@@ -1,0 +1,794 @@
+{
+  "_readme": "Library pilihan untuk field composition (Layer 3). Menentukan sudut pandang kamera, framing, kedalaman ruang, dan struktur geometris. Diisi SETELAH scene_core dan environment terdefinisi. Untuk video: composition ini menjadi posisi awal — gerakan kamera di Layer 4 (motion) bergerak relatif terhadap posisi di sini.",
+  "_version": "1.0",
+  "_structure": "composition → camera | framing | spatial_layers | geometry",
+  "_consistency_note": "Untuk karakter yang sudah dikunci di Layer 1: pastikan framing cukup menampilkan wajah di sebagian besar generate agar AI tetap dapat membaca face_dna. Hindari extreme_close_up pada non-wajah terlalu sering.",
+
+  "composition": {
+
+    "camera": {
+
+      "shot_type": {
+        "_note": "Tipe shot — menentukan seberapa besar subjek mengisi frame dan seberapa banyak environment terlihat. Urutan dari paling dekat ke paling jauh.",
+        "options": [
+          {
+            "en": "ECU",
+            "id": "sangat dekat sekali",
+            "full_name": "Extreme Close-Up",
+            "description": "Detail ekstrem — sepasang mata, bibir, ujung jari. Frame hampir sepenuhnya diisi satu bagian kecil tubuh. Efek dramatis intens, identitas karakter hampir hilang.",
+            "subject_in_frame": "5–10% tubuh atau objek",
+            "use_case": "Ekspresi mikro, detail objek kritis, horor, momen dramatis puncak"
+          },
+          {
+            "en": "CU",
+            "id": "dekat",
+            "full_name": "Close-Up",
+            "description": "Wajah mengisi frame — dari bahu ke atas atau sedikit di atas kepala. Ekspresi dan emosi sangat dominan. Shot standar untuk dialog emosional.",
+            "subject_in_frame": "Kepala + sedikit bahu",
+            "use_case": "Ekspresi karakter, dialog, reaksi emosional, portrait"
+          },
+          {
+            "en": "MCU",
+            "id": "agak dekat",
+            "full_name": "Medium Close-Up",
+            "description": "Dari dada ke atas. Lebih konteks dari CU, masih intimate. Menampilkan bahasa tubuh bagian atas — gesture tangan bisa mulai terlihat.",
+            "subject_in_frame": "Dari mid-chest ke atas",
+            "use_case": "Wawancara, percakapan intim, portrait dengan sedikit konteks"
+          },
+          {
+            "en": "MS",
+            "id": "sedang",
+            "full_name": "Medium Shot",
+            "description": "Dari pinggang ke atas. Menyeimbangkan karakter dengan sedikit environment. Bahasa tubuh penuh terlihat. Shot paling serbaguna.",
+            "subject_in_frame": "Dari pinggang ke atas",
+            "use_case": "Adegan standar, eksplorasi karakter, interaksi dua orang"
+          },
+          {
+            "en": "MFS",
+            "id": "agak jauh",
+            "full_name": "Medium Full Shot",
+            "description": "Dari lutut ke atas. Menampilkan lebih banyak tubuh dan pakaian tanpa kehilangan keterbacaan ekspresi. Kostum dan stance mulai bercerita.",
+            "subject_in_frame": "Dari lutut ke atas",
+            "use_case": "Menampilkan kostum/outfit, pose berdiri, interaksi dalam ruang"
+          },
+          {
+            "en": "FS",
+            "id": "penuh",
+            "full_name": "Full Shot",
+            "description": "Seluruh tubuh dari kepala hingga kaki terlihat. Ada ruang kecil di atas kepala dan di bawah kaki. Stance dan proporsi tubuh dominan.",
+            "subject_in_frame": "Tubuh penuh + ruang minimal",
+            "use_case": "Menampilkan karakter utuh, kostum lengkap, pose heroik, aksi"
+          },
+          {
+            "en": "LS",
+            "id": "jauh",
+            "full_name": "Long Shot",
+            "description": "Subjek terlihat utuh dengan environment yang signifikan. Karakter kecil relatif terhadap background tapi masih bisa dikenali.",
+            "subject_in_frame": "Karakter kecil, environment dominan 60–70%",
+            "use_case": "Karakter dalam dunianya, perjalanan, isolasi, skala lingkungan"
+          },
+          {
+            "en": "WS",
+            "id": "luas",
+            "full_name": "Wide Shot",
+            "description": "Environment sangat dominan. Karakter hanya sebagai elemen kecil dalam lanskap atau setting. Konteks spasial penuh terlihat.",
+            "subject_in_frame": "Karakter sangat kecil, environment 80%+",
+            "use_case": "Establishing, landscape photography, skala epic, kesendirian"
+          },
+          {
+            "en": "EWS",
+            "id": "sangat luas",
+            "full_name": "Extreme Wide Shot",
+            "description": "Subjek hampir tidak terlihat dalam frame yang sangat luas. Fokus sepenuhnya pada skala environment. Karakter hanya titik kecil.",
+            "subject_in_frame": "Karakter hampir tak terlihat, pure environment",
+            "use_case": "Lanskap epik, alien world, God's eye view, pembuka cerita"
+          },
+          {
+            "en": "OTS",
+            "id": "dari balik bahu",
+            "full_name": "Over-The-Shoulder",
+            "description": "Kamera di belakang bahu satu karakter melihat ke karakter atau objek lain. Bahu/kepala karakter A terlihat di tepi frame. Klasik untuk dialog dan konfrontasi.",
+            "subject_in_frame": "Dua subjek — foreground (bahu) + midground (wajah kedua)",
+            "use_case": "Dialog, konfrontasi, power dynamic, negosiasi"
+          },
+          {
+            "en": "POV",
+            "id": "sudut pandang pertama",
+            "full_name": "Point of View",
+            "description": "Perspektif langsung dari mata karakter. Penonton melihat persis apa yang karakter lihat. Sangat immersive tapi bisa disorientasi.",
+            "subject_in_frame": "Apa yang karakter lihat — tidak ada karakter itu sendiri",
+            "use_case": "Immersive action, horror, discovery momen, subjektivitas"
+          },
+          {
+            "en": "two_shot",
+            "id": "dua subjek",
+            "full_name": "Two Shot",
+            "description": "Dua karakter dalam satu frame dengan bobot yang relatif seimbang. Menampilkan hubungan, dinamika, dan interaksi di antara mereka.",
+            "subject_in_frame": "Dua karakter keduanya terlihat jelas",
+            "use_case": "Dinamika duo, hubungan, perbandingan karakter, dialog"
+          },
+          {
+            "en": "aerial",
+            "id": "udara",
+            "full_name": "Aerial Shot",
+            "description": "Pandangan dari ketinggian seperti drone. Subjek terlihat dari atas dengan angle antara 30–75 derajat. Memberikan konteks geografis.",
+            "subject_in_frame": "Perspektif dari udara, environment map-like",
+            "use_case": "Establishing lokasi, pergerakan pasukan, urban landscape, geography"
+          },
+          {
+            "en": "BEV",
+            "id": "pandangan burung",
+            "full_name": "Bird's Eye View",
+            "description": "Tepat 90 derajat dari atas ke bawah. Subjek terlihat flat seperti peta. Tidak ada perspektif konvensional — sangat grafis.",
+            "subject_in_frame": "Perspektif vertikal penuh, tidak ada horizon",
+            "use_case": "Peta hidup, koreografi, formasi, perspektif divine/god"
+          },
+          {
+            "en": "WEV",
+            "id": "pandangan cacing",
+            "full_name": "Worm's Eye View",
+            "description": "Dari bawah melihat ke atas. Membuat subjek terlihat besar, dominan, mengancam, atau heroik tergantung konteks.",
+            "subject_in_frame": "Subjek dari bawah, langit atau ceiling di background",
+            "use_case": "Villain reveal, hero moment, arsitektur megah, rasa tertekan"
+          }
+        ]
+      },
+
+      "angle": {
+        "_note": "Posisi vertikal kamera relatif terhadap subjek — mempengaruhi power dynamic dan mood psikologis.",
+        "options": [
+          {
+            "en": "eye_level",
+            "id": "setinggi mata",
+            "description": "Kamera sejajar dengan mata subjek. Netral, setara, paling natural. Tidak ada implied power dynamic.",
+            "psychological_effect": "Netral, jujur, relatable, setara"
+          },
+          {
+            "en": "slightly_low",
+            "id": "sedikit rendah",
+            "description": "Kamera sedikit di bawah eye level. Memberikan sedikit wibawa pada subjek tanpa drama berlebihan.",
+            "psychological_effect": "Sedikit heroik, menghormati, percaya diri"
+          },
+          {
+            "en": "low_angle",
+            "id": "rendah",
+            "description": "Kamera jelas di bawah subjek. Subjek terlihat kuat, dominan, mengancam, atau heroik.",
+            "psychological_effect": "Kekuatan, dominasi, ketakutan, heroisme"
+          },
+          {
+            "en": "extreme_low",
+            "id": "sangat rendah",
+            "description": "Kamera hampir di permukaan tanah melihat ke atas. Efek dramatis maksimal.",
+            "psychological_effect": "Rasa terintimidasi ekstrem, villain reveal, kebesaran"
+          },
+          {
+            "en": "slightly_high",
+            "id": "sedikit tinggi",
+            "description": "Kamera sedikit di atas eye level. Subjek terlihat sedikit kecil atau vulnerable.",
+            "psychological_effect": "Sedikit lemah, diawasi, observasi"
+          },
+          {
+            "en": "high_angle",
+            "id": "tinggi",
+            "description": "Kamera jelas di atas subjek. Membuat subjek terlihat kecil, lemah, vulnerable, atau innocent.",
+            "psychological_effect": "Kelemahan, kepolosan, pengawasan, isolasi"
+          },
+          {
+            "en": "bird_eye",
+            "id": "pandangan burung",
+            "description": "Tepat dari atas ke bawah (90 derajat). Subjek flat, perspektif God's view.",
+            "psychological_effect": "Omniscient, divine, surveillance, peta hidup"
+          },
+          {
+            "en": "dutch",
+            "id": "miring",
+            "description": "Kamera dimiringkan pada sumbu roll (horizon tidak rata). Menciptakan rasa tidak nyaman, ketidakstabilan, atau kegilaan.",
+            "psychological_effect": "Ketidakstabilan, kegilaan, ketegangan psikologis, disorientation"
+          },
+          {
+            "en": "oblique",
+            "id": "diagonal",
+            "description": "Angle diagonal — antara frontal dan samping. Lebih dinamis dari sudut lurus.",
+            "psychological_effect": "Dinamis, energi, tidak konvensional"
+          }
+        ]
+      },
+
+      "lens": {
+
+        "focal_length": {
+          "_note": "Panjang focal lensa — mempengaruhi field of view, perspektif, dan kompresi ruang.",
+          "options": [
+            {
+              "en": "8mm",
+              "id": "8mm",
+              "category": "ultra_wide",
+              "description": "Ultra fisheye — distorsi ekstrem, lengkungan kuat di tepi. Surrealis, horor, efek kepala terlalu besar.",
+              "perspective_effect": "Distorsi fisheye kuat, field of view sangat luas"
+            },
+            {
+              "en": "14mm",
+              "id": "14mm",
+              "category": "ultra_wide",
+              "description": "Ultra wide — field of view sangat luas, distorsi tepi kuat. Landscape ekstrem, arsitektur.",
+              "perspective_effect": "Distorsi perspektif kuat, latar belakang terasa jauh"
+            },
+            {
+              "en": "24mm",
+              "id": "24mm",
+              "category": "wide",
+              "description": "Wide angle — lingkungan banyak terlihat, sedikit distorsi. Standar untuk environmental storytelling.",
+              "perspective_effect": "Lebar, karakter dalam konteks, sedikit distorsi tepi"
+            },
+            {
+              "en": "35mm",
+              "id": "35mm",
+              "category": "wide_normal",
+              "description": "Mendekati pandangan mata manusia. Natural, tidak distorsi, serbaguna. Favorit dokumenter dan street photography.",
+              "perspective_effect": "Hampir natural, sedikit lebih lebar dari mata"
+            },
+            {
+              "en": "50mm",
+              "id": "50mm",
+              "category": "normal",
+              "description": "Paling dekat dengan persepsi mata manusia. Netral sempurna, tidak ada distorsi, klasik.",
+              "perspective_effect": "Identik dengan pandangan mata, perspektif netral"
+            },
+            {
+              "en": "85mm",
+              "id": "85mm",
+              "category": "short_telephoto",
+              "description": "Portrait lens klasik. Kompresi perspektif menyanjung wajah, bokeh indah, tidak ada distorsi.",
+              "perspective_effect": "Sedikit kompresi, wajah terdefinisi indah, background terdekat"
+            },
+            {
+              "en": "105mm",
+              "id": "105mm",
+              "category": "portrait_telephoto",
+              "description": "Portrait telephoto — kompresi lebih kuat dari 85mm, bokeh lebih creamy, background lebih compressed.",
+              "perspective_effect": "Kompresi sedang, subject terpisah indah dari background"
+            },
+            {
+              "en": "135mm",
+              "id": "135mm",
+              "category": "telephoto",
+              "description": "Kompresi perspektif kuat, subjek dipisahkan dari background secara dramatis. Cinematic.",
+              "perspective_effect": "Kompresi kuat, background sangat compressed dan blurry"
+            },
+            {
+              "en": "200mm",
+              "id": "200mm",
+              "category": "telephoto",
+              "description": "Jarak jauh ke subjek, kompresi kuat. Wildlife photography feel, atau untuk menangkap momen dari jauh.",
+              "perspective_effect": "Kompresi sangat kuat, depth sangat compressed"
+            },
+            {
+              "en": "400mm",
+              "id": "400mm",
+              "category": "super_telephoto",
+              "description": "Super telephoto — subjek dan background terkompresi hampir flat. Hanya bisa dari sangat jauh.",
+              "perspective_effect": "Kompresi ekstrem, dunia terasa flat seperti backdrop"
+            }
+          ]
+        },
+
+        "aperture": {
+          "_note": "Bukaan lensa — menentukan depth of field dan jumlah cahaya yang masuk.",
+          "options": [
+            {
+              "en": "f/1.2",
+              "id": "f/1.2",
+              "description": "Bukaan terlebar — DOF sangat dangkal (paper thin), bokeh creamy ekstrem, perlu cahaya sedikit. Hanya titik kecil yang fokus.",
+              "dof_effect": "Sangat dangkal — hanya satu titik fokus, semua lain blur"
+            },
+            {
+              "en": "f/1.4",
+              "id": "f/1.4",
+              "description": "Sangat lebar — DOF dangkal, bokeh indah, ideal untuk low-light portrait. Favorit cinematografer.",
+              "dof_effect": "Dangkal — subjek tajam, background creamy blur"
+            },
+            {
+              "en": "f/1.8",
+              "id": "f/1.8",
+              "description": "Wide — DOF dangkal, bokeh bagus, lebih tajam dari 1.4. Portrait standar.",
+              "dof_effect": "Dangkal — separasi subjek dan background baik"
+            },
+            {
+              "en": "f/2.8",
+              "id": "f/2.8",
+              "description": "Wide — standar lensa zoom premium. DOF dangkal tapi lebih toleran. Cinematic dan dramatis.",
+              "dof_effect": "Sedikit dangkal — bokeh terlihat, lebih banyak detail background"
+            },
+            {
+              "en": "f/4",
+              "id": "f/4",
+              "description": "Menengah — keseimbangan DOF dan sharpness. Background blur terlihat tapi tidak dominan.",
+              "dof_effect": "Menengah — background sedikit blur, subjek tajam"
+            },
+            {
+              "en": "f/5.6",
+              "id": "f/5.6",
+              "description": "Menengah — banyak hal dalam fokus. Landscape dan group shot. Background masih sedikit terpisah.",
+              "dof_effect": "Menengah lebar — sebagian besar dalam fokus"
+            },
+            {
+              "en": "f/8",
+              "id": "f/8",
+              "description": "Kecil — sweet spot lensa, sharpest aperture untuk kebanyakan lensa. Semua dalam fokus.",
+              "dof_effect": "Lebar — hampir semua dalam fokus, background terlihat jelas"
+            },
+            {
+              "en": "f/11",
+              "id": "f/11",
+              "description": "Kecil — DOF sangat dalam, landscape photography. Diffraction mulai terlihat.",
+              "dof_effect": "Sangat lebar — semua dalam fokus dari depan ke belakang"
+            },
+            {
+              "en": "f/16",
+              "id": "f/16",
+              "description": "Sangat kecil — DOF maksimal, semua tajam, tapi butuh banyak cahaya. Sun stars muncul.",
+              "dof_effect": "Maksimal — seluruh frame dalam fokus tajam"
+            }
+          ]
+        },
+
+        "lens_type": {
+          "_note": "Karakter optik lensa — mempengaruhi aberrasi, bokeh, dan feel gambar.",
+          "options": [
+            {
+              "en": "prime",
+              "id": "prime",
+              "description": "Lensa fixed focal length — biasanya lebih tajam, aperture lebih lebar, karakter optis unik. Memaksa komposisi lebih disiplin.",
+              "visual_character": "Tajam, karakter distorsi minimal, bokeh bersih"
+            },
+            {
+              "en": "zoom",
+              "id": "zoom",
+              "description": "Lensa variabel — fleksibel tapi biasanya sedikit kurang tajam dan gelap dari prime. Untuk konten yang butuh versatilitas.",
+              "visual_character": "Versatil, sedikit lebih 'plastik' dari prime"
+            },
+            {
+              "en": "anamorphic",
+              "id": "anamorfik",
+              "description": "Lensa sinematik — oval bokeh, lens flare horizontal khas, letterbox ratio. Sangat cinematic dan film-feel.",
+              "visual_character": "Lens flare biru horizontal, oval bokeh, widescreen feel"
+            },
+            {
+              "en": "fisheye",
+              "id": "fisheye",
+              "description": "Distorsi ekstrem melingkar — field of view 180 derajat atau lebih. Surrealis, action sports, atau efek horor.",
+              "visual_character": "Distorsi melingkar kuat, cakrawala melengkung"
+            },
+            {
+              "en": "tilt_shift",
+              "id": "tilt-shift",
+              "description": "Bidang fokus bisa diarahkan — efek miniature, hanya strip tipis yang fokus meski landscape, atau perspektif dikoreksi.",
+              "visual_character": "Selective focus dramatis, efek miniatur, perspektif terkontrol"
+            },
+            {
+              "en": "macro",
+              "id": "makro",
+              "description": "Rasio reproduksi 1:1 atau lebih — detail sangat kecil terlihat besar. DOF sangat dangkal di jarak dekat.",
+              "visual_character": "Detail ekstrem, DOF paper-thin, bokeh bulat indah"
+            },
+            {
+              "en": "vintage_adapted",
+              "id": "lensa vintage",
+              "description": "Lensa tua diadaptasi ke kamera modern — aberrasi kromatik, bokeh berbentuk unik, coating minimal, swirly bokeh.",
+              "visual_character": "Karakter unik, aberrasi warna, bokeh berotasi, vintage feel"
+            },
+            {
+              "en": "softbox_diffused",
+              "id": "difusi lembut",
+              "description": "Bukan lensa sebenarnya — efek cahaya sangat lembut, seperti difusi di depan lensa. Dreamy, ethereal, soft.",
+              "visual_character": "Glow di highlight, sangat soft, seperti melalui kaca susu"
+            }
+          ]
+        },
+
+        "dof": {
+          "_note": "Depth of Field — seberapa dalam zone of focus. Dipengaruhi aperture + focal length + jarak ke subjek.",
+          "options": [
+            {
+              "en": "ultra_shallow",
+              "id": "sangat dangkal",
+              "description": "Hanya millimeter yang fokus — satu mata fokus, mata lain blur. Ekstrem artistik.",
+              "visual_effect": "Hampir seluruh frame blur kecuali satu titik"
+            },
+            {
+              "en": "shallow",
+              "id": "dangkal",
+              "description": "Subjek tajam, background blur creamy. Subjek terisolasi dengan indah dari lingkungannya.",
+              "visual_effect": "Subjek tajam, background bokeh jelas"
+            },
+            {
+              "en": "medium",
+              "id": "menengah",
+              "description": "Subjek dan lingkungan terdekat dalam fokus, background mulai soft. Keseimbangan antara isolasi dan konteks.",
+              "visual_effect": "Subjek dan area dekat tajam, background mulai blur"
+            },
+            {
+              "en": "deep",
+              "id": "dalam",
+              "description": "Hampir semua dalam fokus dari foreground ke background. Environment sepenuhnya terbaca.",
+              "visual_effect": "Mayoritas frame tajam"
+            },
+            {
+              "en": "infinite",
+              "id": "tak terbatas",
+              "description": "Seluruh frame dari depan ke belakang tajam sempurna. Landscape, arsitektur, dokumen.",
+              "visual_effect": "Semua elemen frame tajam sempurna"
+            },
+            {
+              "en": "rack_focus",
+              "id": "rack focus",
+              "description": "Fokus berpindah selama shot — dari foreground ke background atau sebaliknya. Menggeser perhatian penonton.",
+              "visual_effect": "Satu elemen blur → tajam, elemen lain tajam → blur (video)"
+            }
+          ]
+        }
+      },
+
+      "height": {
+        "_note": "Ketinggian kamera dari permukaan tanah — mempengaruhi perspektif dan koneksi dengan subjek.",
+        "options": [
+          { "en": "ground_level", "id": "setinggi tanah", "description": "Kamera di permukaan atau sangat rendah — dari perspektif serangga atau hewan kecil. Dramatis dan tidak konvensional." },
+          { "en": "ankle", "id": "setinggi pergelangan kaki", "description": "Sangat rendah — menampilkan tanah/lantai di foreground, subjek dari bawah. Worm's eye feel." },
+          { "en": "waist", "id": "setinggi pinggang", "description": "Kamera di level pinggang — sedikit di bawah eye level, sering digunakan untuk anak-anak atau action dinamis." },
+          { "en": "chest", "id": "setinggi dada", "description": "Kamera di level dada — sedikit di bawah eye level, natural tapi sedikit dominan terhadap subjek yang lebih rendah." },
+          { "en": "eye_level", "id": "setinggi mata", "description": "Paling natural — kamera di ketinggian mata rata-rata. Netral dan relatable." },
+          { "en": "overhead", "id": "di atas kepala", "description": "Kamera di atas kepala — melihat ke bawah, menampilkan top of head dan meja/lantai." },
+          { "en": "high_mounted", "id": "tinggi terpasang", "description": "Kamera dipasang tinggi — seperti CCTV atau crane. Surveillance feel atau establishing." },
+          { "en": "floating", "id": "melayang", "description": "Posisi kamera tidak terikat gravitasi — fantasi, mimpi, atau drone sangat tinggi." }
+        ]
+      },
+
+      "distance": {
+        "_note": "Jarak kamera ke subjek — mempengaruhi intimacy dan proxy.",
+        "options": [
+          { "en": "intimate", "id": "sangat dekat", "description": "Jarak sangat dekat — 0–45 cm. Ruang personal yang sangat privat. Hanya untuk orang yang sangat dekat." },
+          { "en": "personal", "id": "dekat", "description": "Jarak personal — 45–120 cm. Percakapan intim, hubungan dekat." },
+          { "en": "social", "id": "sosial", "description": "Jarak sosial — 120–360 cm. Interaksi formal atau kenalan." },
+          { "en": "public", "id": "publik", "description": "Jarak publik — 360 cm+. Pidato publik, pertunjukan, keramaian." },
+          { "en": "extreme_far", "id": "sangat jauh", "description": "Subjek hanya titik kecil dalam frame — landscape atau aerial feeling." }
+        ]
+      },
+
+      "stability": {
+        "_note": "Stabilitas dan gerakan kamera saat capture — mempengaruhi feel dan mood.",
+        "options": [
+          { "en": "static", "id": "statis", "description": "Kamera diam sempurna di tripod. Komposisi deliberate, formal, tenang. Setiap elemen frame diputuskan dengan sadar." },
+          { "en": "handheld_subtle", "id": "genggam halus", "description": "Sedikit goyangan natural — menambah realisme dan kehidupan. Seperti dokumenter yang halus." },
+          { "en": "handheld_active", "id": "genggam aktif", "description": "Goyangan lebih intens — urgency, chaos, action. Berita perang, horror found footage, chase scene." },
+          { "en": "handheld_chaotic", "id": "genggam kacau", "description": "Goyangan sangat kuat — disorientation, battle, extreme urgency. Batas keterbacaan." },
+          { "en": "gimbal_smooth", "id": "gimbal mulus", "description": "Stabilisasi elektronik — gerakan mulus tanpa goyangan. Modern dan cinematic." },
+          { "en": "dolly_smooth", "id": "dolly mulus", "description": "Pergerakan pada rel yang sangat mulus — klasik cinematic. Stabil tapi bergerak secara deliberate." },
+          { "en": "drone_steady", "id": "drone stabil", "description": "Kamera dari drone yang distabilisasi — aerial yang mulus, perspektif berubah perlahan." },
+          { "en": "crane_majestic", "id": "crane megah", "description": "Pergerakan crane besar yang mulus dan lambat — reveal epik, establishing megah." }
+        ]
+      }
+    },
+
+    "framing": {
+
+      "subject_placement": {
+        "_note": "Posisi subjek dalam frame — menentukan visual balance dan emphasis.",
+        "options": [
+          {
+            "en": "center",
+            "id": "tengah",
+            "description": "Subjek tepat di tengah frame. Formal, statis, simetris. Bisa powerful atau membosankan tergantung konteks.",
+            "compositional_feel": "Stabil, formal, simetris, kadang monoton"
+          },
+          {
+            "en": "third_left",
+            "id": "sepertiga kiri",
+            "description": "Subjek di persimpangan kiri rule of thirds. Natural, dinamis, memberi ruang ke kanan. Konvensional tapi efektif.",
+            "compositional_feel": "Dinamis, natural, lead room ke kanan"
+          },
+          {
+            "en": "third_right",
+            "id": "sepertiga kanan",
+            "description": "Subjek di persimpangan kanan rule of thirds. Natural, dinamis, memberi ruang ke kiri.",
+            "compositional_feel": "Dinamis, natural, lead room ke kiri"
+          },
+          {
+            "en": "golden_ratio",
+            "id": "rasio emas",
+            "description": "Penempatan berdasarkan spiral Fibonacci — organic, pleasing secara matematis, sering tidak disadari tapi terasa 'benar'.",
+            "compositional_feel": "Organis, harmonis, matematis natural"
+          },
+          {
+            "en": "top_third",
+            "id": "sepertiga atas",
+            "description": "Subjek di bagian atas frame — menampilkan banyak foreground atau ground. Rasa terisolasi atau kecil.",
+            "compositional_feel": "Subjek kecil, lingkungan dominan di bawah"
+          },
+          {
+            "en": "bottom_third",
+            "id": "sepertiga bawah",
+            "description": "Subjek di bagian bawah frame — langit atau environment dominan di atas. Sky sebagai elemen dominan.",
+            "compositional_feel": "Langit atau environment atas dominan, subjek grounded"
+          },
+          {
+            "en": "extreme_left",
+            "id": "sangat kiri",
+            "description": "Subjek di tepi kiri frame — tidak konvensional, ruang negatif besar di kanan. Lonely, anticipation, atau sengaja.",
+            "compositional_feel": "Banyak ruang negatif, tension, misterius"
+          },
+          {
+            "en": "extreme_right",
+            "id": "sangat kanan",
+            "description": "Subjek di tepi kanan frame — ruang negatif besar di kiri. Serupa efek dengan extreme_left.",
+            "compositional_feel": "Banyak ruang negatif, tension, reflektif"
+          },
+          {
+            "en": "off_center_dynamic",
+            "id": "off-center dinamis",
+            "description": "Subjek digeser dari tengah tapi tidak pada persimpangan thirds — lebih experimental, energi tidak stabil.",
+            "compositional_feel": "Tidak nyaman secara konstruktif, energi dinamis"
+          },
+          {
+            "en": "multiple_centers",
+            "id": "pusat ganda",
+            "description": "Dua atau lebih subjek membagi frame — masing-masing pada titik komposisi berbeda. Untuk two shot atau lebih.",
+            "compositional_feel": "Dialog visual, ketegangan atau harmoni antar elemen"
+          }
+        ]
+      },
+
+      "head_room": {
+        "_note": "Jarak antara kepala subjek dan batas atas frame.",
+        "options": [
+          { "en": "tight", "id": "ketat", "description": "Hampir tidak ada ruang antara kepala dan top frame — intens, urgent, klaustrofobik, atau stylistic statement." },
+          { "en": "normal", "id": "normal", "description": "Ruang standar — kepala tidak terlalu dekat maupun terlalu jauh dari top frame. Paling nyaman ditonton." },
+          { "en": "generous", "id": "lega", "description": "Banyak ruang di atas kepala — memberikan rasa 'napas', menampilkan environment atas, atau membuat subjek terasa kecil." },
+          { "en": "none_cropped", "id": "terpotong", "description": "Kepala sedikit terpotong oleh top frame — stylistic, dinamis, atau kesalahan yang disengaja." }
+        ]
+      },
+
+      "lead_room": {
+        "_note": "Ruang di arah gaze atau pergerakan subjek — ke mana mereka menghadap atau bergerak.",
+        "options": [
+          { "en": "minimal", "id": "minimal", "description": "Hampir tidak ada ruang di arah gaze — tercekik, tension tinggi, atau subjek 'terjebak' oleh frame." },
+          { "en": "balanced", "id": "seimbang", "description": "Ruang standar di arah gaze — nyaman, tidak berlebihan." },
+          { "en": "abundant", "id": "melimpah", "description": "Banyak ruang di arah gaze — subjek seperti menatap atau bergerak menuju sesuatu yang jauh, harapan atau ketidakpastian." },
+          { "en": "reversed", "id": "terbalik", "description": "Ruang justru di belakang subjek, bukan di depan — surrealis, disorientasi, atau subjek melarikan diri dari sesuatu." }
+        ]
+      },
+
+      "symmetry": {
+        "_note": "Tingkat simetri dan keseimbangan visual dalam komposisi.",
+        "options": [
+          { "en": "perfect_symmetry", "id": "simetri sempurna", "description": "Frame terbagi sempurna — kiri dan kanan identik. Kubrick-esque, powerful, formal, kadang eerie." },
+          { "en": "near_symmetry", "id": "hampir simetri", "description": "Hampir simetris dengan variasi kecil — indah, harmonis, organic." },
+          { "en": "asymmetrical_balanced", "id": "asimetris seimbang", "description": "Tidak simetris tapi seimbang secara visual — objek berbeda tapi visual weight setara. Dinamis dan natural." },
+          { "en": "asymmetrical_unbalanced", "id": "asimetris tidak seimbang", "description": "Sengaja tidak seimbang — tension, ketidakstabilan, atau momen transisi." },
+          { "en": "radial", "id": "radial", "description": "Elemen menyebar dari satu titik pusat — spiral, lingkaran, perspektif tunnel." },
+          { "en": "diagonal", "id": "diagonal", "description": "Garis dominan diagonal — energi, dinamisme, gerakan implisit." }
+        ]
+      },
+
+      "frame_within_frame": {
+        "_note": "Elemen dalam scene yang membentuk 'frame kedua' di dalam frame kamera — menambah kedalaman dan fokus.",
+        "options": [
+          { "en": "none", "id": "tidak ada", "description": "Tidak ada frame dalam frame — komposisi langsung." },
+          { "en": "doorway_arch", "id": "pintu atau gerbang", "description": "Pintu atau gerbang membingkai subjek — threshold, transisi, mengintip." },
+          { "en": "window", "id": "jendela", "description": "Jendela membingkai subjek — memisahkan dalam dan luar, observasi, terisolasi." },
+          { "en": "tunnel", "id": "terowongan", "description": "Terowongan atau koridor panjang — leading lines bertemu di subjek, hope atau claustrophobia." },
+          { "en": "branches_foliage", "id": "ranting atau dedaunan", "description": "Ranting atau daun alami membingkai subjek — organic, natural, layering." },
+          { "en": "rock_formation", "id": "formasi batu", "description": "Celah batu atau formasi alam membingkai subjek." },
+          { "en": "hands_or_arms", "id": "tangan atau lengan", "description": "Tangan atau lengan karakter lain membingkai subjek — protektif, mengancam, atau intim." },
+          { "en": "mirror_reflection", "id": "pantulan cermin", "description": "Subjek terlihat melalui atau dalam pantulan cermin — duality, self-reflection, surrealis." },
+          { "en": "shadow_frame", "id": "bayangan sebagai frame", "description": "Bayangan membentuk frame di sekitar subjek — kontras cahaya dan gelap." },
+          { "en": "crowd_gap", "id": "celah kerumunan", "description": "Subjek dilihat melalui celah dalam kerumunan — voyeuristic, tersembunyi, momen diam dalam keramaian." },
+          { "en": "vehicle_window", "id": "jendela kendaraan", "description": "Kaca mobil, kereta, atau kapal membingkai — perjalanan, transisi, terpisah dari dunia luar." }
+        ]
+      }
+    },
+
+    "spatial_layers": {
+      "_note": "Pengaturan kedalaman frame — foreground, midground, background. Ini adalah array of objects. Layer lebih banyak = depth lebih kaya. Minimal 2 layer (foreground + background) disarankan untuk hasil terbaik.",
+
+      "layer_name": {
+        "_note": "Nama tiap layer dalam array spatial_layers.",
+        "standard_layers": [
+          {
+            "en": "extreme_foreground",
+            "id": "sangat depan",
+            "description": "Sangat dekat ke kamera — mungkin blur, membingkai scene, tidak sepenuhnya dalam fokus.",
+            "z_position": "0–30 cm dari kamera",
+            "typical_elements": ["blurry branches", "bokeh dust particles", "edge of a surface", "silhouette elements"]
+          },
+          {
+            "en": "foreground",
+            "id": "latar depan",
+            "description": "Elemen di depan subjek utama — menambah kedalaman, bisa sharp atau soft.",
+            "z_position": "30 cm–1.5 m dari kamera",
+            "typical_elements": ["flowers", "rocks", "grass", "wooden fence", "table edge", "weapon"]
+          },
+          {
+            "en": "midground",
+            "id": "latar tengah",
+            "description": "Area subjek utama berada — biasanya in focus.",
+            "z_position": "1.5–5 m dari kamera",
+            "typical_elements": ["main character", "supporting characters", "primary props", "action"]
+          },
+          {
+            "en": "background",
+            "id": "latar belakang",
+            "description": "Elemen di belakang subjek utama — environment, atmosfer.",
+            "z_position": "5 m+ dari kamera",
+            "typical_elements": ["buildings", "trees", "mountains", "sky", "other characters at distance"]
+          },
+          {
+            "en": "extreme_background",
+            "id": "sangat belakang",
+            "description": "Cakrawala atau elemen sangat jauh — langit, gunung jauh, kabut.",
+            "z_position": "50 m+ atau cakrawala",
+            "typical_elements": ["horizon", "sky", "distant mountains", "stars", "city skyline"]
+          }
+        ]
+      },
+
+      "focus_state": {
+        "_note": "Kondisi ketajaman setiap spatial layer.",
+        "options": [
+          { "en": "sharp", "id": "tajam", "description": "Layer ini dalam fokus sempurna — setiap detail terlihat jelas." },
+          { "en": "soft", "id": "lembut", "description": "Sedikit di luar fokus — masih terbaca tapi tidak crisp. Depth tanpa distraksi." },
+          { "en": "bokeh", "id": "bokeh", "description": "Blur artistik — titik cahaya menjadi lingkaran, detail hilang menjadi warna dan bentuk." },
+          { "en": "motion_blur", "id": "blur gerak", "description": "Blur karena gerakan — layer ini bergerak cepat saat capture." },
+          { "en": "silhouette", "id": "siluet", "description": "Layer ini hanya terlihat sebagai bentuk hitam — backlit atau sangat gelap." },
+          { "en": "haze_diffused", "id": "kabut tersebar", "description": "Kabut atau haze membuat layer ini soft secara atmosferik — bukan blur fokus tapi blur atmosfer." }
+        ]
+      },
+
+      "atmospheric_interaction": {
+        "_note": "Efek atmosfer yang terjadi pada setiap spatial layer — semakin jauh biasanya semakin banyak interaksi.",
+        "options": [
+          { "en": "clear", "id": "jernih", "description": "Tidak ada efek atmosfer — layer terlihat crisp seperti adanya." },
+          { "en": "light_haze", "id": "kabut tipis", "description": "Sedikit haze — layer sedikit keputihan, detail mulai tersamar." },
+          { "en": "moderate_haze", "id": "kabut sedang", "description": "Haze jelas — layer terselubung, kontras berkurang, warna memudar sedikit." },
+          { "en": "heavy_fog", "id": "kabut tebal", "description": "Kabut tebal — layer hampir tidak terlihat, misterius, atmospheric depth kuat." },
+          { "en": "smoke", "id": "asap", "description": "Asap menghalangi layer — tidak transparan seperti fog, lebih padat." },
+          { "en": "volumetric_light", "id": "cahaya volumetrik", "description": "Sinar cahaya terlihat melalui partikel di layer ini — god rays, crepuscular rays." },
+          { "en": "dust_particles", "id": "partikel debu", "description": "Debu terlihat mengambang — memberi sense of air dan kedalaman." },
+          { "en": "rain_curtain", "id": "tirai hujan", "description": "Hujan membentuk layar di depan atau belakang layer — menambah tekstur dan depth." }
+        ]
+      }
+    },
+
+    "geometry": {
+      "_note": "Struktur garis, bentuk, dan pola visual yang mendominasi komposisi. Mempengaruhi bagaimana mata penonton bergerak dalam frame.",
+
+      "dominant_lines": {
+        "_note": "Jenis garis dominan yang mengalir melalui komposisi — mengarahkan mata.",
+        "options": [
+          {
+            "en": "leading_lines_converging",
+            "id": "garis pengarah konvergen",
+            "description": "Garis-garis yang bertemu di satu titik — jalan, rel, koridor. Mata dipaksa mengikuti ke titik pertemuan di mana subjek berada.",
+            "eye_movement": "Dari tepi frame menuju satu titik fokus — sangat kuat dan terarah"
+          },
+          {
+            "en": "leading_lines_parallel",
+            "id": "garis pengarah paralel",
+            "description": "Garis sejajar yang mengalir melalui frame — sungai, pagar, barisan pohon. Membawa mata dari satu sisi ke sisi lain.",
+            "eye_movement": "Horizontal atau vertikal — membawa mata melintasi frame"
+          },
+          {
+            "en": "diagonal_lines",
+            "id": "garis diagonal",
+            "description": "Garis diagonal — energi, dinamisme, ketegangan. Lebih aktif dari horizontal atau vertikal.",
+            "eye_movement": "Diagonal aktif — energi dan gerakan implisit"
+          },
+          {
+            "en": "horizontal_lines",
+            "id": "garis horizontal",
+            "description": "Garis mendatar dominan — cakrawala, permukaan datar. Ketenangan, stabilitas, istirahat.",
+            "eye_movement": "Horisontal — tenang, stabil, lebar"
+          },
+          {
+            "en": "vertical_lines",
+            "id": "garis vertikal",
+            "description": "Garis tegak dominan — pohon, kolom, bangunan tinggi. Kekuatan, keagungan, pertumbuhan.",
+            "eye_movement": "Vertikal — kekuatan, tinggi, formal"
+          },
+          {
+            "en": "curved_lines",
+            "id": "garis melengkung",
+            "description": "Garis melengkung atau S-curve — organis, mengalir, feminine, natural. Lebih lembut dari garis lurus.",
+            "eye_movement": "Berkelok mengalir — lembut, natural, romantis"
+          },
+          {
+            "en": "s_curve",
+            "id": "kurva-S",
+            "description": "Kurva berbentuk S yang mengalir melalui frame — sangat organis dan indah. Sungai berkelok, tubuh dalam pose.",
+            "eye_movement": "Berkelok dari depan ke belakang — sangat dinamis dan dalam"
+          },
+          {
+            "en": "spiral",
+            "id": "spiral",
+            "description": "Garis atau elemen yang membentuk spiral — mengarahkan mata ke pusat. Fibonacci atau Archimedes.",
+            "eye_movement": "Berputar menuju titik pusat — hipnotis, matematis"
+          },
+          {
+            "en": "zigzag",
+            "id": "zigzag",
+            "description": "Garis patah-patah bergantian arah — energi, action, ketegangan, dinamis.",
+            "eye_movement": "Melompat-lompat aktif — energetik dan tidak tenang"
+          },
+          {
+            "en": "no_dominant_line",
+            "id": "tidak ada garis dominan",
+            "description": "Komposisi tanpa garis terarah yang kuat — tekstur, pola acak, atau gambar yang tergantung pada warna dan bentuk.",
+            "eye_movement": "Bebas mengembara — butuh elemen lain untuk mengikat perhatian"
+          }
+        ]
+      },
+
+      "dominant_shapes": {
+        "_note": "Bentuk geometris yang dominan dalam frame — mempengaruhi perasaan psikologis.",
+        "options": [
+          { "en": "triangles", "id": "segitiga", "description": "Segitiga dominan — stabilitas (dasar bawah) atau bahaya/ketegangan (sudut mengarah ke atas). Dinamis dan terarah." },
+          { "en": "circles_ovals", "id": "lingkaran atau oval", "description": "Bentuk bulat — kelengkapan, harmoni, ketidakberakhiran, feminine energy, lembut." },
+          { "en": "rectangles_squares", "id": "persegi atau kotak", "description": "Bentuk persegi — formalitas, stabilitas, kepastian, man-made, struktur." },
+          { "en": "organic_irregular", "id": "organis tidak beraturan", "description": "Bentuk tak beraturan seperti alam — natural, unpredictable, hidup, tidak terstruktur." },
+          { "en": "radial_pattern", "id": "pola radial", "description": "Elemen menyebar dari satu pusat — sunburst, ripple di air, spider web. Menarik mata ke atau dari pusat." },
+          { "en": "grid_pattern", "id": "pola grid", "description": "Pola kotak teratur — urban, industrial, monoton, atau terstruktur ketat." }
+        ]
+      },
+
+      "visual_tension": {
+        "_note": "Tingkat ketegangan visual dalam komposisi — seberapa 'tidak nyaman' atau 'tidak seimbang' secara konstruktif.",
+        "options": [
+          { "en": "harmonious", "id": "harmonis", "description": "Komposisi seimbang sempurna — nyaman, pleasing, tidak ada ketegangan. Berisiko monoton." },
+          { "en": "slightly_tense", "id": "sedikit tegang", "description": "Sedikit ketidakseimbangan — menarik perhatian tanpa mengganggu. Komposisi hidup." },
+          { "en": "moderately_tense", "id": "cukup tegang", "description": "Ketegangan jelas tapi terkontrol — dynamis, menarik, ada sesuatu yang 'belum selesai'." },
+          { "en": "highly_tense", "id": "sangat tegang", "description": "Ketidakseimbangan kuat — discomfort yang disengaja, rasa akan ada sesuatu yang terjadi." },
+          { "en": "chaotic", "id": "kacau", "description": "Komposisi sengaja kacau — overwhelm, action, extreme emotion, tidak ada center yang jelas." }
+        ]
+      },
+
+      "negative_space": {
+        "_note": "Penggunaan ruang kosong dalam frame sebagai elemen komposisi.",
+        "options": [
+          { "en": "minimal", "id": "minimal", "description": "Frame padat dengan elemen — tidak banyak ruang kosong. Ramai, penuh, overwhelming, atau kaya detail." },
+          { "en": "balanced", "id": "seimbang", "description": "Ruang kosong dan elemen seimbang — nyaman, breathable, tidak padat tidak kosong." },
+          { "en": "generous", "id": "lega", "description": "Banyak ruang kosong — subjek kecil dalam ruang besar. Isolasi, kesendirian, atau minimalis yang kuat." },
+          { "en": "dominant", "id": "dominan", "description": "Ruang kosong mendominasi — subjek sangat kecil. Statement yang kuat tentang kesepian, kebesaran alam, atau minimalis ekstrem." }
+        ]
+      },
+
+      "depth_cues": {
+        "_note": "Teknik yang digunakan untuk menciptakan ilusi kedalaman dalam gambar 2D.",
+        "_note2": "Bisa kombinasi beberapa.",
+        "_examples": [
+          "overlapping_elements",
+          "size_diminution_with_distance",
+          "atmospheric_perspective",
+          "linear_perspective_convergence",
+          "texture_gradient",
+          "focus_differential_bokeh",
+          "color_desaturation_with_distance",
+          "shadow_casting",
+          "vertical_placement_higher_equals_farther",
+          "aerial_perspective"
+        ]
+      },
+
+      "compositional_rule": {
+        "_note": "Aturan atau prinsip komposisi yang diterapkan — bisa satu atau lebih, atau sengaja dilanggar.",
+        "options": [
+          { "en": "rule_of_thirds", "id": "aturan sepertiga", "description": "Frame dibagi 9 bagian — subjek di persimpangan garis. Aturan paling dasar dan efektif." },
+          { "en": "golden_ratio", "id": "rasio emas", "description": "Spiral Fibonacci — penempatan organis berdasarkan matematika alam. Lebih complex dari rule of thirds." },
+          { "en": "centered_symmetry", "id": "simetri terpusat", "description": "Subjek di tengah dengan simetri kanan-kiri — Kubrick style. Formal, powerful, atau eerie." },
+          { "en": "rule_of_odds", "id": "aturan ganjil", "description": "Jumlah ganjil subjek lebih menarik dari genap — 3 lebih baik dari 2 atau 4." },
+          { "en": "fill_the_frame", "id": "penuh frame", "description": "Subjek mengisi hampir seluruh frame — intens, bold, tidak ada distraksi." },
+          { "en": "framing_with_environment", "id": "framing dari lingkungan", "description": "Elemen alam atau arsitektur membentuk frame kedua." },
+          { "en": "deliberately_broken", "id": "sengaja dilanggar", "description": "Semua aturan sengaja diabaikan — untuk efek surrealis, eksperimental, atau artistic statement." }
+        ]
+      }
+    }
+  }
+}

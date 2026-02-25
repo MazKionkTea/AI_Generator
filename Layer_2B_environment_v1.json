@@ -1,0 +1,2132 @@
+{
+  "_readme": "Library pilihan untuk field environment (Layer 2B). Setiap entry berisi nilai en (untuk prompt AI), id (terjemahan Indonesia), dan description (penjelasan konteks). Field bertanda [STRING_BEBAS] diisi teks deskriptif, bukan dipilih dari list.",
+  "_version": "1.0",
+  "_structure": "environment → location | architecture | natural_elements | weather_climate | props_objects | signage_text | technology",
+  "environment": {
+    "location": {
+      "setting_type": {
+        "_note": "Apakah scene berada di dalam atau luar ruangan.",
+        "options": [
+          {
+            "en": "exterior",
+            "id": "eksterior",
+            "description": "Di luar ruangan, terbuka ke langit dan elemen alam. Sumber cahaya utama dari matahari, bulan, atau lampu luar."
+          },
+          {
+            "en": "interior",
+            "id": "interior",
+            "description": "Di dalam bangunan atau struktur tertutup. Cahaya terbatas, dinding membatasi komposisi."
+          },
+          {
+            "en": "transition",
+            "id": "transisi",
+            "description": "Ambang batas antara dalam dan luar — pintu terbuka, jendela besar, koridor dengan satu sisi terbuka."
+          },
+          {
+            "en": "semi_outdoor",
+            "id": "semi-terbuka",
+            "description": "Beratap tapi tanpa dinding — gazebo, selasar, teras berkolom, pagoda."
+          }
+        ]
+      },
+      "specific_location": {
+        "_note": "[STRING_BEBAS] — Nama atau deskripsi lokasi spesifik. Gunakan contoh di bawah sebagai referensi.",
+        "_examples": {
+          "natural": [
+            "ancient_forest_clearing",
+            "misty_mountain_peak",
+            "hidden_waterfall_grotto",
+            "cliffside_overlooking_ocean",
+            "bamboo_forest_path",
+            "cherry_blossom_grove",
+            "volcanic_crater_lake",
+            "glacier_valley",
+            "desert_oasis_with_palm_trees",
+            "mangrove_swamp_edge",
+            "underground_crystal_cave",
+            "frozen_tundra_plain",
+            "jungle_temple_ruins",
+            "ancient_oak_tree_hollow",
+            "meadow_at_dawn"
+          ],
+          "urban_modern": [
+            "rooftop_garden_with_city_view",
+            "underground_metro_station",
+            "narrow_service_alley",
+            "busy_night_market_street",
+            "abandoned_factory",
+            "neon_lit_street_corner",
+            "luxury_penthouse_balcony",
+            "subway_tunnel",
+            "bridge_over_river_at_night",
+            "empty_parking_garage_level_3",
+            "school_hallway_after_hours",
+            "hospital_corridor_at_midnight"
+          ],
+          "fantasy": [
+            "elven_treetop_city_platform",
+            "dwarven_mountain_forge_chamber",
+            "wizard_tower_observatory",
+            "ancient_dragon_lair_entrance",
+            "floating_sky_castle_garden",
+            "underwater_mer_city_plaza",
+            "portal_between_worlds_threshold",
+            "haunted_abandoned_manor_ballroom",
+            "sacred_moonlit_druidic_grove",
+            "demon_king_obsidian_throne_room",
+            "celestial_palace_above_clouds",
+            "ruins_of_forgotten_empire"
+          ],
+          "scifi_futuristic": [
+            "space_station_observation_deck",
+            "alien_planet_surface_red_terrain",
+            "megacity_upper_level_transit",
+            "underground_resistance_base",
+            "corporate_server_room",
+            "crashed_spaceship_wreck_overgrown",
+            "terraformed_mars_colony_greenhouse",
+            "cyberpunk_back_alley_rainy",
+            "space_elevator_launch_platform",
+            "derelict_space_station_corridor"
+          ],
+          "interior_detailed": [
+            "candlelit_medieval_tavern",
+            "royal_throne_room_gilded",
+            "ancient_library_with_floating_books",
+            "gothic_cathedral_nave",
+            "war_room_with_tactical_maps",
+            "alchemist_apothecary_shop",
+            "prison_cell_with_single_window",
+            "submarine_interior_cramped",
+            "artists_cluttered_studio",
+            "abandoned_ballroom_chandelier_broken"
+          ],
+          "liminal": [
+            "long_empty_hospital_corridor",
+            "train_platform_at_3am",
+            "abandoned_shopping_mall_food_court",
+            "empty_swimming_pool_drained",
+            "airport_terminal_late_night_empty",
+            "stairwell_between_floors",
+            "fog_covered_rural_road",
+            "doorway_between_light_and_dark"
+          ]
+        }
+      },
+      "geographic_region": {
+        "_note": "[STRING_BEBAS] — Wilayah geografis atau nama kota/negara/dunia fiksi.",
+        "_examples": [
+          "neo_tokyo_lower_district",
+          "victorian_london_east_end",
+          "ancient_rome_forum",
+          "medieval_european_village",
+          "wild_west_frontier_town",
+          "southeast_asian_coastal_city",
+          "nordic_fjord_settlement",
+          "sahara_desert_outpost",
+          "amazon_rainforest_deep",
+          "arctic_research_station",
+          "fantasy_realm_of_eldenmoor",
+          "cyberpunk_megacity_sector_7",
+          "space_colony_alpha_prime",
+          "underwater_civilization_atlantis"
+        ]
+      },
+      "cultural_context": {
+        "_note": "Latar budaya yang mempengaruhi arsitektur, dekorasi, dan elemen visual scene.",
+        "options": [
+          {
+            "en": "east_asian",
+            "id": "Asia Timur",
+            "description": "Estetika Jepang, China, Korea — atap melengkung, kayu merah, kertas shoji, lantern."
+          },
+          {
+            "en": "southeast_asian",
+            "id": "Asia Tenggara",
+            "description": "Tropis, batik, ukiran kayu, pura/candi, warna cerah, vegetasi lebat."
+          },
+          {
+            "en": "south_asian",
+            "id": "Asia Selatan",
+            "description": "India, arsitektur Mughal, warna-warna kaya, kain sutra, kuil berornamen."
+          },
+          {
+            "en": "middle_eastern",
+            "id": "Timur Tengah",
+            "description": "Arabesque, geometris Islam, kubah, pasar medina, gurun, mosaik."
+          },
+          {
+            "en": "european_medieval",
+            "id": "Eropa abad pertengahan",
+            "description": "Benteng batu, katedral gotik, jalan berbatu, guild market, armour."
+          },
+          {
+            "en": "european_renaissance",
+            "id": "Eropa renaisans",
+            "description": "Perspektif, marmer, fresko, palazzo, taman formal, humanisme."
+          },
+          {
+            "en": "victorian_british",
+            "id": "Victoria Inggris",
+            "description": "Batu bara, uap, besi tempa, gaslamp, topi tinggi, surat kabar, kabut."
+          },
+          {
+            "en": "american_frontier",
+            "id": "Frontier Amerika",
+            "description": "Kayu tua, papan usang, saloon, jalan tanah, tali, topi koboi."
+          },
+          {
+            "en": "nordic_scandinavian",
+            "id": "Nordik",
+            "description": "Kayu gelap, rune, kulit binatang, aurora, fjord, mitologi Viking."
+          },
+          {
+            "en": "mesoamerican",
+            "id": "Mesoamerika",
+            "description": "Piramida Maya/Aztec, batu berukir, tanaman tropis, ritual, warna bumi."
+          },
+          {
+            "en": "african_tribal",
+            "id": "Afrika tribal",
+            "description": "Pola geometris, warna tanah, ukiran kayu, savana, ritual, musik."
+          },
+          {
+            "en": "oceanic_polynesian",
+            "id": "Pasifik Polinesia",
+            "description": "Kayu ukir, tato, laut, bangka, tumbuhan tropis, navigasi bintang."
+          },
+          {
+            "en": "cyberpunk_corporate",
+            "id": "korporat cyberpunk",
+            "description": "Neon, hujan, hoarding iklan raksasa, korporasi vs jalanan kumuh."
+          },
+          {
+            "en": "high_fantasy_elven",
+            "id": "fantasi tinggi Elven",
+            "description": "Pohon besar, arsitektur organik, cahaya magis, alam terintegrasi."
+          },
+          {
+            "en": "dark_fantasy_demonic",
+            "id": "fantasi gelap Demonic",
+            "description": "Batu hitam, api, tulang, simbol merah, kegelapan, kekuasaan brutal."
+          },
+          {
+            "en": "post_apocalyptic_wasteland",
+            "id": "pasca-apokaliptik",
+            "description": "Reruntuhan, karat, kain compang-camping, api unggun, survival."
+          },
+          {
+            "en": "neutral_universal",
+            "id": "netral universal",
+            "description": "Tidak terikat budaya spesifik — kontemporer global, modern bersih."
+          }
+        ]
+      },
+      "ownership": {
+        "_note": "Siapa yang memiliki atau mengelola lokasi ini — mempengaruhi kondisi dan dekorasi.",
+        "options": [
+          {
+            "en": "public",
+            "id": "publik",
+            "description": "Milik umum, akses bebas — taman, jalan, alun-alun, fasilitas kota."
+          },
+          {
+            "en": "government_official",
+            "id": "pemerintah resmi",
+            "description": "Gedung negara, istana, balai kota, militer — formal, terawat, berpenjaga."
+          },
+          {
+            "en": "corporate_maintained",
+            "id": "korporat terawat",
+            "description": "Milik perusahaan besar — bersih, bermerek, efisien, steril sedikit."
+          },
+          {
+            "en": "corporate_neglected",
+            "id": "korporat terbengkalai",
+            "description": "Pernah milik korporasi tapi ditinggal — papan iklan pudar, karat, rusak."
+          },
+          {
+            "en": "private_wealthy",
+            "id": "pribadi kaya",
+            "description": "Milik individu kaya — mewah, personal, detail tinggi, tidak untuk umum."
+          },
+          {
+            "en": "private_modest",
+            "id": "pribadi sederhana",
+            "description": "Milik individu biasa — rumah, warung, bengkel kecil. Hangat dan personal."
+          },
+          {
+            "en": "religious_sacred",
+            "id": "religius sakral",
+            "description": "Milik institusi agama — kuil, katedral, masjid, pura. Penuh simbol dan keheningan."
+          },
+          {
+            "en": "criminal_underground",
+            "id": "kriminal bawah tanah",
+            "description": "Dioperasikan organisasi gelap — tersembunyi, bertanda rahasia, berbahaya."
+          },
+          {
+            "en": "abandoned",
+            "id": "terbengkalai",
+            "description": "Tidak ada pemilik aktif — alam mulai mengambil alih, rusak, penuh kenangan."
+          },
+          {
+            "en": "contested_disputed",
+            "id": "diperebutkan",
+            "description": "Klaim kepemilikan berganda — tanda konflik, perbatasan tidak jelas, ketegangan."
+          },
+          {
+            "en": "ancient_forgotten",
+            "id": "kuno terlupakan",
+            "description": "Peninggalan peradaban lama — tidak ada yang mengklaim, misterius, penuh sejarah."
+          },
+          {
+            "en": "natural_no_owner",
+            "id": "alam liar",
+            "description": "Bukan milik siapapun — wilayah alam murni yang belum diklaim manusia."
+          }
+        ]
+      },
+      "maintenance_state": {
+        "_note": "Tingkat perawatan dan kondisi fisik lokasi.",
+        "options": [
+          {
+            "en": "pristine",
+            "id": "sempurna",
+            "description": "Kondisi sempurna, baru, bersih — seperti baru dibangun atau dibersihkan."
+          },
+          {
+            "en": "well_maintained",
+            "id": "terawat baik",
+            "description": "Sedikit tanda usia tapi jelas dirawat secara rutin dan penuh perhatian."
+          },
+          {
+            "en": "lived_in",
+            "id": "berbekas kehidupan",
+            "description": "Digunakan sehari-hari — berantakan fungsional, hangat, penuh detail kehidupan."
+          },
+          {
+            "en": "weathered",
+            "id": "lapuk alami",
+            "description": "Usia terlihat jelas tapi masih kokoh — patina, retak halus, warna memudar alami."
+          },
+          {
+            "en": "neglected",
+            "id": "terbengkalai ringan",
+            "description": "Kurang perawatan — debu tebal, cat mengelupas, rumput liar, sarang laba-laba."
+          },
+          {
+            "en": "decaying_functional",
+            "id": "rusak tapi berfungsi",
+            "description": "Rusak signifikan tapi masih digunakan — tambal sulam, karat, tapi ada kehidupan."
+          },
+          {
+            "en": "ruins",
+            "id": "reruntuhan",
+            "description": "Sebagian besar sudah runtuh — dinding berlubang, atap hilang, alam mengambil alih."
+          },
+          {
+            "en": "overgrown",
+            "id": "ditumbuhi tanaman",
+            "description": "Vegetasi menutupi struktur — akar menembus batu, pohon tumbuh di dalam bangunan."
+          },
+          {
+            "en": "battle_damaged",
+            "id": "bekas pertempuran",
+            "description": "Rusak akibat konflik — bekas peluru, kebakaran, ledakan, sisa perang."
+          },
+          {
+            "en": "freshly_devastated",
+            "id": "baru hancur",
+            "description": "Kerusakan baru terjadi — asap masih mengepul, puing masih panas, abu segar."
+          },
+          {
+            "en": "under_construction",
+            "id": "dalam pembangunan",
+            "description": "Sedang dibangun atau direnovasi — perancah, material berserakan, belum selesai."
+          },
+          {
+            "en": "sterile_clinical",
+            "id": "steril klinis",
+            "description": "Terlalu bersih dan teratur — laboratorium, fasilitas medis, ruang penelitian."
+          }
+        ]
+      }
+    },
+    "architecture": {
+      "architectural_style": {
+        "_note": "Gaya arsitektur bangunan atau struktur dalam scene.",
+        "options": [
+          {
+            "en": "gothic",
+            "id": "Gotik",
+            "description": "Kubah lancip, jendela rose, flying buttress, gelap dan megah — katedral abad pertengahan."
+          },
+          {
+            "en": "romanesque",
+            "id": "Romanesque",
+            "description": "Lengkung setengah lingkaran, dinding tebal, menara kokoh — sebelum gotik."
+          },
+          {
+            "en": "classical_greek",
+            "id": "Klasik Yunani",
+            "description": "Kolom Doric/Ionic/Corinthian, marmor putih, simetri, proporsi sempurna."
+          },
+          {
+            "en": "roman",
+            "id": "Romawi",
+            "description": "Lengkung, kubah, beton, amfiteater, forum — utilitas dan kemegahan."
+          },
+          {
+            "en": "baroque",
+            "id": "Barok",
+            "description": "Ornamen berlebihan, dinamis, dramatis, emas, gerakan — kemewahan absolut."
+          },
+          {
+            "en": "renaissance",
+            "id": "Renaisans",
+            "description": "Proporsi harmonis, pilaster, kubah, perspektif — kembali ke klasik dengan twist."
+          },
+          {
+            "en": "victorian",
+            "id": "Victoria",
+            "description": "Besi tempa, bata merah, dekorasi rumit, bay window, gingerbread trim."
+          },
+          {
+            "en": "art_nouveau",
+            "id": "Art Nouveau",
+            "description": "Kurva organik, inspirasi alam, besi lentur, kaca berwarna — Gaudi."
+          },
+          {
+            "en": "art_deco",
+            "id": "Art Deco",
+            "description": "Geometris tegas, emas dan hitam, garis vertikal — Chrysler Building."
+          },
+          {
+            "en": "bauhaus",
+            "id": "Bauhaus",
+            "description": "Fungsi adalah form, bersih, tidak ada ornamen, beton dan kaca."
+          },
+          {
+            "en": "brutalist",
+            "id": "Brutalis",
+            "description": "Beton ekspos masif, blok besar, tidak ada ornamen, intim dengan material."
+          },
+          {
+            "en": "modernist",
+            "id": "Modernis",
+            "description": "Garis bersih, material industri, jendela besar, terbuka, minimalis."
+          },
+          {
+            "en": "postmodern",
+            "id": "Postmodern",
+            "description": "Ironi, referensi historis dicampur, warna pop, eklektik, playful."
+          },
+          {
+            "en": "contemporary",
+            "id": "Kontemporer",
+            "description": "Arsitektur masa kini — kaca, baja, parametrik, sustainable, ramping."
+          },
+          {
+            "en": "east_asian_traditional",
+            "id": "Asia Timur tradisional",
+            "description": "Atap melengkung, kayu, tiang merah, dinding putih — pagoda, kuil, rumah teh."
+          },
+          {
+            "en": "islamic",
+            "id": "Islam",
+            "description": "Arabesque, geometris, kubah, menara, muqarnas, kaligrafi, taman simetris."
+          },
+          {
+            "en": "mughal",
+            "id": "Mughal",
+            "description": "Taj Mahal style — marmer putih, kubah bawang, taman charbagh, simetri megah."
+          },
+          {
+            "en": "mesoamerican",
+            "id": "Mesoamerika",
+            "description": "Piramida bertingkat, batu besar, ukiran dewa, plaza luas, orientasi astronomis."
+          },
+          {
+            "en": "indigenous_organic",
+            "id": "organik indigenous",
+            "description": "Material lokal — tanah liat, kayu, batu, anyaman. Menyatu dengan alam."
+          },
+          {
+            "en": "cyberpunk_utilitarian",
+            "id": "utilitarian cyberpunk",
+            "description": "Beton kusam, metal panel, kabel terekspos, LED strip, tambal sulam generasi."
+          },
+          {
+            "en": "high_tech_futuristic",
+            "id": "futuristik high-tech",
+            "description": "Permukaan bersih, AI integrated, hologram, kaca pintar, kurva parametrik."
+          },
+          {
+            "en": "organic_fantasy",
+            "id": "organik fantasi",
+            "description": "Dibangun dari atau menyatu dengan alam — pohon raksasa sebagai rumah, batu hidup, akar sebagai jembatan."
+          },
+          {
+            "en": "dark_gothic_fantasy",
+            "id": "gotik fantasi gelap",
+            "description": "Batu hitam, paku-paku, api abadi, tengkorak sebagai dekorasi, salju abadi."
+          },
+          {
+            "en": "steampunk",
+            "id": "Steampunk",
+            "description": "Tembaga, kuningan, pipa uap, gear, lampu gas, mesin di mana-mana."
+          },
+          {
+            "en": "mixed_eras",
+            "id": "campuran era",
+            "description": "Berbagai gaya dari periode berbeda tercampur — bangunan lama ditambal teknologi baru."
+          }
+        ]
+      },
+      "era_mix": {
+        "_note": "Campuran era arsitektur yang terlihat dalam scene — bisa satu atau beberapa.",
+        "_examples": [
+          "2020s_infrastructure_with_2060s_patches",
+          "ancient_ruins_with_modern_additions",
+          "victorian_base_with_steampunk_modifications",
+          "medieval_stone_with_fantasy_crystal_growths",
+          "brutalist_concrete_with_cyberpunk_overlays",
+          "traditional_wood_with_contemporary_glass_extension"
+        ]
+      },
+      "materials": {
+        "_note": "Material utama yang terlihat dalam arsitektur scene.",
+        "options": [
+          {
+            "en": "stone",
+            "id": "batu",
+            "description": "Batu alam atau batu potong — kokoh, tua, alam, permanen."
+          },
+          {
+            "en": "marble",
+            "id": "marmer",
+            "description": "Marmer poles — kemewahan, kedinginan, kemegahan klasik."
+          },
+          {
+            "en": "granite",
+            "id": "granit",
+            "description": "Batu keras bertekstur — industrial, berat, tahan lama."
+          },
+          {
+            "en": "brick",
+            "id": "bata merah",
+            "description": "Bata merah terekspos — hangat, urban, bersejarah, bekerja keras."
+          },
+          {
+            "en": "wood",
+            "id": "kayu",
+            "description": "Kayu alami atau olahan — hangat, organik, tradisional, mudah terbakar."
+          },
+          {
+            "en": "dark_wood",
+            "id": "kayu gelap",
+            "description": "Kayu tua atau eboni — mewah, gothic, berat, formal."
+          },
+          {
+            "en": "concrete",
+            "id": "beton",
+            "description": "Beton polos atau ekspos — modern, berat, abu-abu, kokoh, dingin."
+          },
+          {
+            "en": "glass",
+            "id": "kaca",
+            "description": "Kaca luas atau panel — transparan, modern, cahaya masuk, rapuh kesan."
+          },
+          {
+            "en": "steel",
+            "id": "baja",
+            "description": "Baja struktural atau dekoratif — industri, modern, kuat, reflektif."
+          },
+          {
+            "en": "copper",
+            "id": "tembaga",
+            "description": "Tembaga segar (oranye) atau patina (hijau) — vintage, unik, bernilai."
+          },
+          {
+            "en": "brass",
+            "id": "kuningan",
+            "description": "Kuningan — hangat, steampunk, klasik, ornamen detail."
+          },
+          {
+            "en": "iron_wrought",
+            "id": "besi tempa",
+            "description": "Besi tempa — pagar, lentera, ornamen — victorian dan gothic."
+          },
+          {
+            "en": "clay_adobe",
+            "id": "tanah liat adobe",
+            "description": "Dinding tanah liat — Timur Tengah, Amerika Selatan, hangat, organik."
+          },
+          {
+            "en": "thatch",
+            "id": "jerami atap",
+            "description": "Atap jerami atau alang-alang — pedesaan, tradisional, hangat, rentan api."
+          },
+          {
+            "en": "bamboo",
+            "id": "bambu",
+            "description": "Bambu — Asia Tenggara, ringan, cepat tumbuh, estetika organik."
+          },
+          {
+            "en": "crystal",
+            "id": "kristal",
+            "description": "Kristal alami atau buatan — fantasi, kemewahan, prismatik, langka."
+          },
+          {
+            "en": "obsidian",
+            "id": "obsidian",
+            "description": "Batu vulkanik hitam mengilap — dark fantasy, dingin, tajam, misterius."
+          },
+          {
+            "en": "bone_ivory",
+            "id": "tulang gading",
+            "description": "Material tulang — dark fantasy, horror, barbar, atau seni primitif."
+          },
+          {
+            "en": "living_wood",
+            "id": "kayu hidup",
+            "description": "Pohon yang masih hidup dibentuk menjadi struktur — high fantasy elven."
+          },
+          {
+            "en": "holographic_panels",
+            "id": "panel holografik",
+            "description": "Dinding atau permukaan holografik — scifi, digital, tidak material."
+          },
+          {
+            "en": "weathered_concrete",
+            "id": "beton lapuk",
+            "description": "Beton tua, retak, berlumut — post-apocalyptic, urban decay."
+          },
+          {
+            "en": "rusted_metal",
+            "id": "metal berkarat",
+            "description": "Metal teroksidasi oranye-merah — tua, ditinggal, industrial, post-apo."
+          },
+          {
+            "en": "temporal_plastic_panels",
+            "id": "panel plastik sementara",
+            "description": "Panel plastik murah tambal sulam — dystopia, poor urban, sementara."
+          }
+        ]
+      },
+      "structural_features": {
+        "_note": "Elemen arsitektur spesifik yang terlihat dalam scene.",
+        "_examples_by_category": {
+          "classical": [
+            "columns",
+            "arches",
+            "flying_buttresses",
+            "vaulted_ceiling",
+            "dome",
+            "portico",
+            "frieze",
+            "pediment"
+          ],
+          "medieval": [
+            "battlements",
+            "drawbridge",
+            "portcullis",
+            "tower_keep",
+            "moat",
+            "arrow_slits",
+            "great_hall"
+          ],
+          "modern": [
+            "curtain_wall_glass",
+            "cantilever",
+            "open_floor_plan",
+            "mezzanine",
+            "skylights",
+            "exposed_beams"
+          ],
+          "industrial": [
+            "exposed_utility_pipes",
+            "haphazard_wiring",
+            "fire_escape_ladders",
+            "loading_dock",
+            "conveyor",
+            "smokestacks"
+          ],
+          "cyberpunk": [
+            "LED_strip_lighting",
+            "holographic_signage",
+            "antenna_clusters",
+            "satellite_dishes",
+            "server_racks_visible"
+          ],
+          "fantasy": [
+            "crystal_spires",
+            "floating_platforms",
+            "root_bridges",
+            "vine_covered_walls",
+            "glowing_runes_inscribed"
+          ],
+          "decay": [
+            "collapsed_ceiling",
+            "broken_windows",
+            "overgrown_cracks",
+            "flooded_lower_levels",
+            "scorch_marks"
+          ]
+        }
+      },
+      "decorative_elements": {
+        "_note": "Dekorasi non-struktural yang menambah karakter visual scene.",
+        "_examples_by_category": {
+          "organic": [
+            "moss_covered_walls",
+            "flowering_vines",
+            "lichen_patches",
+            "bird_nests",
+            "tree_roots_through_walls"
+          ],
+          "cultural": [
+            "tapestries",
+            "religious_murals",
+            "family_crests",
+            "battle_banners",
+            "ancestral_portraits"
+          ],
+          "urban": [
+            "graffiti",
+            "gang_tags",
+            "wheat_paste_posters",
+            "corporate_warning_signs",
+            "public_art_installations"
+          ],
+          "commercial": [
+            "faded_advertisements",
+            "neon_signs",
+            "product_displays",
+            "branded_awnings"
+          ],
+          "ritual": [
+            "candles",
+            "incense_holders",
+            "offerings",
+            "carved_symbols",
+            "prayer_flags",
+            "bones_and_skulls"
+          ],
+          "technological": [
+            "holographic_displays",
+            "sensor_arrays",
+            "data_streams_visible",
+            "charging_stations",
+            "surveillance_cameras"
+          ]
+        }
+      }
+    },
+    "natural_elements": {
+      "terrain": {
+        "_note": "Jenis permukaan tanah atau medan yang ada dalam scene.",
+        "options": [
+          {
+            "en": "flat_paved",
+            "id": "datar berbatu/aspal",
+            "description": "Permukaan datar buatan manusia — jalan aspal, batu cobblestone, plaza beton."
+          },
+          {
+            "en": "flat_earth",
+            "id": "tanah datar",
+            "description": "Tanah datar alami — ladang, padang, sabana, lantai hutan."
+          },
+          {
+            "en": "sandy",
+            "id": "berpasir",
+            "description": "Pasir halus atau kasar — pantai, gurun, bukit pasir."
+          },
+          {
+            "en": "rocky",
+            "id": "berbatu",
+            "description": "Batu-batu besar dan kecil — lereng gunung, tepi sungai berbatu, gua."
+          },
+          {
+            "en": "rocky_slope",
+            "id": "lereng berbatu",
+            "description": "Kemiringan dengan permukaan berbatu — tebing, lereng gunung, canyon."
+          },
+          {
+            "en": "muddy",
+            "id": "berlumpur",
+            "description": "Tanah basah berlumpur — setelah hujan, rawa tepi, jalanan musim hujan."
+          },
+          {
+            "en": "grassy",
+            "id": "berumput",
+            "description": "Tertutup rumput — padang hijau, halaman, tepi hutan."
+          },
+          {
+            "en": "mossy",
+            "id": "berlumut",
+            "description": "Tertutup lumut — hutan tua, batu tepi sungai, reruntuhan basah."
+          },
+          {
+            "en": "snow_covered",
+            "id": "tertutup salju",
+            "description": "Salju menutupi permukaan — musim dingin, pegunungan tinggi, tundra."
+          },
+          {
+            "en": "icy",
+            "id": "berlapis es",
+            "description": "Permukaan es atau gletser — licin, reflektif, biru-putih."
+          },
+          {
+            "en": "volcanic",
+            "id": "vulkanik",
+            "description": "Lava beku hitam atau lava cair merah — di sekitar gunung berapi."
+          },
+          {
+            "en": "cracked_dry",
+            "id": "retak kering",
+            "description": "Tanah retak karena kekeringan ekstrem — gurun, danau kering, post-apo."
+          },
+          {
+            "en": "flooded",
+            "id": "banjir",
+            "description": "Permukaan tertutup air — banjir, lahan basah, musim hujan ekstrem."
+          },
+          {
+            "en": "cliff_edge",
+            "id": "tepi tebing",
+            "description": "Permukaan berakhir di jurang terjal — dramatic, berbahaya, pemandangan luas."
+          },
+          {
+            "en": "submerged",
+            "id": "terendam air",
+            "description": "Di bawah permukaan air — laut dalam, danau, sungai bawah air."
+          },
+          {
+            "en": "floating",
+            "id": "melayang",
+            "description": "Platform atau tanah yang melayang — fantasi, anti-gravitasi, mimpi."
+          },
+          {
+            "en": "glass_smooth",
+            "id": "licin seperti kaca",
+            "description": "Permukaan sangat halus reflektif — danau tenang sempurna, cermin alam."
+          }
+        ]
+      },
+      "vegetation": {
+        "density": {
+          "_note": "Seberapa lebat vegetasi dalam scene.",
+          "options": [
+            {
+              "en": "none",
+              "id": "tidak ada",
+              "description": "Tidak ada tanaman sama sekali — gurun, kota padat, ruang hampa."
+            },
+            {
+              "en": "sparse",
+              "id": "jarang",
+              "description": "Beberapa tanaman tersebar — gurun dengan semak, padang batu, urban dengan pot."
+            },
+            {
+              "en": "moderate",
+              "id": "sedang",
+              "description": "Vegetasi cukup tapi tidak mendominasi — taman kota, hutan tepi, kebun."
+            },
+            {
+              "en": "dense",
+              "id": "lebat",
+              "description": "Vegetasi lebat mengisi banyak frame — hutan, kebun raya, jungle."
+            },
+            {
+              "en": "overwhelming",
+              "id": "sangat lebat",
+              "description": "Alam mengambil alih segalanya — jungle tropis, alam yang menginvasi bangunan."
+            }
+          ]
+        },
+        "types": {
+          "_note": "Jenis tanaman yang dominan dalam scene — bisa kombinasi beberapa.",
+          "_examples_by_category": {
+            "trees": [
+              "ancient_oak",
+              "weeping_willow",
+              "cherry_blossom",
+              "pine_forest",
+              "bamboo_grove",
+              "palm_trees",
+              "mangrove",
+              "giant_sequoia",
+              "dead_bare_trees",
+              "twisted_dark_trees",
+              "glowing_fantasy_trees",
+              "crystal_trees",
+              "floating_island_trees"
+            ],
+            "ground_cover": [
+              "wild_grass",
+              "moss",
+              "ferns",
+              "wildflowers",
+              "clover_field",
+              "mushrooms",
+              "fallen_leaves_carpet",
+              "snow_blanket",
+              "ash_layer"
+            ],
+            "vines_climbing": [
+              "ivy_covered_walls",
+              "flowering_wisteria",
+              "wild_rose_thorns",
+              "kudzu_invasion",
+              "fantasy_glowing_vines",
+              "poisonous_strangler_vines"
+            ],
+            "water_plants": [
+              "lily_pads",
+              "lotus_flowers",
+              "reeds",
+              "cattails",
+              "sea_grass",
+              "kelp_forest"
+            ],
+            "exotic_fantasy": [
+              "bioluminescent_plants",
+              "carnivorous_plant_clusters",
+              "giant_mushroom_forest",
+              "crystal_flowers",
+              "shadow_vines",
+              "healing_herb_patches"
+            ]
+          }
+        }
+      },
+      "water_features": {
+        "_note": "Badan atau elemen air yang hadir dalam scene.",
+        "options": [
+          {
+            "en": "none",
+            "id": "tidak ada",
+            "description": "Tidak ada elemen air."
+          },
+          {
+            "en": "puddle",
+            "id": "genangan kecil",
+            "description": "Genangan air kecil di lantai — setelah hujan, memantulkan lampu atau langit."
+          },
+          {
+            "en": "stream",
+            "id": "aliran kecil",
+            "description": "Aliran air kecil jernih — suara gemericik, batu-batu kecil, menenangkan."
+          },
+          {
+            "en": "river",
+            "id": "sungai",
+            "description": "Aliran air besar — arus, lebar, kapal kecil mungkin ada."
+          },
+          {
+            "en": "waterfall",
+            "id": "air terjun",
+            "description": "Air jatuh dari ketinggian — dramatis, uap air, pelangi mungkin ada."
+          },
+          {
+            "en": "hidden_waterfall_grotto",
+            "id": "gua air terjun tersembunyi",
+            "description": "Air terjun di dalam gua atau lekukan — misterius, magis, privat."
+          },
+          {
+            "en": "still_pond",
+            "id": "kolam tenang",
+            "description": "Kolam air tenang — cermin sempurna, lotus, refleksi langit."
+          },
+          {
+            "en": "lake",
+            "id": "danau",
+            "description": "Badan air besar — horizon air, ombak kecil, kabut pagi mungkin ada."
+          },
+          {
+            "en": "ocean_sea",
+            "id": "laut atau samudra",
+            "description": "Laut luas — ombak, cakrawala jauh, angin asin, kemungkinan badai."
+          },
+          {
+            "en": "flooded_ruins",
+            "id": "reruntuhan banjir",
+            "description": "Bangunan terendam air — kolom menonjol, refleksi misterius, post-apocalyptic."
+          },
+          {
+            "en": "underground_lake",
+            "id": "danau bawah tanah",
+            "description": "Danau dalam gua — tenang sempurna, bioluminesen mungkin ada, gema."
+          },
+          {
+            "en": "hot_spring",
+            "id": "mata air panas",
+            "description": "Kolam air panas alami — uap naik, mineral, suasana relaksasi atau magis."
+          },
+          {
+            "en": "frozen_lake",
+            "id": "danau beku",
+            "description": "Danau membeku — bisa dilalui, retakan di es, refleksi di bawah."
+          },
+          {
+            "en": "swamp_water",
+            "id": "air rawa",
+            "description": "Air hitam atau hijau stagnan — berlumpur, eceng gondok, misterius, berbahaya."
+          },
+          {
+            "en": "acid_pool",
+            "id": "kolam asam",
+            "description": "Cairan berbahaya berwarna — volcanic, industrial, fantasy dungeon."
+          },
+          {
+            "en": "magical_pool",
+            "id": "kolam magis",
+            "description": "Air yang berpendar, berubah warna, atau memiliki sifat supernatural."
+          },
+          {
+            "en": "flooded_city_street",
+            "id": "jalan kota banjir",
+            "description": "Jalan urban terendam — refleksi neon, debris mengambang, post-disaster."
+          },
+          {
+            "en": "rain_on_surface",
+            "id": "hujan di permukaan",
+            "description": "Percikan hujan aktif di permukaan — ripple di puddle, suara, basah."
+          }
+        ]
+      },
+      "geological": {
+        "_note": "Formasi geologi atau material bumi yang terlihat dalam scene.",
+        "options": [
+          {
+            "en": "none",
+            "id": "tidak ada",
+            "description": "Tidak ada formasi geologi yang menonjol."
+          },
+          {
+            "en": "boulder_field",
+            "id": "ladang batu besar",
+            "description": "Batu-batu besar tersebar — lereng gunung, sungai tua, area glacial."
+          },
+          {
+            "en": "rock_formations",
+            "id": "formasi batu unik",
+            "description": "Batuan berbentuk unik karena erosi — hoodoo, arch, balanced rock."
+          },
+          {
+            "en": "cliff_face",
+            "id": "dinding tebing",
+            "description": "Dinding batu terjal vertikal — strata terlihat, tanaman menempel, jatuh dramatis."
+          },
+          {
+            "en": "cave_stalactites",
+            "id": "stalaktit gua",
+            "description": "Stalaktit dan stalagmit — gua kapur, tetes air, ribuan tahun terbentuk."
+          },
+          {
+            "en": "crystal_formations",
+            "id": "formasi kristal",
+            "description": "Kristal tumbuh dari batu — quartz, amethyst, atau kristal fantasi bercahaya."
+          },
+          {
+            "en": "volcanic_rock",
+            "id": "batuan vulkanik",
+            "description": "Lava beku hitam — obsidian, scoria, tekstur kasar tajam."
+          },
+          {
+            "en": "lava_flows",
+            "id": "aliran lava",
+            "description": "Lava cair atau setengah beku — merah oranye menyala, panas ekstrem."
+          },
+          {
+            "en": "sand_dunes",
+            "id": "bukit pasir",
+            "description": "Gundukan pasir yang terbentuk angin — gurun, pantai, kurva halus indah."
+          },
+          {
+            "en": "canyon_walls",
+            "id": "dinding ngarai",
+            "description": "Dinding ngarai tinggi di kedua sisi — merah, oranye, strata jelas, dramatis."
+          },
+          {
+            "en": "glacier",
+            "id": "gletser",
+            "description": "Es besar bergerak perlahan — biru dalam, retak, moraine di sekitarnya."
+          },
+          {
+            "en": "geysers",
+            "id": "geyser",
+            "description": "Semburan air panas dari bumi — yellowstone, fantasi, teratur atau acak."
+          },
+          {
+            "en": "sulfur_vents",
+            "id": "lubang belerang",
+            "description": "Gas kuning keluar dari tanah — vulkanik, asap, berbahaya, dramatis."
+          },
+          {
+            "en": "underground_crystal_cave",
+            "id": "gua kristal bawah tanah",
+            "description": "Seluruh gua tertutup kristal besar — seperti di Naica, magical realism."
+          },
+          {
+            "en": "floating_rocks",
+            "id": "batu melayang",
+            "description": "Bebatuan yang melayang di udara — fantasy, anti-gravitasi, Pandora."
+          }
+        ]
+      },
+      "celestial_bodies": {
+        "_note": "Objek langit yang terlihat dalam scene — terutama relevant saat malam, luar angkasa, atau setting fantasi.",
+        "options": [
+          {
+            "en": "single_sun",
+            "id": "matahari tunggal",
+            "description": "Satu matahari — Bumi normal. Posisi menentukan waktu hari."
+          },
+          {
+            "en": "twin_suns",
+            "id": "matahari kembar",
+            "description": "Dua matahari di langit — planet alien, fantasi, bayangan ganda."
+          },
+          {
+            "en": "single_moon",
+            "id": "bulan tunggal",
+            "description": "Bulan normal — fase berbeda (purnama, sabit, dll) mempengaruhi cahaya malam."
+          },
+          {
+            "en": "twin_moons",
+            "id": "bulan kembar",
+            "description": "Dua bulan — setting fantasi atau scifi alien. Pasang surut berbeda."
+          },
+          {
+            "en": "massive_moon_looming",
+            "id": "bulan raksasa mendekat",
+            "description": "Bulan sangat besar di cakrawala — apocalyptic, dramatic, mengancam."
+          },
+          {
+            "en": "star_field_clear",
+            "id": "langit berbintang jernih",
+            "description": "Ribuan bintang terlihat jelas — jauh dari polusi cahaya, atau luar angkasa."
+          },
+          {
+            "en": "milky_way_visible",
+            "id": "bimasakti terlihat",
+            "description": "Jalur galaksi terlihat — langit gelap sempurna, menakjubkan, luas."
+          },
+          {
+            "en": "nebula",
+            "id": "nebula",
+            "description": "Awan gas berwarna di langit — luar angkasa atau langit fantasi supernatural."
+          },
+          {
+            "en": "rings_of_planet",
+            "id": "cincin planet",
+            "description": "Cincin planet terlihat di langit — di planet lain atau dari orbit."
+          },
+          {
+            "en": "eclipse_solar",
+            "id": "gerhana matahari",
+            "description": "Bulan menutupi matahari — cincin cahaya, kegelapan siang, dramatis."
+          },
+          {
+            "en": "eclipse_blood_moon",
+            "id": "gerhana bulan darah",
+            "description": "Bulan merah total — pertanda buruk, momen ritualistik, dramatis."
+          },
+          {
+            "en": "comet_visible",
+            "id": "komet terlihat",
+            "description": "Komet dengan ekor panjang di langit — jarang, pertanda, dramatis."
+          },
+          {
+            "en": "aurora_borealis",
+            "id": "aurora kutub",
+            "description": "Cahaya kutub hijau, ungu, merah — kutub, magical realism, takjub."
+          },
+          {
+            "en": "meteor_shower",
+            "id": "hujan meteor",
+            "description": "Banyak bintang jatuh — acara tahunan, momen romantis, atau bencana."
+          },
+          {
+            "en": "none_day",
+            "id": "tidak terlihat (siang)",
+            "description": "Siang hari — tidak ada objek langit yang menonjol selain matahari."
+          }
+        ]
+      },
+      "wildlife": {
+        "_note": "Makhluk hidup selain karakter utama yang ada dalam scene.",
+        "options": [
+          {
+            "en": "none",
+            "id": "tidak ada",
+            "description": "Tidak ada hewan atau makhluk lain dalam scene."
+          },
+          {
+            "en": "birds_distant",
+            "id": "burung di kejauhan",
+            "description": "Siluet burung terbang di kejauhan — latar, atmofserik, tidak mengganggu."
+          },
+          {
+            "en": "birds_close",
+            "id": "burung dekat",
+            "description": "Burung yang terlihat jelas — bertengger, terbang dekat, bisa dikenali jenisnya."
+          },
+          {
+            "en": "insects",
+            "id": "serangga",
+            "description": "Kupu-kupu, capung, kunang-kunang, lebah — detail kecil yang menambah kehidupan."
+          },
+          {
+            "en": "fireflies",
+            "id": "kunang-kunang",
+            "description": "Cahaya kecil berkedip di malam hari — romantis, magis, hangat."
+          },
+          {
+            "en": "fish_underwater",
+            "id": "ikan bawah air",
+            "description": "Ikan dalam air jernih — bervariasi ukuran, warna, formasi."
+          },
+          {
+            "en": "small_mammals",
+            "id": "mamalia kecil",
+            "description": "Kelinci, tupai, rusa kecil — alam damai, tidak mengancam."
+          },
+          {
+            "en": "large_predator",
+            "id": "predator besar",
+            "description": "Serigala, harimau, beruang — bahaya, kekuatan alam, ketegangan."
+          },
+          {
+            "en": "horse_or_mount",
+            "id": "kuda atau tunggangan",
+            "description": "Kuda, atau tunggangan fantasi seperti griffin — transport, kebangsawanan."
+          },
+          {
+            "en": "dragon",
+            "id": "naga",
+            "description": "Naga — berbagai ukuran dan tipe. Boss monster atau companion."
+          },
+          {
+            "en": "fantasy_creatures",
+            "id": "makhluk fantasi",
+            "description": "Unicorn, phoenix, sea serpent, giant eagle — menambah dimensi dunia."
+          },
+          {
+            "en": "monsters",
+            "id": "monster",
+            "description": "Makhluk menakutkan tidak dikenal — bahaya, dungeon, nightmare."
+          },
+          {
+            "en": "spirits_ethereal",
+            "id": "roh atau makhluk astral",
+            "description": "Makhluk tidak berwujud — wisps, ghosts, fairy, energy beings."
+          },
+          {
+            "en": "mechanical_creatures",
+            "id": "makhluk mekanikal",
+            "description": "Hewan robot atau cyborg — steampunk, scifi, post-human."
+          },
+          {
+            "en": "swarm",
+            "id": "kawanan",
+            "description": "Banyak makhluk sekaligus — kawanan burung, koloni serangga, gelombang zombie."
+          }
+        ]
+      }
+    },
+    "weather_climate": {
+      "precipitation": {
+        "_note": "Jenis dan intensitas hujan, salju, atau presipitasi lain dalam scene.",
+        "options": [
+          {
+            "en": "none",
+            "id": "tidak ada",
+            "description": "Langit cerah atau berawan tapi tidak ada presipitasi."
+          },
+          {
+            "en": "light_drizzle",
+            "id": "gerimis",
+            "description": "Hujan sangat ringan — nyaris tidak terasa, melembabkan permukaan, atmosferik."
+          },
+          {
+            "en": "moderate_rain",
+            "id": "hujan sedang",
+            "description": "Hujan normal — percikan terlihat, puddle mulai terbentuk, perlu payung."
+          },
+          {
+            "en": "heavy_rain",
+            "id": "hujan deras",
+            "description": "Hujan lebat — visibilitas berkurang, banjir kecil, suara keras di atap."
+          },
+          {
+            "en": "torrential_rain",
+            "id": "hujan sangat deras",
+            "description": "Hujan ekstrem — hampir tidak bisa melihat, banjir serius, angin kencang."
+          },
+          {
+            "en": "acid_rain",
+            "id": "hujan asam",
+            "description": "Hujan berbahaya — scifi dystopia, industrial berat, membakar tanaman."
+          },
+          {
+            "en": "blood_rain",
+            "id": "hujan darah",
+            "description": "Hujan berwarna merah — dark fantasy, pertanda bencana, supernatural."
+          },
+          {
+            "en": "light_snow",
+            "id": "salju ringan",
+            "description": "Kepingan salju berjatuhan pelan — romantis, tenang, musim dingin awal."
+          },
+          {
+            "en": "heavy_snowfall",
+            "id": "salju deras",
+            "description": "Salju turun tebal — visibilitas berkurang, cepat menumpuk, menguburkan."
+          },
+          {
+            "en": "blizzard",
+            "id": "badai salju",
+            "description": "Badai salju dengan angin — berbahaya, disorientasi, white out."
+          },
+          {
+            "en": "hail",
+            "id": "hujan es",
+            "description": "Bola es jatuh dari langit — berbahaya, merusak, suara keras."
+          },
+          {
+            "en": "sleet",
+            "id": "hujan beku",
+            "description": "Campuran hujan dan salju — membeku di permukaan, sangat licin."
+          },
+          {
+            "en": "ash_fall",
+            "id": "hujan abu",
+            "description": "Abu vulkanik jatuh dari langit — apocalyptic, grey, mencekik, vulkanik."
+          },
+          {
+            "en": "embers_falling",
+            "id": "bara api jatuh",
+            "description": "Potongan bara terbang di udara — kebakaran besar di dekat, dramatis."
+          },
+          {
+            "en": "magical_precipitation",
+            "id": "presipitasi magis",
+            "description": "Hujan bintang, bunga jatuh dari langit, partikel cahaya — fantasi dan sakral."
+          }
+        ]
+      },
+      "wind": {
+        "_note": "Kekuatan dan karakteristik angin dalam scene.",
+        "options": [
+          {
+            "en": "dead_calm",
+            "id": "hening sempurna",
+            "description": "Tidak ada angin sama sekali — daun tidak bergerak, air seperti cermin."
+          },
+          {
+            "en": "gentle_breeze",
+            "id": "angin sepoi",
+            "description": "Angin lemah menyenangkan — rambut sedikit bergerak, daun bergetar lembut."
+          },
+          {
+            "en": "moderate_wind",
+            "id": "angin sedang",
+            "description": "Angin terasa — rambut dan pakaian bergerak, daun berdesir kuat."
+          },
+          {
+            "en": "strong_wind",
+            "id": "angin kencang",
+            "description": "Angin kuat — perlu berpegangan, debu beterbangan, pohon membungkuk."
+          },
+          {
+            "en": "gale",
+            "id": "angin badai",
+            "description": "Angin berbahaya — sulit berjalan, benda beterbangan, pohon hampir tumbang."
+          },
+          {
+            "en": "hurricane",
+            "id": "badai besar",
+            "description": "Angin ekstrem destruktif — merusak bangunan, mendatarkan pohon, gelombang laut."
+          },
+          {
+            "en": "dust_devil",
+            "id": "puting beliung debu",
+            "description": "Pusaran kecil debu atau pasir — gurun, kering, lokal, bergerak."
+          },
+          {
+            "en": "tornado",
+            "id": "tornado",
+            "description": "Pusaran angin besar destruktif — funnel cloud, mengangkat benda besar."
+          },
+          {
+            "en": "magical_wind",
+            "id": "angin magis",
+            "description": "Angin dengan partikel cahaya, bunga beterbangan, atau efek supernatural."
+          }
+        ]
+      },
+      "visibility": {
+        "_note": "Seberapa jelas pandangan dalam scene.",
+        "options": [
+          {
+            "en": "crystal_clear",
+            "id": "sangat jernih",
+            "description": "Visibility sempurna — langit biru, tidak ada halangan, bisa melihat sangat jauh."
+          },
+          {
+            "en": "clear",
+            "id": "jernih",
+            "description": "Visibility normal baik — tidak ada kabut, cuaca bersih."
+          },
+          {
+            "en": "hazy",
+            "id": "kabur",
+            "description": "Sedikit berkabut atau polusi ringan — jarak jauh sedikit tidak jelas."
+          },
+          {
+            "en": "light_fog",
+            "id": "kabut tipis",
+            "description": "Kabut tipis di tanah atau air — pagi hari, misterius, romantis."
+          },
+          {
+            "en": "thick_fog",
+            "id": "kabut tebal",
+            "description": "Kabut tebal menghalangi pandangan — horror, misteri, hanya beberapa meter terlihat."
+          },
+          {
+            "en": "dense_smoke",
+            "id": "asap tebal",
+            "description": "Asap dari kebakaran atau industri — gelap, berbahaya, mencekik."
+          },
+          {
+            "en": "sandstorm",
+            "id": "badai pasir",
+            "description": "Pasir menutup segalanya — oranye-coklat, visibility nol, apocalyptic."
+          },
+          {
+            "en": "snowstorm_whiteout",
+            "id": "badai salju total",
+            "description": "Salju menutupi semua arah — tidak bisa melihat tangan sendiri."
+          },
+          {
+            "en": "underwater_murky",
+            "id": "keruh bawah air",
+            "description": "Air kotor atau dalam — partikel melayang, visibility sangat terbatas."
+          },
+          {
+            "en": "underwater_clear",
+            "id": "jernih bawah air",
+            "description": "Air kristal jernih — terlihat jauh ke bawah, cahaya menyebar indah."
+          },
+          {
+            "en": "magical_obscurement",
+            "id": "dikaburkan sihir",
+            "description": "Pandangan dihalangi efek magical — portal, sihir, void, atau mimpi."
+          }
+        ]
+      },
+      "temperature_indicators": {
+        "_note": "Tanda visual yang menunjukkan suhu dalam scene — bisa kombinasi beberapa.",
+        "_examples": {
+          "cold": [
+            "breath_visible_as_vapor",
+            "frost_on_surfaces",
+            "icicles_hanging",
+            "frozen_puddles",
+            "snow_accumulation",
+            "characters_bundled_up",
+            "ice_crystals_on_glass",
+            "frozen_waterfall"
+          ],
+          "hot": [
+            "heat_shimmer_on_ground",
+            "sweat_visible",
+            "dust_dry",
+            "cracked_earth",
+            "wilting_plants",
+            "mirage_effect",
+            "sun_bleached_colors",
+            "characters_seeking_shade"
+          ],
+          "humid": [
+            "condensation_on_surfaces",
+            "damp_walls",
+            "steaming_ground",
+            "foggy_breath_warm",
+            "moss_everywhere",
+            "dripping_water"
+          ],
+          "neutral": [
+            "no_temperature_indicators",
+            "comfortable_clothing_appropriate"
+          ]
+        }
+      },
+      "sky_condition": {
+        "_note": "Kondisi langit yang terlihat dalam scene.",
+        "options": [
+          {
+            "en": "clear_blue",
+            "id": "biru cerah",
+            "description": "Langit biru bersih tanpa awan — optimis, cerah, luas."
+          },
+          {
+            "en": "partly_cloudy",
+            "id": "berawan sebagian",
+            "description": "Awan putih tersebar di langit biru — dinamis, bayangan bergerak."
+          },
+          {
+            "en": "overcast_white",
+            "id": "mendung putih",
+            "description": "Awan tebal putih merata — cahaya lembut, tidak ada bayangan keras, dingin."
+          },
+          {
+            "en": "overcast_grey",
+            "id": "mendung abu-abu",
+            "description": "Awan gelap tebal — hujan akan datang, suasana suram, berat."
+          },
+          {
+            "en": "storm_clouds",
+            "id": "awan badai",
+            "description": "Awan hitam mengancam — petir di dalam, dramatis, bahaya mendekat."
+          },
+          {
+            "en": "dramatic_clouds",
+            "id": "awan dramatis",
+            "description": "Awan tinggi dengan lekukan dramatis — cumulonimbus, God rays, epik."
+          },
+          {
+            "en": "sunset_colors",
+            "id": "warna senja",
+            "description": "Langit oranye, merah, ungu saat matahari terbenam — indah, emosional."
+          },
+          {
+            "en": "sunrise_colors",
+            "id": "warna fajar",
+            "description": "Langit merah muda, emas, biru muda saat matahari terbit — harapan baru."
+          },
+          {
+            "en": "night_starry",
+            "id": "malam berbintang",
+            "description": "Langit malam penuh bintang — jauh dari polusi cahaya, menakjubkan."
+          },
+          {
+            "en": "night_moonlit",
+            "id": "malam bermandikan bulan",
+            "description": "Bulan terang menerangi malam — bayangan tajam, perak, romantis atau mistis."
+          },
+          {
+            "en": "city_light_glow",
+            "id": "cahaya kota",
+            "description": "Langit malam berwarna oranye-merah dari polusi cahaya kota."
+          },
+          {
+            "en": "aurora",
+            "id": "aurora",
+            "description": "Cahaya kutub berwarna hijau, ungu, merah menari di langit."
+          },
+          {
+            "en": "apocalyptic_red",
+            "id": "merah apokaliptik",
+            "description": "Langit merah gelap karena asap, debu, atau supernatural — mencekam."
+          },
+          {
+            "en": "alien_sky",
+            "id": "langit alien",
+            "description": "Warna tidak normal — ungu, hijau, oranye — planet lain atau fantasi."
+          },
+          {
+            "en": "magical_sky",
+            "id": "langit magis",
+            "description": "Nebula terlihat siang, bintang berwarna, awan berbentuk wajah — fantasi tinggi."
+          }
+        ]
+      },
+      "special_phenomena": {
+        "_note": "Fenomena cuaca atau alam langka yang menambah drama visual — bisa kombinasi beberapa.",
+        "options": [
+          {
+            "en": "rainbow",
+            "id": "pelangi",
+            "description": "Pelangi setelah hujan — harapan, keindahan, kadang double rainbow."
+          },
+          {
+            "en": "double_rainbow",
+            "id": "pelangi ganda",
+            "description": "Dua pelangi — lebih langka, lebih magis, lebih dramatis."
+          },
+          {
+            "en": "aurora_borealis",
+            "id": "aurora borealis",
+            "description": "Cahaya kutub utara — hijau, ungu, merah menari di langit malam."
+          },
+          {
+            "en": "aurora_australis",
+            "id": "aurora australis",
+            "description": "Cahaya kutub selatan — sama indahnya, lebih jarang dilihat."
+          },
+          {
+            "en": "lightning",
+            "id": "petir",
+            "description": "Kilatan petir — dramatis, berbahaya, menerangi scene sesaat."
+          },
+          {
+            "en": "ball_lightning",
+            "id": "petir bola",
+            "description": "Bola cahaya mengambang — fenomena langka, misterius, scifi vibes."
+          },
+          {
+            "en": "sun_halo",
+            "id": "halo matahari",
+            "description": "Lingkaran cahaya di sekitar matahari — fenomena optis, melarang, sakral."
+          },
+          {
+            "en": "sun_dogs",
+            "id": "parhelion",
+            "description": "Titik cahaya di sisi matahari — mirip matahari kembar, tanda cuaca."
+          },
+          {
+            "en": "crepuscular_rays",
+            "id": "sinar Tuhan",
+            "description": "Sinar cahaya matahari menembus awan — megah, sakral, God rays."
+          },
+          {
+            "en": "fog_bow",
+            "id": "pelangi kabut",
+            "description": "Pelangi putih dalam kabut — lebih halus dan misterius dari rainbow."
+          },
+          {
+            "en": "volcanic_lightning",
+            "id": "petir vulkanik",
+            "description": "Petir dalam abu vulkanik — sangat dramatis, berbahaya ekstrem."
+          },
+          {
+            "en": "ash_fall",
+            "id": "hujan abu vulkanik",
+            "description": "Abu vulkanik jatuh perlahan — grey, apocalyptic, mencekam."
+          },
+          {
+            "en": "magical_storm",
+            "id": "badai magis",
+            "description": "Badai dengan petir berwarna, kilat berbentuk rune, hujan bintang."
+          },
+          {
+            "en": "time_distortion_visual",
+            "id": "distorsi waktu visual",
+            "description": "Efek visual waktu melambat atau terpecah — fantasi, scifi, mimpi."
+          },
+          {
+            "en": "portal_effects",
+            "id": "efek portal",
+            "description": "Pusaran dimensional, cahaya dari portal, space warping visible."
+          }
+        ]
+      }
+    },
+    "props_objects": {
+      "_note": "Objek atau benda spesifik yang hadir dalam scene. Ini adalah array — bisa ada beberapa objek sekaligus. Field 'name' diisi string bebas, lihat name_examples.",
+      "name_examples": {
+        "_note": "[STRING_BEBAS] — Nama spesifik objek. Gunakan contoh di bawah sebagai inspirasi, dikelompokkan per setting.",
+        "_examples_by_category": {
+          "weapons_medieval": [
+            "longsword_sheathed",
+            "crossbow_loaded",
+            "quiver_with_arrows",
+            "war_hammer",
+            "battle_axe",
+            "shield_with_crest",
+            "dagger_at_belt",
+            "magic_staff_glowing",
+            "enchanted_bow"
+          ],
+          "weapons_modern_scifi": [
+            "assault_rifle_leaning_on_wall",
+            "holster_with_pistol",
+            "energy_weapon_charging",
+            "sniper_rifle_case",
+            "grenade_belt"
+          ],
+          "containers": [
+            "iron_bound_treasure_chest",
+            "leather_satchel_worn",
+            "metal_briefcase_locked",
+            "potion_bottles_on_shelf",
+            "burlap_sacks_of_grain",
+            "ceramic_urns_ancient",
+            "cryogenic_storage_pod",
+            "supply_crate_military"
+          ],
+          "furniture_interior": [
+            "heavy_oak_table",
+            "throne_ornate",
+            "fireplace_roaring",
+            "canopy_bed_curtained",
+            "bookshelf_overflowing",
+            "writing_desk_cluttered",
+            "broken_chair",
+            "hospital_bed_empty"
+          ],
+          "vehicles": [
+            "horse_saddled_waiting",
+            "wooden_cart_hay",
+            "steam_powered_carriage",
+            "vintage_motorcycle_parked",
+            "crashed_spaceship_pod",
+            "submarine_hatch_open",
+            "hovering_drone_patrol",
+            "armored_vehicle_damaged"
+          ],
+          "ritual_magical": [
+            "ritual_circle_drawn_in_blood",
+            "crystal_ball_glowing",
+            "ancient_grimoire_open",
+            "candles_half_melted",
+            "altar_with_offerings",
+            "rune_stones_scattered",
+            "enchanted_mirror",
+            "potion_bubbling_in_cauldron"
+          ],
+          "technology_props": [
+            "holographic_map_projected",
+            "broken_terminal_sparking",
+            "server_rack_blinking",
+            "medical_scanner_active",
+            "communication_device_old",
+            "bomb_timer_counting",
+            "neural_interface_headset",
+            "solar_power_array"
+          ],
+          "atmospheric_details": [
+            "wanted_poster_faded",
+            "scattered_playing_cards",
+            "half_eaten_meal_abandoned",
+            "fresh_flowers_in_vase",
+            "torn_photograph",
+            "blood_stained_cloth",
+            "pile_of_gold_coins",
+            "overturned_hourglass",
+            "letter_sealed_with_wax",
+            "broken_compass"
+          ],
+          "nature_props": [
+            "fallen_ancient_tree",
+            "bird_nest_with_eggs",
+            "giant_mushroom_cluster",
+            "skull_bleached_by_sun",
+            "mysterious_monolith",
+            "standing_stones_circle",
+            "altar_overgrown_moss",
+            "bones_arranged_ritually"
+          ]
+        }
+      },
+      "type": {
+        "_note": "Kategori objek.",
+        "options": [
+          {
+            "en": "weapon",
+            "id": "senjata",
+            "description": "Pedang, busur, pistol, staff sihir, dll."
+          },
+          {
+            "en": "container",
+            "id": "wadah",
+            "description": "Peti, koper, kantong, botol, dompet, kotak."
+          },
+          {
+            "en": "furniture",
+            "id": "furnitur",
+            "description": "Kursi, meja, tempat tidur, lemari, bangku."
+          },
+          {
+            "en": "vehicle",
+            "id": "kendaraan",
+            "description": "Kuda, kereta, motor, kapal, pesawat, mech."
+          },
+          {
+            "en": "technology",
+            "id": "teknologi",
+            "description": "Komputer, senjata futuristik, alat ilmiah, perangkat."
+          },
+          {
+            "en": "food_drink",
+            "id": "makanan atau minuman",
+            "description": "Hidangan di meja, botol, cangkir, buah-buahan."
+          },
+          {
+            "en": "plant_prop",
+            "id": "tanaman dekoratif",
+            "description": "Pot bunga, pohon dalam ruangan, buket, karangan bunga."
+          },
+          {
+            "en": "art_cultural",
+            "id": "seni atau budaya",
+            "description": "Lukisan, patung, instrumen musik, artefak."
+          },
+          {
+            "en": "ritual_magical",
+            "id": "ritual atau magis",
+            "description": "Lilin, grimoir, kristal bola, altar, simbol sihir."
+          },
+          {
+            "en": "nature_element",
+            "id": "elemen alam",
+            "description": "Batu, kayu tumbang, sarang, tulang hewan."
+          },
+          {
+            "en": "debris_rubble",
+            "id": "puing atau reruntuhan",
+            "description": "Potongan bangunan runtuh, kaca pecah, sisa kehancuran."
+          },
+          {
+            "en": "document_text",
+            "id": "dokumen atau tulisan",
+            "description": "Surat, peta, buku terbuka, tablet, koran."
+          },
+          {
+            "en": "light_source",
+            "id": "sumber cahaya",
+            "description": "Lilin, obor, lampu meja, lentera gantung, api unggun."
+          }
+        ]
+      },
+      "condition": {
+        "_note": "Kondisi fisik objek.",
+        "options": [
+          {
+            "en": "pristine",
+            "id": "sempurna baru",
+            "description": "Baru, tidak ada noda atau goresan."
+          },
+          {
+            "en": "well_used",
+            "id": "sering dipakai",
+            "description": "Terlihat digunakan tapi terawat — patina wajar, fungsional."
+          },
+          {
+            "en": "worn",
+            "id": "lusuh",
+            "description": "Sudah tua, terlihat usang, tapi masih berfungsi."
+          },
+          {
+            "en": "damaged",
+            "id": "rusak",
+            "description": "Ada kerusakan nyata — retak, robek, bengkok, tapi masih ada."
+          },
+          {
+            "en": "broken",
+            "id": "hancur",
+            "description": "Tidak berfungsi, dalam potongan-potongan, rusak total."
+          },
+          {
+            "en": "ancient",
+            "id": "kuno",
+            "description": "Sangat tua, patina tebal, mungkin ada ukiran atau tulisan kuno."
+          },
+          {
+            "en": "magical_glowing",
+            "id": "bercahaya magis",
+            "description": "Memancarkan cahaya supernatural — rune menyala, energi terlihat."
+          }
+        ]
+      },
+      "importance": {
+        "_note": "Seberapa penting objek ini dalam scene atau cerita.",
+        "options": [
+          {
+            "en": "plot_critical",
+            "id": "kritis untuk cerita",
+            "description": "Objek ini adalah fokus utama scene — MacGuffin, senjata kunci, bukti."
+          },
+          {
+            "en": "character_defining",
+            "id": "mendefinisikan karakter",
+            "description": "Objek yang menceritakan sesuatu tentang pemiliknya — foto, senjata kesayangan."
+          },
+          {
+            "en": "atmospheric",
+            "id": "atmosferik",
+            "description": "Menambah mood dan feel scene tapi bukan plot point utama."
+          },
+          {
+            "en": "background",
+            "id": "latar belakang",
+            "description": "Ada dalam scene untuk mengisi dunia, tidak perlu diperhatikan."
+          },
+          {
+            "en": "environmental_storytelling",
+            "id": "bercerita lewat lingkungan",
+            "description": "Detail yang menceritakan kisah tanpa kata-kata — surat yang tidak terkirim, foto lama."
+          }
+        ]
+      },
+      "position": {
+        "_note": "Posisi objek dalam frame.",
+        "options": [
+          {
+            "en": "foreground_left",
+            "id": "latar depan kiri",
+            "description": "Objek besar di depan sebelah kiri — framing element."
+          },
+          {
+            "en": "foreground_right",
+            "id": "latar depan kanan",
+            "description": "Objek besar di depan sebelah kanan — framing element."
+          },
+          {
+            "en": "foreground_center",
+            "id": "latar depan tengah",
+            "description": "Objek di depan antara kamera dan subjek."
+          },
+          {
+            "en": "midground",
+            "id": "latar tengah",
+            "description": "Bersama atau dekat dengan subjek utama."
+          },
+          {
+            "en": "background_prop",
+            "id": "latar belakang",
+            "description": "Jauh di belakang, detail dunia, tidak dominan."
+          },
+          {
+            "en": "held_by_character",
+            "id": "dipegang karakter",
+            "description": "Objek dalam tangan atau langsung berinteraksi dengan karakter."
+          },
+          {
+            "en": "scattered_around",
+            "id": "tersebar di sekitar",
+            "description": "Multiple instance tersebar di seluruh scene."
+          }
+        ]
+      }
+    },
+    "signage_text": {
+      "_note": "Tanda, tulisan, atau teks yang terlihat dalam scene — terutama untuk setting urban atau historis.",
+      "language": {
+        "options": [
+          {
+            "en": "none",
+            "id": "tidak ada",
+            "description": "Tidak ada tanda atau tulisan dalam scene."
+          },
+          {
+            "en": "english",
+            "id": "Inggris",
+            "description": "Tanda dalam bahasa Inggris."
+          },
+          {
+            "en": "japanese_kanji",
+            "id": "Jepang/Kanji",
+            "description": "Karakter Jepang — kanji, hiragana, katakana."
+          },
+          {
+            "en": "chinese_characters",
+            "id": "karakter China",
+            "description": "Karakter Mandarin atau Chinese tradisional."
+          },
+          {
+            "en": "arabic_script",
+            "id": "tulisan Arab",
+            "description": "Kaligrafi Arab atau teks Arab modern."
+          },
+          {
+            "en": "latin_ancient",
+            "id": "Latin kuno",
+            "description": "Tulisan Latin — Roma kuno, naskah abad pertengahan."
+          },
+          {
+            "en": "runic",
+            "id": "Runik",
+            "description": "Alfabet runik Norse atau fantasi — kuno, misterius."
+          },
+          {
+            "en": "elvish_fictional",
+            "id": "bahasa fiksi Elvish",
+            "description": "Tulisan bahasa fiksi fantasi — Tengwar, Aurebesh, dll."
+          },
+          {
+            "en": "unknown_alien",
+            "id": "tidak dikenal atau alien",
+            "description": "Tulisan yang tidak bisa dibaca — alien, kuno misterius, sandi rahasia."
+          },
+          {
+            "en": "mixed_multilingual",
+            "id": "campuran berbagai bahasa",
+            "description": "Berbagai bahasa bercampur — kota kosmopolitan, cyberpunk."
+          }
+        ]
+      },
+      "signage_type": {
+        "options": [
+          {
+            "en": "commercial_ads",
+            "id": "iklan komersial",
+            "description": "Billboard, papan toko, neon sign produk — urban, komersial."
+          },
+          {
+            "en": "directional_signs",
+            "id": "tanda arah",
+            "description": "Petunjuk jalan, tanda nama tempat, exit sign."
+          },
+          {
+            "en": "warning_signs",
+            "id": "tanda peringatan",
+            "description": "Danger, Keep Out, hazmat — pabrik, militer, zona berbahaya."
+          },
+          {
+            "en": "propaganda",
+            "id": "propaganda",
+            "description": "Poster politik, wajah pemimpin, slogan — dystopia, perang, totaliter."
+          },
+          {
+            "en": "graffiti_tags",
+            "id": "graffiti",
+            "description": "Tulisan semprot — pemberontakan, seni jalanan, gang territory."
+          },
+          {
+            "en": "religious_inscriptions",
+            "id": "tulisan religius",
+            "description": "Ayat suci, doa, simbol — kuil, gereja, batu suci."
+          },
+          {
+            "en": "magical_runes",
+            "id": "rune magis",
+            "description": "Simbol atau tulisan yang memancarkan efek magis."
+          },
+          {
+            "en": "memorial_epitaph",
+            "id": "memorial atau epitaf",
+            "description": "Tanda peringatan, batu nisan, nama yang diukir."
+          },
+          {
+            "en": "none",
+            "id": "tidak ada",
+            "description": "Tidak ada signage yang terlihat."
+          }
+        ]
+      }
+    },
+    "technology": {
+      "_note": "Teknologi yang terlihat dalam environment — menentukan level kemajuan dunia.",
+      "tech_level": {
+        "options": [
+          {
+            "en": "none_primitive",
+            "id": "primitif",
+            "description": "Tidak ada teknologi — prasejarah, nature-only, survival purni."
+          },
+          {
+            "en": "ancient_tools",
+            "id": "alat kuno",
+            "description": "Alat batu, tembaga, kayu — zaman prasejarah hingga kuno."
+          },
+          {
+            "en": "medieval_mechanical",
+            "id": "mekanik abad pertengahan",
+            "description": "Roda gigi, tuas, katrol, mesin sederhana, senjata melee."
+          },
+          {
+            "en": "early_industrial",
+            "id": "industri awal",
+            "description": "Mesin uap, rel kereta, telegraf, pabrik pertama."
+          },
+          {
+            "en": "modern_contemporary",
+            "id": "modern kontemporer",
+            "description": "Smartphone, internet, mobil, semua teknologi masa kini."
+          },
+          {
+            "en": "near_future",
+            "id": "masa depan dekat",
+            "description": "AI terlihat, AR/VR umum, kendaraan otonom, drone di mana-mana."
+          },
+          {
+            "en": "advanced_scifi",
+            "id": "scifi lanjut",
+            "description": "FTL travel, teleportasi, AI superintelijen, bahan materi eksotis."
+          },
+          {
+            "en": "post_scarcity",
+            "id": "pasca-kelangkaan",
+            "description": "Teknologi telah memecahkan semua masalah — abundance, tapi mungkin ada biaya tersembunyi."
+          },
+          {
+            "en": "magical_equivalent",
+            "id": "setara magis",
+            "description": "Tidak ada teknologi — digantikan sihir yang berfungsi sama."
+          },
+          {
+            "en": "techno_magic_hybrid",
+            "id": "hibrida teknologi-sihir",
+            "description": "Teknologi dan sihir berpadu — circuit rune, spell compiler."
+          }
+        ]
+      },
+      "visible_tech_elements": {
+        "_note": "Elemen teknologi spesifik yang terlihat dalam scene — bisa kombinasi beberapa.",
+        "_examples_by_era": {
+          "ancient_medieval": [
+            "waterwheel",
+            "windmill",
+            "siege_engine",
+            "printing_press_early",
+            "astrolabe",
+            "sundial",
+            "catapult"
+          ],
+          "industrial_victorian": [
+            "steam_engine",
+            "telegraph_wires",
+            "factory_smokestacks",
+            "gear_mechanisms",
+            "gaslamp_streetlights",
+            "early_telephone"
+          ],
+          "modern": [
+            "smartphones",
+            "surveillance_cameras",
+            "LED_screens",
+            "electric_cars",
+            "solar_panels",
+            "wifi_routers_visible",
+            "ATM_machines",
+            "traffic_lights"
+          ],
+          "cyberpunk_nearfuture": [
+            "holographic_displays",
+            "neon_advertisements",
+            "drone_traffic",
+            "cybernetic_implants_visible",
+            "AR_overlays",
+            "server_farms",
+            "biometric_scanners",
+            "neural_interface_ports"
+          ],
+          "advanced_scifi": [
+            "anti_gravity_platforms",
+            "FTL_drives_visible",
+            "energy_shields",
+            "matter_replicators",
+            "AI_cores_exposed",
+            "dimensional_portals",
+            "dyson_sphere_components",
+            "teleportation_pads"
+          ],
+          "magical": [
+            "crystal_power_cores",
+            "spell_matrices_glowing",
+            "enchanted_mechanisms",
+            "ley_line_conduits",
+            "arcane_batteries",
+            "runestone_generators"
+          ]
+        }
+      }
+    }
+  }
+}

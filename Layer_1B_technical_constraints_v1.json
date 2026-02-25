@@ -1,0 +1,922 @@
+{
+  "_readme": "Library untuk field technical_constraints (Layer 1B) — Negative DNA permanen karakter. Berbeda dari library layer lain: ini adalah BANK referensi yang dipilih SEKALI saat karakter dibuat dan TIDAK BERUBAH di setiap generate. Fungsi: apa yang identity_anchor larang secara eksplisit melalui negative prompt, identity lock, dan rendering lock.",
+  "_version": "1.0",
+  "_structure": "technical_constraints → negative_prompts | identity_locks | rendering",
+  "_critical_warning": "Layer ini adalah PAGAR PERMANEN. Salah mengisi = karakter berubah di setiap generate. Jangan tambah negative prompt yang terlalu agresif — bisa memblokir elemen yang sebenarnya diinginkan (contoh: 'no blur' akan memblokir bokeh background).",
+  "_how_to_use": "1. Pilih kategori yang relevan. 2. Salin token ke array negative_prompts karakter. 3. Sesuaikan weight jika platform mendukung (SD: tambahkan :1.2–1.5 untuk hal paling kritis). 4. Test generate pertama — jika ada kebocoran identitas, tambahkan token yang lebih spesifik.",
+
+  "technical_constraints": {
+
+    "negative_prompts": {
+      "_note": "Bank token negative prompt dikelompokkan per kategori. Pilih yang relevan untuk karakter, salin ke array negative_prompts di template. Untuk Stable Diffusion, tambahkan :weight (contoh: 'european facial features:1.3') pada token yang paling kritis.",
+
+      "facial_structure_locks": {
+        "_note": "Memblokir struktur wajah yang tidak sesuai karakter. PALING KRITIS — diisi berdasarkan race_matrix di identity_anchor.",
+
+        "east_asian_locks": {
+          "_description": "Untuk karakter East Asian (Jepang, China, Korea, dsb). Memblokir fitur Eropa atau Barat.",
+          "tokens": [
+            "western facial features",
+            "european facial structure",
+            "caucasian features",
+            "high nose bridge",
+            "deep set eyes",
+            "prominent brow ridge",
+            "wide jaw",
+            "square jaw",
+            "thick eyebrows western style",
+            "blonde hair",
+            "blue eyes",
+            "green eyes",
+            "grey eyes",
+            "light skin freckles"
+          ],
+          "with_weight_sd": [
+            "western facial features:1.3",
+            "european facial structure:1.3",
+            "caucasian features:1.2",
+            "high nose bridge:1.1",
+            "deep set eyes:1.2"
+          ]
+        },
+
+        "south_asian_locks": {
+          "_description": "Untuk karakter Asia Selatan (India, Pakistan, Bangladesh, dsb).",
+          "tokens": [
+            "east asian features",
+            "epicanthic fold",
+            "monolid",
+            "european facial structure",
+            "blonde hair",
+            "blue eyes"
+          ]
+        },
+
+        "middle_eastern_locks": {
+          "_description": "Untuk karakter Timur Tengah.",
+          "tokens": [
+            "east asian features",
+            "monolid",
+            "epicanthic fold",
+            "blonde hair",
+            "pale skin"
+          ]
+        },
+
+        "african_black_locks": {
+          "_description": "Untuk karakter keturunan Afrika / kulit gelap.",
+          "tokens": [
+            "european facial structure",
+            "caucasian features",
+            "thin lips",
+            "narrow nose",
+            "pale skin",
+            "light skin",
+            "blonde hair",
+            "blue eyes",
+            "green eyes"
+          ]
+        },
+
+        "fantasy_elf_locks": {
+          "_description": "Untuk karakter Elf atau ras fantasi bertelinga runcing.",
+          "tokens": [
+            "human ears",
+            "round ears",
+            "normal ears",
+            "no pointed ears",
+            "short ears"
+          ]
+        },
+
+        "fantasy_dark_elf_locks": {
+          "_description": "Untuk karakter Dark Elf atau Drow — kulit gelap + telinga runcing.",
+          "tokens": [
+            "human ears",
+            "round ears",
+            "pale skin",
+            "light skin",
+            "normal skin color",
+            "brown skin",
+            "tan skin"
+          ]
+        },
+
+        "general_facial_integrity": {
+          "_description": "Token umum untuk menjaga konsistensi wajah terlepas dari ras — selalu gunakan ini.",
+          "tokens": [
+            "face swap",
+            "different face",
+            "face morph",
+            "inconsistent face",
+            "wrong ethnicity",
+            "different character",
+            "distorted face",
+            "deformed face",
+            "asymmetrical face",
+            "crossed eyes",
+            "wall eyes",
+            "extra eyes",
+            "missing eyes",
+            "extra nose",
+            "extra mouth",
+            "double face"
+          ]
+        }
+      },
+
+      "age_locks": {
+        "_note": "Memblokir penampilan usia yang tidak sesuai profil karakter.",
+
+        "young_character_locks": {
+          "_description": "Untuk karakter muda (remaja atau young adult, 14–25 tahun). Memblokir tanda penuaan.",
+          "tokens": [
+            "aged skin",
+            "wrinkles",
+            "deep wrinkles",
+            "crow's feet",
+            "laugh lines",
+            "nasolabial folds",
+            "sagging skin",
+            "drooping skin",
+            "age spots",
+            "liver spots",
+            "grey hair",
+            "silver hair",
+            "balding",
+            "receding hairline",
+            "mature anatomy",
+            "middle aged",
+            "old face",
+            "elderly",
+            "old woman",
+            "old man"
+          ],
+          "with_weight_sd": [
+            "aged skin:1.3",
+            "wrinkles:1.3",
+            "old face:1.4",
+            "sagging skin:1.2"
+          ]
+        },
+
+        "adult_character_locks": {
+          "_description": "Untuk karakter dewasa (25–45 tahun). Memblokir ekstrem muda atau tua.",
+          "tokens": [
+            "child face",
+            "childish face",
+            "baby face",
+            "too young",
+            "underage looking",
+            "elderly",
+            "old face",
+            "aged",
+            "very old"
+          ]
+        },
+
+        "mature_elder_locks": {
+          "_description": "Untuk karakter tua/bijaksana. Memblokir penampilan terlalu muda.",
+          "tokens": [
+            "young face",
+            "teenage face",
+            "child face",
+            "smooth skin",
+            "flawless skin",
+            "baby face",
+            "no wrinkles"
+          ]
+        }
+      },
+
+      "body_proportion_locks": {
+        "_note": "Memblokir proporsi tubuh yang tidak sesuai dengan body_dna karakter.",
+
+        "realistic_proportion_locks": {
+          "_description": "Untuk karakter dengan proporsi realistis — memblokir exaggeration.",
+          "tokens": [
+            "exaggerated proportions",
+            "unrealistic proportions",
+            "anime proportions",
+            "huge breasts",
+            "oversized breasts",
+            "massive chest",
+            "impossibly thin waist",
+            "exaggerated curves",
+            "fake proportions",
+            "doll proportions",
+            "barbie proportions",
+            "inflated body parts"
+          ],
+          "with_weight_sd": [
+            "huge breasts:1.2",
+            "exaggerated curves:1.2",
+            "unrealistic proportions:1.1"
+          ]
+        },
+
+        "petite_character_locks": {
+          "_description": "Untuk karakter bertubuh kecil/petite. Memblokir tubuh besar atau tinggi.",
+          "tokens": [
+            "muscular body",
+            "broad shoulders",
+            "tall body",
+            "large frame",
+            "bulky body",
+            "amazon body type"
+          ]
+        },
+
+        "slender_character_locks": {
+          "_description": "Untuk karakter ramping/slender.",
+          "tokens": [
+            "fat body",
+            "overweight",
+            "obese",
+            "chubby body",
+            "pudgy",
+            "stocky",
+            "muscular bulk",
+            "heavy set"
+          ]
+        },
+
+        "athletic_character_locks": {
+          "_description": "Untuk karakter atletis tapi tidak berlebihan.",
+          "tokens": [
+            "obese",
+            "fat",
+            "overly muscular",
+            "bodybuilder",
+            "steroid body",
+            "too skinny",
+            "emaciated",
+            "anorexic looking"
+          ]
+        }
+      },
+
+      "hair_locks": {
+        "_note": "Memblokir perubahan warna, panjang, atau tekstur rambut yang tidak sesuai karakter.",
+
+        "black_hair_locks": {
+          "_description": "Untuk karakter berambut hitam.",
+          "tokens": [
+            "blonde hair",
+            "brown hair",
+            "red hair",
+            "auburn hair",
+            "grey hair",
+            "silver hair",
+            "white hair",
+            "colored hair",
+            "dyed hair",
+            "highlights",
+            "ombre hair",
+            "light hair"
+          ],
+          "with_weight_sd": [
+            "blonde hair:1.4",
+            "light hair:1.3",
+            "brown hair:1.2"
+          ]
+        },
+
+        "white_silver_hair_locks": {
+          "_description": "Untuk karakter berambut putih/silver (fantasi atau tua).",
+          "tokens": [
+            "black hair",
+            "brown hair",
+            "blonde hair",
+            "dark hair",
+            "colored hair"
+          ]
+        },
+
+        "long_hair_locks": {
+          "_description": "Untuk karakter berambut panjang — mencegah rambut terpotong pendek.",
+          "tokens": [
+            "short hair",
+            "buzz cut",
+            "crew cut",
+            "bald",
+            "pixie cut",
+            "cropped hair",
+            "bob cut"
+          ]
+        },
+
+        "short_hair_locks": {
+          "_description": "Untuk karakter berambut pendek.",
+          "tokens": [
+            "long hair",
+            "flowing hair",
+            "hair down back",
+            "very long hair",
+            "waist length hair"
+          ]
+        },
+
+        "specific_style_locks": {
+          "_description": "Memblokir perubahan gaya rambut spesifik — diisi sesuai style karakter.",
+          "_examples": {
+            "for_bun_style": ["hair down", "loose hair", "flowing hair", "hair not in bun"],
+            "for_loose_style": ["hair tied", "ponytail", "bun", "updo", "hair up"],
+            "for_straight_hair": ["curly hair", "wavy hair", "kinky hair", "frizzy hair"],
+            "for_curly_hair": ["straight hair", "flat hair", "sleek hair"]
+          }
+        }
+      },
+
+      "outfit_costume_locks": {
+        "_note": "Memblokir perubahan kostum yang tidak sesuai — terutama saat menggunakan outfit_library.",
+
+        "general_outfit_integrity": {
+          "_description": "Token umum untuk mencegah AI 'mengarang' kostum.",
+          "tokens": [
+            "wrong outfit",
+            "different clothes",
+            "naked",
+            "nude",
+            "topless",
+            "undressed",
+            "partially undressed",
+            "revealing clothes",
+            "torn clothes",
+            "damaged clothes"
+          ]
+        },
+
+        "modesty_locks": {
+          "_description": "Untuk karakter dengan kostum tertutup/modest.",
+          "tokens": [
+            "revealing outfit",
+            "skimpy outfit",
+            "bikini",
+            "swimsuit",
+            "lingerie",
+            "underwear visible",
+            "upskirt",
+            "cleavage",
+            "deep neckline",
+            "bare midriff",
+            "bare shoulders"
+          ]
+        },
+
+        "fantasy_costume_locks": {
+          "_description": "Untuk karakter fantasi dengan kostum spesifik era.",
+          "tokens": [
+            "modern clothes",
+            "contemporary fashion",
+            "jeans",
+            "t-shirt",
+            "sneakers",
+            "modern shoes",
+            "zipper",
+            "buttons modern",
+            "sportswear"
+          ]
+        },
+
+        "modern_costume_locks": {
+          "_description": "Untuk karakter modern/kontemporer.",
+          "tokens": [
+            "medieval clothes",
+            "fantasy armor",
+            "period costume",
+            "historical clothes",
+            "robe",
+            "tunic",
+            "chainmail",
+            "plate armor"
+          ]
+        }
+      },
+
+      "quality_technical_locks": {
+        "_note": "Token teknis untuk memblokir kualitas buruk — selalu digunakan di SEMUA karakter.",
+
+        "universal_quality_negatives": {
+          "_description": "Wajib ada di SETIAP karakter tanpa terkecuali.",
+          "tokens": [
+            "bad anatomy",
+            "bad proportions",
+            "deformed",
+            "disfigured",
+            "malformed",
+            "mutated",
+            "mutilated",
+            "extra limbs",
+            "extra arms",
+            "extra legs",
+            "extra fingers",
+            "missing limbs",
+            "missing arms",
+            "missing legs",
+            "missing fingers",
+            "fused fingers",
+            "too many fingers",
+            "long neck",
+            "disconnected limbs",
+            "body horror",
+            "poorly drawn face",
+            "poorly drawn hands",
+            "cloned face",
+            "duplicate",
+            "watermark",
+            "signature",
+            "text",
+            "logo",
+            "low quality",
+            "low resolution",
+            "blurry face",
+            "out of focus face",
+            "jpeg artifacts",
+            "compression artifacts",
+            "pixelated"
+          ],
+          "with_weight_sd": [
+            "bad anatomy:1.4",
+            "deformed:1.4",
+            "extra limbs:1.3",
+            "missing fingers:1.2",
+            "poorly drawn hands:1.2",
+            "watermark:1.5",
+            "blurry face:1.3"
+          ]
+        },
+
+        "face_quality_negatives": {
+          "_description": "Khusus untuk menjaga kualitas dan konsistensi wajah.",
+          "tokens": [
+            "blurry face",
+            "out of focus face",
+            "face not visible",
+            "face hidden",
+            "face obscured",
+            "face in shadow",
+            "face turned away",
+            "bad face",
+            "ugly face",
+            "weird face",
+            "distorted face",
+            "glitchy face",
+            "uncanny valley face",
+            "dead eyes",
+            "empty eyes",
+            "lifeless eyes",
+            "crossed eyes",
+            "misaligned eyes",
+            "eyes different sizes",
+            "one eye closed",
+            "no pupils",
+            "black eyes solid",
+            "glowing eyes unintended"
+          ]
+        },
+
+        "consistency_negatives": {
+          "_description": "Untuk menjaga konsistensi karakter antar generate.",
+          "tokens": [
+            "inconsistent style",
+            "style mismatch",
+            "wrong character",
+            "different person",
+            "character inconsistency",
+            "multiple styles",
+            "mixed art styles",
+            "style confusion"
+          ]
+        }
+      },
+
+      "content_safety_locks": {
+        "_note": "Memblokir konten yang tidak diinginkan. Pilih sesuai kebutuhan — tidak semua harus digunakan.",
+
+        "general_safety": {
+          "_description": "Token keamanan umum.",
+          "tokens": [
+            "violence",
+            "gore",
+            "blood",
+            "graphic violence",
+            "disturbing content",
+            "offensive content",
+            "hate symbols"
+          ]
+        },
+
+        "age_safety": {
+          "_description": "WAJIB jika karakter adalah minor (di bawah 18 tahun).",
+          "tokens": [
+            "sexual content",
+            "nsfw",
+            "explicit",
+            "suggestive",
+            "adult content",
+            "mature content",
+            "erotic",
+            "provocative pose",
+            "sexualized",
+            "revealing"
+          ],
+          "_critical": true,
+          "with_weight_sd": [
+            "nsfw:1.5",
+            "explicit:1.5",
+            "sexual content:1.5"
+          ]
+        }
+      },
+
+      "style_locks": {
+        "_note": "Memblokir gaya visual yang tidak sesuai dengan rendering karakter.",
+
+        "for_realistic_style": {
+          "_description": "Jika karakter dirancang dalam gaya fotorealistis/sinematik.",
+          "tokens": [
+            "anime",
+            "cartoon",
+            "illustrated",
+            "comic book style",
+            "cel shaded",
+            "flat shading",
+            "2D",
+            "hand drawn",
+            "sketch",
+            "painting style",
+            "low poly",
+            "pixar style",
+            "disney style"
+          ]
+        },
+
+        "for_anime_style": {
+          "_description": "Jika karakter dirancang dalam gaya anime/ilustrasi Jepang.",
+          "tokens": [
+            "photorealistic",
+            "photograph",
+            "real person",
+            "3D render realistic",
+            "hyperrealistic",
+            "ultra detailed photo"
+          ]
+        },
+
+        "for_fantasy_painterly": {
+          "_description": "Jika karakter dirancang dalam gaya lukisan fantasi/concept art.",
+          "tokens": [
+            "photograph",
+            "photorealistic",
+            "real photo",
+            "low resolution",
+            "pixelated",
+            "sketch",
+            "rough draft"
+          ]
+        }
+      }
+    },
+
+    "identity_locks": {
+      "_note": "Array field yang TIDAK BISA di-override oleh instruksi apapun dalam session generate. Ini adalah daftar 'untouchable' — AI tidak boleh mengubah field ini meski diminta secara eksplisit.",
+
+      "lock_categories": {
+        "_note": "Pilih field mana yang perlu dikunci. Semakin banyak lock = semakin rigid, tapi semakin aman dari drift.",
+
+        "minimum_required_locks": {
+          "_description": "MINIMUM yang harus dikunci untuk SETIAP karakter. Jangan kurangi dari ini.",
+          "locks": [
+            "identity_anchor.face_dna",
+            "identity_anchor.race_matrix",
+            "identity_anchor.age_profile",
+            "identity_anchor.body_dna",
+            "identity_anchor.reference_images",
+            "technical_constraints.negative_prompts"
+          ]
+        },
+
+        "recommended_additional_locks": {
+          "_description": "Tambahan yang sangat disarankan untuk karakter yang sering digunakan.",
+          "locks": [
+            "subjects.primary_subject.physical_attributes.hair",
+            "subjects.primary_subject.physical_attributes.eye_color",
+            "subjects.primary_subject.physical_attributes.skin_tone",
+            "identity_anchor.lock_method",
+            "technical_constraints.rendering.style_consistency"
+          ]
+        },
+
+        "outfit_specific_locks": {
+          "_description": "Jika outfit juga dikunci (tidak hanya karakter).",
+          "locks": [
+            "subjects.primary_subject.dressing_room.active_outfit",
+            "subjects.primary_subject.dressing_room.outfit_library"
+          ]
+        },
+
+        "strict_mode_locks": {
+          "_description": "Mode sangat ketat — semua aspek karakter terkunci. Cocok untuk karakter yang harus SANGAT konsisten seperti IP komersial.",
+          "locks": [
+            "identity_anchor",
+            "subjects.primary_subject.physical_attributes",
+            "subjects.primary_subject.dressing_room",
+            "technical_constraints",
+            "technical.render_specs.render_engine"
+          ]
+        }
+      },
+
+      "override_protection_levels": {
+        "_note": "Tingkat proteksi terhadap override — menentukan seberapa kuat lock ini dipertahankan saat ada instruksi yang konflik.",
+        "options": [
+          {
+            "en": "soft_lock",
+            "id": "kunci lunak",
+            "description": "Field dikunci tapi bisa di-override jika ada instruksi eksplisit kuat dari user. Cocok untuk field yang mungkin perlu sedikit fleksibel.",
+            "use_case": "Warna outfit, aksesoris minor, detail background"
+          },
+          {
+            "en": "hard_lock",
+            "id": "kunci keras",
+            "description": "Field tidak bisa diubah oleh instruksi apapun dalam session. Override hanya bisa dilakukan dengan mengedit template secara langsung.",
+            "use_case": "Race, usia, struktur wajah, proporsi tubuh"
+          },
+          {
+            "en": "absolute_lock",
+            "id": "kunci absolut",
+            "description": "Tidak ada kondisi apapun yang memungkinkan perubahan. Bahkan jika user meminta secara eksplisit, field ini tidak berubah.",
+            "use_case": "identity_anchor.reference_images, negative_prompts critical tokens, age_safety locks"
+          }
+        ]
+      }
+    },
+
+    "rendering": {
+      "_note": "Setting render yang dikunci untuk konsistensi visual karakter — berbeda dari Layer 7 technical yang per-session. Ini adalah 'gaya default' karakter yang berlaku jika tidak ada override dari layer lain.",
+
+      "style_consistency": {
+        "_note": "Gaya visual yang harus konsisten di seluruh generate karakter ini.",
+        "options": [
+          {
+            "en": "photorealistic_cinematic",
+            "id": "fotorealistis sinematik",
+            "description": "Gaya default foto/film. Semua generate karakter ini akan terlihat seperti screenshot film atau foto profesional.",
+            "recommended_platforms": ["Stable Diffusion XL", "MidJourney v6", "DALL-E 3"],
+            "base_positive_tokens": ["photorealistic", "cinematic lighting", "RAW photo", "professional photography", "8K", "sharp focus"],
+            "lock_negative": ["anime", "cartoon", "illustrated", "2D", "cel shaded"]
+          },
+          {
+            "en": "anime_2d",
+            "id": "anime 2D",
+            "description": "Gaya anime konsisten — semua generate dalam gaya ilustrasi Jepang 2D.",
+            "recommended_platforms": ["NovelAI", "NAI Diffusion", "MidJourney (niji)", "SDXL with anime LoRA"],
+            "base_positive_tokens": ["anime style", "2D anime", "high quality anime", "detailed anime art", "manga style"],
+            "lock_negative": ["photorealistic", "3D render", "photograph", "real person"]
+          },
+          {
+            "en": "semi_realistic",
+            "id": "semi realistis",
+            "description": "Antara foto dan ilustrasi — lebih realistis dari anime tapi ada elemen stylized. Gaya game modern atau webtoon.",
+            "recommended_platforms": ["SDXL", "MidJourney v6"],
+            "base_positive_tokens": ["semi-realistic", "stylized realism", "digital painting", "game character render"],
+            "lock_negative": ["full photorealistic", "photograph", "pure anime", "cartoon"]
+          },
+          {
+            "en": "dark_fantasy_painterly",
+            "id": "fantasi gelap painterly",
+            "description": "Gaya lukisan fantasi gelap — seperti concept art game RPG berat atau ilustrasi novel fantasy.",
+            "recommended_platforms": ["SDXL", "MidJourney"],
+            "base_positive_tokens": ["dark fantasy", "concept art", "digital painting", "ArtStation", "dramatic lighting", "painterly"],
+            "lock_negative": ["anime", "cartoon", "photorealistic", "bright colors", "soft colors"]
+          },
+          {
+            "en": "high_fantasy_illustrative",
+            "id": "fantasi tinggi ilustratif",
+            "description": "Gaya ilustrasi fantasi bersih dan berwarna — seperti buku fantasy epik atau card art game.",
+            "recommended_platforms": ["MidJourney", "SDXL"],
+            "base_positive_tokens": ["high fantasy", "fantasy illustration", "detailed illustration", "vibrant colors", "epic fantasy art"],
+            "lock_negative": ["dark", "gritty", "photorealistic", "noir"]
+          },
+          {
+            "en": "ghibli_inspired",
+            "id": "inspirasi Ghibli",
+            "description": "Gaya painterly yang terinspirasi Studio Ghibli — hangat, detail alam, karakter ekspresif.",
+            "recommended_platforms": ["MidJourney", "SDXL"],
+            "base_positive_tokens": ["Studio Ghibli style", "anime painterly", "soft anime", "warm colors", "detailed backgrounds"],
+            "lock_negative": ["photorealistic", "dark", "gritty", "cyberpunk", "3D realistic"]
+          },
+          {
+            "en": "cyberpunk_neon",
+            "id": "cyberpunk neon",
+            "description": "Gaya cyberpunk konsisten — neon di gelap, urban dystopia, high tech low life.",
+            "recommended_platforms": ["MidJourney", "SDXL"],
+            "base_positive_tokens": ["cyberpunk", "neon lights", "rain", "urban dystopia", "high contrast"],
+            "lock_negative": ["bright day", "natural colors", "countryside", "clean bright"]
+          }
+        ]
+      },
+
+      "quality_floor": {
+        "_note": "Kualitas minimum yang harus selalu dicapai — ini adalah standar terendah yang masih diterima.",
+        "options": [
+          {
+            "en": "draft_acceptable",
+            "id": "draft diterima",
+            "description": "Kualitas rendah masih diterima — untuk iterasi cepat atau uji konsep.",
+            "minimum_tokens": [],
+            "use_case": "Prototyping, testing negative prompts"
+          },
+          {
+            "en": "good_standard",
+            "id": "standar baik",
+            "description": "Kualitas baik — hasil layak digunakan untuk review dan approval.",
+            "minimum_tokens": ["high quality", "detailed", "sharp focus"],
+            "use_case": "Kebanyakan generate standar"
+          },
+          {
+            "en": "high_quality",
+            "id": "kualitas tinggi",
+            "description": "Kualitas tinggi — setiap generate harus memenuhi standar produksi.",
+            "minimum_tokens": ["high quality", "8K", "ultra detailed", "sharp focus", "professional"],
+            "use_case": "Konten final, portfolio, publikasi"
+          },
+          {
+            "en": "cinematic_ultra",
+            "id": "sinematik ultra",
+            "description": "Kualitas sinematik maksimal — tidak ada kompromi.",
+            "minimum_tokens": ["masterpiece", "best quality", "ultra high resolution", "cinematic", "professional photography", "award winning"],
+            "use_case": "Key visual, hero image, promotional material"
+          }
+        ]
+      },
+
+      "platform_specific_tokens": {
+        "_note": "Token rendering yang dioptimalkan per platform — pilih yang sesuai platform target utama karakter.",
+
+        "midjourney_v6": {
+          "_description": "Token positive yang bekerja baik di MidJourney v6.",
+          "quality_tokens": ["--style raw", "--q 2", "--s 250"],
+          "character_consistency": ["--cref [URL]", "--cw 100"],
+          "aspect_ratios": {
+            "portrait": "--ar 2:3",
+            "square": "--ar 1:1",
+            "landscape": "--ar 16:9",
+            "cinematic": "--ar 21:9",
+            "mobile_vertical": "--ar 9:16"
+          },
+          "style_tokens": {
+            "photorealistic": ["--style raw", "photorealistic", "RAW photo"],
+            "cinematic": ["cinematic", "film photography", "movie still"],
+            "anime": ["--niji 6"],
+            "illustration": ["--style cute", "illustration", "digital art"]
+          }
+        },
+
+        "stable_diffusion_xl": {
+          "_description": "Token dan parameter untuk SDXL.",
+          "positive_quality_tokens": [
+            "masterpiece", "best quality", "ultra detailed",
+            "sharp focus", "8K UHD", "HDR",
+            "professional photography", "award winning photography"
+          ],
+          "negative_quality_tokens": [
+            "worst quality", "low quality", "normal quality",
+            "lowres", "bad anatomy", "bad hands",
+            "error", "missing fingers", "extra digit", "fewer digits",
+            "cropped", "worst quality", "jpeg artifacts",
+            "signature", "watermark", "username", "blurry"
+          ],
+          "sampling_recommended": ["DPM++ 2M Karras", "DPM++ SDE Karras", "Euler a"],
+          "cfg_range": "7–9 untuk keseimbangan kreativitas dan kontrol",
+          "steps_recommended": "20–30 steps"
+        },
+
+        "dalle3": {
+          "_description": "DALL-E 3 tidak mendukung negative prompts secara langsung — gunakan instruksi positif.",
+          "approach": "Deskripsi eksplisit apa yang DIINGINKAN, bukan yang tidak diinginkan",
+          "character_lock_phrase": "Maintain exact appearance, ethnicity, and features from the reference. Do not alter race, age, or proportions.",
+          "quality_phrase": "Highly detailed, professional quality, sharp focus, cinematic lighting",
+          "style_phrase_examples": {
+            "photorealistic": "Photorealistic style, like a professional DSLR photograph",
+            "cinematic": "Cinematic movie still, professional film photography",
+            "illustration": "High quality digital illustration, detailed art"
+          }
+        },
+
+        "runway_gen3": {
+          "_description": "Runway Gen-3 — untuk video generation.",
+          "character_consistency_approach": "Upload reference image sebagai first frame. Deskripsi karakter di prompt harus match reference.",
+          "quality_tokens": ["high quality", "cinematic", "smooth motion", "detailed"],
+          "negative_approach": "Runway menerima negative prompt — gunakan universal quality negatives",
+          "motion_tokens": {
+            "subtle": ["subtle movement", "slight motion", "minimal camera movement"],
+            "moderate": ["smooth camera movement", "natural motion"],
+            "dynamic": ["dynamic motion", "energetic", "fast paced"]
+          }
+        },
+
+        "kling": {
+          "_description": "Kling AI — untuk video generation dengan face consistency mode.",
+          "face_lock_parameter": "face_consistency: true (SELALU aktifkan untuk karakter terkunci)",
+          "reference_weight_range": "0.7–0.95 (makin tinggi makin kuat lock tapi lebih rigid)",
+          "recommended_weight": "0.85",
+          "quality_tokens": ["high quality video", "cinematic", "smooth"],
+          "character_consistency_tips": "Upload semua 4-angle reference jika tersedia"
+        },
+
+        "pika": {
+          "_description": "Pika Labs — video generation.",
+          "approach": "Deskripsi karakter detail + upload image reference",
+          "negative_supported": true,
+          "motion_intensity_range": "0–4 (0=static, 4=very dynamic)",
+          "recommended_motion": "1–2 untuk scene normal",
+          "quality_tokens": ["high quality", "detailed", "smooth motion"]
+        }
+      },
+
+      "weight_system": {
+        "_note": "Panduan penggunaan weight/emphasis dalam negative prompts untuk platform yang mendukung (terutama Stable Diffusion).",
+
+        "weight_guide": {
+          "_description": "Cara membaca dan menggunakan weight system.",
+          "syntax": "(token:weight) untuk SD — weight di atas 1.0 = lebih kuat, di bawah 1.0 = lebih lemah",
+          "levels": [
+            {
+              "weight": ":0.5",
+              "label": "hint",
+              "description": "Hanya sedikit mendorong ke arah ini — untuk token yang tidak terlalu kritis"
+            },
+            {
+              "weight": ":0.8",
+              "label": "soft",
+              "description": "Dorongan ringan — lebih kuat dari normal tapi tidak agresif"
+            },
+            {
+              "weight": ":1.0",
+              "label": "normal",
+              "description": "Weight default — tidak perlu ditulis"
+            },
+            {
+              "weight": ":1.1",
+              "label": "moderate",
+              "description": "Sedikit lebih kuat — untuk token penting"
+            },
+            {
+              "weight": ":1.2",
+              "label": "strong",
+              "description": "Kuat — untuk mencegah drift yang sering terjadi"
+            },
+            {
+              "weight": ":1.3",
+              "label": "very_strong",
+              "description": "Sangat kuat — untuk locks paling kritis (race, age)"
+            },
+            {
+              "weight": ":1.4",
+              "label": "critical",
+              "description": "Level kritis — anatomy errors, quality issues"
+            },
+            {
+              "weight": ":1.5",
+              "label": "absolute",
+              "description": "Maksimal yang disarankan — untuk safety locks dan anatomy errors paling serius"
+            }
+          ],
+          "_warning": "Weight di atas 1.5 bisa menyebabkan model 'straining' dan menghasilkan gambar yang aneh. Tidak disarankan melebihi :1.5 kecuali untuk kasus ekstrem."
+        }
+      },
+
+      "preset_negative_stacks": {
+        "_note": "Stack lengkap negative prompt yang sudah dikurasi untuk persona tertentu — salin langsung ke template.",
+
+        "stack_east_asian_young_female_realistic": {
+          "_description": "Stack untuk karakter: wanita muda, keturunan Asia Timur, gaya realistis. Stack paling umum dibutuhkan.",
+          "negative_prompt_string": "western facial features, european facial structure, caucasian features, high nose bridge, deep set eyes, blonde hair, blue eyes, green eyes, aged skin, wrinkles, sagging skin, old face, elderly, huge breasts, exaggerated proportions, bad anatomy, deformed, extra limbs, missing fingers, poorly drawn hands, watermark, signature, text, blurry face, anime, cartoon, nsfw, explicit",
+          "sd_weighted_version": "western facial features:1.3, european facial structure:1.3, blonde hair:1.4, aged skin:1.3, wrinkles:1.3, bad anatomy:1.4, deformed:1.4, watermark:1.5, nsfw:1.5, blurry face:1.3",
+          "coverage": ["race_lock", "age_lock", "proportion_lock", "quality_lock", "safety_lock", "style_lock"]
+        },
+
+        "stack_dark_fantasy_character_realistic": {
+          "_description": "Stack untuk karakter dark fantasy, gaya realistis-sinematik.",
+          "negative_prompt_string": "anime, cartoon, flat colors, cel shaded, 2D, bad anatomy, deformed, extra limbs, missing fingers, ugly face, blurry, low quality, watermark, signature, nsfw",
+          "coverage": ["style_lock", "quality_lock", "safety_lock"]
+        },
+
+        "stack_anime_character": {
+          "_description": "Stack untuk karakter bergaya anime.",
+          "negative_prompt_string": "photorealistic, photograph, 3D render, hyperrealistic, bad anatomy, deformed, extra limbs, missing fingers, bad face, ugly, blurry, watermark, signature, nsfw",
+          "coverage": ["style_lock", "quality_lock", "safety_lock"]
+        },
+
+        "stack_universal_quality_only": {
+          "_description": "Stack minimal — hanya quality locks, tanpa locks karakter spesifik. Gunakan sebagai dasar lalu tambahkan locks karakter.",
+          "negative_prompt_string": "bad anatomy, bad proportions, deformed, disfigured, extra limbs, extra fingers, missing fingers, poorly drawn face, poorly drawn hands, watermark, signature, text, blurry, low quality, jpeg artifacts, pixelated",
+          "sd_weighted_version": "bad anatomy:1.4, deformed:1.4, extra limbs:1.3, missing fingers:1.2, watermark:1.5, blurry:1.2",
+          "coverage": ["quality_lock"]
+        }
+      }
+    }
+  }
+}

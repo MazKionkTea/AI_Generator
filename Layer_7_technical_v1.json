@@ -1,0 +1,1157 @@
+{
+  "_readme": "Library pilihan untuk field technical (Layer 7) dan output_config (Layer 8C). Layer paling bervariasi antar platform — nilai valid untuk MidJourney berbeda dengan Stable Diffusion, Runway, atau Pika. Juga mencakup Layer 8A (metadata) dan 8B (variations) sebagai referensi lengkap.",
+  "_version": "1.0",
+  "_structure": "technical → render_specs | camera_tech | post_processing | video_specs | output_config | metadata | variations",
+  "_platform_scope": "MidJourney v6 | Stable Diffusion XL | DALL-E 3 | Runway Gen-3 | Kling | Pika | Sora | Hailuo | Leonardo AI | Adobe Firefly",
+
+  "technical": {
+
+    "render_specs": {
+
+      "resolution": {
+        "_note": "Resolusi output — pixel dimensions. Tidak semua platform menerima resolusi custom; banyak yang hanya menerima preset.",
+        "options": [
+          {
+            "en": "512x512",
+            "id": "512x512",
+            "megapixels": 0.26,
+            "description": "Resolusi minimum legacy — hanya untuk SD 1.x. Terlalu kecil untuk output modern.",
+            "platform_support": { "sdxl": false, "midjourney": false, "dalle3": false },
+            "use_case": "Prototipe cepat, legacy SD pipeline"
+          },
+          {
+            "en": "768p",
+            "id": "768p",
+            "megapixels": 0.59,
+            "description": "Resolusi rendah — masih terlalu kecil untuk hasil berkualitas.",
+            "platform_support": { "sdxl": true, "midjourney": false },
+            "use_case": "Draft iteration cepat"
+          },
+          {
+            "en": "1024x1024",
+            "id": "1024x1024",
+            "megapixels": 1.05,
+            "description": "Resolusi native SDXL dan DALL-E 3 untuk square format. Sweet spot kualitas vs kecepatan untuk banyak platform.",
+            "platform_support": { "sdxl": true, "midjourney": true, "dalle3": true },
+            "use_case": "Square content, social media, standar output"
+          },
+          {
+            "en": "1080p",
+            "id": "1080p (1920×1080)",
+            "megapixels": 2.07,
+            "description": "Full HD standar. Paling universal untuk web, social, dan presentasi.",
+            "platform_support": { "sdxl": true, "midjourney": true, "dalle3": true, "runway": true },
+            "use_case": "Web content, social media landscape, YouTube thumbnail"
+          },
+          {
+            "en": "1440p",
+            "id": "1440p (2560×1440)",
+            "megapixels": 3.69,
+            "description": "2K — kualitas tinggi tapi bukan standar. Antara 1080p dan 4K.",
+            "platform_support": { "sdxl": true, "midjourney": true },
+            "use_case": "High quality print kecil, monitor 2K"
+          },
+          {
+            "en": "2k",
+            "id": "2K (2048×1080)",
+            "megapixels": 2.21,
+            "description": "Standar DCI cinema 2K. Jarang digunakan di luar produksi film.",
+            "platform_support": { "sdxl": true },
+            "use_case": "Cinema production pipeline"
+          },
+          {
+            "en": "4k",
+            "id": "4K (3840×2160)",
+            "megapixels": 8.29,
+            "description": "Ultra HD — detail sangat tinggi, cocok untuk print besar dan display 4K. Butuh lebih banyak VRAM dan waktu.",
+            "platform_support": { "sdxl": true, "midjourney": true, "dalle3": false },
+            "use_case": "Print besar, display 4K, hero image berkualitas tinggi"
+          },
+          {
+            "en": "8k",
+            "id": "8K (7680×4320)",
+            "megapixels": 33.18,
+            "description": "Resolusi ekstrem — hanya mungkin via upscaling dari output native yang lebih rendah. Butuh post-process.",
+            "platform_support": { "sdxl": "via_upscaler", "midjourney": "via_upscaler" },
+            "use_case": "Billboard, large format print, showcase maximum detail"
+          },
+          {
+            "en": "custom",
+            "id": "custom",
+            "description": "[STRING_BEBAS] — Tentukan width×height spesifik. Format: WIDTHxHEIGHT. Tidak semua platform mendukung.",
+            "examples": ["1280x720", "1920x1080", "2048x2048", "1024x1536", "1536x1024"]
+          }
+        ]
+      },
+
+      "aspect_ratio": {
+        "_note": "Rasio lebar:tinggi frame — menentukan bentuk output. KRITIS untuk platform image AI karena ini yang diproses, bukan resolusi pixel.",
+        "options": [
+          {
+            "en": "1:1",
+            "id": "1:1 (persegi)",
+            "description": "Persegi sempurna — Instagram feed klasik, profile picture, album art.",
+            "pixel_example": "1024×1024",
+            "use_case": "Instagram feed, NFT, album cover, profile picture, konten sosial universal",
+            "platform_syntax": { "midjourney": "--ar 1:1", "sdxl": "width=1024, height=1024", "pika": "--ar 1:1" }
+          },
+          {
+            "en": "16:9",
+            "id": "16:9 (landscape standar)",
+            "description": "Widescreen landscape — standar YouTube, TV, monitor, presentasi.",
+            "pixel_example": "1920×1080",
+            "use_case": "YouTube, video horizontal, wallpaper, presentasi, game screenshot",
+            "platform_syntax": { "midjourney": "--ar 16:9", "sdxl": "width=1344, height=768", "pika": "--ar 16:9", "runway": "--ar 16:9" }
+          },
+          {
+            "en": "9:16",
+            "id": "9:16 (portrait vertical)",
+            "description": "Vertical portrait — standar konten mobile, TikTok, Instagram Stories/Reels, YouTube Shorts.",
+            "pixel_example": "1080×1920",
+            "use_case": "TikTok, Instagram Reels, YouTube Shorts, konten mobile first",
+            "platform_syntax": { "midjourney": "--ar 9:16", "sdxl": "width=768, height=1344", "pika": "--ar 9:16", "runway": "--ar 9:16" }
+          },
+          {
+            "en": "4:3",
+            "id": "4:3 (landscape klasik)",
+            "description": "Format TV klasik pre-widescreen. Terasa lebih 'boxy', sedikit lebih tinggi dari 16:9.",
+            "pixel_example": "1024×768",
+            "use_case": "Presentasi klasik, retro aesthetic, vintage photography feel",
+            "platform_syntax": { "midjourney": "--ar 4:3" }
+          },
+          {
+            "en": "3:4",
+            "id": "3:4 (portrait standar)",
+            "description": "Portrait standar — format foto portrait tradisional, sedikit lebih lebar dari 2:3.",
+            "pixel_example": "768×1024",
+            "use_case": "Portrait photography, book cover, poster standar",
+            "platform_syntax": { "midjourney": "--ar 3:4", "sdxl": "width=896, height=1152" }
+          },
+          {
+            "en": "2:3",
+            "id": "2:3 (portrait foto)",
+            "description": "Portrait foto 35mm klasik — rasio standar kamera film full frame.",
+            "pixel_example": "832×1216",
+            "use_case": "Portrait sinematik, fashion editorial, book cover, magazine",
+            "platform_syntax": { "midjourney": "--ar 2:3", "sdxl": "width=832, height=1216" }
+          },
+          {
+            "en": "3:2",
+            "id": "3:2 (landscape foto)",
+            "description": "Landscape foto 35mm klasik — format kamera DSLR standar.",
+            "pixel_example": "1216×832",
+            "use_case": "Landscape photography, hero banner, cinematic masih terasa grounded",
+            "platform_syntax": { "midjourney": "--ar 3:2", "sdxl": "width=1216, height=832" }
+          },
+          {
+            "en": "21:9",
+            "id": "21:9 (ultra widescreen)",
+            "description": "Ultra widescreen sinematik — format DCI anamorphic. Sangat cinematic, letterbox feel.",
+            "pixel_example": "2560×1080",
+            "use_case": "Sinematik ultra widescreen, wallpaper ultrawide monitor, film still aesthetic",
+            "platform_syntax": { "midjourney": "--ar 21:9" }
+          },
+          {
+            "en": "7:4",
+            "id": "7:4 (widescreen sinematik)",
+            "description": "Antara 16:9 dan 21:9 — cinematic tapi tidak ekstrem.",
+            "pixel_example": "1792×1024",
+            "use_case": "Cinematic medium format, widescreen art",
+            "platform_syntax": { "midjourney": "--ar 7:4" }
+          },
+          {
+            "en": "1:2",
+            "id": "1:2 (portrait sangat tinggi)",
+            "description": "Sangat tinggi dan sempit — format novel grafis, banner vertikal.",
+            "pixel_example": "512×1024",
+            "use_case": "Novel grafis panel, banner vertikal, character full body ultra tall",
+            "platform_syntax": { "midjourney": "--ar 1:2" }
+          },
+          {
+            "en": "2:1",
+            "id": "2:1 (landscape sangat lebar)",
+            "description": "Sangat lebar — panoramik, banner horizontal.",
+            "pixel_example": "2048×1024",
+            "use_case": "Banner website, panoramik, header image, diorama",
+            "platform_syntax": { "midjourney": "--ar 2:1" }
+          }
+        ]
+      },
+
+      "render_engine": {
+        "_note": "Engine render virtual yang dideskripsikan dalam prompt — memberikan AI referensi visual karakteristik rendering tertentu.",
+        "options": [
+          {
+            "en": "native",
+            "id": "native AI",
+            "description": "Tidak menentukan engine — AI menggunakan default-nya sendiri. Paling fleksibel.",
+            "visual_character": "Tergantung model yang digunakan",
+            "best_for": "Ketika tidak butuh karakter visual spesifik engine"
+          },
+          {
+            "en": "unreal_engine_5",
+            "id": "Unreal Engine 5",
+            "description": "UE5 dengan Lumen dan Nanite — GI real-time, geometry sangat detail, kualitas game AAA terkini.",
+            "visual_character": "Sangat realistis, GI cantik, subsurface scattering, real-time shadows",
+            "prompt_keywords": ["Unreal Engine 5", "UE5 render", "Lumen GI", "game engine render"],
+            "best_for": "Karakter game AAA, environment detail ekstrem, arsitektur fotorealistis"
+          },
+          {
+            "en": "octane_render",
+            "id": "Octane Render",
+            "description": "GPU path tracer — unbiased rendering, caustics sempurna, material sangat realistis.",
+            "visual_character": "Spekuler sempurna, cahaya fisik akurat, material sangat believable",
+            "prompt_keywords": ["Octane render", "Octane X", "path traced", "unbiased render"],
+            "best_for": "Product visualization, jewellery, arsitektur mewah, material study"
+          },
+          {
+            "en": "cycles",
+            "id": "Cycles (Blender)",
+            "description": "Blender Cycles — open source path tracer, sangat realistis, komunitas besar.",
+            "visual_character": "Realistis, bersih, sedikit lebih 'indie' dari Octane",
+            "prompt_keywords": ["Cycles render", "Blender render", "Blender 3D"],
+            "best_for": "Character render Blender, indie 3D, artistic realism"
+          },
+          {
+            "en": "arnold",
+            "id": "Arnold Renderer",
+            "description": "Industry standard untuk film VFX — Pixar, Marvel, dan kebanyakan studio besar.",
+            "visual_character": "Film-quality, skin subsurface sempurna, sangat clean",
+            "prompt_keywords": ["Arnold render", "VFX quality render", "film production render"],
+            "best_for": "Film VFX quality, karakter hyper-realistis, cinematic character"
+          },
+          {
+            "en": "v_ray",
+            "id": "V-Ray",
+            "description": "Standar industri arsitektur dan desain interior — known untuk material dan cahaya sangat akurat.",
+            "visual_character": "Arsitektur bersih, material believable, sangat profesional",
+            "prompt_keywords": ["V-Ray render", "architectural visualization", "V-Ray material"],
+            "best_for": "Arsitektur, interior design, product design"
+          },
+          {
+            "en": "redshift",
+            "id": "Redshift",
+            "description": "GPU renderer cepat — favority Maxon C4D pipeline, stylized realism.",
+            "visual_character": "Lebih stylized dari Octane, cepat, motion graphics quality",
+            "prompt_keywords": ["Redshift render", "Cinema 4D render", "C4D Redshift"],
+            "best_for": "Motion graphics, stylized 3D, C4D workflow look"
+          },
+          {
+            "en": "keyshot",
+            "id": "KeyShot",
+            "description": "Real-time rendering untuk produk — sangat bersih, material sangat detail.",
+            "visual_character": "Product render sangat bersih, material studio, HDRI lighting",
+            "prompt_keywords": ["KeyShot render", "product visualization render"],
+            "best_for": "Product photography look, industrial design, packaging"
+          },
+          {
+            "en": "corona",
+            "id": "Corona Renderer",
+            "description": "Fotorealistis arsitektur dan interior — sangat popular di visualisasi arsitektur Eropa.",
+            "visual_character": "Warm dan natural, sangat believable untuk interior",
+            "prompt_keywords": ["Corona render", "architectural interior render"],
+            "best_for": "Interior visualisasi, residential architecture"
+          },
+          {
+            "en": "mantra_houdini",
+            "id": "Mantra (Houdini)",
+            "description": "VFX dan simulation renderer — procedural, untuk efek kompleks.",
+            "visual_character": "Simulation-heavy, VFX procedural, Houdini pipeline",
+            "prompt_keywords": ["Houdini render", "Mantra render", "VFX simulation"],
+            "best_for": "Fluid simulation, destruction, VFX heavy scene"
+          }
+        ]
+      },
+
+      "quality_settings": {
+        "_note": "Level kualitas render yang diinginkan — mempengaruhi detail, sharpness, dan fidelitas keseluruhan.",
+        "options": [
+          {
+            "en": "draft",
+            "id": "draft",
+            "description": "Kualitas rendah untuk iterasi cepat — melihat komposisi dan konsep tanpa menunggu lama.",
+            "use_case": "Prototipe, testing komposisi, iterasi cepat",
+            "prompt_approach": "Tidak perlu quality keywords — biarkan default"
+          },
+          {
+            "en": "good",
+            "id": "baik",
+            "description": "Kualitas cukup untuk review dan approval — detail memadai, tidak ada artefak mencolok.",
+            "use_case": "Internal review, client draft, second-round iteration",
+            "prompt_keywords": ["high quality", "detailed", "sharp"]
+          },
+          {
+            "en": "high",
+            "id": "tinggi",
+            "description": "Kualitas produksi standar — layak untuk publikasi dan penggunaan final kebanyakan kasus.",
+            "use_case": "Social media post, web content, standard deliverable",
+            "prompt_keywords": ["high quality", "8K", "ultra detailed", "sharp focus", "professional"]
+          },
+          {
+            "en": "ultra",
+            "id": "ultra",
+            "description": "Kualitas maksimal yang bisa dicapai platform — semua detail dimaksimalkan.",
+            "use_case": "Print, showcase, key visual",
+            "prompt_keywords": ["masterpiece", "best quality", "ultra high resolution", "highly detailed", "crisp", "8K UHD"]
+          },
+          {
+            "en": "cinematic",
+            "id": "sinematik",
+            "description": "Kualitas film — tidak sekadar high detail tapi juga cinematic depth, bokeh, dan grading yang tepat.",
+            "use_case": "Film still, cinematic frame, hero image premium",
+            "prompt_keywords": ["cinematic quality", "film still", "professional photography", "award winning", "masterpiece"]
+          }
+        ]
+      },
+
+      "sampling": {
+        "_note": "Sampling dan anti-aliasing — terutama relevan untuk Stable Diffusion. Menentukan seberapa halus dan detail hasil akhir.",
+        "options": [
+          {
+            "en": "low",
+            "id": "rendah",
+            "description": "Steps sedikit — cepat tapi lebih noisy dan kurang detail.",
+            "sd_steps_range": "10–15 steps",
+            "use_case": "Iterasi cepat, draft"
+          },
+          {
+            "en": "medium",
+            "id": "sedang",
+            "description": "Steps cukup — keseimbangan kecepatan dan kualitas.",
+            "sd_steps_range": "20–25 steps",
+            "use_case": "Standar untuk kebanyakan generate"
+          },
+          {
+            "en": "high",
+            "id": "tinggi",
+            "description": "Steps banyak — kualitas lebih tinggi, waktu lebih lama.",
+            "sd_steps_range": "30–40 steps",
+            "use_case": "Final output, detail tinggi"
+          },
+          {
+            "en": "max",
+            "id": "maksimal",
+            "description": "Steps sangat banyak — diminishing returns setelah titik tertentu tapi maksimal detail.",
+            "sd_steps_range": "50–80 steps",
+            "use_case": "Showcase, print, hasil terbaik absolut"
+          }
+        ],
+
+        "sampler_algorithms": {
+          "_note": "Algoritma sampler Stable Diffusion — mempengaruhi karakter dan kualitas output. Sangat berpengaruh di SDXL.",
+          "options": [
+            { "en": "DPM++_2M_Karras", "id": "DPM++ 2M Karras", "description": "Paling populer untuk kualitas — sharp, detail tinggi, konsisten.", "steps_recommended": "20–30", "best_for": "Portrait, character, general" },
+            { "en": "DPM++_SDE_Karras", "id": "DPM++ SDE Karras", "description": "Lebih creative dan soft dari 2M — bagus untuk atmosphere dan painterly.", "steps_recommended": "20–30", "best_for": "Painterly, illustration, atmosphere" },
+            { "en": "DPM++_3M_SDE_Karras", "id": "DPM++ 3M SDE Karras", "description": "Versi terbaru — kualitas tinggi, perlu steps lebih sedikit.", "steps_recommended": "15–25", "best_for": "High quality general" },
+            { "en": "Euler_a", "id": "Euler Ancestral", "description": "Cepat dan creative — variance tinggi, hasil bisa sangat berbeda per seed.", "steps_recommended": "20–25", "best_for": "Eksplorasi kreatif, variety" },
+            { "en": "Euler", "id": "Euler", "description": "Deterministic, lebih konsisten dari Euler a.", "steps_recommended": "20–30", "best_for": "Konsistensi, detail" },
+            { "en": "DDIM", "id": "DDIM", "description": "Deterministic, cepat — good untuk inpainting.", "steps_recommended": "20–50", "best_for": "Inpainting, img2img" },
+            { "en": "UniPC", "id": "UniPC", "description": "Cepat dengan kualitas baik — konvergen cepat.", "steps_recommended": "10–20", "best_for": "Speed-quality balance" },
+            { "en": "LCM", "id": "LCM", "description": "Very fast — hanya butuh 4–8 steps. Kualitas sedikit lebih rendah tapi sangat cepat.", "steps_recommended": "4–8", "best_for": "Real-time iteration, sangat cepat" }
+          ]
+        },
+
+        "cfg_scale": {
+          "_note": "CFG Scale (Classifier Free Guidance) — seberapa ketat AI mengikuti prompt. Hanya Stable Diffusion.",
+          "options": [
+            { "value": "1–3", "description": "Sangat bebas — AI banyak improvisasi, prompt hanya sebagai hint lemah." },
+            { "value": "4–6", "description": "Lebih mengikuti prompt tapi masih creative. Good untuk artistic freedom." },
+            { "value": "7–9", "description": "Standar — mengikuti prompt dengan baik, kualitas biasanya optimal di range ini." },
+            { "value": "10–12", "description": "Ketat — sangat literal mengikuti prompt, bisa over-saturated atau over-sharpened." },
+            { "value": "13–20", "description": "Sangat ketat — bisa artifact atau uncanny valley. Jarang direkomendasikan." }
+          ],
+          "recommended": "7–9 untuk portrait dan character — sweet spot kualitas"
+        }
+      }
+    },
+
+    "camera_tech": {
+      "_note": "Spesifikasi kamera virtual — memberikan konteks optis yang mempengaruhi bagaimana AI merender gambar. Paling berpengaruh di platform realistis.",
+
+      "film_back": {
+        "_note": "Ukuran sensor/film virtual — menentukan field of view dan karakteristik perspektif.",
+        "options": [
+          {
+            "en": "full_frame",
+            "id": "full frame (35mm)",
+            "description": "Sensor 35mm — standar professional fotografi. Bokeh cantik, dynamic range baik, perspektif natural.",
+            "crop_factor": 1.0,
+            "visual_character": "Natural, professional, bokeh cantik, perspektif standar",
+            "prompt_keywords": ["full frame camera", "35mm sensor", "Canon EOS R5", "Sony A7", "Nikon Z"],
+            "best_for": "Portrait, general fotografi, sinematik standar"
+          },
+          {
+            "en": "medium_format",
+            "id": "medium format",
+            "description": "Sensor lebih besar dari 35mm — detail sangat tinggi, skin rendering luar biasa, tonal range lebih luas.",
+            "crop_factor": "0.64–0.79x (lebih besar dari full frame)",
+            "visual_character": "Sangat detail, skin texture luar biasa, tonal gradasi halus, 'luxury' feel",
+            "prompt_keywords": ["medium format camera", "Hasselblad", "Phase One", "Fujifilm GFX"],
+            "best_for": "Fashion photography, portrait ultra high quality, print besar"
+          },
+          {
+            "en": "large_format",
+            "id": "large format",
+            "description": "Sensor/film 4×5 inch ke atas — bokeh depth of field sangat unik, detail ekstrem, tilt-shift native.",
+            "visual_character": "Dreamy DOF, extreme detail, vintage feel, architectural",
+            "prompt_keywords": ["large format photography", "4x5 camera", "view camera"],
+            "best_for": "Landscape artisanal, portrait fine art, arsitektur vintage"
+          },
+          {
+            "en": "aps_c",
+            "id": "APS-C",
+            "description": "Sensor crop — lebih kecil dari full frame, crop factor 1.5–1.6x, field of view lebih sempit.",
+            "crop_factor": 1.5,
+            "visual_character": "Sedikit lebih 'crop', kurang bokeh dari full frame, lebih 'video' feel",
+            "prompt_keywords": ["APS-C sensor", "crop sensor camera"],
+            "best_for": "General content, wildlife (reach lebih panjang), budget setup"
+          },
+          {
+            "en": "micro_four_thirds",
+            "id": "Micro Four Thirds",
+            "description": "Sensor kecil — crop factor 2x, depth of field lebih dalam, lebih mudah zona fokus.",
+            "crop_factor": 2.0,
+            "visual_character": "Deep focus lebih mudah, less bokeh, mirrorless compact feel",
+            "prompt_keywords": ["micro four thirds", "MFT camera", "Olympus", "Panasonic"],
+            "best_for": "Video content, street photography, general"
+          },
+          {
+            "en": "film_super8",
+            "id": "Film Super 8",
+            "description": "Format film vintage home movie — grain kasar, color shift, vignette kuat, nostalgic.",
+            "visual_character": "Grain kasar, color desaturated warm, vignette, scratches, nostalgic home movie",
+            "prompt_keywords": ["Super 8 film", "vintage home movie", "8mm film"],
+            "best_for": "Nostalgic aesthetic, vintage, home video feel"
+          },
+          {
+            "en": "anamorphic",
+            "id": "Anamorphic",
+            "description": "Lensa anamorphic — oval bokeh, lens flare horizontal khas, letterbox ratio. Signature look film sinema.",
+            "visual_character": "Oval bokeh, horizontal lens flare biru, widescreen feel, cinematic signature",
+            "prompt_keywords": ["anamorphic lens", "anamorphic flare", "oval bokeh", "Panavision anamorphic"],
+            "best_for": "Sinema, cinematic ketat, sci-fi, epic film look"
+          }
+        ]
+      },
+
+      "iso": {
+        "_note": "ISO virtual — sensitivitas cahaya yang mempengaruhi noise/grain dan exposure.",
+        "options": [
+          { "en": "ISO 50", "id": "ISO 50", "description": "Base ISO — noise nol, detail maksimal. Hanya bisa di cahaya sangat terang.", "noise_level": "nol", "use_case": "Studio, daylight bright, product" },
+          { "en": "ISO 100", "id": "ISO 100", "description": "Standar base ISO — clean, tidak ada noise, detail optimal.", "noise_level": "minimal", "use_case": "Daylight, studio, landscape" },
+          { "en": "ISO 200", "id": "ISO 200", "description": "Satu stop dari base — masih sangat clean.", "noise_level": "sangat minimal", "use_case": "Outdoor cloudy, well-lit interior" },
+          { "en": "ISO 400", "id": "ISO 400", "description": "Medium — sedikit mulai ada tekstur grain, masih sangat acceptable.", "noise_level": "sedikit", "use_case": "Indoor natural light, golden hour" },
+          { "en": "ISO 800", "id": "ISO 800", "description": "Grain mulai terlihat — menambah texture yang bisa jadi desirable.", "noise_level": "ringan", "use_case": "Low light interior, concert, street night" },
+          { "en": "ISO 1600", "id": "ISO 1600", "description": "Grain jelas terlihat — adds grittiness, rawness, texture.", "noise_level": "sedang", "use_case": "Night photography, gritty aesthetic, documentary" },
+          { "en": "ISO 3200", "id": "ISO 3200", "description": "Grain kuat — bisa sangat artistic atau gritty tergantung tujuan.", "noise_level": "tinggi", "use_case": "Dark environment, intentional grain aesthetic" },
+          { "en": "ISO 6400", "id": "ISO 6400", "description": "Grain sangat kuat — ekstremal, chunky noise. Bisa sangat artistic.", "noise_level": "sangat tinggi", "use_case": "Extreme low light, artistic grain, vintage film noir" },
+          { "en": "ISO 12800+", "id": "ISO 12800+", "description": "Grain ekstrem — noise pattern sangat kasar. Hanya untuk efek khusus.", "noise_level": "ekstrem", "use_case": "Artistic noise, stylized grain effect" }
+        ]
+      },
+
+      "shutter": {
+        "_note": "Shutter speed virtual — mempengaruhi motion blur subjek dan kamera.",
+        "options": [
+          { "en": "1/15", "id": "1/15 detik", "description": "Sangat lambat — motion blur ekstrem untuk apapun yang bergerak.", "motion_blur": "ekstrem", "use_case": "Light painting, artistic blur, long exposure" },
+          { "en": "1/30", "id": "1/30 detik", "description": "Lambat — motion blur kuat, perlu tripod.", "motion_blur": "kuat", "use_case": "Low light, creative blur" },
+          { "en": "1/60", "id": "1/60 detik", "description": "Video standard (180° rule di 24fps) — motion blur natural sinematik.", "motion_blur": "natural sinematik", "use_case": "Video cinematic, 24fps golden rule" },
+          { "en": "1/125", "id": "1/125 detik", "description": "Kecepatan umum — freeze gerakan ringan, sedikit motion blur.", "motion_blur": "sedikit", "use_case": "Portrait standar, gerakan lambat" },
+          { "en": "1/250", "id": "1/250 detik", "description": "Kecepatan medium — freeze gerakan sedang.", "motion_blur": "minimal", "use_case": "Outdoor portrait, gerakan sedang" },
+          { "en": "1/500", "id": "1/500 detik", "description": "Kecepatan tinggi — freeze gerakan cepat.", "motion_blur": "sangat minimal", "use_case": "Sports, gerakan cepat" },
+          { "en": "1/1000", "id": "1/1000 detik", "description": "Sangat cepat — freeze hampir semua gerakan termasuk percikan air.", "motion_blur": "tidak ada", "use_case": "Action sport, freeze motion, splash" },
+          { "en": "1/4000", "id": "1/4000 detik", "description": "Ekstrem — freeze absolut segala sesuatu.", "motion_blur": "nol absolut", "use_case": "Bullet time look, extreme freeze frame" }
+        ]
+      },
+
+      "look_profile": {
+        "_note": "Color science atau look profile yang diaplikasikan — menentukan bagaimana warna dan tonal range diinterpretasikan.",
+        "options": [
+          {
+            "en": "raw",
+            "id": "RAW",
+            "description": "Unprocessed — data mentah dari sensor. Maximum dynamic range tapi perlu grading. Flat dan desaturated.",
+            "visual_character": "Flat, natural, ready for grading, neutral",
+            "prompt_keywords": ["RAW photo", "unprocessed RAW", "flat profile"]
+          },
+          {
+            "en": "log",
+            "id": "Log",
+            "description": "Logarithmic — flat, desaturated, maximum dynamic range untuk post-production. Standar video profesional.",
+            "visual_character": "Flat, washed out, maximum latitude untuk grading",
+            "prompt_keywords": ["S-Log", "Log footage", "flat log profile", "Log C"],
+            "sub_types": { "s_log3": "Sony S-Log3", "log_c": "ARRI Log C", "c_log": "Canon C-Log", "v_log": "Panasonic V-Log" }
+          },
+          {
+            "en": "rec709",
+            "id": "Rec.709",
+            "description": "Standar broadcast dan video online — natural, sudah diproses, siap publikasi. Paling umum.",
+            "visual_character": "Natural, clean, standar broadcast, siap digunakan",
+            "prompt_keywords": ["Rec.709 color space", "standard video color", "broadcast standard"]
+          },
+          {
+            "en": "print_emulation",
+            "id": "Print Emulation",
+            "description": "Mensimulasikan karakter film seluloid tertentu — setiap film stock punya 'DNA warna' unik.",
+            "visual_character": "Film-like, grain tertentu, color response khas film",
+            "prompt_keywords": ["film emulation", "Kodak Portra", "Fuji Velvia", "Cinestill"],
+            "film_stock_options": [
+              { "en": "Kodak_Portra_400", "description": "Kulit indah, warm, grain halus, shadow detail baik. Portrait favorit.", "vibe": "warm, skin-flattering, natural" },
+              { "en": "Kodak_Ektar_100", "description": "Saturasi tinggi, grain sangat halus, warna vivid. Landscape dan nature.", "vibe": "vivid, sharp, punchy" },
+              { "en": "Fuji_Velvia_50", "description": "Saturasi ekstrem, warna sangat vivid, grain sangat halus. Nature dan landscape.", "vibe": "ultra vivid, punchy greens and blues" },
+              { "en": "Fuji_Pro_400H", "description": "Pastel, skin tone excellent, sedikit cool. Portrait natural.", "vibe": "pastel, natural, slightly cool" },
+              { "en": "Ilford_HP5", "description": "Black and white, grain medium, tonal range sangat baik.", "vibe": "monochrome classic, documentary" },
+              { "en": "Cinestill_800T", "description": "Tungsten balanced, halation merah di highlight, grain kuat, cinematic night.", "vibe": "night cinema, red halation, gritty cinematic" },
+              { "en": "Kodak_Tri_X", "description": "Black and white klasik, grain kuat, kontras tinggi. Street photography legendaris.", "vibe": "gritty B&W, high contrast, street classic" }
+            ]
+          },
+          {
+            "en": "hdr",
+            "id": "HDR",
+            "description": "High Dynamic Range — range tonal sangat luas, highlight tidak clipping, shadow detail kuat.",
+            "visual_character": "Highlight dan shadow keduanya detail, range dinamis sangat lebar",
+            "prompt_keywords": ["HDR", "high dynamic range", "HDR photo", "wide dynamic range"]
+          },
+          {
+            "en": "vintage_cross_process",
+            "id": "Cross Process Vintage",
+            "description": "Film di-develop dengan bahan kimia yang salah — warna shift dramatis, kontras tinggi, vintage.",
+            "visual_character": "Color shift dramatis, kontras tinggi, arty, tidak natural",
+            "prompt_keywords": ["cross process", "xpro", "vintage film effect", "color shift film"]
+          }
+        ]
+      }
+    },
+
+    "post_processing": {
+      "_note": "Efek dan modifikasi yang diaplikasikan setelah render — color grading, grain, efek lensa, VFX overlay.",
+
+      "color_grading": {
+        "_note": "Preset color grading — menentukan overall color look dan feel.",
+        "options": [
+          { "en": "natural_neutral", "id": "natural netral", "description": "Tidak ada grading yang terasa — warna senatural mungkin. Standar documentary.", "prompt_keywords": ["natural colors", "color accurate", "true to life"] },
+          { "en": "teal_orange", "id": "teal-oranye", "description": "Hollywood blockbuster classic — teal di shadow dan background, oranye di skin tone. Sangat cinematic.", "prompt_keywords": ["teal and orange color grading", "Hollywood color grade", "complementary color grade"] },
+          { "en": "desaturated_cold", "id": "dingin desaturasi", "description": "Warna dibuang, shift ke cool — dystopia, post-apocalyptic, atau thriller gelap.", "prompt_keywords": ["desaturated cold tones", "bleached cool", "dystopian color grade"] },
+          { "en": "warm_golden", "id": "hangat keemasan", "description": "Push ke warm golden — nostalgia, summer, comfort, golden hour sepanjang hari.", "prompt_keywords": ["warm golden tones", "nostalgic warm grade", "amber color grade"] },
+          { "en": "bleach_bypass", "id": "bleach bypass", "description": "Kontras sangat tinggi, saturasi dikurangi, shadow sangat gelap. Sinema perang dan thriller.", "prompt_keywords": ["bleach bypass", "skip bleach process", "high contrast desaturated"] },
+          { "en": "vintage_faded", "id": "vintage pudar", "description": "Warna sedikit pudar, shadow lift, skin tone warm-vintage. Foto lama analog.", "prompt_keywords": ["vintage film look", "faded color grade", "lifted blacks", "matte finish"] },
+          { "en": "neon_cyberpunk", "id": "neon cyberpunk", "description": "Saturasi sangat tinggi pada range tertentu — neon pop di atas shadow gelap.", "prompt_keywords": ["neon color grading", "cyberpunk grade", "vibrant neon tones"] },
+          { "en": "noir_monochrome", "id": "noir monokrom", "description": "Hitam putih atau near-monochrome — high contrast, deep shadows.", "prompt_keywords": ["black and white", "noir grade", "monochrome", "high contrast B&W"] },
+          { "en": "green_teal_matrix", "id": "hijau teal Matrix", "description": "Push ke hijau — The Matrix look, alien, toxic, sci-fi dingin.", "prompt_keywords": ["green teal matrix look", "sci-fi green grade", "The Matrix color"] },
+          { "en": "pink_dreamlike", "id": "merah muda dreamy", "description": "Push ke pink dan lavender — dreamy, feminine, ethereal.", "prompt_keywords": ["pink tones", "dreamy color grade", "pastel grade", "lavender tones"] },
+          { "en": "orange_teal_dark", "id": "oranye teal gelap", "description": "Teal-orange tapi lebih dark dan moody — premium, luxury feel.", "prompt_keywords": ["dark teal orange grade", "moody cinematic grade", "premium dark grade"] }
+        ]
+      },
+
+      "grain_noise": {
+        "_note": "Film grain dan noise — menambahkan tekstur organis dan mengurangi kesan 'terlalu digital'.",
+        "options": [
+          { "en": "clean_digital", "id": "bersih digital", "description": "Tidak ada grain sama sekali — sempurna, clean, modern digital.", "prompt_keywords": ["clean", "no grain", "digital clean"] },
+          { "en": "very_subtle_grain", "id": "grain sangat halus", "description": "Grain hampir tidak terlihat — hanya menambahkan sedikit 'kehidupan' pada gambar.", "prompt_keywords": ["subtle grain", "slight film texture"] },
+          { "en": "subtle_35mm", "id": "grain 35mm halus", "description": "Grain 35mm normal — natural, analog feel, tapi tidak mengganggu detail.", "prompt_keywords": ["35mm film grain", "subtle film grain", "analog grain"] },
+          { "en": "medium_grain", "id": "grain sedang", "description": "Grain jelas terlihat — adds texture dan character. Documentary, editorial.", "prompt_keywords": ["film grain", "medium grain", "grainy film look"] },
+          { "en": "heavy_grain", "id": "grain berat", "description": "Grain kasar dan kuat — gritty, vintage, noir, atau ISO tinggi.", "prompt_keywords": ["heavy grain", "coarse grain", "grainy", "high ISO grain"] },
+          { "en": "extreme_grain", "id": "grain ekstrem", "description": "Grain sangat kasar — almost abstrak, ekspresif, artsy statement.", "prompt_keywords": ["extreme grain", "very grainy", "chunky grain"] },
+          { "en": "digital_noise", "id": "noise digital", "description": "Noise digital bukan film grain — berbeda karakter, lebih 'electronic', CCTV feel.", "prompt_keywords": ["digital noise", "ISO noise", "electronic noise texture"] },
+          { "en": "vhs_noise", "id": "noise VHS", "description": "Noise VHS — tracking lines, color bleeding, scan artifacts.", "prompt_keywords": ["VHS noise", "VHS artifacts", "retro video noise"] }
+        ]
+      },
+
+      "lens_effects": {
+        "_note": "Efek optis lensa — menambahkan karakteristik kamera fisik yang membuat gambar terasa lebih 'analog'. Array — bisa kombinasi.",
+        "_examples_by_category": {
+          "distortion_aberration": [
+            "chromatic_aberration",
+            "barrel_distortion",
+            "pincushion_distortion",
+            "vignette_natural",
+            "vignette_heavy",
+            "lens_distortion_fisheye"
+          ],
+          "flare_glow": [
+            "lens_flare_subtle",
+            "lens_flare_dramatic",
+            "anamorphic_flare_horizontal",
+            "sun_star_burst",
+            "orb_flare",
+            "streak_flare",
+            "bloom_glow_highlight",
+            "diffusion_glow"
+          ],
+          "focus_depth": [
+            "tilt_shift_miniature",
+            "selective_focus_dramatic",
+            "swirly_bokeh_vintage",
+            "oval_bokeh_anamorphic",
+            "cat_eye_bokeh_edge",
+            "soap_bubble_bokeh"
+          ],
+          "texture_overlay": [
+            "halation_red_cinestill",
+            "light_leak",
+            "dust_on_lens",
+            "condensation_water_drops",
+            "scratched_glass"
+          ]
+        }
+      },
+
+      "sharpening": {
+        "_note": "Ketajaman detail — seberapa crisp dan defined detail dalam gambar.",
+        "options": [
+          { "en": "very_soft", "id": "sangat lembut", "description": "Sangat soft — dreamy, ethereal, atau vintage softbox look.", "prompt_keywords": ["soft focus", "dreamy soft", "portrait diffusion"] },
+          { "en": "soft", "id": "lembut", "description": "Sedikit soft — flattering untuk portrait, tidak terlalu crisp.", "prompt_keywords": ["slightly soft", "portrait smooth"] },
+          { "en": "natural", "id": "natural", "description": "Ketajaman natural — seperti lensa prime yang baik. Tidak over-sharpened.", "prompt_keywords": ["sharp", "in focus", "clear detail"] },
+          { "en": "crispy", "id": "crispy", "description": "Sangat tajam — detail maksimal, texture sangat terlihat. Landscape, macro, product.", "prompt_keywords": ["tack sharp", "crisp detail", "ultra sharp", "pixel sharp"] },
+          { "en": "hyper_detail", "id": "hyper detail", "description": "Ketajaman ekstrem — AI-sharpened look, setiap pori dan texture diperbesar.", "prompt_keywords": ["hyper detailed", "ultra detailed", "extreme detail", "8K sharp"] }
+        ]
+      },
+
+      "vfx_overlay": {
+        "_note": "Elemen VFX yang di-overlay di atas render — menambah tekstur, era, atau efek khusus. Array — kombinasi bebas.",
+        "_examples_by_category": {
+          "film_damage_texture": [
+            "film_scratches",
+            "film_burn_edges",
+            "dust_and_hairs",
+            "film_splice_marks",
+            "frame_jitter",
+            "light_leak_red",
+            "light_leak_orange"
+          ],
+          "screen_display_artifacts": [
+            "scan_lines_crt",
+            "interlacing_lines",
+            "phosphor_glow",
+            "screen_reflection",
+            "monitor_glare",
+            "dead_pixels",
+            "screen_static"
+          ],
+          "lens_contamination": [
+            "lens_dirt_smear",
+            "rain_drops_on_lens",
+            "condensation_on_lens",
+            "fingerprint_smear",
+            "mud_splatter"
+          ],
+          "weather_atmospheric": [
+            "rain_streaks_overlay",
+            "snow_particle_overlay",
+            "dust_storm_overlay",
+            "fog_patch",
+            "lens_haze"
+          ],
+          "digital_glitch": [
+            "pixel_glitch",
+            "color_channel_shift",
+            "data_corruption_artifact",
+            "scan_line_glitch",
+            "compression_artifact_heavy"
+          ],
+          "special_effects": [
+            "magic_sparkle_overlay",
+            "particle_dust_gold",
+            "cherry_blossom_overlay",
+            "embers_flying",
+            "smoke_wisps",
+            "bokeh_lights_overlay"
+          ]
+        }
+      }
+    },
+
+    "video_specs": {
+      "_note": "Spesifikasi teknis video — HANYA untuk output video. Untuk gambar, section ini tidak digunakan.",
+
+      "codec": {
+        "_note": "Format kompresi video — menentukan kualitas, ukuran file, dan kompatibilitas.",
+        "options": [
+          {
+            "en": "h264",
+            "id": "H.264 / AVC",
+            "description": "Standar universal — kompresi baik, kompatibilitas terluas, diputar di mana saja.",
+            "file_size": "medium",
+            "compatibility": "universal",
+            "use_case": "Web, social media, general delivery, streaming",
+            "container": ["mp4", "mkv", "mov"]
+          },
+          {
+            "en": "h265",
+            "id": "H.265 / HEVC",
+            "description": "Generasi berikut dari H.264 — kualitas sama tapi file 50% lebih kecil. Sedikit kurang compatible.",
+            "file_size": "small",
+            "compatibility": "baik — modern devices",
+            "use_case": "4K delivery, mobile, streaming efisien",
+            "container": ["mp4", "mkv", "mov"]
+          },
+          {
+            "en": "av1",
+            "id": "AV1",
+            "description": "Codec terbaru — kompresi terbaik, royalty-free, semakin banyak dukungan platform.",
+            "file_size": "sangat kecil",
+            "compatibility": "modern — Chrome, YouTube, Android",
+            "use_case": "Web streaming, YouTube, modern platform",
+            "container": ["mp4", "webm", "mkv"]
+          },
+          {
+            "en": "prores_422",
+            "id": "ProRes 422",
+            "description": "Editing codec Apple — kualitas sangat tinggi, file besar, intra-frame. Standar post-production.",
+            "file_size": "very large",
+            "compatibility": "Mac-centric, professional editing",
+            "use_case": "Post-production, editing, color grading pipeline",
+            "container": ["mov"]
+          },
+          {
+            "en": "prores_4444",
+            "id": "ProRes 4444",
+            "description": "ProRes kualitas tertinggi — alpha channel support, lossless pratically.",
+            "file_size": "sangat besar",
+            "compatibility": "Professional post-production",
+            "use_case": "VFX pipeline, compositing dengan alpha",
+            "container": ["mov"]
+          },
+          {
+            "en": "dnxhd",
+            "id": "DNxHD / DNxHR",
+            "description": "Editing codec Avid — standar post-production broadcast, serupa ProRes tapi cross-platform.",
+            "file_size": "large",
+            "compatibility": "Broadcast, Avid workflow",
+            "use_case": "Broadcast post-production, Avid pipeline",
+            "container": ["mov", "mxf"]
+          }
+        ]
+      },
+
+      "bitrate": {
+        "_note": "Data per detik — menentukan kualitas versus ukuran file.",
+        "options": [
+          { "en": "2mbps", "id": "2 Mbps", "description": "Sangat rendah — streaming mobile, preview.", "quality": "rendah", "use_case": "Mobile streaming, preview" },
+          { "en": "5mbps", "id": "5 Mbps", "description": "Rendah-medium — 720p streaming.", "quality": "medium-low", "use_case": "720p web" },
+          { "en": "8mbps", "id": "8 Mbps", "description": "Standar 1080p web — YouTube standar.", "quality": "medium", "use_case": "1080p web, YouTube" },
+          { "en": "15mbps", "id": "15 Mbps", "description": "1080p high quality — detail baik.", "quality": "good", "use_case": "1080p premium web" },
+          { "en": "25mbps", "id": "25 Mbps", "description": "1080p premium atau 4K web.", "quality": "high", "use_case": "4K streaming, 1080p premium" },
+          { "en": "50mbps", "id": "50 Mbps", "description": "4K high quality delivery.", "quality": "very high", "use_case": "4K premium, mastering" },
+          { "en": "100mbps", "id": "100 Mbps", "description": "4K broadcast atau editing quality.", "quality": "broadcast", "use_case": "4K broadcast, editing source" },
+          { "en": "lossless", "id": "lossless", "description": "Tidak ada kompresi lossy — kualitas sempurna, file sangat besar.", "quality": "perfect", "use_case": "Archive, VFX source, mastering" }
+        ]
+      },
+
+      "audio_track": {
+        "_note": "Deskripsi audio track yang menyertai video — AI video platform sebagian mendukung audio generation.",
+        "options": [
+          { "en": "none", "id": "tidak ada audio", "description": "Video tanpa audio — silent. User menambahkan audio sendiri di post-production." },
+          { "en": "ambient_only", "id": "ambient saja", "description": "Hanya suara latar alami — angin, air, lingkungan. Tanpa musik atau dialog." },
+          { "en": "music_underscore", "id": "musik latar", "description": "Musik instrumental sebagai latar — tidak ada dialog atau SFX spesifik." },
+          { "en": "sfx_only", "id": "SFX saja", "description": "Sound effects saja — langkah, impact, environment sounds. Tanpa musik." },
+          { "en": "music_and_sfx", "id": "musik dan SFX", "description": "Kombinasi musik latar dan sound effects." },
+          { "en": "dialogue", "id": "dialog", "description": "Audio berisi percakapan karakter — biasanya ditambahkan manual atau via TTS." },
+          { "en": "full_mix", "id": "mix penuh", "description": "Musik + SFX + dialog — full audio production." }
+        ]
+      },
+
+      "delivery_format": {
+        "_note": "Format container file video untuk distribusi.",
+        "options": [
+          { "en": "mp4", "id": "MP4", "description": "Universal — diputar di semua platform, device, dan browser. Default untuk web.", "compatibility": "universal", "best_for": "Web, social media, general" },
+          { "en": "mov", "id": "MOV (QuickTime)", "description": "Apple container — sangat baik untuk ProRes, editing Mac. Kurang universal.", "compatibility": "Mac-centric", "best_for": "Post-production, Mac workflow, ProRes delivery" },
+          { "en": "webm", "id": "WebM", "description": "Web optimized — open format, bagus untuk web embedding, mendukung alpha channel.", "compatibility": "Web/browser", "best_for": "Web embedding, UI animation, transparent background" },
+          { "en": "gif", "id": "GIF", "description": "Animated GIF — universal, sangat kecil, hanya 256 warna, tidak ada audio.", "compatibility": "universal", "best_for": "Loop pendek, meme, messaging apps, reaction gif" },
+          { "en": "webp_animated", "id": "WebP Animasi", "description": "Seperti GIF tapi jauh lebih kecil dan kualitas lebih baik.", "compatibility": "modern browsers", "best_for": "Web loop, pengganti GIF modern" },
+          { "en": "apng", "id": "APNG", "description": "Animated PNG — kualitas GIF tapi full color dan alpha support.", "compatibility": "modern browsers", "best_for": "UI animation, transparent background loop" }
+        ]
+      },
+
+      "stabilization": {
+        "_note": "Post-production stabilization — mengurangi guncangan setelah direkam/di-generate.",
+        "options": [
+          { "en": "none", "id": "tidak ada", "description": "Tanpa stabilisasi — gerakan kamera asli dipertahankan. Handheld akan tetap shaky." },
+          { "en": "subtle", "id": "halus", "description": "Stabilisasi ringan — mengurangi microjitter tapi gerakan organic masih terasa." },
+          { "en": "moderate", "id": "sedang", "description": "Stabilisasi standar — mengurangi guncangan signifikan, footage lebih watchable." },
+          { "en": "strong", "id": "kuat", "description": "Stabilisasi agresif — hampir seperti gimbal. Mungkin ada crop dan warping di tepi." },
+          { "en": "cinematic_smooth", "id": "smooth sinematik", "description": "Smooth seperti gimbal professional — semua guncangan hilang, gerakan sangat fluid." }
+        ]
+      }
+    },
+
+    "output_config": {
+      "_note": "Layer 8C — Mengontrol bagaimana semua data schema dikemas menjadi prompt teks final yang dikirim ke AI platform.",
+
+      "prompt_structure": {
+
+        "order": {
+          "_note": "Urutan section dalam prompt final — section yang disebutkan lebih awal cenderung lebih berpengaruh di kebanyakan AI model.",
+          "options": [
+            {
+              "en": "identity_first",
+              "id": "identitas duluan",
+              "description": "Prioritas mutlak pada karakter — identity_anchor dan subjects di depan sebelum scene apapun.",
+              "sequence": ["identity_anchor", "technical_constraints", "subjects", "scene_core", "environment", "composition", "lighting", "atmosphere", "technical"],
+              "best_for": "Karakter yang harus sangat konsisten, portrait series"
+            },
+            {
+              "en": "scene_first",
+              "id": "scene duluan",
+              "description": "Environment dan mood didefinisikan dulu sebelum subjek.",
+              "sequence": ["scene_core", "environment", "atmosphere", "subjects", "identity_anchor", "composition", "lighting", "technical"],
+              "best_for": "Environment-driven content, landscape dengan karakter kecil"
+            },
+            {
+              "en": "cinematic_order",
+              "id": "urutan sinematik",
+              "description": "Mengikuti cara sineas berpikir — framing dulu, lalu isi, lalu mood.",
+              "sequence": ["composition", "scene_core", "subjects", "identity_anchor", "lighting", "atmosphere", "environment", "technical"],
+              "best_for": "Sinematik, still dari film"
+            },
+            {
+              "en": "standard_weighted",
+              "id": "standar berbobot",
+              "description": "Urutan berdasarkan weight section_weights default — yang paling penting di awal.",
+              "sequence": ["identity_anchor", "technical_constraints", "subjects", "lighting", "composition", "atmosphere", "scene_core", "environment", "technical"],
+              "best_for": "Penggunaan umum yang seimbang"
+            }
+          ]
+        },
+
+        "separator": {
+          "_note": "Karakter atau string yang memisahkan antar section dalam prompt.",
+          "options": [
+            { "en": ", ", "id": "koma spasi", "description": "Standar — paling umum, dipakai di hampir semua platform.", "best_for": "Semua platform" },
+            { "en": ". ", "id": "titik spasi", "description": "Pemisah kalimat — terasa lebih natural language, baik untuk DALL-E 3.", "best_for": "DALL-E 3, Sora — natural language model" },
+            { "en": " | ", "id": "pipe", "description": "Pemisah tegas — terasa lebih structured, beberapa platform membacanya sebagai pemisah kuat.", "best_for": "MidJourney style" },
+            { "en": "\n", "id": "baris baru", "description": "Setiap section di baris baru — lebih mudah dibaca manusia, beberapa model memprosesnya per baris.", "best_for": "Model yang sensitif terhadap struktur" },
+            { "en": "; ", "id": "titik koma", "description": "Semi-colon — lebih kuat dari koma, lebih lemah dari titik.", "best_for": "Natural language model" }
+          ]
+        },
+
+        "emphasis_syntax": {
+          "_note": "Cara menambahkan emphasis atau weight pada bagian prompt tertentu — sintaks berbeda per platform.",
+          "options": [
+            {
+              "en": "parentheses",
+              "id": "tanda kurung",
+              "description": "Stable Diffusion standard — (token) menambah weight 1.1x, ((token)) 1.21x, (((token))) 1.33x.",
+              "syntax": "(important feature), ((very important)), (((critical)))",
+              "platform": "Stable Diffusion, SDXL",
+              "weight_math": "1.1x per layer kurung"
+            },
+            {
+              "en": "brackets",
+              "id": "tanda kurung kotak",
+              "description": "Stable Diffusion untuk mengurangi weight — [token] mengurangi 0.9x.",
+              "syntax": "[less important feature]",
+              "platform": "Stable Diffusion",
+              "weight_math": "0.9x per layer bracket"
+            },
+            {
+              "en": "weight_suffix",
+              "id": "sufiks weight",
+              "description": "Weight eksplisit — (token:1.3) untuk SD, atau hanya angka untuk beberapa platform.",
+              "syntax": "(dark eyes:1.4), (asian features:1.3)",
+              "platform": "Stable Diffusion, SDXL",
+              "range": "0.1 (minimal) – 1.5 (maksimal yang aman)"
+            },
+            {
+              "en": "natural_repetition",
+              "id": "repetisi natural",
+              "description": "Menyebutkan fitur yang sama beberapa kali — efek emphasis untuk model natural language.",
+              "syntax": "young Asian woman, Asian features, East Asian appearance",
+              "platform": "DALL-E 3, Sora, natural language model"
+            },
+            {
+              "en": "exclamation",
+              "id": "tanda seru",
+              "description": "MidJourney style emphasis — beberapa platform membaca tanda seru sebagai emphasis.",
+              "syntax": "photorealistic!, sharp focus!",
+              "platform": "Beberapa natural language model"
+            }
+          ]
+        },
+
+        "length_limit": {
+          "_note": "Batas maksimum karakter atau token dalam prompt — bervariasi per platform.",
+          "platform_limits": {
+            "midjourney": { "limit": "kira-kira 6000 karakter", "token_limit": null, "notes": "Semakin panjang semakin sedikit pengaruh kata awal" },
+            "stable_diffusion_sdxl": { "limit": null, "token_limit": 75, "notes": "CLIP tokenizer — 75 token optimal. Konten di atas 75 token sering diabaikan" },
+            "dalle3": { "limit": "kira-kira 4000 karakter", "token_limit": null, "notes": "Natural language, panjang diterima dengan baik" },
+            "runway": { "limit": "500 karakter", "token_limit": null, "notes": "Pendek dan focused lebih efektif" },
+            "kling": { "limit": "500 karakter", "token_limit": null, "notes": "Deskripsi natural language singkat" },
+            "pika": { "limit": "300 karakter", "token_limit": null, "notes": "Sangat singkat — poin paling penting saja" },
+            "sora": { "limit": "panjang", "token_limit": null, "notes": "Mendukung deskripsi panjang dan detail" }
+          },
+          "options": [
+            { "en": 500, "id": "500 karakter", "description": "Sangat singkat — video platform. Hanya elemen terpenting." },
+            { "en": 1000, "id": "1000 karakter", "description": "Singkat — gambar platform dengan fokus ketat." },
+            { "en": 2000, "id": "2000 karakter", "description": "Medium — keseimbangan detail dan keterbacaan." },
+            { "en": 4000, "id": "4000 karakter", "description": "Panjang — untuk platform yang mendukung prompt panjang (DALL-E 3, Sora)." }
+          ]
+        },
+
+        "truncation_strategy": {
+          "_note": "Bagaimana prompt dipotong jika melebihi batas panjang.",
+          "options": [
+            { "en": "priority_only", "id": "prioritas saja", "description": "Hanya section dengan weight tinggi yang dipertahankan — sisanya dibuang. Paling aman." },
+            { "en": "proportional", "id": "proporsional", "description": "Semua section dikurangi secara proporsional berdasarkan weight." },
+            { "en": "front_loaded", "id": "depan penuh", "description": "Section di awal mendapat token penuh, sisanya dipotong — memanfaatkan attention bias model." },
+            { "en": "summarize", "id": "diringkas", "description": "Setiap section diringkas ke keyword terpenting sebelum digabungkan." }
+          ]
+        }
+      },
+
+      "section_weights": {
+        "_note": "Bobot setiap section dalam prompt — menentukan berapa banyak token dan emphasis yang diberikan. Skala 0.0 (tidak masuk) hingga 2.0 (critical/locked).",
+        "default_weights": {
+          "identity_anchor": { "weight": 2.0, "status": "LOCKED", "note": "Paspor permanen karakter — tidak pernah dikurangi" },
+          "technical_constraints": { "weight": 2.0, "status": "LOCKED", "note": "Negative DNA — tidak pernah dikurangi" },
+          "subjects": { "weight": 1.5, "status": "LOCKED", "note": "Blueprint karakter — hampir tidak pernah dikurangi" },
+          "lighting": { "weight": 1.5, "status": "variabel", "note": "Sangat penting untuk keterbacaan wajah karakter" },
+          "composition": { "weight": 1.3, "status": "variabel", "note": "Penting untuk framing yang diinginkan" },
+          "atmosphere": { "weight": 1.2, "status": "variabel", "note": "Mood dan feel" },
+          "scene_core": { "weight": 1.0, "status": "variabel", "note": "Konteks waktu dan tempat" },
+          "environment": { "weight": 1.0, "status": "variabel", "note": "Detail lingkungan" },
+          "motion": { "weight": 1.0, "status": "variabel_video_only", "note": "Hanya untuk video" },
+          "temporal_sequence": { "weight": 0.8, "status": "variabel_video_only", "note": "Hanya untuk video" },
+          "technical": { "weight": 0.8, "status": "platform", "note": "Platform parameters" },
+          "variations": { "weight": 0.0, "status": "internal", "note": "Tidak masuk prompt — internal only" },
+          "metadata": { "weight": 0.0, "status": "admin", "note": "Tidak masuk prompt — admin only" }
+        },
+        "weight_presets": [
+          {
+            "name": "character_portrait_focused",
+            "id": "fokus portrait karakter",
+            "overrides": { "identity_anchor": 2.0, "subjects": 2.0, "lighting": 1.8, "composition": 1.5, "scene_core": 0.6, "environment": 0.3 },
+            "use_case": "Portrait series — karakter dan kualitas portrait di atas segalanya"
+          },
+          {
+            "name": "environment_storytelling",
+            "id": "fokus environment",
+            "overrides": { "scene_core": 1.8, "environment": 1.6, "atmosphere": 1.5, "subjects": 1.0, "composition": 1.2 },
+            "use_case": "Scene-driven content — lingkungan yang kuat, karakter sebagai elemen"
+          },
+          {
+            "name": "cinematic_balanced",
+            "id": "sinematik seimbang",
+            "overrides": { "composition": 1.6, "lighting": 1.6, "atmosphere": 1.4, "identity_anchor": 2.0, "subjects": 1.4 },
+            "use_case": "Sinematik — semua elemen sinema penting, karakter tetap terkunci"
+          }
+        ]
+      },
+
+      "parameter_append": {
+        "_note": "Parameter platform-specific yang ditambahkan di akhir prompt — format string siap paste.",
+        "midjourney": {
+          "_note": "Parameter MidJourney v6 — ditambahkan setelah prompt dengan '--'",
+          "options": [
+            { "en": "--v 6", "description": "Model MidJourney versi 6 — terbaru dan terbaik" },
+            { "en": "--v 6.1", "description": "MidJourney v6.1 jika tersedia" },
+            { "en": "--style raw", "description": "Raw mode — lebih literal mengikuti prompt, kurang artistic interpretation" },
+            { "en": "--style cute", "description": "Cute/sweet aesthetic mode" },
+            { "en": "--style expressive", "description": "Lebih ekspresif dan artistic" },
+            { "en": "--q 1", "description": "Quality level 1 — standar" },
+            { "en": "--q 2", "description": "Quality level 2 — lebih detail, lebih lama" },
+            { "en": "--s 0", "description": "Stylize 0 — paling literal, tidak ada artistic interpretation" },
+            { "en": "--s 100", "description": "Stylize 100 — default MidJourney" },
+            { "en": "--s 250", "description": "Stylize 250 — lebih artistic" },
+            { "en": "--s 750", "description": "Stylize 750 — sangat artistic" },
+            { "en": "--niji 6", "description": "Model anime MidJourney Niji v6" },
+            { "en": "--cw 100", "description": "Character weight 100 — maksimal konsistensi karakter dengan --cref" },
+            { "en": "--cw 50", "description": "Character weight 50 — hanya wajah yang dikunci, outfit bisa berbeda" },
+            { "en": "--chaos 0", "description": "Chaos 0 — paling predictable dan konsisten" },
+            { "en": "--chaos 50", "description": "Chaos 50 — medium variety" },
+            { "en": "--weird 0", "description": "Weird 0 — standard output" },
+            { "en": "--seed [NUMBER]", "description": "Seed tertentu untuk reproducibility" }
+          ],
+          "common_combinations": [
+            "--v 6 --style raw --ar 2:3 --q 2 --s 250",
+            "--v 6 --ar 16:9 --style raw --s 100",
+            "--niji 6 --ar 9:16 --s 200",
+            "--v 6 --ar 1:1 --style raw --cw 100 --cref [URL]"
+          ]
+        },
+        "stable_diffusion_sdxl": {
+          "_note": "Parameter untuk SDXL via webUI atau API",
+          "options": [
+            { "en": "steps: 20", "description": "Steps minimum layak untuk hasil draft" },
+            { "en": "steps: 25", "description": "Steps standar — kualitas baik, kecepatan reasonable" },
+            { "en": "steps: 30", "description": "Steps tinggi — kualitas lebih baik, lebih lambat" },
+            { "en": "steps: 40", "description": "Steps tinggi — diminishing returns mulai terasa" },
+            { "en": "cfg_scale: 7", "description": "CFG 7 — standar sweet spot" },
+            { "en": "cfg_scale: 8", "description": "CFG 8 — sedikit lebih mengikuti prompt" },
+            { "en": "cfg_scale: 9", "description": "CFG 9 — ketat mengikuti prompt" },
+            { "en": "sampler: DPM++ 2M Karras", "description": "Sampler terbaik untuk portrait dan character" },
+            { "en": "sampler: DPM++ SDE Karras", "description": "Lebih painterly dan soft" },
+            { "en": "sampler: Euler a", "description": "Creative, varied results" },
+            { "en": "hires_fix: true", "description": "Hires fix — upscale dengan detail tambahan" },
+            { "en": "hires_denoising: 0.4", "description": "Denoising untuk hires — lower = lebih konsisten" },
+            { "en": "hires_scale: 1.5x", "description": "Scale untuk hires fix" }
+          ],
+          "common_presets": {
+            "quality_portrait": "steps: 25, cfg: 7.5, sampler: DPM++ 2M Karras, hires_fix: true, hires_denoising: 0.35",
+            "quick_draft": "steps: 15, cfg: 7, sampler: LCM",
+            "maximum_quality": "steps: 35, cfg: 8, sampler: DPM++ 2M Karras, hires_fix: true, hires_denoising: 0.4, hires_scale: 1.5"
+          }
+        },
+        "dalle3": {
+          "_note": "DALL-E 3 parameter via OpenAI API",
+          "options": [
+            { "en": "quality: standard", "description": "Kualitas standar — lebih cepat dan murah" },
+            { "en": "quality: hd", "description": "HD quality — lebih detail, sedikit lebih mahal" },
+            { "en": "style: vivid", "description": "Vivid — lebih saturasi dan dramatis, lebih 'AI look'" },
+            { "en": "style: natural", "description": "Natural — lebih realistis dan sesuai prompt, lebih foto-like" },
+            { "en": "size: 1024x1024", "description": "Square format" },
+            { "en": "size: 1792x1024", "description": "Landscape format" },
+            { "en": "size: 1024x1792", "description": "Portrait format" }
+          ],
+          "recommended_suffix": "I NEED to maintain exact appearance. Do not alter ethnicity, age, proportions, or features.",
+          "common_presets": {
+            "portrait_natural": "quality=hd, style=natural, size=1024x1792",
+            "landscape_vivid": "quality=hd, style=vivid, size=1792x1024",
+            "square_standard": "quality=standard, style=natural, size=1024x1024"
+          }
+        },
+        "runway_gen3": {
+          "_note": "Runway Gen-3 Alpha — parameter video generation",
+          "options": [
+            { "en": "--fps 24", "description": "24fps cinematic" },
+            { "en": "--fps 30", "description": "30fps video standard" },
+            { "en": "--duration 4", "description": "4 detik" },
+            { "en": "--duration 5", "description": "5 detik" },
+            { "en": "--duration 8", "description": "8 detik" },
+            { "en": "--duration 10", "description": "10 detik maksimal" },
+            { "en": "--motion_intensity low", "description": "Gerakan minimal" },
+            { "en": "--motion_intensity medium", "description": "Gerakan sedang" },
+            { "en": "--motion_intensity high", "description": "Gerakan kuat" },
+            { "en": "--seed [NUMBER]", "description": "Seed untuk reproducibility" }
+          ],
+          "common_presets": {
+            "ambient_portrait": "--fps 24 --duration 5 --motion_intensity low",
+            "dynamic_action": "--fps 24 --duration 8 --motion_intensity high",
+            "hero_reveal": "--fps 24 --duration 6 --motion_intensity medium"
+          }
+        },
+        "kling": {
+          "_note": "Kling AI — parameter video generation",
+          "options": [
+            { "en": "mode: standard", "description": "Mode standard — 5 detik" },
+            { "en": "mode: pro", "description": "Mode pro — hingga 10 detik, kualitas lebih tinggi" },
+            { "en": "duration: 5", "description": "5 detik" },
+            { "en": "duration: 10", "description": "10 detik (mode pro)" },
+            { "en": "cfg: 0.5", "description": "CFG rendah — lebih bebas" },
+            { "en": "cfg: 1.0", "description": "CFG default" },
+            { "en": "face_consistency: true", "description": "SELALU aktifkan untuk karakter terkunci" },
+            { "en": "reference_weight: 0.85", "description": "Bobot referensi karakter — 0.85 optimal" }
+          ],
+          "common_presets": {
+            "character_video": "mode: pro, duration: 10, face_consistency: true, reference_weight: 0.85",
+            "ambient_loop": "mode: standard, duration: 5, cfg: 0.7"
+          }
+        },
+        "pika": {
+          "_note": "Pika Labs — parameter video generation",
+          "options": [
+            { "en": "--motion 0", "description": "Tidak ada gerakan — hampir static" },
+            { "en": "--motion 1", "description": "Gerakan minimal" },
+            { "en": "--motion 2", "description": "Gerakan sedang — default baik" },
+            { "en": "--motion 3", "description": "Gerakan kuat" },
+            { "en": "--motion 4", "description": "Gerakan maksimal" },
+            { "en": "--ar 16:9", "description": "Landscape" },
+            { "en": "--ar 9:16", "description": "Portrait vertical" },
+            { "en": "--ar 1:1", "description": "Square" },
+            { "en": "--fps 24", "description": "24fps" },
+            { "en": "--zoom in", "description": "Slow zoom in" },
+            { "en": "--zoom out", "description": "Slow zoom out" },
+            { "en": "--seed [NUMBER]", "description": "Seed untuk reproducibility" }
+          ],
+          "common_presets": {
+            "portrait_ambient": "--motion 1 --ar 9:16 --fps 24",
+            "dynamic_landscape": "--motion 3 --ar 16:9 --fps 24",
+            "square_social": "--motion 2 --ar 1:1 --fps 24"
+          }
+        },
+        "sora": {
+          "_note": "OpenAI Sora — parameter video generation",
+          "options": [
+            { "en": "resolution: 480p", "description": "480p — preview quality" },
+            { "en": "resolution: 720p", "description": "720p — standard" },
+            { "en": "resolution: 1080p", "description": "1080p — high quality" },
+            { "en": "duration: 5s", "description": "5 detik" },
+            { "en": "duration: 10s", "description": "10 detik" },
+            { "en": "duration: 20s", "description": "20 detik" },
+            { "en": "aspect_ratio: 16:9", "description": "Landscape" },
+            { "en": "aspect_ratio: 9:16", "description": "Portrait" },
+            { "en": "aspect_ratio: 1:1", "description": "Square" }
+          ]
+        }
+      }
+    },
+
+    "platform_configs": {
+      "_note": "Konfigurasi lengkap per platform — kombinasi semua parameter teknis yang optimal untuk setiap platform. Gunakan sebagai referensi cepat.",
+      "options": [
+        {
+          "name": "MidJourney_Cinematic_Portrait",
+          "id": "MidJourney Portrait Sinematik",
+          "platform": "midjourney",
+          "generator_type": "image",
+          "render_specs": { "aspect_ratio": "2:3", "quality_settings": "ultra" },
+          "camera_tech": { "film_back": "full_frame", "look_profile": "print_emulation" },
+          "post_processing": { "color_grading": "teal_orange", "grain_noise": "subtle_35mm", "sharpening": "natural" },
+          "parameter_string": "--v 6 --style raw --ar 2:3 --q 2 --s 250",
+          "best_for": "Portrait sinematik karakter, fantasy character showcase"
+        },
+        {
+          "name": "SDXL_High_Quality_Character",
+          "id": "SDXL Karakter Kualitas Tinggi",
+          "platform": "stable_diffusion_xl",
+          "generator_type": "image",
+          "render_specs": { "resolution": "1024x1024", "aspect_ratio": "2:3", "quality_settings": "ultra", "sampling": "high" },
+          "camera_tech": { "film_back": "full_frame", "iso": "ISO 100", "look_profile": "rec709" },
+          "post_processing": { "color_grading": "natural_neutral", "grain_noise": "subtle_35mm", "sharpening": "natural" },
+          "parameter_string": "steps: 28, cfg: 7.5, sampler: DPM++ 2M Karras",
+          "positive_prefix": "masterpiece, best quality, ultra detailed, 8K, sharp focus,",
+          "best_for": "High quality character render, portrait detail"
+        },
+        {
+          "name": "DALLE3_Natural_Scene",
+          "id": "DALL-E 3 Scene Natural",
+          "platform": "dalle3",
+          "generator_type": "image",
+          "render_specs": { "aspect_ratio": "16:9", "quality_settings": "cinematic" },
+          "parameter_string": "quality=hd, style=natural, size=1792x1024",
+          "prompt_approach": "Natural language description, tidak perlu syntax khusus",
+          "best_for": "Scene environment, landscape, cinematic wide"
+        },
+        {
+          "name": "Runway_Character_Video",
+          "id": "Runway Video Karakter",
+          "platform": "runway_gen3",
+          "generator_type": "video",
+          "render_specs": { "aspect_ratio": "9:16" },
+          "video_specs": { "delivery_format": "mp4", "stabilization": "subtle" },
+          "parameter_string": "--fps 24 --duration 6 --motion_intensity medium",
+          "best_for": "Character video portrait vertikal, social media"
+        },
+        {
+          "name": "Kling_Pro_Cinematic",
+          "id": "Kling Pro Sinematik",
+          "platform": "kling",
+          "generator_type": "video",
+          "render_specs": { "aspect_ratio": "16:9" },
+          "video_specs": { "delivery_format": "mp4" },
+          "parameter_string": "mode: pro, duration: 10, face_consistency: true, reference_weight: 0.85",
+          "best_for": "Cinematic video karakter, konsistensi wajah tinggi"
+        },
+        {
+          "name": "Pika_Social_Vertical",
+          "id": "Pika Sosial Vertikal",
+          "platform": "pika",
+          "generator_type": "video",
+          "render_specs": { "aspect_ratio": "9:16" },
+          "video_specs": { "delivery_format": "mp4" },
+          "parameter_string": "--motion 2 --ar 9:16 --fps 24",
+          "best_for": "Konten vertikal sosial media, TikTok, Reels"
+        }
+      ]
+    }
+  }
+}

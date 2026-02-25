@@ -1,0 +1,1076 @@
+{
+  "_readme": "Library pilihan untuk field scene_core. Setiap entry berisi nilai en (bahasa Inggris untuk prompt AI), id (terjemahan Indonesia), dan description (penjelasan konteks). Pilih satu nilai per field saat mengisi template karakter.",
+  "_version": "1.0",
+  "_changelog": "v1.0 — Perbaikan: duplikat id 'night'/'midnight' dikoreksi. Penambahan: scene_type (+8), primary_focus (+5), narrative_moment (+10), dramatic_weight (+5), period (+7), season (+4 fantasy), time_flow (+4), location_type (+4), region (+8), scale (+3), specific_place_examples (baru).",
+
+  "scene_core": {
+
+    "scene_type": {
+      "_note": "Tipe shot kamera — menentukan seberapa besar subjek mengisi frame dan seberapa banyak environment yang terlihat.",
+      "options": [
+        {
+          "en": "extreme_close_up",
+          "id": "sangat dekat sekali",
+          "description": "Frame sangat ketat pada bagian spesifik — mata, mulut, jari. Efek dramatis intens, detail ekstrem."
+        },
+        {
+          "en": "close_up",
+          "id": "dekat",
+          "description": "Wajah atau objek mengisi mayoritas frame. Fokus pada ekspresi dan detail emosi."
+        },
+        {
+          "en": "medium_close_up",
+          "id": "agak dekat",
+          "description": "Dari dada ke atas. Lebih konteks dari close_up, masih intimate."
+        },
+        {
+          "en": "portrait",
+          "id": "potret",
+          "description": "Fokus pada subjek utama dari dada ke atas, menekankan ekspresi dan karakter."
+        },
+        {
+          "en": "medium_shot",
+          "id": "sedang",
+          "description": "Dari pinggang ke atas. Menyeimbangkan subjek dengan sedikit konteks lingkungan."
+        },
+        {
+          "en": "medium_full_shot",
+          "id": "sedang penuh",
+          "description": "Dari lutut ke atas. Menampilkan lebih banyak tubuh tanpa kehilangan ekspresi."
+        },
+        {
+          "en": "full_shot",
+          "id": "penuh",
+          "description": "Seluruh tubuh subjek terlihat dari kepala hingga kaki, dengan sedikit ruang di atas dan bawah."
+        },
+        {
+          "en": "long_shot",
+          "id": "jauh",
+          "description": "Subjek terlihat utuh dengan latar belakang yang dominan dan terlihat jelas."
+        },
+        {
+          "en": "wide_shot",
+          "id": "luas",
+          "description": "Frame luas menampilkan subjek dan lingkungan sekitarnya. Subjek terlihat relatif kecil dalam frame."
+        },
+        {
+          "en": "establishing_shot",
+          "id": "pembuka",
+          "description": "Shot sangat luas yang memperkenalkan lokasi atau setting sebelum masuk ke aksi utama."
+        },
+        {
+          "en": "aerial_shot",
+          "id": "udara",
+          "description": "Pandangan dari atas, seperti drone atau pesawat. Bird's eye view dari ketinggian."
+        },
+        {
+          "en": "bird_eye_view",
+          "id": "pandangan burung",
+          "description": "Sudut tepat dari atas (90 derajat ke bawah). Subjek terlihat flat, peta hidup."
+        },
+        {
+          "en": "worm_eye_view",
+          "id": "pandangan cacing",
+          "description": "Sudut dari bawah ke atas. Membuat subjek terlihat besar, dominan, atau mengancam."
+        },
+        {
+          "en": "over_the_shoulder",
+          "id": "dari balik bahu",
+          "description": "Kamera di belakang satu karakter melihat ke karakter lain. Klasik untuk dialog dan konfrontasi."
+        },
+        {
+          "en": "POV",
+          "id": "sudut pandang orang pertama",
+          "description": "Perspektif langsung dari mata karakter. Penonton melihat apa yang karakter lihat."
+        },
+        {
+          "en": "two_shot",
+          "id": "dua subjek",
+          "description": "Dua karakter dalam satu frame, menampilkan hubungan atau dinamika di antara mereka."
+        },
+        {
+          "en": "dutch_angle",
+          "id": "sudut miring",
+          "description": "Kamera dimiringkan pada sumbu horizontal. Menciptakan rasa ketidaknyamanan, ketegangan, atau kegilaan."
+        },
+        {
+          "en": "macro",
+          "id": "makro",
+          "description": "Pengambilan sangat dekat untuk menampilkan detail kecil — tekstur, serangga, tetesan air."
+        }
+      ]
+    },
+
+    "primary_focus": {
+      "_note": "Elemen utama yang menjadi pusat perhatian dalam scene.",
+      "options": [
+        {
+          "en": "character",
+          "id": "karakter",
+          "description": "Perhatian tertuju pada subjek manusia atau makhluk — ekspresi, emosi, identitas."
+        },
+        {
+          "en": "emotion",
+          "id": "emosi",
+          "description": "Perasaan yang dipancarkan scene menjadi elemen utama, bukan subjek konkretnya."
+        },
+        {
+          "en": "landscape",
+          "id": "lanskap",
+          "description": "Environment atau pemandangan menjadi bintang utama. Karakter hanya elemen kecil atau tidak ada."
+        },
+        {
+          "en": "action",
+          "id": "aksi",
+          "description": "Momen gerakan atau aktivitas menjadi pusat — dinamika, energi, dan kecepatan ditonjolkan."
+        },
+        {
+          "en": "object",
+          "id": "objek",
+          "description": "Benda atau item spesifik menjadi fokus — artefak, senjata, teknologi, simbol."
+        },
+        {
+          "en": "interaction",
+          "id": "interaksi",
+          "description": "Hubungan atau dinamika antara dua atau lebih subjek menjadi pusat perhatian."
+        },
+        {
+          "en": "atmosphere",
+          "id": "atmosfer",
+          "description": "Mood, cahaya, dan feeling keseluruhan lebih penting dari elemen konkret lainnya."
+        },
+        {
+          "en": "texture",
+          "id": "tekstur",
+          "description": "Detail permukaan, material, dan kualitas taktil menjadi elemen visual utama."
+        },
+        {
+          "en": "light",
+          "id": "cahaya",
+          "description": "Cahaya itu sendiri menjadi subjek — efek volumetrik, ray of light, shadow play."
+        },
+        {
+          "en": "narrative",
+          "id": "narasi",
+          "description": "Scene berfungsi sebagai penceritaan visual — environmental storytelling, implied story."
+        },
+        {
+          "en": "relationship",
+          "id": "hubungan",
+          "description": "Koneksi emosional antara karakter — cinta, persahabatan, konflik, pengkhianatan."
+        }
+      ]
+    },
+
+    "narrative_moment": {
+      "_note": "Titik dalam arc cerita — menentukan 'momen apa' yang sedang ditangkap dalam gambar ini.",
+      "options": [
+        {
+          "en": "peaceful_idle",
+          "id": "diam damai",
+          "description": "Momen tenang tanpa konflik. Karakter istirahat, melamun, atau menikmati keadaan."
+        },
+        {
+          "en": "calm_before_storm",
+          "id": "tenang sebelum badai",
+          "description": "Ketenangan yang menegangkan sebelum konflik atau aksi besar meletus. Ada sesuatu yang akan terjadi."
+        },
+        {
+          "en": "inciting_incident",
+          "id": "insiden pemicu",
+          "description": "Momen yang memulai konflik atau perubahan besar. Titik balik awal cerita."
+        },
+        {
+          "en": "journey_start",
+          "id": "awal perjalanan",
+          "description": "Karakter memulai petualangan atau misi baru. Penuh harapan sekaligus ketidakpastian."
+        },
+        {
+          "en": "rising_action",
+          "id": "aksi meningkat",
+          "description": "Ketegangan dan konflik membangun menuju puncak. Momentum terus meningkat."
+        },
+        {
+          "en": "training",
+          "id": "latihan",
+          "description": "Karakter dalam proses belajar, berlatih, atau mengembangkan kemampuan."
+        },
+        {
+          "en": "confrontation",
+          "id": "konfrontasi",
+          "description": "Pertemuan langsung antara pihak yang berkonflik. Penuh ketegangan dan antisipasi."
+        },
+        {
+          "en": "climax",
+          "id": "klimaks",
+          "description": "Puncak dari konflik atau aksi — momen paling intens, keputusan terbesar."
+        },
+        {
+          "en": "sacrifice",
+          "id": "pengorbanan",
+          "description": "Karakter melepaskan sesuatu yang berharga demi tujuan lebih besar."
+        },
+        {
+          "en": "betrayal",
+          "id": "pengkhianatan",
+          "description": "Momen kepercayaan dipatahkan. Syok, kemarahan, atau kesedihan yang dalam."
+        },
+        {
+          "en": "transformation",
+          "id": "transformasi",
+          "description": "Karakter atau sesuatu sedang berubah — fisik, emosional, atau spiritual."
+        },
+        {
+          "en": "discovery",
+          "id": "penemuan",
+          "description": "Karakter menemukan sesuatu yang penting, mengubah pemahaman atau arah cerita."
+        },
+        {
+          "en": "falling_action",
+          "id": "aksi menurun",
+          "description": "Setelah klimaks, ketegangan mulai mereda. Dampak mulai terlihat."
+        },
+        {
+          "en": "aftermath",
+          "id": "pasca-kejadian",
+          "description": "Keadaan setelah peristiwa besar. Dampak, kerusakan, atau keheningan yang tersisa."
+        },
+        {
+          "en": "mourning",
+          "id": "berkabung",
+          "description": "Momen berduka atas kehilangan — orang, tempat, atau sesuatu yang berarti."
+        },
+        {
+          "en": "reunion",
+          "id": "reuni",
+          "description": "Pertemuan kembali setelah berpisah lama. Penuh haru, kebahagiaan, atau kompleksitas emosi."
+        },
+        {
+          "en": "separation",
+          "id": "perpisahan",
+          "description": "Momen melepas atau berpisah. Kesedihan, kerelaan, atau keharusan."
+        },
+        {
+          "en": "celebration",
+          "id": "perayaan",
+          "description": "Kemenangan, keberhasilan, atau kebahagiaan bersama. Energi positif dan kegembiraan."
+        },
+        {
+          "en": "resolution",
+          "id": "resolusi",
+          "description": "Konflik terselesaikan, keseimbangan baru tercapai. Penutupan arc cerita."
+        },
+        {
+          "en": "journey_end",
+          "id": "akhir perjalanan",
+          "description": "Karakter tiba di tujuan atau misi selesai. Refleksi atas perjalanan yang telah dilalui."
+        }
+      ]
+    },
+
+    "dramatic_weight": {
+      "_note": "Intensitas emosional dan dramatis dari scene — menentukan seberapa kuat 'rasa' yang ingin disampaikan.",
+      "options": [
+        {
+          "en": "serene",
+          "id": "damai",
+          "description": "Ketenangan sempurna, tanpa ketegangan. Harmonis, meditative, memberi ketenangan."
+        },
+        {
+          "en": "whimsical",
+          "id": "jenaka",
+          "description": "Ringan, playful, sedikit ajaib. Dunia yang menyenangkan tanpa beban berat."
+        },
+        {
+          "en": "subtle",
+          "id": "halus",
+          "description": "Intensitas rendah, emosi terkendali. Lebih banyak implikasi daripada ekspresi eksplisit."
+        },
+        {
+          "en": "hopeful",
+          "id": "penuh harapan",
+          "description": "Optimisme dan antisipasi akan hal baik. Cahaya di ujung terowongan."
+        },
+        {
+          "en": "moderate",
+          "id": "sedang",
+          "description": "Keseimbangan antara ketenangan dan intensitas. Cukup menarik perhatian tanpa berlebihan."
+        },
+        {
+          "en": "melancholic",
+          "id": "melankolis",
+          "description": "Sedih namun indah, introspektif, penuh nostalgia. Bukan tragedi — lebih ke refleksi."
+        },
+        {
+          "en": "haunting",
+          "id": "menghantu",
+          "description": "Kegelisahan yang tertinggal, tidak bisa dilupakan. Ada yang tidak beres tapi tidak eksplisit."
+        },
+        {
+          "en": "tense",
+          "id": "tegang",
+          "description": "Ketegangan psikologis tinggi. Antisipasi kuat akan sesuatu yang akan atau hampir terjadi."
+        },
+        {
+          "en": "intense",
+          "id": "intens",
+          "description": "Emosi atau aksi kuat dan langsung. Momen signifikan, penuh energi, sulit diabaikan."
+        },
+        {
+          "en": "tragic",
+          "id": "tragis",
+          "description": "Kesedihan mendalam, kehilangan besar, takdir yang tidak bisa dihindari."
+        },
+        {
+          "en": "epic",
+          "id": "epik",
+          "description": "Skala besar, konsekuensi monumental. Banyak elemen visual mengesankan, rasa sejarah sedang dibuat."
+        }
+      ]
+    },
+
+    "time_setting": {
+
+      "period": {
+        "_note": "Era waktu atau periode historis/fiksi tempat scene berlangsung.",
+        "options": [
+          {
+            "en": "mythological",
+            "id": "mitologis",
+            "description": "Zaman para dewa dan makhluk legendaris — Olympus, Asgard, mitologi Asia. Batas realita dan mitos kabur."
+          },
+          {
+            "en": "prehistoric",
+            "id": "prasejarah",
+            "description": "Sebelum sejarah tertulis — dinosaurus, manusia purba, alam liar yang belum tersentuh."
+          },
+          {
+            "en": "ancient",
+            "id": "kuno",
+            "description": "Peradaban awal — Mesir, Yunani, Romawi, Mesopotamia, Persia kuno."
+          },
+          {
+            "en": "warring_states",
+            "id": "zaman perang antar negara",
+            "description": "Era konflik antar kerajaan/negara kota — China kuno, Jepang feudal, Eropa abad pertengahan awal."
+          },
+          {
+            "en": "medieval",
+            "id": "abad pertengahan",
+            "description": "Zaman ksatria, kerajaan, dan katedral (sekitar 500–1500 M). Eropa, Islam, dan Asia tengah."
+          },
+          {
+            "en": "renaissance",
+            "id": "renaisans",
+            "description": "Kebangkitan seni dan ilmu pengetahuan di Eropa (abad 14–17). Humanisme, perspektif, eksplorasi."
+          },
+          {
+            "en": "colonial",
+            "id": "kolonial",
+            "description": "Era penjajahan dan ekspansi kekuatan Eropa (abad 15–19). Konflik budaya, perdagangan paksa."
+          },
+          {
+            "en": "industrial",
+            "id": "industri",
+            "description": "Revolusi industri — uap, pabrik, urbanisasi masif (abad 18–19)."
+          },
+          {
+            "en": "victorian",
+            "id": "viktoria",
+            "description": "Era Victoria — teknologi awal, etika ketat, estetika gelap dan mewah (1837–1901)."
+          },
+          {
+            "en": "wild_west",
+            "id": "barat liar",
+            "description": "Amerika frontier — koboi, penambangan emas, konflik wilayah (sekitar 1850–1900)."
+          },
+          {
+            "en": "early_20th_century",
+            "id": "awal abad ke-20",
+            "description": "Perang Dunia I, era jazz, awal mobil dan pesawat (1900–1930)."
+          },
+          {
+            "en": "mid_20th_century",
+            "id": "pertengahan abad ke-20",
+            "description": "Perang Dunia II, era 50-an, rock and roll, Perang Dingin awal (1930–1960)."
+          },
+          {
+            "en": "cold_war",
+            "id": "perang dingin",
+            "description": "Ketegangan ideologi Barat vs Timur, perlombaan luar angkasa, ketakutan nuklir (1947–1991)."
+          },
+          {
+            "en": "late_20th_century",
+            "id": "akhir abad ke-20",
+            "description": "Era 70–90-an — teknologi digital awal, MTV, internet proto, perubahan sosial besar (1960–1999)."
+          },
+          {
+            "en": "present",
+            "id": "kini",
+            "description": "Zaman sekarang — kontemporer, AI awal, media sosial, polarisasi global."
+          },
+          {
+            "en": "near_future",
+            "id": "masa depan dekat",
+            "description": "10–50 tahun ke depan — teknologi masih bisa diproyeksikan, perubahan terasa nyata."
+          },
+          {
+            "en": "mid_future",
+            "id": "masa depan menengah",
+            "description": "50–200 tahun ke depan — perubahan sosial dan teknologi signifikan, mungkin tak terbayangkan sekarang."
+          },
+          {
+            "en": "far_future",
+            "id": "masa depan jauh",
+            "description": "Ratusan hingga ribuan tahun ke depan — peradaban mungkin tak lagi mengenali manusia sekarang."
+          },
+          {
+            "en": "post_apocalyptic",
+            "id": "pasca-apokaliptik",
+            "description": "Setelah bencana besar — peradaban runtuh, bertahan hidup, reruntuhan peradaban lama."
+          },
+          {
+            "en": "alternate_history",
+            "id": "sejarah alternatif",
+            "description": "Timeline di mana peristiwa sejarah berkembang berbeda — 'bagaimana jika Jerman menang?'"
+          },
+          {
+            "en": "timeless",
+            "id": "abadi",
+            "description": "Tidak terikat periode tertentu — bisa kapan saja atau di luar konsep waktu linear."
+          },
+          {
+            "en": "fantasy_medieval",
+            "id": "fantasi abad pertengahan",
+            "description": "Setting seperti abad pertengahan tapi dengan sihir, monster, dan makhluk fantasi."
+          },
+          {
+            "en": "high_fantasy",
+            "id": "fantasi tinggi",
+            "description": "Dunia fantasi sepenuhnya berbeda dari realita — mitologi sendiri, ras, dan hukum alam berbeda."
+          },
+          {
+            "en": "dark_fantasy",
+            "id": "fantasi gelap",
+            "description": "Fantasi dengan tema kegelapan, horor, dan moral abu-abu. Dunia yang brutal dan berbahaya."
+          },
+          {
+            "en": "cyberpunk_era",
+            "id": "era cyberpunk",
+            "description": "Masa depan distopia — korporasi megah, teknologi tinggi kehidupan rendah, neon dan hujan."
+          },
+          {
+            "en": "steampunk_era",
+            "id": "era steampunk",
+            "description": "Teknologi uap canggih dalam estetika Victoria — mesin terbang, robot kuningan, goggles."
+          },
+          {
+            "en": "dieselpunk_era",
+            "id": "era dieselpunk",
+            "description": "Estetika 1920–1950 dilebih-lebihkan — art deco futuristik, mesin diesel besar, noir."
+          },
+          {
+            "en": "atompunk_era",
+            "id": "era atompunk",
+            "description": "Visi masa depan dari sudut pandang 1950-an — rocket, nuklir, optimisme atom yang naif."
+          },
+          {
+            "en": "biopunk_era",
+            "id": "era biopunk",
+            "description": "Bioteknologi menjadi kekuatan dominan — genetika, organisme rekayasa, tubuh yang dimodifikasi."
+          },
+          {
+            "en": "solarpunk_era",
+            "id": "era solarpunk",
+            "description": "Masa depan berkelanjutan — harmoni dengan alam, teknologi hijau, komunitas, optimisme."
+          },
+          {
+            "en": "retro_futuristic",
+            "id": "retro futuristik",
+            "description": "Visi masa depan dari perspektif masa lalu yang tidak terwujud — flying cars era 50-an."
+          }
+        ]
+      },
+
+      "season": {
+        "_note": "Musim saat scene berlangsung. Tersedia pilihan realistis (4 musim + tropis) dan fantasi.",
+        "options": [
+          {
+            "en": "spring",
+            "id": "musim semi",
+            "description": "Musim bunga, pertumbuhan baru, cuaca hangat, warna-warna cerah pastel."
+          },
+          {
+            "en": "early_spring",
+            "id": "awal musim semi",
+            "description": "Salju mulai mencair, tunas pertama muncul, masih ada gigitan dingin di udara."
+          },
+          {
+            "en": "late_spring",
+            "id": "akhir musim semi",
+            "description": "Bunga mekar penuh, cuaca semakin hangat, hijau lebat dan segar."
+          },
+          {
+            "en": "summer",
+            "id": "musim panas",
+            "description": "Matahari terik, hari panjang, aktivitas outdoor, udara berat."
+          },
+          {
+            "en": "early_summer",
+            "id": "awal musim panas",
+            "description": "Panas mulai terasa, masih segar, sisa bunga musim semi bertahan."
+          },
+          {
+            "en": "late_summer",
+            "id": "akhir musim panas",
+            "description": "Panas terik memuncak, tanaman mulai mengering, persiapan menuju gugur."
+          },
+          {
+            "en": "autumn",
+            "id": "musim gugur",
+            "description": "Daun merah dan oranye, cuaca sejuk, angin semilir, suasana melankolis indah."
+          },
+          {
+            "en": "early_autumn",
+            "id": "awal musim gugur",
+            "description": "Daun mulai berubah warna di ujung-ujungnya, malam mulai terasa dingin."
+          },
+          {
+            "en": "late_autumn",
+            "id": "akhir musim gugur",
+            "description": "Daun berguguran, dahan gundul, tanah tertutup daun kering, dingin menusuk."
+          },
+          {
+            "en": "winter",
+            "id": "musim dingin",
+            "description": "Salju, dingin menggigit, napas membeku, keheningan putih yang tenang."
+          },
+          {
+            "en": "early_winter",
+            "id": "awal musim dingin",
+            "description": "Frost pertama, mungkin belum salju tebal, dunia membeku perlahan."
+          },
+          {
+            "en": "late_winter",
+            "id": "akhir musim dingin",
+            "description": "Salju mulai mencair, hari sedikit lebih panjang, tanda-tanda kehidupan mulai muncul."
+          },
+          {
+            "en": "dry_season",
+            "id": "musim kemarau",
+            "description": "Tanpa hujan, tanah retak kering, debu beterbangan — iklim tropis."
+          },
+          {
+            "en": "wet_season",
+            "id": "musim hujan",
+            "description": "Hujan deras hampir setiap hari, banjir, tanaman subur — iklim tropis."
+          },
+          {
+            "en": "monsoon",
+            "id": "musim monsun",
+            "description": "Angin dan hujan musiman kuat — Asia Selatan dan Tenggara. Dramatis dan kuat."
+          },
+          {
+            "en": "sakura_season",
+            "id": "musim sakura",
+            "description": "Bunga sakura bermekaran — Jepang atau setting fantasi. Cantik singkat, penuh makna."
+          },
+          {
+            "en": "harvest_season",
+            "id": "musim panen",
+            "description": "Ladang penuh hasil bumi siap dipanen. Warna keemasan, kehangatan komunitas, kelimpahan."
+          },
+          {
+            "en": "eternal_winter",
+            "id": "musim dingin abadi",
+            "description": "Musim dingin yang tidak pernah berakhir — kutukan, anomali sihir, atau iklim planet lain."
+          },
+          {
+            "en": "eternal_summer",
+            "id": "musim panas abadi",
+            "description": "Panas terus-menerus tanpa pergantian — gurun magis, planet yang berbeda, kondisi ekstrem."
+          }
+        ]
+      },
+
+      "time_of_day": {
+        "_note": "Waktu dalam sehari — menentukan kualitas cahaya yang sangat mempengaruhi mood dan visual.",
+        "options": [
+          {
+            "en": "predawn",
+            "id": "dini hari",
+            "description": "Tengah malam menuju pagi — paling gelap, sunyi absolut, sering misterius atau mencekam."
+          },
+          {
+            "en": "3am",
+            "id": "jam 3 pagi",
+            "description": "Waktu mati — paling sepi, sering diasosiasikan dengan horor, kesendirian, atau momen kritis."
+          },
+          {
+            "en": "dawn",
+            "id": "fajar",
+            "description": "Matahari akan terbit — langit mulai terang, warna pastel lembut biru dan merah muda."
+          },
+          {
+            "en": "sunrise",
+            "id": "matahari terbit",
+            "description": "Matahari muncul di cakrawala — cahaya keemasan pertama, dramatis dan penuh harapan."
+          },
+          {
+            "en": "golden_hour_morning",
+            "id": "jam emas pagi",
+            "description": "Satu jam setelah matahari terbit — cahaya hangat keemasan dari arah timur yang rendah."
+          },
+          {
+            "en": "morning",
+            "id": "pagi",
+            "description": "Awal hari — cahaya cerah bersih, aktivitas dimulai, udara segar."
+          },
+          {
+            "en": "late_morning",
+            "id": "menjelang siang",
+            "description": "Mendekati siang — cahaya makin terang, bayangan memendek, aktivitas penuh."
+          },
+          {
+            "en": "noon",
+            "id": "tengah hari",
+            "description": "Matahari di puncak — bayangan minimal, cahaya tajam keras, panas terik."
+          },
+          {
+            "en": "afternoon",
+            "id": "siang",
+            "description": "Setelah tengah hari — cahaya mulai miring, bayangan mulai memanjang, suhu masih tinggi."
+          },
+          {
+            "en": "late_afternoon",
+            "id": "sore",
+            "description": "Menjelang petang — cahaya keemasan kembali dari barat, suhu mulai turun."
+          },
+          {
+            "en": "golden_hour_evening",
+            "id": "jam emas sore",
+            "description": "Satu jam sebelum matahari terbenam — cahaya paling indah, hangat, panjang, dan rendah."
+          },
+          {
+            "en": "sunset",
+            "id": "matahari terbenam",
+            "description": "Matahari tenggelam — warna oranye, merah, ungu dramatis di langit barat."
+          },
+          {
+            "en": "twilight",
+            "id": "senja",
+            "description": "Setelah matahari terbenam tapi belum gelap — cahaya lembayung, siluet tajam."
+          },
+          {
+            "en": "blue_hour",
+            "id": "jam biru",
+            "description": "Periode singkat setelah sunset — langit biru dalam, cahaya dingin rata, tidak ada bayangan keras."
+          },
+          {
+            "en": "dusk",
+            "id": "temaram",
+            "description": "Senja paling gelap — cahaya siang terakhir, bintang mulai tampak, transisi ke malam."
+          },
+          {
+            "en": "evening",
+            "id": "petang",
+            "description": "Awal malam — lampu mulai menyala, aktivitas beralih ke indoor, langit gelap berbintang."
+          },
+          {
+            "en": "night",
+            "id": "malam",
+            "description": "Gelap penuh — sumber cahaya dari lampu, bulan, dan bintang. Suasana malam yang tenang."
+          },
+          {
+            "en": "midnight",
+            "id": "tengah malam",
+            "description": "Tepat pukul 12 malam — sunyi, waktu mistis, sering diasosiasikan dengan hal-hal tersembunyi."
+          },
+          {
+            "en": "overcast_day",
+            "id": "hari mendung",
+            "description": "Siang tertutup awan tebal — cahaya lembut merata, tidak ada bayangan keras, suasana dingin."
+          }
+        ]
+      },
+
+      "time_flow": {
+        "_note": "Cara waktu bergerak dalam scene — relevan terutama untuk video, tapi juga mempengaruhi feel gambar statis.",
+        "options": [
+          {
+            "en": "frozen_moment",
+            "id": "momen beku",
+            "description": "Waktu berhenti — momen tertangkap di tengah aksi, seperti foto yang sempurna."
+          },
+          {
+            "en": "slow_motion",
+            "id": "gerak lambat",
+            "description": "Waktu bergerak sangat lambat — detail gerakan terlihat jelas, efek dramatis."
+          },
+          {
+            "en": "real_time",
+            "id": "waktu nyata",
+            "description": "Waktu berjalan normal — tidak ada manipulasi temporal, alur natural."
+          },
+          {
+            "en": "time_lapse",
+            "id": "timelapse",
+            "description": "Waktu dipercepat — perubahan besar terlihat dalam hitungan detik, langit bergerak cepat."
+          },
+          {
+            "en": "fast_forward",
+            "id": "percepat",
+            "description": "Gerakan dipercepat — efek urgensi, komedi, atau montase singkat."
+          },
+          {
+            "en": "rewind",
+            "id": "putar ulang",
+            "description": "Waktu bergerak mundur — aksi berjalan terbalik, efek surealis atau penyesalan."
+          },
+          {
+            "en": "dream_time",
+            "id": "waktu mimpi",
+            "description": "Waktu tidak linear atau tidak logis — seperti dalam mimpi, transisi tiba-tiba, logika kabur."
+          },
+          {
+            "en": "loop",
+            "id": "pengulangan",
+            "description": "Momen yang berulang terus-menerus — Groundhog Day, kutukan, atau memori yang menghantui."
+          },
+          {
+            "en": "parallel",
+            "id": "paralel",
+            "description": "Dua atau lebih timeline berjalan bersamaan — lintas dimensi, quantum, atau crosscut naratif."
+          },
+          {
+            "en": "fractured",
+            "id": "terpecah",
+            "description": "Waktu tidak berurutan, fragmentasi — kenangan tersebar, narasi non-linear, perspektif berbeda."
+          },
+          {
+            "en": "timeless",
+            "id": "tanpa waktu",
+            "description": "Di luar konsep waktu linear — tidak jelas kapan terjadi, bisa selamanya atau sedetik."
+          }
+        ]
+      }
+    },
+
+    "space_setting": {
+
+      "location_type": {
+        "_note": "Kategori utama jenis lokasi — dari yang paling umum hingga yang fiksi.",
+        "options": [
+          {
+            "en": "urban",
+            "id": "urban",
+            "description": "Area kota — gedung, jalan, infrastruktur manusia yang padat dan terorganisir."
+          },
+          {
+            "en": "natural",
+            "id": "alam",
+            "description": "Lingkungan alami — hutan, gunung, laut, sungai. Tanpa atau minimal campur tangan manusia."
+          },
+          {
+            "en": "interior",
+            "id": "interior",
+            "description": "Di dalam bangunan atau struktur tertutup — ruangan, gua, kapal."
+          },
+          {
+            "en": "exterior",
+            "id": "eksterior",
+            "description": "Di luar ruangan, terbuka ke langit dan elemen alam. Bisa natural atau urban."
+          },
+          {
+            "en": "space",
+            "id": "angkasa",
+            "description": "Luar angkasa — orbit, antariksa dalam, nol gravitasi, kekosongan."
+          },
+          {
+            "en": "underground",
+            "id": "bawah tanah",
+            "description": "Di bawah permukaan bumi — gua, terowongan, bunker, labirin bawah tanah."
+          },
+          {
+            "en": "underwater",
+            "id": "bawah air",
+            "description": "Di dalam air — laut, danau, sungai. Efek refraksi cahaya dan gelembung khas."
+          },
+          {
+            "en": "virtual",
+            "id": "virtual",
+            "description": "Dunia digital — simulasi, cyberspace, metaverse, grid data."
+          },
+          {
+            "en": "dimensional",
+            "id": "dimensional",
+            "description": "Dimensi lain atau ruang antardimensi — portal, void antara dunia, realm paralel."
+          },
+          {
+            "en": "dreamscape",
+            "id": "dunia mimpi",
+            "description": "Dunia impian — logika tidak normal, visualisasi abstrak, berubah-ubah, surrealis."
+          },
+          {
+            "en": "void",
+            "id": "kehampaan",
+            "description": "Kekosongan total — tidak ada floor, ceiling, atau walls. Floating dalam kegelapan atau cahaya."
+          },
+          {
+            "en": "ruins",
+            "id": "reruntuhan",
+            "description": "Bekas peradaban — bangunan runtuh, kota mati, struktur terbengkalai penuh sejarah."
+          },
+          {
+            "en": "transitional",
+            "id": "transisi",
+            "description": "Area peralihan ambigu — koridor, jembatan, pintu masuk, antara dua tempat."
+          },
+          {
+            "en": "liminal_space",
+            "id": "ruang liminal",
+            "description": "Tempat yang terasa tidak nyata — kosong, menunggu, seram namun familiar. Mall sepi, kolam renang kosong."
+          }
+        ]
+      },
+
+      "region": {
+        "_note": "Area atau wilayah yang lebih spesifik dalam location_type.",
+        "options": [
+          {
+            "en": "downtown",
+            "id": "pusat kota",
+            "description": "Jantung kota — gedung pencakar langit, keramaian, bisnis, pusat aktivitas."
+          },
+          {
+            "en": "suburbs",
+            "id": "pinggiran kota",
+            "description": "Area perumahan di luar pusat kota — lebih tenang, keluarga, taman kecil."
+          },
+          {
+            "en": "countryside",
+            "id": "pedesaan",
+            "description": "Area pertanian dan desa — ladang, populasi jarang, kehidupan sederhana."
+          },
+          {
+            "en": "wilderness",
+            "id": "alam liar",
+            "description": "Area tak berpenghuni, belum tersentuh manusia — ekosistem asli utuh."
+          },
+          {
+            "en": "coastal",
+            "id": "pesisir",
+            "description": "Area pantai dan tebing — pertemuan darat dan laut, angin asin, ombak."
+          },
+          {
+            "en": "island",
+            "id": "pulau",
+            "description": "Daratan dikelilingi air — terisolasi, eksotis, ekosistem unik tersendiri."
+          },
+          {
+            "en": "mountainous",
+            "id": "pegunungan",
+            "description": "Area pegunungan — ketinggian, cuaca ekstrem, pemandangan luas, udara tipis."
+          },
+          {
+            "en": "plateau",
+            "id": "dataran tinggi",
+            "description": "Dataran datar di ketinggian — luas dan terbuka, angin kencang, cakrawala jauh."
+          },
+          {
+            "en": "canyon",
+            "id": "ngarai",
+            "description": "Lembah sempit berdinding tebing tinggi — dramatis, terisolasi, gema suara."
+          },
+          {
+            "en": "desert",
+            "id": "gurun",
+            "description": "Area kering — pasir atau batu, suhu ekstrem siang-malam, vegetasi minimal."
+          },
+          {
+            "en": "savanna",
+            "id": "sabana",
+            "description": "Padang rumput tropis dengan pohon tersebar — Afrika, Australia. Panas, luas, fauna besar."
+          },
+          {
+            "en": "forest",
+            "id": "hutan",
+            "description": "Area berpepohonan lebat — ekosistem kompleks, teduh, suara alam."
+          },
+          {
+            "en": "jungle",
+            "id": "hutan hujan tropis",
+            "description": "Hutan lebat tropis — keanekaragaman hayati ekstrem, lembab, kanopi tebal."
+          },
+          {
+            "en": "tundra",
+            "id": "tundra",
+            "description": "Dataran beku tanpa pohon — vegetasi rendah, iklim kutub, permafrost."
+          },
+          {
+            "en": "arctic",
+            "id": "arktik",
+            "description": "Wilayah kutub — es abadi, aurora borealis, gelap berbulan-bulan atau terang abadi."
+          },
+          {
+            "en": "swamp",
+            "id": "rawa",
+            "description": "Lahan basah berlumpur — air stagnan, vegetasi khusus, suasana misterius."
+          },
+          {
+            "en": "delta",
+            "id": "delta sungai",
+            "description": "Pertemuan sungai dan laut — tanah subur, jaringan kanal, ekosistem unik."
+          },
+          {
+            "en": "volcanic",
+            "id": "vulkanik",
+            "description": "Area gunung berapi — lava, abu, tanah hitam, kekuatan alam yang ekstrem."
+          },
+          {
+            "en": "cave_system",
+            "id": "sistem gua",
+            "description": "Jaringan gua bawah tanah — stalaktit, danau bawah tanah, gelap total, ekosistem tersembunyi."
+          },
+          {
+            "en": "industrial_zone",
+            "id": "zona industri",
+            "description": "Area pabrik dan gudang — infrastruktur utilitas, polusi, estetika kasar."
+          },
+          {
+            "en": "sky",
+            "id": "langit",
+            "description": "Di udara — terbang, awan, atmosfer atas, pandangan dari ketinggian."
+          },
+          {
+            "en": "orbit",
+            "id": "orbit",
+            "description": "Mengelilingi planet — stasiun ruang angkasa, satelit, pandangan bumi dari luar."
+          },
+          {
+            "en": "deep_space",
+            "id": "angkasa dalam",
+            "description": "Jauh dari planet atau bintang — kekosongan, isolasi absolut, nebula dan galaksi jauh."
+          },
+          {
+            "en": "underworld",
+            "id": "dunia bawah",
+            "description": "Mitos atau literal — tempat kematian, gelap, misterius, di luar jangkauan dunia hidup."
+          }
+        ]
+      },
+
+      "specific_place_examples": {
+        "_note": "Ini adalah LIBRARY CONTOH — bukan nilai terstruktur. Gunakan sebagai inspirasi untuk mengisi field specific_place (string bebas) dalam template karakter. Dikelompokkan berdasarkan kategori.",
+
+        "natural_outdoor": [
+          "ancient_forest_clearing", "misty_mountain_peak", "hidden_waterfall_grotto",
+          "cliffside_overlooking_ocean", "bamboo_forest_path", "cherry_blossom_grove",
+          "ancient_oak_tree_hollow", "volcanic_crater_lake", "glacier_valley",
+          "desert_oasis", "mangrove_swamp_edge", "jungle_temple_ruins",
+          "frozen_tundra_plain", "underground_crystal_cave", "floating_island_edge"
+        ],
+
+        "urban_modern": [
+          "rooftop_garden_city_view", "underground_metro_station", "busy_night_market",
+          "alleyway_between_skyscrapers", "abandoned_factory", "neon_lit_street_corner",
+          "luxury_penthouse_balcony", "subway_tunnel", "bridge_over_river_at_night",
+          "empty_parking_garage", "school_hallway_after_hours", "hospital_corridor"
+        ],
+
+        "fantasy_locations": [
+          "elven_treetop_city", "dwarven_mountain_forge", "wizard_tower_observatory",
+          "ancient_dragon_lair", "floating_sky_castle", "underwater_mer_city",
+          "portal_between_worlds", "haunted_abandoned_manor", "sacred_moonlit_grove",
+          "demon_king_throne_room", "celestial_palace_above_clouds", "ruins_of_forgotten_empire"
+        ],
+
+        "futuristic_scifi": [
+          "space_station_observation_deck", "planet_surface_alien_terrain", "megacity_upper_level",
+          "underground_resistance_base", "corporate_server_room", "crashed_spaceship_wreck",
+          "terraformed_mars_colony", "cyberpunk_back_alley", "space_elevator_platform",
+          "derelict_space_station", "virtual_reality_grid", "deep_sea_research_station"
+        ],
+
+        "interior_spaces": [
+          "candlelit_tavern", "royal_throne_room", "ancient_library_with_floating_books",
+          "cathedral_nave", "opium_den_haze", "war_room_with_maps", "apothecary_shop",
+          "prison_cell", "spaceship_cockpit", "submarine_interior", "greenhouse_full_of_rare_plants",
+          "artists_cluttered_studio", "abandoned_ballroom", "secret_underground_lab"
+        ],
+
+        "transitional_liminal": [
+          "long_empty_corridor", "train_platform_at_3am", "abandoned_shopping_mall",
+          "empty_swimming_pool", "airport_terminal_late_night", "elevator_between_floors",
+          "stairwell_in_unfamiliar_building", "fog_covered_road", "doorway_between_light_and_dark"
+        ]
+      },
+
+      "scale": {
+        "_note": "Skala ruang yang dirasakan — mempengaruhi perasaan karakter dalam lingkungannya.",
+        "options": [
+          {
+            "en": "microscopic",
+            "id": "mikroskopis",
+            "description": "Skala sangat kecil — seluler, molekuler, tak terlihat mata biasa."
+          },
+          {
+            "en": "nano",
+            "id": "nano",
+            "description": "Skala atom atau nano — dalam materi itu sendiri, abstrak dan surealis."
+          },
+          {
+            "en": "intimate",
+            "id": "intim",
+            "description": "Ruang pribadi sangat dekat — fokus pada detail kecil dan emosi antar individu."
+          },
+          {
+            "en": "personal",
+            "id": "personal",
+            "description": "Ruang untuk satu orang atau beberapa — interaksi dekat, skala manusiawi."
+          },
+          {
+            "en": "human_scale",
+            "id": "skala manusia",
+            "description": "Ruang yang proporsional dengan tubuh manusia — ruangan, lorong, taman kecil."
+          },
+          {
+            "en": "social",
+            "id": "sosial",
+            "description": "Ruang untuk kelompok kecil — interaksi komunitas, gathering, kebersamaan."
+          },
+          {
+            "en": "neighborhood",
+            "id": "lingkungan",
+            "description": "Skala blok atau lingkungan — beberapa bangunan, jalan, komunitas lokal."
+          },
+          {
+            "en": "public",
+            "id": "publik",
+            "description": "Ruang umum besar — plaza, stasiun, pasar. Banyak orang, aktivitas bersama."
+          },
+          {
+            "en": "expansive",
+            "id": "luas",
+            "description": "Area besar terbuka — pemandangan luas, rasa kebebasan dan ketidakterbatasan."
+          },
+          {
+            "en": "claustrophobic",
+            "id": "sempit menekan",
+            "description": "Ruang sempit tertekan — sulit bergerak, dinding mendekat, menekan psikologis."
+          },
+          {
+            "en": "monumental",
+            "id": "monumental",
+            "description": "Skala megah — arsitektur besar, manusia terasa sangat kecil, rasa kagum."
+          },
+          {
+            "en": "cosmic",
+            "id": "kosmik",
+            "description": "Skala alam semesta — planet, bintang, galaksi, rasa tak terbatas yang menakutkan."
+          }
+        ]
+      }
+    }
+  }
+}

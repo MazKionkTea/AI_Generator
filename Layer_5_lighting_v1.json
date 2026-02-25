@@ -1,0 +1,733 @@
+{
+  "_readme": "Library pilihan untuk field lighting (Layer 5). Urutan penerapan internal: key → fill → rim → ambient → practical → volumetric → shadows. Untuk konsistensi karakter: key_light atau rim_light HARUS menyinari area wajah agar face_dna dari Layer 1 tetap terbaca AI.",
+  "_version": "1.0",
+  "_structure": "lighting → preset | key_light | fill_light | rim_light | ambient_light | natural_light | practical_lights | volumetric_effects | shadows",
+  "_character_lock_warning": "Jika menggunakan lighting yang sangat gelap atau backlit ekstrem tanpa fill — wajah karakter bisa tidak terbaca AI dan identity lock bisa gagal. Selalu pastikan setidaknya satu light source menyinari wajah.",
+
+  "lighting": {
+
+    "preset": {
+      "_note": "Quick setup — satu nilai yang langsung mendefinisikan mood lighting keseluruhan. Bisa digunakan sendiri atau sebagai titik awal yang kemudian di-override per sub-field.",
+      "options": [
+        {
+          "en": "golden_hour",
+          "id": "jam emas",
+          "description": "Satu jam setelah matahari terbit atau sebelum terbenam. Cahaya hangat keemasan rendah dari samping, panjang, melukis semua permukaan dengan emas. Skin tone sangat indah.",
+          "color_temperature": "2800K–4000K",
+          "dominant_hue": "warm gold, amber, orange",
+          "shadow_character": "Panjang, lembut, hangat",
+          "mood": "Romantis, hangat, harapan, indah, nostalgic"
+        },
+        {
+          "en": "blue_hour",
+          "id": "jam biru",
+          "description": "Tepat setelah matahari terbenam atau sebelum terbit. Langit biru dalam merata, tidak ada matahari, cahaya sangat lembut dan diffuse dari seluruh langit.",
+          "color_temperature": "7000K–10000K",
+          "dominant_hue": "deep blue, cool cyan",
+          "shadow_character": "Hampir tidak ada bayangan keras, semua lembut",
+          "mood": "Melankolis, tenang, ethereal, transisional"
+        },
+        {
+          "en": "harsh_noon",
+          "id": "tengah hari keras",
+          "description": "Matahari tepat di atas, 90 derajat. Bayangan sangat pendek dan keras, kontras tinggi, menghilangkan detail di shadow. Tidak ideal untuk portrait tapi dramatis untuk texture.",
+          "color_temperature": "5500K–6500K",
+          "dominant_hue": "neutral white, slight blue",
+          "shadow_character": "Sangat pendek, keras, hitam",
+          "mood": "Keras, panas, tanpa ampun, industrial, sinister di context tertentu"
+        },
+        {
+          "en": "overcast_soft",
+          "id": "mendung lembut",
+          "description": "Langit tertutup awan tebal sebagai natural softbox raksasa. Cahaya merata dari semua arah, tidak ada bayangan keras, semua terlihat jelas tanpa contrast ekstrem.",
+          "color_temperature": "6000K–7000K",
+          "dominant_hue": "cool white, slight grey",
+          "shadow_character": "Sangat lembut, hampir tidak ada",
+          "mood": "Flat, dingin, murung, atau netral sempurna tergantung konteks"
+        },
+        {
+          "en": "moonlight",
+          "id": "cahaya bulan",
+          "description": "Malam dengan bulan terang. Cahaya perak-biru dingin dari atas, bayangan keras tapi lemah, kontras tinggi. Semua warna bergeser ke monokrom biru-abu.",
+          "color_temperature": "4100K–5000K",
+          "dominant_hue": "silver, cool blue, desaturated",
+          "shadow_character": "Panjang, keras, biru-abu",
+          "mood": "Misterius, romantis, magis, atau mengancam"
+        },
+        {
+          "en": "candlelight",
+          "id": "cahaya lilin",
+          "description": "Cahaya api kecil yang sangat hangat, bergerak, low key. Hanya area dekat sumber yang terang. Sangat intimate dan dramatis.",
+          "color_temperature": "1800K–2200K",
+          "dominant_hue": "deep amber, orange, dark red",
+          "shadow_character": "Sangat keras di sekitar sumber, gelap total di luar",
+          "mood": "Intimate, dramatis, sejarah, horor, religius, atau romantis"
+        },
+        {
+          "en": "firelight",
+          "id": "cahaya api",
+          "description": "Api unggun atau perapian. Lebih besar dari lilin — area yang diterangi lebih luas, flicker lebih terlihat, kontras antara area terang dan gelap sangat tinggi.",
+          "color_temperature": "1500K–2500K",
+          "dominant_hue": "orange, deep amber, flickering red",
+          "shadow_character": "Bergerak (flicker), keras, warm",
+          "mood": "Survival, primitif, mistis, hangat, bahaya"
+        },
+        {
+          "en": "neon_cyberpunk",
+          "id": "neon cyberpunk",
+          "description": "Multiple sumber cahaya neon berwarna dari berbagai arah. Warna kontrastif berpadu — magenta dan cyan, merah dan biru. Rim light warna-warni, bayangan berwarna.",
+          "color_temperature": "Mixed — tidak relevan",
+          "dominant_hue": "magenta, cyan, purple, neon green — kontrastif",
+          "shadow_character": "Berwarna, multiple shadow dari multiple source",
+          "mood": "Urban dystopia, futuristik, energik, berbahaya"
+        },
+        {
+          "en": "studio_three_point",
+          "id": "studio tiga titik",
+          "description": "Setup klasik tiga lampu: key (depan-samping), fill (berlawanan key, lebih lemah), rim (belakang). Menghasilkan tampilan terkontrol dan profesional.",
+          "color_temperature": "5600K (daylight balanced)",
+          "dominant_hue": "neutral white",
+          "shadow_character": "Terkontrol, lembut, clean",
+          "mood": "Profesional, bersih, portrait, commercial"
+        },
+        {
+          "en": "dramatic_chiaroscuro",
+          "id": "chiaroscuro dramatis",
+          "description": "Satu sumber cahaya keras dari satu sisi — sisi lain gelap total atau hampir gelap. Kontras ekstrem. Gaya Caravaggio dan film noir.",
+          "color_temperature": "Bervariasi — sering warm atau netral",
+          "dominant_hue": "Tergantung sumber — warm atau netral",
+          "shadow_character": "Sangat keras, dalam, setengah wajah gelap",
+          "mood": "Dramatis ekstrem, misteri, bahaya, seni tinggi, psychologis"
+        },
+        {
+          "en": "magic_ethereal",
+          "id": "magis ethereal",
+          "description": "Cahaya dari sumber supernatural — partikel bercahaya, glow organik, warna tidak natural. Logika cahaya tidak mengikuti fisika.",
+          "color_temperature": "Tidak relevan — supernatural",
+          "dominant_hue": "Teal, purple, gold, white — bervariasi per magic type",
+          "shadow_character": "Lembut, menyebar, glow",
+          "mood": "Magis, sakral, fantasi, otherworldly"
+        },
+        {
+          "en": "underwater",
+          "id": "bawah air",
+          "description": "Cahaya menembus air dari atas — caustics (pola cahaya bergerak di permukaan bawah), biru-hijau, cepat melemah dengan kedalaman.",
+          "color_temperature": "7000K–12000K",
+          "dominant_hue": "deep teal, blue-green, caustic patterns",
+          "shadow_character": "Bergerak (caustics), cepat hilang dengan jarak",
+          "mood": "Misterius, dalam, isolasi, surreal"
+        },
+        {
+          "en": "horror_underlighting",
+          "id": "cahaya bawah horor",
+          "description": "Cahaya dari bawah (under lighting) — kebalikan dari normal. Bayangan jatuh ke atas, wajah terlihat tidak natural dan mengancam.",
+          "color_temperature": "Bervariasi — sering cool atau green",
+          "dominant_hue": "Green, sickly yellow, atau cold white",
+          "shadow_character": "Terbalik — naik ke atas",
+          "mood": "Horror, ancaman, tidak natural, jahat"
+        },
+        {
+          "en": "sunrise_atmospheric",
+          "id": "fajar atmosferik",
+          "description": "Pertama cahaya matahari yang menerobos — garis horizon berwarna pink dan oranye, langit gradient dari hitam ke biru ke oranye. God rays mungkin ada.",
+          "color_temperature": "2500K–4000K di horizon, 7000K+ di zenith",
+          "dominant_hue": "Pink, peach, warm orange di bawah — deep blue di atas",
+          "shadow_character": "Panjang, lembut, pink-warm",
+          "mood": "Harapan, awal baru, sakral, tenang yang menakjubkan"
+        },
+        {
+          "en": "storm_dramatic",
+          "id": "badai dramatis",
+          "description": "Cahaya dari langit badai — awan gelap memfilter cahaya menjadi kontrasif, petir sesekali menerangi, warna desaturated kecuali saat kilat.",
+          "color_temperature": "Desaturated — 5000K–6500K tapi flat",
+          "dominant_hue": "Grey, dark green-grey, silver — dengan flash putih sesekali",
+          "shadow_character": "Flat saat mendung, ekstrem tajam saat kilat",
+          "mood": "Dramatis, bahaya, klimaks, epik"
+        },
+        {
+          "en": "fog_diffused",
+          "id": "kabut tersebar",
+          "description": "Cahaya tersebar oleh kabut tebal — tidak ada bayangan sama sekali, semua soft, jarak jauh hilang. Sumber cahaya tersebar merata.",
+          "color_temperature": "Tergantung sumber tapi semua tersebar",
+          "dominant_hue": "Putih-abu, diffuse",
+          "shadow_character": "Hampir tidak ada",
+          "mood": "Misterius, isolasi, ethereal, atau threatening"
+        },
+        {
+          "en": "desert_bleached",
+          "id": "gurun terang",
+          "description": "Cahaya terik gurun yang membleach warna — overexposed highlight, warna tersaturasi rendah, haze di kejauhan, semua terasa kering.",
+          "color_temperature": "5000K–6000K tapi felt very harsh",
+          "dominant_hue": "Bleached white, pale yellow, desaturated",
+          "shadow_character": "Keras, kering, kontras tinggi",
+          "mood": "Panas, keras, survival, barat liar, tanpa ampun"
+        },
+        {
+          "en": "aurora_night",
+          "id": "malam aurora",
+          "description": "Cahaya aurora borealis sebagai sumber dominan — hijau dan ungu bergerak lembut, cahaya bintang tambahan, bumi gelap.",
+          "color_temperature": "Tidak relevan — supernatural atmospheric",
+          "dominant_hue": "Green, purple, teal — moving softly",
+          "shadow_character": "Hampir tidak ada — cahaya sangat diffuse",
+          "mood": "Menakjubkan, magis, isolasi indah, transcendent"
+        }
+      ]
+    },
+
+    "_shared_light_fields": {
+      "_note": "Field berikut berlaku untuk key_light, fill_light, rim_light, ambient_light, dan natural_light. Lihat sub-sections di bawah untuk pilihan per field.",
+
+      "source_type": {
+        "_note": "Jenis sumber cahaya — menentukan karakter fisik cahaya.",
+        "options": [
+          { "en": "sun", "id": "matahari", "description": "Matahari — sumber cahaya tunggal paralel dari sangat jauh. Karakter berubah drastis tergantung posisi dan cuaca." },
+          { "en": "window", "id": "jendela", "description": "Cahaya matahari atau langit menembus jendela — dibentuk oleh frame jendela, bisa sangat dramatis." },
+          { "en": "skylight", "id": "cahaya langit", "description": "Cahaya dari seluruh kubah langit tanpa matahari langsung — sangat lembut, merata, cool." },
+          { "en": "moon", "id": "bulan", "description": "Bulan — cahaya matahari dipantulkan, jauh lebih lemah, cool silver, hard shadow." },
+          { "en": "stars", "id": "bintang", "description": "Hanya bintang — sangat gelap, nyaris tidak ada cahaya. Ambient minimal." },
+          { "en": "fire_large", "id": "api besar", "description": "Api unggun, perapian, atau kebakaran — hangat, flicker, radius terbatas, sangat dramatis." },
+          { "en": "candle_torch", "id": "lilin atau obor", "description": "Sumber api kecil — sangat hangat, flicker kuat, radius sangat terbatas." },
+          { "en": "neon_tube", "id": "tabung neon", "description": "Neon sign atau strip LED — warna jenuh, linear, kadang flicker, modern dan urban." },
+          { "en": "fluorescent", "id": "lampu fluorescent", "description": "Lampu TL — cahaya hijau-putih sedikit, harsh, flat, institutional." },
+          { "en": "incandescent", "id": "lampu pijar", "description": "Lampu bohlam tungsten — hangat amber, soft, familiar, retro." },
+          { "en": "LED_warm", "id": "LED hangat", "description": "LED color warm — hangat tapi lebih bersih dari incandescent." },
+          { "en": "LED_cool", "id": "LED dingin", "description": "LED color cool atau daylight — putih-biru bersih, modern." },
+          { "en": "monitor_screen", "id": "layar monitor", "description": "Cahaya dari screen komputer atau TV — cool, berubah dinamis, jarak sangat dekat." },
+          { "en": "bioluminescent", "id": "bioluminesen", "description": "Cahaya organisme hidup — lembut, teal atau biru-hijau, fantasi atau deep sea." },
+          { "en": "magic_spell", "id": "sihir", "description": "Sumber cahaya supernatural dari sihir — warna bebas, tidak ada logika fisik." },
+          { "en": "crystal_glow", "id": "kristal bercahaya", "description": "Kristal atau batu yang memancarkan cahaya — fantasi, lembut, warna tergantung kristal." },
+          { "en": "lava", "id": "lava", "description": "Cahaya dari lava — deep orange-red, sangat warm, panas intens, dramatis." },
+          { "en": "explosion_flash", "id": "kilat ledakan", "description": "Cahaya sesaat dari ledakan — sangat terang, putih-oranye, hanya sesaat, untuk video." },
+          { "en": "portal_dimensional", "id": "portal dimensional", "description": "Cahaya dari portal atau dimensi lain — warna otherworldly, intensitas bervariasi." },
+          { "en": "hologram", "id": "hologram", "description": "Cahaya dari display holografik — teal, semi-transparan, modern-futuristik." }
+        ]
+      },
+
+      "position": {
+        "_note": "Posisi sumber cahaya relatif terhadap subjek — menggunakan sistem clock (jam) untuk horizontal dan low/mid/high untuk vertikal.",
+        "options": [
+          { "en": "front_center", "id": "depan tengah", "description": "Langsung di depan subjek — flat, tidak ada bayangan dramatik, wajah terang merata. Kadang terlalu flat." },
+          { "en": "45_left_front", "id": "45 derajat kiri depan", "description": "Posisi Rembrandt klasik kiri — bayangan jatuh ke kanan, highlight di kiri. Favorable untuk sebagian besar wajah." },
+          { "en": "45_right_front", "id": "45 derajat kanan depan", "description": "Posisi Rembrandt klasik kanan — bayangan jatuh ke kiri, highlight di kanan." },
+          { "en": "side_left", "id": "samping kiri", "description": "Tepat 90 derajat dari kiri — split lighting, wajah terbagi dua terang-gelap dramatis." },
+          { "en": "side_right", "id": "samping kanan", "description": "Tepat 90 derajat dari kanan — split lighting dari kanan." },
+          { "en": "45_left_back", "id": "45 derajat kiri belakang", "description": "Rim atau kicker dari kiri belakang — memisahkan subjek dari background, halo di rambut kiri." },
+          { "en": "45_right_back", "id": "45 derajat kanan belakang", "description": "Rim atau kicker dari kanan belakang — memisahkan subjek, halo di rambut kanan." },
+          { "en": "back_center", "id": "belakang tengah", "description": "Tepat di belakang subjek — silhouette jika tidak ada fill, rim light simetris di kedua sisi." },
+          { "en": "top_center", "id": "atas tengah", "description": "Tepat di atas — 'butterfly lighting', bayangan di bawah hidung dan dagu, glamour atau flat." },
+          { "en": "top_left", "id": "atas kiri", "description": "Dari atas dan kiri — natural seperti langit berawan, bayangan ke bawah-kanan." },
+          { "en": "top_right", "id": "atas kanan", "description": "Dari atas dan kanan — natural, bayangan ke bawah-kiri." },
+          { "en": "under_center", "id": "bawah tengah", "description": "Dari bawah tepat — under lighting, tidak natural, efek horor atau dramatis." },
+          { "en": "under_left", "id": "bawah kiri", "description": "Dari bawah kiri — horor atau theatrical, bayangan naik ke kanan atas." },
+          { "en": "under_right", "id": "bawah kanan", "description": "Dari bawah kanan — horor atau theatrical, bayangan naik ke kiri atas." },
+          { "en": "wrap_around", "id": "melingkupi", "description": "Cahaya datang dari banyak arah melingkupi subjek — lembut, natural, outdoor diffuse." },
+          { "en": "omnidirectional", "id": "semua arah", "description": "Ambient merata dari semua arah — tidak ada bayangan, flat sempurna, studio atau overcast." }
+        ]
+      },
+
+      "intensity": {
+        "_note": "Kekuatan cahaya — berapa banyak cahaya yang mencapai subjek.",
+        "options": [
+          { "en": "trace", "id": "sangat redup", "description": "Nyaris tidak ada cahaya — hanya hint bahwa ada sumber. Gelap ekstrem, detail hampir hilang." },
+          { "en": "dim", "id": "redup", "description": "Cahaya redup — hanya area terkena yang sedikit terang, suasana gelap mendominasi." },
+          { "en": "low", "id": "rendah", "description": "Cahaya rendah — low key, kontras tinggi, sebagian besar scene lebih gelap." },
+          { "en": "moderate", "id": "sedang", "description": "Cahaya sedang — seimbang, tidak terlalu terang tidak terlalu gelap. Versatile." },
+          { "en": "bright", "id": "terang", "description": "Cahaya terang — high key, scene terasa terbuka dan jelas. Sedikit shadow." },
+          { "en": "very_bright", "id": "sangat terang", "description": "Cahaya sangat terang — highlight kuat, mungkin sedikit overexposed di area terang." },
+          { "en": "blinding", "id": "menyilaukan", "description": "Overexposed ekstrem — highlight murni putih, detail hilang di area cahaya, dramatic reveal." }
+        ]
+      },
+
+      "quality": {
+        "_note": "Kualitas cahaya — seberapa keras atau lembut transisi antara area terang dan bayangan.",
+        "options": [
+          { "en": "hard", "id": "keras", "description": "Bayangan dengan tepi sangat tajam dan jelas — dari sumber cahaya kecil dan jauh (matahari langsung, spot kecil). Dramatis dan tegas." },
+          { "en": "semi_hard", "id": "semi keras", "description": "Bayangan dengan tepi jelas tapi sedikit soft — antara hard dan soft. Natural dan cinematic." },
+          { "en": "soft", "id": "lembut", "description": "Bayangan dengan tepi gradual — dari sumber cahaya besar atau jauh. Natural, flattering untuk portrait." },
+          { "en": "diffused", "id": "tersebar", "description": "Cahaya tersebar merata dari sumber yang sangat besar — bayangan sangat lembut atau tidak ada. Overcast feel." },
+          { "en": "specular", "id": "spekuler", "description": "Cahaya sangat keras dan terfokus — highlight titik kecil sangat terang pada permukaan mengkilap." },
+          { "en": "bounce", "id": "pantulan", "description": "Cahaya telah dipantulkan dari permukaan lain — lebih lembut dari sumber asli, sedikit berwarna permukaan pantulan." }
+        ]
+      },
+
+      "falloff": {
+        "_note": "Seberapa cepat intensitas cahaya menurun seiring jarak.",
+        "options": [
+          { "en": "rapid", "id": "cepat", "description": "Cahaya sangat cepat melemah — hanya area dekat sumber yang terang, latar belakang gelap drastis. Api, lilin." },
+          { "en": "linear", "id": "linear", "description": "Penurunan gradual dan merata — setiap meter sama lemahnya." },
+          { "en": "slow", "id": "lambat", "description": "Cahaya bertahan jauh — sumber besar atau sangat powerful. Studio besar, matahari." },
+          { "en": "infinite", "id": "tak terbatas", "description": "Cahaya paralel tidak melemah — matahari dan bulan secara praktis, sumber di infinity." }
+        ]
+      },
+
+      "color": {
+
+        "temperature": {
+          "_note": "Suhu warna cahaya dalam Kelvin — menentukan warm/cool balance.",
+          "options": [
+            { "en": "1500K", "id": "1500K", "description": "Lava, api besar — oranye-merah sangat dalam, hampir monokrom oranye." },
+            { "en": "1800K", "id": "1800K", "description": "Lilin — sangat hangat, amber dalam, romantiis." },
+            { "en": "2200K", "id": "2200K", "description": "Lampu pijar lama, obor — hangat amber." },
+            { "en": "2700K", "id": "2700K", "description": "Lampu pijar modern, LED warm — hangat, home lighting." },
+            { "en": "3200K", "id": "3200K", "description": "Tungsten studio — standar indoor artificial lighting." },
+            { "en": "4000K", "id": "4000K", "description": "Warm white LED — antara warm dan neutral. Natural, nyaman." },
+            { "en": "5000K", "id": "5000K", "description": "Noon sun di cuaca cerah — paling netral, white balance daylight." },
+            { "en": "5600K", "id": "5600K", "description": "Standar daylight fotografi — HMI, strobe. Putih bersih sempurna." },
+            { "en": "6500K", "id": "6500K", "description": "Overcast sky, LCD monitor — sedikit cool, putih-biru." },
+            { "en": "7500K", "id": "7500K", "description": "Shade atau langit biru — cool, sedikit biru." },
+            { "en": "9000K", "id": "9000K", "description": "Langit biru cerah — sangat cool, biru jelas." },
+            { "en": "12000K+", "id": "12000K+", "description": "Deep shade, biru langit sangat — biru sangat kuat, underwater feel." }
+          ]
+        },
+
+        "hue": {
+          "_note": "Warna spesifik cahaya — digunakan untuk gel, neon, atau cahaya supernatural yang tidak mengikuti temperature normal.",
+          "options": [
+            { "en": "warm_gold", "id": "emas hangat", "description": "Kuning keemasan — golden hour, glamour, royal, warmth." },
+            { "en": "amber_orange", "id": "amber oranye", "description": "Oranye hangat — firelight, tungsten, vintage, adventure." },
+            { "en": "deep_red", "id": "merah dalam", "description": "Merah jenuh — bahaya, gairah, alarm, ritual." },
+            { "en": "rose_pink", "id": "merah muda", "description": "Pink lembut — romantis, glamour, dreamy, feminine." },
+            { "en": "magenta", "id": "magenta", "description": "Merah-ungu — cyberpunk, neon, artistik, synthwave." },
+            { "en": "purple_violet", "id": "ungu", "description": "Ungu — magis, mistis, royalti, supernatural." },
+            { "en": "deep_blue", "id": "biru dalam", "description": "Biru tua — malam, dingin, melankolis, underwater." },
+            { "en": "cyan", "id": "sian", "description": "Biru-hijau — cyberpunk, teknologi, dingin, futuristik." },
+            { "en": "teal", "id": "teal", "description": "Hijau-biru — fantasi, underwater, ethereal, cool." },
+            { "en": "neon_green", "id": "hijau neon", "description": "Hijau jenuh — toxic, alien, night vision, horror." },
+            { "en": "sickly_yellow_green", "id": "kuning-hijau sakit", "description": "Kuning-hijau tidak sehat — fluorescent, horror, penyakit, tidak natural." },
+            { "en": "pure_white", "id": "putih murni", "description": "Putih netral sempurna — studio, daylight, bersih." },
+            { "en": "silver_moonlight", "id": "perak bulan", "description": "Putih keperakan — malam, bulan, mistis, cool." },
+            { "en": "black_light_uv", "id": "sinar UV", "description": "Ultraviolet — hanya material fluorescent menyala, gelap, rave, supernatural." }
+          ]
+        },
+
+        "saturation": {
+          "_note": "Intensitas warna dalam cahaya — seberapa jenuh warna tersebut.",
+          "options": [
+            { "en": "monochrome", "id": "monokrom", "description": "Tidak ada warna — cahaya murni hitam-putih. Ekstrem artistik atau night vision." },
+            { "en": "desaturated", "id": "desaturasi", "description": "Warna sangat redup — hampir abu-abu, sedikit tint saja." },
+            { "en": "muted", "id": "redup", "description": "Warna ada tapi tidak kuat — natural, subtle, cinematic." },
+            { "en": "natural", "id": "natural", "description": "Warna sesuai sumber cahaya tanpa exaggeration." },
+            { "en": "vivid", "id": "vivid", "description": "Warna lebih kuat dari natural — pop, komersial, vibrant." },
+            { "en": "neon", "id": "neon", "description": "Warna sangat jenuh mendekati fluorescent — cyberpunk, rave, signage." },
+            { "en": "oversaturated", "id": "oversaturasi", "description": "Warna ekstrem berlebihan — surrealis, halusinasi, artistic statement." }
+          ]
+        },
+
+        "modifiers": {
+          "_note": "Alat atau teknik yang memodifikasi cahaya — bisa kombinasi beberapa.",
+          "_examples_by_category": {
+            "softening": ["softbox", "umbrella_shoot_through", "beauty_dish", "diffusion_panel", "bounce_card", "silk_scrim"],
+            "shaping": ["snoot", "barn_doors", "grid", "flag", "gobo", "fresnel_lens"],
+            "coloring": ["gel_warm", "gel_cool", "gel_color_custom", "cto_orange_gel", "ctb_blue_gel"],
+            "special_effects": ["cookie_cucoloris", "prism", "glass_block", "through_leaves", "venetian_blind", "rotating_pattern"],
+            "natural_equivalent": ["through_fog", "through_water_surface", "reflected_from_snow", "reflected_from_sand", "filtered_by_clouds"]
+          }
+        }
+      }
+    },
+
+    "key_light": {
+      "_note": "Sumber cahaya UTAMA dan paling kuat. Mendefinisikan arah shadow utama dan mood keseluruhan. Selalu enabled kecuali untuk scene gelap total. Posisi key_light adalah keputusan terpenting dalam lighting.",
+      "_character_lock": "Untuk konsistensi karakter: key_light HARUS menyinari wajah secara cukup. Jangan letakkan key_light di belakang karakter tanpa fill yang kuat.",
+      "_field_reference": "Semua field di _shared_light_fields berlaku. Lihat options di atas.",
+      "_recommended_ratios": {
+        "portrait_beauty": "Key jauh lebih kuat dari fill — ratio 3:1 hingga 4:1",
+        "dramatic_chiaroscuro": "Key saja tanpa fill atau fill sangat lemah — ratio 8:1 atau lebih",
+        "commercial_clean": "Key dan fill hampir sama kuat — ratio 2:1",
+        "outdoor_natural": "Matahari sebagai key, skylight sebagai fill — ratio bervariasi"
+      }
+    },
+
+    "fill_light": {
+      "_note": "Cahaya pengisi untuk mengurangi kontras yang diciptakan key_light. TIDAK membuat bayangan baru yang signifikan — harus lebih lemah dari key. Jika fill tidak ada, shadow side menjadi sangat gelap (chiaroscuro).",
+      "_field_reference": "Semua field di _shared_light_fields berlaku.",
+      "_typical_setup": {
+        "position": "Berlawanan dengan key_light — jika key dari kiri, fill dari kanan",
+        "intensity": "Selalu lebih lemah dari key — biasanya 30–70% kekuatan key",
+        "quality": "Biasanya lebih soft dari key",
+        "color": "Sering sedikit lebih cool dari key untuk memberi dimensi"
+      }
+    },
+
+    "rim_light": {
+      "_note": "Cahaya dari belakang yang menerangi pinggiran subjek — memisahkan subjek dari background, menciptakan 'halo' atau 'edge light'. Sangat penting untuk konsistensi karakter karena membantu AI mengenali batas subjek.",
+      "_field_reference": "Semua field di _shared_light_fields berlaku.",
+      "_typical_setup": {
+        "position": "Belakang subjek — 45_left_back, 45_right_back, atau back_center",
+        "intensity": "Bervariasi — bisa subtle (highlight tipis) hingga kuat (halo dramatis)",
+        "quality": "Biasanya hard untuk tepi yang tajam",
+        "color": "Sering berbeda dari key — complementary atau contrasting"
+      },
+      "_rim_light_types": {
+        "hair_light": "Di atas belakang — menerangi rambut, memisahkan dari background atas",
+        "kicker": "Dari bawah belakang — menerangi bawah dagu dan bahu",
+        "edge_light": "Tepat dari samping belakang — garis cahaya tipis di tepi satu sisi",
+        "halo_light": "Merata dari belakang — glow di seluruh siluet",
+        "colored_rim": "Rim dengan warna berbeda dari key — cyberpunk, fantasi"
+      }
+    },
+
+    "ambient_light": {
+      "_note": "Cahaya base yang merata ke seluruh scene — 'cahaya yang ada di mana-mana'. Menentukan seberapa gelap area paling gelap. Bisa nol (gelap total) atau tinggi (high key flat).",
+      "_field_reference": "Semua field di _shared_light_fields berlaku.",
+      "_typical_values": {
+        "outdoor_day": "Tinggi — skylight merata ke mana-mana",
+        "indoor_day": "Sedang — cahaya dari jendela tersebar",
+        "indoor_night": "Rendah — hanya dari lampu artificial",
+        "dungeon_cave": "Sangat rendah atau nol — gelap total kecuali ada sumber lokal",
+        "space": "Nol — ruang angkasa tidak ada ambient"
+      }
+    },
+
+    "natural_light": {
+      "_note": "Cahaya alami spesifik (matahari, bulan, langit) sebagai layer terpisah yang berinteraksi dengan ambient. Terutama penting untuk outdoor scene.",
+      "_field_reference": "Semua field di _shared_light_fields berlaku.",
+
+      "sun_position_presets": {
+        "_note": "Posisi matahari berubah sepanjang hari — mempengaruhi angle dan warna cahaya.",
+        "options": [
+          { "en": "just_above_horizon_sunrise", "id": "baru terbit", "description": "Matahari baru di horizon timur — sudut sangat rendah (1–5°), cahaya sangat panjang dan merah-oranye." },
+          { "en": "low_morning", "id": "pagi rendah", "description": "Matahari rendah pagi (10–20°) — golden hour morning, hangat, bayangan sangat panjang." },
+          { "en": "mid_morning", "id": "pagi menengah", "description": "Matahari sekitar 30–45° — cahaya masih hangat, bayangan mulai memendek, usable untuk fotografi." },
+          { "en": "high_noon", "id": "tengah hari", "description": "Matahari hampir di atas (70–90°) — keras, bayangan pendek, kontras tinggi, bleached." },
+          { "en": "mid_afternoon", "id": "sore menengah", "description": "Matahari mulai turun 45–60° — mulai lebih hangat, bayangan memanjang." },
+          { "en": "golden_hour_evening", "id": "sore jam emas", "description": "Matahari rendah sebelum terbenam (5–15°) — paling hangat, bayangan sangat panjang." },
+          { "en": "just_below_horizon_sunset", "id": "baru terbenam", "description": "Matahari baru di bawah horizon — tidak ada cahaya langsung, langit masih glowing." }
+        ]
+      },
+
+      "sky_as_light_source": {
+        "_note": "Langit sendiri berfungsi sebagai light source yang merata — sangat berbeda tergantung kondisi.",
+        "options": [
+          { "en": "clear_blue_sky", "id": "langit biru cerah", "description": "Langit biru sebagai fill light raksasa — cool, merata dari atas, complementary terhadap warm sun." },
+          { "en": "overcast_white", "id": "mendung putih", "description": "Awan tebal sebagai softbox raksasa — sangat lembut, merata ke segala arah, tidak ada directional." },
+          { "en": "overcast_grey_dark", "id": "mendung abu gelap", "description": "Awan gelap — cahaya sangat redup, flat, suram, dramatis." },
+          { "en": "sunset_sky_glow", "id": "senja bercahaya", "description": "Langit sunset sebagai fill berwarna — pink dan oranye dari bawah, melengkapi warna emas matahari." },
+          { "en": "blue_hour_sky", "id": "langit jam biru", "description": "Langit deep blue setelah sunset sebagai ambient — cool, merata, sangat cinematik." },
+          { "en": "night_sky_minimal", "id": "langit malam minimal", "description": "Malam tanpa bulan — ambient hampir nol dari langit, hanya bintang yang negligible." }
+        ]
+      }
+    },
+
+    "practical_lights": {
+      "_note": "Lampu yang TERLIHAT dalam frame sebagai objek fisik — sekaligus berfungsi sebagai sumber cahaya. Ini adalah array — bisa ada beberapa sekaligus.",
+
+      "light_name": {
+        "_note": "[STRING_BEBAS] — Nama objek cahaya spesifik.",
+        "_examples_by_category": {
+          "historical_fantasy": [
+            "wall_mounted_torch", "hanging_lantern_iron", "candelabra_tall",
+            "oil_lamp_table", "brazier_large", "campfire_center",
+            "magic_crystal_orb", "enchanted_floating_candle",
+            "alchemical_glowing_flask", "druidic_stone_circle_glow"
+          ],
+          "modern_interior": [
+            "desk_lamp_warm", "ceiling_light_overhead", "floor_lamp_corner",
+            "neon_sign_wall", "computer_monitor_glow", "television_screen",
+            "refrigerator_open", "streetlight_through_window",
+            "bathroom_mirror_backlit", "nightstand_lamp"
+          ],
+          "urban_exterior": [
+            "streetlamp_sodium", "neon_sign_storefront", "car_headlights",
+            "traffic_signal_red", "billboard_illuminated", "spotlight_venue",
+            "bonfire_urban", "phone_screen_crowd"
+          ],
+          "industrial_scifi": [
+            "emergency_red_light_flashing", "fluorescent_tube_flickering",
+            "holographic_display_panel", "welding_arc_spark",
+            "plasma_conduit_glow", "engine_exhaust_glow",
+            "warning_beacon_rotating", "radar_sweep_glow"
+          ],
+          "natural": [
+            "fireflies_cluster", "bioluminescent_fungi", "lava_pool",
+            "glowing_river_magical", "aurora_reflection_on_water",
+            "deep_sea_anglerfish_lure"
+          ]
+        }
+      },
+
+      "location_in_frame": {
+        "_note": "Posisi lampu praktis dalam frame.",
+        "options": [
+          { "en": "foreground_left", "id": "latar depan kiri", "description": "Lampu di foreground sebelah kiri — bisa sebagian masuk frame atau jelas terlihat." },
+          { "en": "foreground_right", "id": "latar depan kanan", "description": "Lampu di foreground sebelah kanan." },
+          { "en": "foreground_center", "id": "latar depan tengah", "description": "Lampu di depan subjek, antara kamera dan subjek." },
+          { "en": "midground_left", "id": "latar tengah kiri", "description": "Lampu sejajar dengan subjek, di kiri." },
+          { "en": "midground_right", "id": "latar tengah kanan", "description": "Lampu sejajar dengan subjek, di kanan." },
+          { "en": "background_left", "id": "latar belakang kiri", "description": "Lampu di kejauhan sebelah kiri — berkontribusi pada depth dan atmosphere." },
+          { "en": "background_center", "id": "latar belakang tengah", "description": "Lampu di kejauhan tengah — sering menjadi visual anchor." },
+          { "en": "background_right", "id": "latar belakang kanan", "description": "Lampu di kejauhan sebelah kanan." },
+          { "en": "overhead_visible", "id": "atas terlihat", "description": "Lampu gantung atau ceiling yang terlihat dalam frame." },
+          { "en": "held_by_character", "id": "dipegang karakter", "description": "Lampu dipegang atau dibawa oleh karakter — obor, lilin, senter." }
+        ]
+      },
+
+      "emission_properties": {
+        "pattern": {
+          "_note": "Pola nyala lampu praktis.",
+          "options": [
+            { "en": "steady", "id": "stabil", "description": "Cahaya konstan tanpa variasi — lampu listrik normal, kristal." },
+            { "en": "flicker_slow", "id": "kedip lambat", "description": "Kedipan lambat dan tidak beraturan — lilin di udara bergerak, lampu hampir mati." },
+            { "en": "flicker_fast", "id": "kedip cepat", "description": "Kedipan cepat — api aktif, lampu rusak, listrik tidak stabil." },
+            { "en": "pulse_slow", "id": "denyut lambat", "description": "Naik-turun teratur seperti detak — organik, magis, mesin hidup." },
+            { "en": "pulse_fast", "id": "denyut cepat", "description": "Denyut cepat — alarm, sinyal darurat, energi tinggi." },
+            { "en": "strobe", "id": "strobo", "description": "Cahaya berkedip sangat cepat teratur — rave, studio, efek dramatis." },
+            { "en": "fade_in_out", "id": "memudar masuk-keluar", "description": "Perlahan muncul dan menghilang — magical, atmospheric, sinyal morse." },
+            { "en": "arc_wandering", "id": "busur berkeliaran", "description": "Cahaya bergerak seperti busur listrik — petir, sihir, mesin Tesla." }
+          ]
+        },
+        "speed": {
+          "options": [
+            { "en": "very_slow", "id": "sangat lambat", "description": "Seperti napas lambat — 1 siklus per 3–5 detik." },
+            { "en": "slow", "id": "lambat", "description": "1 siklus per 1–2 detik — lilin terkena angin lembut." },
+            { "en": "medium", "id": "sedang", "description": "Beberapa kali per detik — api normal." },
+            { "en": "fast", "id": "cepat", "description": "Banyak kali per detik — lampu rusak, listrik tidak stabil." },
+            { "en": "very_fast", "id": "sangat cepat", "description": "Strobo effect — 10+ kali per detik." }
+          ]
+        }
+      },
+
+      "contribution": {
+        "_note": "Seberapa besar pengaruh cahaya praktis ini terhadap eksposur keseluruhan scene.",
+        "options": [
+          { "en": "accent", "id": "aksen", "description": "Hanya sebagai aksen — tidak mengubah eksposur keseluruhan, tapi menambah karakter visual." },
+          { "en": "motivated", "id": "termotivasi", "description": "Sumber cahaya yang 'memotivasi' cahaya artificial lain — memberikan alasan logis cahaya itu ada." },
+          { "en": "supplemental", "id": "tambahan", "description": "Berkontribusi signifikan pada eksposur tapi bukan sumber utama." },
+          { "en": "key", "id": "utama", "description": "Lampu praktis ini adalah sumber cahaya dominan dalam scene — lilin satu-satunya di ruang gelap." }
+        ]
+      }
+    },
+
+    "volumetric_effects": {
+      "_note": "Efek partikel di udara yang membuat cahaya 'terlihat' — god rays, kabut bercahaya, debu mengambang. Menambah dimensi dan kedalaman dramatis pada scene.",
+
+      "medium_type": {
+        "_note": "Apa yang ada di udara yang membuat cahaya terlihat.",
+        "options": [
+          { "en": "none", "id": "tidak ada", "description": "Udara bersih — cahaya tidak terlihat sebagai volume, hanya sebagai efek pada permukaan." },
+          { "en": "dust", "id": "debu", "description": "Partikel debu halus — cahaya terlihat sebagai beam tipis, sangat natural. Biasa di interior lama, kering." },
+          { "en": "fog", "id": "kabut", "description": "Uap air di udara — cahaya tersebar merata, menciptakan glow lembut dan depth atmospheric." },
+          { "en": "thick_fog", "id": "kabut tebal", "description": "Kabut sangat padat — cahaya sangat tersebar, sumber tidak jelas, creepy dan misterius." },
+          { "en": "smoke", "id": "asap", "description": "Partikel asap — lebih padat dari fog, sedikit berwarna, cahaya tersebar tidak merata." },
+          { "en": "incense_smoke", "id": "asap dupa", "description": "Asap dupa tipis yang mengalir — artistik, sakral, curling visible." },
+          { "en": "steam", "id": "uap", "description": "Uap air panas — bergerak naik, dense spot, tersebar ke luar. Natural di dapur, air panas, hutan basah." },
+          { "en": "rain", "id": "hujan", "description": "Tetes hujan membuat cahaya terlihat — terutama saat backlit, dramatis dan atmosferik." },
+          { "en": "pollen_spores", "id": "serbuk sari", "description": "Partikel organik mengambang — natural, fantasi, spring feel, golden particles." },
+          { "en": "magic_particles", "id": "partikel magis", "description": "Partikel supernatural — bercahaya sendiri, berwarna, bergerak tidak mengikuti fisika." },
+          { "en": "snow", "id": "salju", "description": "Kepingan salju — bergerak turun lambat, backlit sangat indah." },
+          { "en": "ash", "id": "abu", "description": "Abu ringan melayang — post-apocalyptic, vulkanik, post-battle." },
+          { "en": "underwater_particles", "id": "partikel bawah air", "description": "Partikel di dalam air — plankton, debu laut, yang membuat cahaya terlihat di bawah air." }
+        ]
+      },
+
+      "density": {
+        "_note": "Kepadatan medium volumetrik.",
+        "options": [
+          { "en": "trace", "id": "sangat tipis", "description": "Hampir tidak terlihat — hanya hint saat cahaya tepat mengenai partikel." },
+          { "en": "subtle", "id": "halus", "description": "Terlihat tapi tidak dominan — menambah depth tanpa menghalangi." },
+          { "en": "moderate", "id": "sedang", "description": "Jelas terlihat — beams dan god rays terbentuk, visibility sedikit berkurang." },
+          { "en": "thick", "id": "tebal", "description": "Sangat dense — objek jauh mulai tersembunyi, cahaya sangat dramatis." },
+          { "en": "opaque", "id": "buram", "description": "Hampir tidak bisa melihat melaluinya — dense fog atau smoke ekstrem." }
+        ]
+      },
+
+      "interaction_with_light": {
+        "_note": "Bagaimana cahaya berinteraksi dengan medium — bisa kombinasi beberapa.",
+        "options": [
+          { "en": "god_rays", "id": "sinar Tuhan", "description": "Sinar cahaya dari atas menembus medium — megah, sakral, dramatis. Paling iconic volumetric effect." },
+          { "en": "light_cones", "id": "kerucut cahaya", "description": "Kerucut cahaya dari sumber spesifik — spotlight, senter, lampu jalan. Terlihat sebagai volume solid." },
+          { "en": "glow_halo", "id": "glow halo", "description": "Cahaya tersebar membentuk halo di sekitar sumber — fog atau haze di sekitar lampu." },
+          { "en": "caustics", "id": "kaustik", "description": "Pola cahaya bergerak dari refraksi air — underwater, kolam, kaca bergelombang." },
+          { "en": "light_scattering", "id": "hamburan cahaya", "description": "Cahaya tersebar merata ke semua arah — tidak ada beam jelas, ambient meningkat." },
+          { "en": "backlit_rim", "id": "rim backlit", "description": "Cahaya dari belakang menerangi tepi partikel — rain backlit, smoke backlit, sangat dramatik." },
+          { "en": "shadow_rays", "id": "sinar bayangan", "description": "Bayangan yang terlihat dalam volume — benda menghalangi cahaya menciptakan garis gelap dalam fog." }
+        ]
+      },
+
+      "color_influence": {
+        "_note": "Bagaimana medium mewarnai atau memfilter cahaya yang melewatinya.",
+        "options": [
+          { "en": "neutral", "id": "netral", "description": "Medium tidak mewarnai cahaya — hanya menghamburkan tanpa mengubah warna." },
+          { "en": "warm_tint", "id": "tint hangat", "description": "Medium menambahkan tint hangat — asap sering memberikan efek ini, debu kering." },
+          { "en": "cool_tint", "id": "tint dingin", "description": "Medium menambahkan tint dingin — fog laut, udara pegunungan." },
+          { "en": "colored_magic", "id": "berwarna magis", "description": "Medium berwarna supernatural — partikel sihir berwarna yang mewarnai cahaya sekitarnya." },
+          { "en": "green_tint", "id": "tint hijau", "description": "Tint hijau — air dangkal, underwater dangkal, hutan lebat." },
+          { "en": "amber_tint", "id": "tint amber", "description": "Tint amber keemasan — debu gurun, cahaya api dalam asap." }
+        ]
+      },
+
+      "movement": {
+        "_note": "Dinamika gerakan medium volumetrik.",
+        "options": [
+          { "en": "static", "id": "statis", "description": "Medium tidak bergerak — udara diam, fog thick tanpa angin." },
+          { "en": "drifting_slow", "id": "mengalir lambat", "description": "Bergerak sangat perlahan — kabut pagi, asap dupa, serbuk sari." },
+          { "en": "drifting_medium", "id": "mengalir sedang", "description": "Gerakan jelas tapi smooth — kabut dengan angin ringan, uap." },
+          { "en": "turbulent", "id": "turbulen", "description": "Bergerak tidak beraturan kacau — asap dalam kebakaran, steam dalam tekanan." },
+          { "en": "rising", "id": "naik", "description": "Bergerak ke atas — steam, asap hangat, partikel panas." },
+          { "en": "falling", "id": "turun", "description": "Bergerak ke bawah — salju, abu, debu setelah ledakan." },
+          { "en": "swirling", "id": "berputar", "description": "Berputar spiral — angin pusaran, sihir aktif, drain." }
+        ]
+      }
+    },
+
+    "shadows": {
+      "_note": "Karakteristik bayangan dalam scene — shadow adalah negatif dari cahaya, sama pentingnya.",
+
+      "style": {
+        "_note": "Pendekatan rendering bayangan secara keseluruhan.",
+        "options": [
+          { "en": "realistic_ray_traced", "id": "realistis ray traced", "description": "Bayangan mengikuti fisika sepenuhnya — decay, penumbra, interreflection. Paling natural." },
+          { "en": "realistic_simplified", "id": "realistis disederhanakan", "description": "Realistis tapi tanpa complexity penuh — natural tapi efisien." },
+          { "en": "stylized_sharp", "id": "stilisasi tajam", "description": "Bayangan dengan tepi sangat tajam dan gelap solid — anime, graphic novel, noir." },
+          { "en": "stylized_soft", "id": "stilisasi lembut", "description": "Bayangan lembut dan dipoles — ilustrasi, konsep art, dreamy." },
+          { "en": "painted", "id": "dilukis", "description": "Bayangan seperti dilukis tangan — brushstroke visible, artistic." },
+          { "en": "cel_shaded", "id": "cel shading", "description": "Bayangan flat dalam zona — anime cell, tidak ada gradient, hanya dua tone." },
+          { "en": "none", "id": "tidak ada", "description": "Tidak ada bayangan — untuk gaya sangat flat, atau scene dengan ambient sempurna." }
+        ]
+      },
+
+      "softness": {
+        "_note": "Ketajaman tepi bayangan — dipengaruhi ukuran dan jarak sumber cahaya.",
+        "options": [
+          { "en": "razor_sharp", "id": "sangat tajam", "description": "Tepi sempurna crisp tanpa penumbra — dari sumber sangat jauh atau sangat kecil (laser, bintang). Point light." },
+          { "en": "hard", "id": "keras", "description": "Tepi tajam dengan penumbra sangat tipis — matahari langsung, spotlight, sumber kecil." },
+          { "en": "semi_soft", "id": "semi lembut", "description": "Tepi sedikit diffuse — natural cinematic, sebagian besar kondisi outdoor cerah." },
+          { "en": "soft", "id": "lembut", "description": "Tepi gradual — dari sumber besar atau jauh. Overcast, softbox, window diffuse." },
+          { "en": "very_soft", "id": "sangat lembut", "description": "Hampir tidak ada tepi jelas — bayangan memudar perlahan. Overcast penuh, ambient tinggi." },
+          { "en": "feathered", "id": "tepi bulu", "description": "Tepi sangat gradual seperti bulu — dari sumber yang sangat besar relatif terhadap jarak." }
+        ]
+      },
+
+      "color_tint": {
+        "_note": "Warna bayangan — bayangan BUKAN hitam murni, selalu ada tint dari ambient atau bounce light.",
+        "options": [
+          { "en": "neutral_dark", "id": "netral gelap", "description": "Abu-abu gelap netral — tidak ada bias warna, studio controlled." },
+          { "en": "cool_blue", "id": "biru dingin", "description": "Bayangan berwarna biru — outdoor saat matahari terang (sky sebagai fill), paling umum natural." },
+          { "en": "deep_blue", "id": "biru dalam", "description": "Bayangan biru tua — malam, blue hour, atau intentional dramatic." },
+          { "en": "warm_brown", "id": "coklat hangat", "description": "Bayangan hangat — indoor dengan banyak permukaan kayu, cahaya bounce dari material warm." },
+          { "en": "purple_violet", "id": "ungu", "description": "Bayangan ungu — artistik, fantasi, atau complementary terhadap golden key light." },
+          { "en": "green_tinted", "id": "tint hijau", "description": "Bayangan hijau — di bawah kanopi hutan, dari bounce vegetation." },
+          { "en": "complementary_to_key", "id": "komplementer terhadap key", "description": "Warna bayangan berlawanan dengan key light di color wheel — cyan shadow untuk warm key, orange shadow untuk cool key." },
+          { "en": "colored_magical", "id": "berwarna magis", "description": "Bayangan dengan warna supernatural — fantasi, shadow magic, bayangan yang tidak seharusnya." }
+        ]
+      },
+
+      "special_shadow_effects": {
+        "_note": "Efek bayangan khusus yang menambah narrative atau estetika — bisa kombinasi beberapa.",
+        "_examples": [
+          "prison_bar_shadows_through_window",
+          "venetian_blind_stripes_on_wall",
+          "tree_branch_pattern_on_ground",
+          "dappled_light_through_leaves",
+          "shadow_of_character_revealing_true_form",
+          "multiple_shadows_from_multiple_sources",
+          "shadow_moving_independently_of_subject",
+          "shadow_cast_on_fog_volumetrically",
+          "hard_shadow_split_face_perfectly",
+          "long_dramatic_shadow_at_golden_hour",
+          "shadow_telling_different_story_than_character",
+          "no_shadow_supernatural_entity"
+        ]
+      }
+    },
+
+    "lighting_combinations": {
+      "_note": "Preset kombinasi lengkap yang langsung bisa dipakai — menggabungkan semua sub-field sekaligus. Gunakan sebagai template yang bisa dimodifikasi.",
+      "options": [
+        {
+          "name": "Portrait_Beauty_Daylight",
+          "id": "Portrait kecantikan siang",
+          "setup": {
+            "key_light": { "source_type": "window", "position": "45_left_front", "intensity": "bright", "quality": "soft" },
+            "fill_light": { "source_type": "bounce", "position": "45_right_front", "intensity": "moderate", "quality": "diffused" },
+            "rim_light": { "enabled": false },
+            "ambient": { "source_type": "skylight", "intensity": "moderate" }
+          },
+          "mood": "Bersih, natural, flattering, profesional"
+        },
+        {
+          "name": "Dramatic_Noir_Single_Key",
+          "id": "Noir dramatis satu lampu",
+          "setup": {
+            "key_light": { "source_type": "practical_motivated", "position": "side_left", "intensity": "bright", "quality": "hard" },
+            "fill_light": { "enabled": false },
+            "rim_light": { "enabled": false },
+            "ambient": { "intensity": "trace" }
+          },
+          "mood": "Film noir, misteri, chiaroscuro ekstrem"
+        },
+        {
+          "name": "Cyberpunk_Neon_Night",
+          "id": "Neon cyberpunk malam",
+          "setup": {
+            "key_light": { "source_type": "neon_tube", "color": { "hue": "magenta", "saturation": "neon" }, "position": "45_left_front", "intensity": "moderate" },
+            "fill_light": { "source_type": "neon_tube", "color": { "hue": "cyan", "saturation": "neon" }, "position": "45_right_front", "intensity": "low" },
+            "rim_light": { "source_type": "neon_tube", "color": { "hue": "purple_violet" }, "position": "back_center", "intensity": "moderate" },
+            "ambient": { "intensity": "dim", "color": { "hue": "deep_blue" } },
+            "volumetric": { "medium_type": "rain", "density": "moderate" }
+          },
+          "mood": "Urban dystopia, night life, danger, neon-soaked"
+        },
+        {
+          "name": "Fantasy_Magical_Forest",
+          "id": "Hutan magis fantasi",
+          "setup": {
+            "key_light": { "source_type": "skylight", "position": "top_center", "intensity": "moderate", "quality": "diffused", "color": { "hue": "warm_gold" } },
+            "fill_light": { "source_type": "bounce", "position": "wrap_around", "intensity": "low" },
+            "rim_light": { "source_type": "magic_spell", "color": { "hue": "teal" }, "position": "45_right_back", "intensity": "moderate" },
+            "ambient": { "source_type": "bioluminescent", "intensity": "low", "color": { "hue": "teal" } },
+            "volumetric": { "medium_type": "pollen_spores", "density": "subtle", "interaction_with_light": ["god_rays"] }
+          },
+          "mood": "Magis, damai, otherworldly, fantasi"
+        },
+        {
+          "name": "Horror_Extreme_Underlighting",
+          "id": "Horor cahaya bawah ekstrem",
+          "setup": {
+            "key_light": { "source_type": "practical_motivated", "position": "under_center", "intensity": "moderate", "quality": "hard", "color": { "hue": "sickly_yellow_green" } },
+            "fill_light": { "enabled": false },
+            "rim_light": { "enabled": false },
+            "ambient": { "intensity": "trace", "color": { "hue": "deep_blue" } }
+          },
+          "mood": "Horror, ancaman, tidak natural, monster reveal"
+        },
+        {
+          "name": "Golden_Hour_Epic_Portrait",
+          "id": "Portrait epik jam emas",
+          "setup": {
+            "key_light": { "source_type": "sun", "position": "45_right_front", "intensity": "very_bright", "quality": "semi_hard", "color": { "temperature": "3200K", "hue": "warm_gold" } },
+            "fill_light": { "source_type": "skylight", "intensity": "moderate", "quality": "diffused", "color": { "hue": "deep_blue" } },
+            "rim_light": { "source_type": "sun", "position": "45_left_back", "intensity": "bright", "color": { "hue": "amber_orange" } },
+            "ambient": { "source_type": "clear_blue_sky", "intensity": "moderate" },
+            "volumetric": { "medium_type": "dust", "density": "subtle", "interaction_with_light": ["god_rays"] }
+          },
+          "mood": "Epik, heroik, hangat, memorable"
+        },
+        {
+          "name": "Candlelit_Medieval_Intimate",
+          "id": "Lilin medieval intim",
+          "setup": {
+            "key_light": { "source_type": "candle_torch", "position": "front_center", "intensity": "dim", "quality": "hard", "color": { "temperature": "1800K", "hue": "amber_orange" }, "falloff": "rapid" },
+            "fill_light": { "enabled": false },
+            "rim_light": { "source_type": "fire_large", "position": "back_center", "intensity": "low" },
+            "ambient": { "intensity": "trace" },
+            "volumetric": { "medium_type": "smoke", "density": "subtle" }
+          },
+          "mood": "Intimate, bersejarah, mistis, low key dramatis"
+        },
+        {
+          "name": "Underwater_Deep",
+          "id": "Dalam air",
+          "setup": {
+            "key_light": { "source_type": "skylight", "position": "top_center", "intensity": "moderate", "quality": "diffused", "color": { "temperature": "9000K", "hue": "teal" } },
+            "fill_light": { "source_type": "skylight", "position": "wrap_around", "intensity": "low", "color": { "hue": "deep_blue" } },
+            "rim_light": { "source_type": "bioluminescent", "intensity": "low", "color": { "hue": "cyan" } },
+            "ambient": { "intensity": "low", "color": { "hue": "teal" } },
+            "volumetric": { "medium_type": "underwater_particles", "density": "moderate", "interaction_with_light": ["caustics", "god_rays"] }
+          },
+          "mood": "Misterius, isolasi, surreal, eksplorasi"
+        }
+      ]
+    }
+  }
+}

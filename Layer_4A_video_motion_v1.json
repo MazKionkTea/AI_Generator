@@ -1,0 +1,1112 @@
+{
+  "_readme": "Library pilihan untuk field motion (Layer 4A) dan temporal_sequence (Layer 4B). KHUSUS VIDEO — untuk gambar statis, layer ini dilewati sepenuhnya. Motion harus didefinisikan SEBELUM lighting (Layer 5) agar AI tahu apakah cahaya perlu konsisten antar frame. Semua gerakan kamera relatif terhadap posisi awal yang didefinisikan di composition (Layer 3).",
+  "_version": "1.0",
+  "_structure": "motion → camera_movement | subject_motion | environment_motion | motion_intensity | temporal_sequence",
+  "_platform_note": "Cara mengekspresikan motion berbeda per platform. Runway/Kling: deskripsi natural language. Pika: parameter --motion. Sora: instruksi dalam prompt. Lihat motion_presets.platform_syntax untuk referensi per platform.",
+
+  "motion": {
+
+    "camera_movement": {
+
+      "type": {
+        "_note": "Jenis fundamental gerakan kamera. Bisa dikombinasikan (contoh: dolly_in + pan_right secara bersamaan). Deskripsi menggunakan terminologi sinematik standar.",
+        "options": [
+          {
+            "en": "static",
+            "id": "statis",
+            "description": "Kamera tidak bergerak sama sekali — terpasang pada satu titik. Semua gerakan berasal dari subjek atau environment. Komposisi tetap persis seperti yang didefinisikan di Layer 3.",
+            "cinematic_feel": "Formal, deliberate, semua perhatian pada subjek yang bergerak dalam frame",
+            "best_for": "Dialog, emotional beat, landscape reveal, situasi di mana komposisi adalah kuncinya",
+            "platform_syntax": {
+              "runway": "static camera",
+              "kling": "fixed camera, no camera movement",
+              "pika": "--motion 0",
+              "sora": "static camera shot, locked off"
+            }
+          },
+          {
+            "en": "pan",
+            "id": "pan",
+            "description": "Kamera berputar pada sumbu vertikal (kiri-kanan) dari posisi tetap — seperti kepala manusia yang menoleh. Tripod tidak bergerak, hanya kepala kamera yang berotasi.",
+            "cinematic_feel": "Mengikuti, menelusuri, reveal lateral, menghubungkan dua elemen dalam frame",
+            "best_for": "Mengikuti subjek yang bergerak lateral, reveal lanskap, menghubungkan dua karakter",
+            "platform_syntax": {
+              "runway": "camera pans [left/right]",
+              "kling": "pan left / pan right",
+              "sora": "the camera pans slowly to the right"
+            }
+          },
+          {
+            "en": "tilt",
+            "id": "tilt",
+            "description": "Kamera berputar pada sumbu horizontal (atas-bawah) dari posisi tetap — seperti kepala mengangguk. Tripod tidak bergerak, hanya sudut kamera yang berubah.",
+            "cinematic_feel": "Reveal vertikal, membangun skala, mengikuti gerakan naik-turun",
+            "best_for": "Reveal gedung tinggi dari bawah ke atas, karakter jatuh, objek jatuh dari langit",
+            "platform_syntax": {
+              "runway": "camera tilts [up/down]",
+              "kling": "tilt up / tilt down",
+              "sora": "camera tilts upward to reveal the skyscraper"
+            }
+          },
+          {
+            "en": "dolly",
+            "id": "dolly",
+            "description": "Seluruh kamera bergerak maju-mundur pada rel atau permukaan datar — berbeda dari zoom karena perspektif benar-benar berubah (elemen background bergerak relatif terhadap foreground).",
+            "cinematic_feel": "Immersive, mendekati atau menjauhi secara fisik, parallax kuat, sinematik klasik",
+            "best_for": "Reveal dramatis, membangun intimacy, Hitchcock zoom (dolly out + zoom in bersamaan)",
+            "sub_types": {
+              "dolly_in": "Kamera bergerak maju mendekati subjek — intensitas, urgency, intimacy",
+              "dolly_out": "Kamera bergerak mundur menjauhi subjek — isolation, reveal konteks, pelepasan",
+              "dolly_lateral": "Kamera bergerak menyamping sambil mempertahankan jarak — tracking shot, mengikuti paralel"
+            },
+            "platform_syntax": {
+              "runway": "dolly in / camera moves forward",
+              "kling": "dolly in / dolly out",
+              "sora": "the camera slowly dollies in toward the subject"
+            }
+          },
+          {
+            "en": "truck",
+            "id": "truck",
+            "description": "Seluruh kamera bergerak lateral (kiri-kanan) tanpa merotasi — seperti kereta di rel samping. Berbeda dari pan karena kamera tidak menoleh, hanya berpindah posisi.",
+            "cinematic_feel": "Tracking shot, mengikuti subjek dari samping, walking pace",
+            "best_for": "Mengikuti karakter yang berjalan, reveal lingkungan saat bergerak lateral",
+            "platform_syntax": {
+              "runway": "camera tracks left / camera tracks right",
+              "sora": "tracking shot, camera moves laterally alongside the character"
+            }
+          },
+          {
+            "en": "pedestal",
+            "id": "pedestal",
+            "description": "Seluruh kamera naik atau turun secara vertikal tanpa mengubah arah pandang — seperti elevator kamera. Berbeda dari tilt karena sudut tidak berubah.",
+            "cinematic_feel": "Rise: megah, harapan, reveal langit. Fall: sinking, kelelahan, jatuh",
+            "best_for": "Reveal langit secara dramatis, karakter tumbang, naik ke ketinggian",
+            "platform_syntax": {
+              "runway": "camera rises / camera descends",
+              "sora": "the camera pedests up, revealing the full cityscape"
+            }
+          },
+          {
+            "en": "orbit",
+            "id": "orbit",
+            "description": "Kamera bergerak melingkar mengelilingi subjek sambil selalu menghadap ke subjek — seperti planet mengorbit matahari. Disebut juga arc shot atau circular tracking.",
+            "cinematic_feel": "Menyingkap semua sisi subjek, heroik, eksploratif, God's view",
+            "best_for": "Karakter reveal heroik, momen penting di mana subjek adalah pusat dunia",
+            "sub_types": {
+              "orbit_360": "Orbit penuh mengelilingi subjek",
+              "orbit_partial": "Orbit sebagian — 90° atau 180°",
+              "orbit_rising": "Orbit sambil naik — reveal dramatis dari bawah ke atas"
+            },
+            "platform_syntax": {
+              "runway": "camera orbits around the subject",
+              "kling": "orbit shot, circular camera movement",
+              "sora": "the camera orbits slowly around the character, revealing all sides"
+            }
+          },
+          {
+            "en": "zoom",
+            "id": "zoom",
+            "description": "Focal length lensa berubah tanpa kamera bergerak — perspektif tidak berubah (berbeda dari dolly). Background dan foreground scale bersama-sama. Terasa lebih '2D' dari dolly.",
+            "cinematic_feel": "Emphasis instan, kurang natural dari dolly, retro jika zoom cepat",
+            "best_for": "Reaksi shock (smash zoom), slow zoom untuk emphasis emosional",
+            "sub_types": {
+              "zoom_in": "Focal length memanjang — subjek membesar",
+              "zoom_out": "Focal length memendek — subjek mengecil, konteks terungkap",
+              "smash_zoom": "Zoom sangat cepat — komedi, shock, exaggeration",
+              "slow_zoom": "Zoom sangat lambat — tension, emotional weight"
+            },
+            "platform_syntax": {
+              "runway": "zoom in slowly / slow zoom out",
+              "pika": "--zoom in",
+              "sora": "the camera slowly zooms in on the character's face"
+            }
+          },
+          {
+            "en": "handheld_follow",
+            "id": "handheld mengikuti",
+            "description": "Kamera mengikuti subjek dengan goyangan natural handheld — realistis, urgency, dokumenter. Berbeda dari steady tracking karena ada imperfection yang disengaja.",
+            "cinematic_feel": "Realistis, urgency, dokumenter, perang, investigasi",
+            "best_for": "Chase scene, momen emosional mentah, adegan perang, horror found footage",
+            "platform_syntax": {
+              "runway": "handheld camera follows the character",
+              "sora": "shaky handheld camera follows closely behind the running character"
+            }
+          },
+          {
+            "en": "crane_jib",
+            "id": "crane/jib",
+            "description": "Kamera pada lengan crane yang bisa naik sangat tinggi dan bergerak dengan arc besar — movement megah dan lambat yang tidak bisa dilakukan handheld.",
+            "cinematic_feel": "Megah, epik, God's view, establishing, ceremonial",
+            "best_for": "Establishing shot epik, akhir scene yang memisahkan karakter dari dunia",
+            "platform_syntax": {
+              "runway": "crane shot rising above the scene",
+              "sora": "the camera cranes up and away, revealing the vast landscape below"
+            }
+          },
+          {
+            "en": "drone_aerial",
+            "id": "drone aerial",
+            "description": "Gerakan bebas dari udara — bisa bergerak ke semua arah, naik-turun, dan putar. Modern dan sinematik.",
+            "cinematic_feel": "Bebas, modern, God's eye, landscape reveal, skala geografis",
+            "best_for": "Establishing landscape, karakter kecil dalam world yang besar, pursuit dari udara",
+            "platform_syntax": {
+              "runway": "aerial drone shot",
+              "sora": "aerial drone footage swooping down toward the forest"
+            }
+          },
+          {
+            "en": "whip_pan",
+            "id": "whip pan",
+            "description": "Pan sangat cepat — begitu cepat sehingga frame blur total di tengah gerakan. Sering digunakan sebagai transisi atau untuk koneksi dua scene.",
+            "cinematic_feel": "Energi, kecepatan, transisi stylish, Edgar Wright aesthetic",
+            "best_for": "Match cut antar scene, transisi energetik, koneksi cepat dua lokasi",
+            "platform_syntax": {
+              "runway": "whip pan to the right",
+              "sora": "fast whip pan transition"
+            }
+          },
+          {
+            "en": "vertigo_effect",
+            "id": "efek vertigo",
+            "description": "Dolly berlawanan arah dengan zoom bersamaan — Hitchcock/Vertigo effect. Subjek tetap sama besar tapi background tampak berubah jauh/dekat secara dramatis.",
+            "cinematic_feel": "Disorientasi psikologis, dread, realisasi yang mengejutkan, Hitchcock signature",
+            "best_for": "Momen psychological shock, karakter menyadari sesuatu yang mengerikan",
+            "platform_syntax": {
+              "runway": "dolly zoom effect, zoom out while moving forward",
+              "sora": "Hitchcock zoom, dolly in while zooming out simultaneously"
+            }
+          }
+        ]
+      },
+
+      "direction": {
+        "_note": "Arah spesifik gerakan kamera. Bisa kombinasi dua arah (misal: forward + right untuk diagonal).",
+        "options": [
+          { "en": "left", "id": "ke kiri", "description": "Pan kiri atau truck ke kiri." },
+          { "en": "right", "id": "ke kanan", "description": "Pan kanan atau truck ke kanan." },
+          { "en": "up", "id": "ke atas", "description": "Tilt ke atas atau pedestal naik." },
+          { "en": "down", "id": "ke bawah", "description": "Tilt ke bawah atau pedestal turun." },
+          { "en": "forward", "id": "maju", "description": "Dolly in atau kamera maju mendekati subjek." },
+          { "en": "backward", "id": "mundur", "description": "Dolly out atau kamera mundur menjauhi subjek." },
+          { "en": "clockwise", "id": "searah jarum jam", "description": "Orbit atau rotasi searah jarum jam." },
+          { "en": "counter_clockwise", "id": "berlawanan jarum jam", "description": "Orbit berlawanan jarum jam." },
+          { "en": "diagonal_forward_left", "id": "diagonal maju-kiri", "description": "Bergerak maju sambil ke kiri." },
+          { "en": "diagonal_forward_right", "id": "diagonal maju-kanan", "description": "Bergerak maju sambil ke kanan." },
+          { "en": "rising_forward", "id": "naik maju", "description": "Naik sambil maju — drone reveal klasik." },
+          { "en": "sinking_backward", "id": "turun mundur", "description": "Turun sambil mundur — isolation feel." }
+        ]
+      },
+
+      "speed": {
+        "_note": "Kecepatan gerakan kamera — mempengaruhi mood dan urgency.",
+        "options": [
+          {
+            "en": "imperceptible",
+            "id": "hampir tidak terasa",
+            "description": "Sangat lambat sehingga penonton hampir tidak sadar kamera bergerak — seperti jam yang bergerak tanpa disadari. Tekanan psikologis yang sangat halus.",
+            "duration_reference": "Bergerak 1–2 derajat atau cm dalam seluruh durasi shot"
+          },
+          {
+            "en": "very_slow",
+            "id": "sangat lambat",
+            "description": "Gerakan lambat yang jelas terlihat — meditative, majestic, atau menekan. Penonton menyadari kamera bergerak tapi tidak terasa terburu-buru.",
+            "duration_reference": "Movement penuh dalam 5–10 detik"
+          },
+          {
+            "en": "slow",
+            "id": "lambat",
+            "description": "Lambat dan deliberate — cinematic standard untuk momen emosional. Cukup lambat untuk terasa meaningful.",
+            "duration_reference": "Movement penuh dalam 3–5 detik"
+          },
+          {
+            "en": "normal",
+            "id": "normal",
+            "description": "Kecepatan natural — seperti kepala manusia yang menoleh mengikuti sesuatu. Tidak menarik perhatian ke dirinya sendiri.",
+            "duration_reference": "Movement penuh dalam 1–3 detik"
+          },
+          {
+            "en": "fast",
+            "id": "cepat",
+            "description": "Lebih cepat dari natural — urgency, action, mengejar. Terasa sedikit out of control.",
+            "duration_reference": "Movement penuh dalam 0.5–1 detik"
+          },
+          {
+            "en": "sudden",
+            "id": "tiba-tiba",
+            "description": "Sangat cepat, hampir instan — shock, reaksi, cut-to. Tidak ada ramp-up.",
+            "duration_reference": "Hampir instan — kurang dari 0.3 detik"
+          }
+        ]
+      },
+
+      "easing": {
+        "_note": "Karakter akselerasi dan deselerasi gerakan — menentukan apakah gerakan terasa mekanis atau organis.",
+        "options": [
+          {
+            "en": "linear",
+            "id": "linear",
+            "description": "Kecepatan konstan dari awal hingga akhir — terasa mekanis, robotic, atau industrial. Jarang digunakan untuk gerakan organis.",
+            "feel": "Mekanis, robot, conveyor belt"
+          },
+          {
+            "en": "ease_in",
+            "id": "ease in",
+            "description": "Mulai lambat lalu semakin cepat — seperti mobil yang mulai jalan. Membangun momentum.",
+            "feel": "Bangunan momentum, akselerasi, antisipasi"
+          },
+          {
+            "en": "ease_out",
+            "id": "ease out",
+            "description": "Mulai cepat lalu melambat hingga berhenti — seperti mobil yang mengerem. Landing yang lembut.",
+            "feel": "Deselerasi lembut, settling, arrival"
+          },
+          {
+            "en": "ease_in_out",
+            "id": "ease in-out",
+            "description": "Mulai lambat, tengah cepat, akhir lambat — gerakan paling organis dan sinematik. Standar industri untuk kamera.",
+            "feel": "Organis, sinematik, napas"
+          },
+          {
+            "en": "smooth_continuous",
+            "id": "smooth kontinu",
+            "description": "Gerakan sangat halus tanpa perubahan kecepatan yang terasa — gimbal atau drone yang dikontrol dengan baik.",
+            "feel": "Floating, dreamy, mengalir"
+          },
+          {
+            "en": "snappy",
+            "id": "snappy",
+            "description": "Mulai dan berhenti tajam dengan sedikit overshoot — feel anime atau action stylized.",
+            "feel": "Energetik, anime, pop"
+          },
+          {
+            "en": "springy",
+            "id": "springy",
+            "description": "Gerakan dengan sedikit bounce di akhir — seperti spring atau karet. Playful, organic.",
+            "feel": "Playful, hidup, springy organic"
+          }
+        ]
+      },
+
+      "arc": {
+        "_note": "Jalur yang dilalui kamera dalam ruang tiga dimensi.",
+        "options": [
+          { "en": "straight_line", "id": "garis lurus", "description": "Kamera bergerak dalam garis lurus sempurna — clean, deliberate, geometris." },
+          { "en": "gentle_curve", "id": "kurva lembut", "description": "Kamera mengikuti kurva lembut — lebih organis dari garis lurus, natural." },
+          { "en": "s_curve", "id": "kurva-S", "description": "Kamera mengikuti jalur berbentuk S — sangat organis, dancing quality." },
+          { "en": "circular_arc", "id": "busur melingkar", "description": "Kamera bergerak dalam busur lingkaran — orbit partial atau crane arc." },
+          { "en": "full_circle", "id": "lingkaran penuh", "description": "Orbit 360 derajat penuh mengelilingi subjek." },
+          { "en": "spiral", "id": "spiral", "description": "Kamera bergerak dalam spiral — naik sambil orbit, atau turun sambil mendekati." },
+          { "en": "figure_eight", "id": "angka delapan", "description": "Jalur berbentuk angka 8 — kompleks, menghubungkan dua titik, dance quality." }
+        ]
+      }
+    },
+
+    "subject_motion": {
+
+      "primary_motion": {
+        "_note": "Gerakan utama yang dilakukan subjek/karakter dalam video. Bisa kombinasi beberapa.",
+        "options": [
+          {
+            "en": "idle_breathing",
+            "id": "diam bernapas",
+            "description": "Hampir tidak bergerak — hanya gerakan napas yang terlihat di dada dan bahu. Paling minimal.",
+            "intensity": "minimal",
+            "cloth_physics_implied": "very_subtle",
+            "hair_physics_implied": "none"
+          },
+          {
+            "en": "idle_subtle_sway",
+            "id": "diam sedikit bergerak",
+            "description": "Berdiri diam dengan sedikit micro-movement alami — shift berat badan, kepala sedikit bergerak. Seperti orang berdiri menunggu.",
+            "intensity": "very_low",
+            "cloth_physics_implied": "subtle_flutter",
+            "hair_physics_implied": "light_sway"
+          },
+          {
+            "en": "head_turn",
+            "id": "menoleh",
+            "description": "Hanya kepala yang berputar — menoleh ke satu arah. Tubuh tetap.",
+            "intensity": "low",
+            "cloth_physics_implied": "none",
+            "hair_physics_implied": "subtle"
+          },
+          {
+            "en": "look_up_down",
+            "id": "melihat atas-bawah",
+            "description": "Kepala menunduk atau mendongak — mencari, memperhatikan, menghindari kontak mata.",
+            "intensity": "low",
+            "cloth_physics_implied": "none",
+            "hair_physics_implied": "subtle"
+          },
+          {
+            "en": "hand_gesture",
+            "id": "gestur tangan",
+            "description": "Tangan bergerak — menunjuk, melambaikan, mengangkat, berbicara dengan tangan. Tubuh relatif diam.",
+            "intensity": "low_to_moderate",
+            "cloth_physics_implied": "sleeve_flutter",
+            "hair_physics_implied": "none"
+          },
+          {
+            "en": "reach_grab",
+            "id": "meraih atau mengambil",
+            "description": "Tangan atau lengan meraih sesuatu — mengambil objek, menyentuh, menjangkau.",
+            "intensity": "moderate",
+            "cloth_physics_implied": "subtle_flutter",
+            "hair_physics_implied": "none"
+          },
+          {
+            "en": "turning_body",
+            "id": "memutar badan",
+            "description": "Seluruh tubuh berputar — berbalik arah, menoleh sambil badan ikut, spin.",
+            "intensity": "moderate",
+            "cloth_physics_implied": "dramatic_flutter",
+            "hair_physics_implied": "dynamic_flow"
+          },
+          {
+            "en": "sitting_down",
+            "id": "duduk",
+            "description": "Karakter bergerak dari berdiri ke duduk — atau sebaliknya (stand_up).",
+            "intensity": "moderate",
+            "cloth_physics_implied": "moderate_flutter",
+            "hair_physics_implied": "none"
+          },
+          {
+            "en": "walking_slow",
+            "id": "berjalan lambat",
+            "description": "Berjalan pelan dan deliberate — langkah diperhitungkan, confident atau hati-hati.",
+            "intensity": "moderate",
+            "cloth_physics_implied": "gentle_sway",
+            "hair_physics_implied": "light_bounce"
+          },
+          {
+            "en": "walking_normal",
+            "id": "berjalan normal",
+            "description": "Berjalan dengan kecepatan natural — paling umum, relatable.",
+            "intensity": "moderate",
+            "cloth_physics_implied": "moderate_sway",
+            "hair_physics_implied": "natural_bounce"
+          },
+          {
+            "en": "walking_fast",
+            "id": "berjalan cepat",
+            "description": "Langkah besar dan cepat — urgency, purpose, hampir berlari.",
+            "intensity": "moderate_high",
+            "cloth_physics_implied": "active_flutter",
+            "hair_physics_implied": "dynamic_sway"
+          },
+          {
+            "en": "running",
+            "id": "berlari",
+            "description": "Berlari — ke segala arah. Energi penuh.",
+            "intensity": "high",
+            "cloth_physics_implied": "dramatic_flow",
+            "hair_physics_implied": "dynamic_flow"
+          },
+          {
+            "en": "running_desperate",
+            "id": "berlari putus asa",
+            "description": "Berlari sekencang mungkin — survival mode, melarikan diri atau mengejar.",
+            "intensity": "very_high",
+            "cloth_physics_implied": "extreme_flow",
+            "hair_physics_implied": "extreme_flow"
+          },
+          {
+            "en": "jumping",
+            "id": "melompat",
+            "description": "Tubuh meninggalkan tanah — lompatan tinggi, parkour, atau jatuh.",
+            "intensity": "high",
+            "cloth_physics_implied": "dramatic_flow",
+            "hair_physics_implied": "dramatic_rise_fall"
+          },
+          {
+            "en": "fighting_combat",
+            "id": "bertarung",
+            "description": "Gerakan pertarungan — pukulan, tendangan, block, dodge. Dinamis dan tidak terprediksi.",
+            "intensity": "very_high",
+            "cloth_physics_implied": "extreme_dynamic",
+            "hair_physics_implied": "extreme_dynamic"
+          },
+          {
+            "en": "dancing",
+            "id": "menari",
+            "description": "Gerakan tari — bisa dari yang paling halus (sway) hingga yang paling energetik.",
+            "intensity": "varies",
+            "cloth_physics_implied": "dramatic_flowing",
+            "hair_physics_implied": "flowing_dynamic"
+          },
+          {
+            "en": "falling",
+            "id": "jatuh",
+            "description": "Tubuh jatuh — karena tersandung, ditembak, atau gravitasi. Bisa lambat-motion atau real-time.",
+            "intensity": "high",
+            "cloth_physics_implied": "gravity_pull",
+            "hair_physics_implied": "gravity_flow"
+          },
+          {
+            "en": "crouching_crawling",
+            "id": "jongkok atau merangkak",
+            "description": "Bergerak rendah ke tanah — stealth, survival, memeriksa sesuatu.",
+            "intensity": "moderate",
+            "cloth_physics_implied": "compressed_minimal",
+            "hair_physics_implied": "hanging_forward"
+          },
+          {
+            "en": "expression_change",
+            "id": "perubahan ekspresi",
+            "description": "Hanya wajah yang berubah — ekspresi berubah perlahan atau mendadak. Tubuh diam.",
+            "intensity": "minimal",
+            "cloth_physics_implied": "none",
+            "hair_physics_implied": "none"
+          },
+          {
+            "en": "breathing_heavy",
+            "id": "napas berat",
+            "description": "Napas terengah-engah — setelah berlari, ketakutan, atau kelelahan. Dada naik-turun dramatis.",
+            "intensity": "low_visible",
+            "cloth_physics_implied": "rhythmic_subtle",
+            "hair_physics_implied": "none"
+          },
+          {
+            "en": "floating_levitating",
+            "id": "melayang",
+            "description": "Tubuh terangkat dari tanah — sihir, angin kuat, ruang angkasa, mimpi.",
+            "intensity": "moderate",
+            "cloth_physics_implied": "floating_all_directions",
+            "hair_physics_implied": "floating_upward"
+          },
+          {
+            "en": "swimming",
+            "id": "berenang",
+            "description": "Gerakan berenang — underwater atau di permukaan. Resistance terlihat.",
+            "intensity": "moderate_to_high",
+            "cloth_physics_implied": "water_resistance_flow",
+            "hair_physics_implied": "underwater_spread"
+          }
+        ]
+      },
+
+      "motion_path": {
+        "_note": "Jalur yang ditempuh subjek dalam ruang — relatif terhadap kamera.",
+        "options": [
+          { "en": "stationary", "id": "diam", "description": "Subjek tidak berpindah tempat — hanya gerakan in-place (bernapas, ekspresi, gestur)." },
+          { "en": "toward_camera", "id": "mendekati kamera", "description": "Subjek bergerak langsung menuju kamera — semakin besar dalam frame, intensitas meningkat." },
+          { "en": "away_from_camera", "id": "menjauhi kamera", "description": "Subjek bergerak menjauh — semakin kecil, isolation, departure." },
+          { "en": "lateral_left", "id": "lateral ke kiri", "description": "Subjek bergerak dari kanan ke kiri frame — movement melintang." },
+          { "en": "lateral_right", "id": "lateral ke kanan", "description": "Subjek bergerak dari kiri ke kanan frame." },
+          { "en": "diagonal_toward", "id": "diagonal mendekati", "description": "Mendekati kamera dari sudut diagonal — natural walk toward camera." },
+          { "en": "diagonal_away", "id": "diagonal menjauhi", "description": "Menjauhi kamera dari sudut diagonal — subjek bergerak ke sudut frame." },
+          { "en": "circular_around_point", "id": "melingkar mengelilingi titik", "description": "Subjek berputar mengelilingi titik — mengelilingi api unggun, dancing in circle." },
+          { "en": "erratic_unpredictable", "id": "acak tidak terprediksi", "description": "Arah berubah-ubah — combat dodge, lost, panicking." },
+          { "en": "out_of_frame", "id": "keluar frame", "description": "Subjek bergerak hingga keluar dari batas frame — departure yang dramatis atau natural." },
+          { "en": "into_frame", "id": "masuk frame", "description": "Subjek masuk dari luar batas frame — entrance yang dramatis atau natural." }
+        ]
+      },
+
+      "speed": {
+        "_note": "Kecepatan gerakan subjek — bisa berbeda dari kecepatan kamera.",
+        "options": [
+          {
+            "en": "ultra_slow_motion",
+            "id": "ultra slow motion",
+            "description": "1000fps+ diputar di 24fps — gerakan hampir tidak terlihat, tekstur dan detail mendominasi. Setiap tetes keringat terlihat.",
+            "fps_ratio": "1000fps → 24fps playback",
+            "best_for": "Action impacts, detail dramatik, efek artistik"
+          },
+          {
+            "en": "slow_motion",
+            "id": "slow motion",
+            "description": "120–240fps diputar di 24fps — gerakan terlihat jelas tapi 5–10x lebih lambat. Standar slow-mo sinematik.",
+            "fps_ratio": "120–240fps → 24fps playback",
+            "best_for": "Hero moments, emotional beats, action sequence"
+          },
+          {
+            "en": "slightly_slow",
+            "id": "sedikit lambat",
+            "description": "48–60fps diputar di 24fps — sedikit lebih lambat dari normal. Subtle emotional weight.",
+            "fps_ratio": "48–60fps → 24fps playback",
+            "best_for": "Subtle emphasis, tengah adegan emosional"
+          },
+          {
+            "en": "real_time",
+            "id": "real time",
+            "description": "Kecepatan natural — seperti melihat langsung. Tidak ada manipulasi waktu.",
+            "fps_ratio": "24fps → 24fps",
+            "best_for": "Adegan normal, dialog, kebanyakan scene"
+          },
+          {
+            "en": "slightly_fast",
+            "id": "sedikit cepat",
+            "description": "Sedikit lebih cepat dari normal — urgency ringan, energi.",
+            "fps_ratio": "Time-lapse ringan",
+            "best_for": "Montase, establishing activity"
+          },
+          {
+            "en": "fast_forward",
+            "id": "fast forward",
+            "description": "Gerakan sangat cepat — time-lapse, activity yang diringkas, komedi.",
+            "fps_ratio": "Time-lapse 2–5x",
+            "best_for": "Time passing, montage, komedi slapstick"
+          },
+          {
+            "en": "explosive",
+            "id": "eksplosif",
+            "description": "Gerakan dengan akselerasi mendadak ekstrem — ledakan, power move, sudden burst of energy.",
+            "fps_ratio": "Real time dengan impact",
+            "best_for": "Action climax, power reveal, combat"
+          }
+        ]
+      },
+
+      "cloth_physics": {
+        "_note": "Simulasi fisika pakaian/kain sesuai gerakan subjek.",
+        "options": [
+          { "en": "none", "id": "tidak ada", "description": "Kain tidak bergerak sama sekali — subjek statis atau pakaian sangat ketat/kaku (armor, spandex)." },
+          { "en": "very_subtle", "id": "sangat halus", "description": "Gerakan hampir tidak terlihat — hanya napas yang menggerakkan kain sangat sedikit." },
+          { "en": "subtle_flutter", "id": "flutter halus", "description": "Kain bergerak ringan — ujung pakaian, rumbai-rumbai. Cocok untuk gerakan minimal." },
+          { "en": "gentle_sway", "id": "ayunan lembut", "description": "Kain berayun lembut mengikuti gerakan berjalan pelan." },
+          { "en": "moderate_sway", "id": "ayunan sedang", "description": "Kain bergerak jelas mengikuti gerakan berjalan normal." },
+          { "en": "active_flutter", "id": "flutter aktif", "description": "Kain bergerak aktif — berlari, angin, gerakan cepat." },
+          { "en": "dramatic_flow", "id": "aliran dramatis", "description": "Kain mengalir dramatis — jubah yang berkibar, gaun panjang yang berputar, angin kencang." },
+          { "en": "extreme_flow", "id": "aliran ekstrem", "description": "Kain terbang ke belakang dalam aliran penuh — berlari kencang, jatuh bebas, kekuatan angin ekstrem." },
+          { "en": "floating_weightless", "id": "mengambang tanpa bobot", "description": "Kain melayang tanpa mengikuti gravitasi — underwater, sihir, ruang angkasa." },
+          { "en": "water_resistance", "id": "resistensi air", "description": "Kain bergerak dalam air — lambat, mengembang, bergerak tertinggal." }
+        ]
+      },
+
+      "hair_physics": {
+        "_note": "Simulasi fisika rambut sesuai gerakan subjek.",
+        "options": [
+          { "en": "none", "id": "tidak ada", "description": "Rambut tidak bergerak — hair gel kuat, helm, kepang ketat, atau rambut sangat pendek." },
+          { "en": "very_subtle", "id": "sangat halus", "description": "Rambut hampir tidak bergerak — rambut pendek atau diikat, hanya sedikit getaran." },
+          { "en": "light_sway", "id": "berayun ringan", "description": "Rambut berayun sedikit — angin sepoi, berjalan lambat." },
+          { "en": "natural_bounce", "id": "bouncing natural", "description": "Rambut memantul alami saat berjalan — gerakan yang natural dan hidup." },
+          { "en": "dynamic_sway", "id": "berayun dinamis", "description": "Rambut berayun kuat mengikuti gerakan cepat." },
+          { "en": "dynamic_flow", "id": "mengalir dinamis", "description": "Rambut mengalir penuh mengikuti gerakan dramatis — berlari, berputar, terkena angin kencang." },
+          { "en": "extreme_flow", "id": "aliran ekstrem", "description": "Rambut terbang ke belakang atau ke semua arah — kecepatan sangat tinggi atau angin badai." },
+          { "en": "floating_upward", "id": "melayang ke atas", "description": "Rambut melayang ke atas atau ke segala arah — underwater, levitasi, angin dari bawah." },
+          { "en": "underwater_spread", "id": "menyebar bawah air", "description": "Rambut menyebar seperti kipas dalam air — halo yang indah." }
+        ]
+      }
+    },
+
+    "environment_motion": {
+      "_note": "Gerakan elemen background dan lingkungan — menciptakan dunia yang hidup di sekitar karakter.",
+
+      "elements": {
+        "_note": "Elemen environment yang bergerak. Ini adalah array — bisa kombinasi beberapa sekaligus.",
+        "_examples_by_category": {
+          "nature_organic": [
+            "leaves_rustling", "branches_swaying", "tall_grass_waving",
+            "flowers_swaying", "tree_canopy_moving", "reeds_bending",
+            "water_surface_rippling", "river_flowing", "waterfall_falling",
+            "ocean_waves", "rain_falling", "snow_falling",
+            "fog_drifting", "clouds_moving", "dust_swirling",
+            "petals_falling", "seeds_floating", "pollen_drifting"
+          ],
+          "fire_light": [
+            "campfire_flickering", "candles_flickering", "torch_flame_dancing",
+            "bonfire_roaring", "embers_rising", "explosion_smoke_expanding",
+            "lava_flowing", "lightning_flash"
+          ],
+          "urban_mechanical": [
+            "traffic_passing", "train_moving", "neon_signs_flickering",
+            "flags_waving", "laundry_on_line_fluttering", "curtains_blowing",
+            "paper_blowing", "newspaper_tumbling", "steam_rising_from_grate",
+            "elevator_moving", "escalator_moving", "clock_hands_moving",
+            "windmill_spinning", "fan_spinning"
+          ],
+          "atmospheric_particles": [
+            "rain_on_puddles", "rain_streaks", "snow_accumulating",
+            "dust_motes_in_sunbeam", "smoke_rising", "mist_moving",
+            "heat_shimmer", "sparkles_floating", "magical_particles_orbiting"
+          ],
+          "water_bodies": [
+            "pond_reflection_rippling", "lake_waves", "stream_flowing",
+            "puddle_rain_rings", "fountain_water_arc", "waterfall_spray",
+            "underwater_caustics_moving"
+          ],
+          "fantasy_scifi": [
+            "runes_glowing_pulsing", "portal_energy_swirling",
+            "magical_orb_rotating", "hologram_flickering",
+            "energy_field_crackling", "crystal_resonating",
+            "bioluminescent_plants_pulsing", "floating_islands_slowly_drifting",
+            "dimensional_rift_pulsating"
+          ],
+          "people_crowd": [
+            "crowd_moving_background", "distant_figures_walking",
+            "background_conversation_muted", "birds_flock_flying",
+            "animals_grazing_distant"
+          ]
+        }
+      },
+
+      "intensity": {
+        "_note": "Seberapa kuat environment bergerak — menentukan apakah lingkungan menjadi foreground atau background dari narasi.",
+        "options": [
+          {
+            "en": "imperceptible",
+            "id": "hampir tidak terasa",
+            "description": "Gerakan sangat minimal — hanya ada jika dilihat dengan teliti. Environment terasa 'hampir gambar diam'.",
+            "example": "Daun yang hampir tidak bergerak, air danau yang hampir sempurna tenang"
+          },
+          {
+            "en": "subtle",
+            "id": "halus",
+            "description": "Terlihat tapi tidak menarik perhatian — environment hidup tapi tidak mengganggu subjek utama.",
+            "example": "Rerumputan bergerak sedikit, asap tipis mengalir perlahan"
+          },
+          {
+            "en": "moderate",
+            "id": "sedang",
+            "description": "Gerakan jelas dan berkontribusi pada mood — penonton merasakannya sebagai bagian dari atmosphere.",
+            "example": "Angin yang bertiup, api yang berkedip aktif, ombak laut kecil"
+          },
+          {
+            "en": "dramatic",
+            "id": "dramatis",
+            "description": "Environment bergerak kuat dan mendominasi mood — hampir se-prominent dengan subjek.",
+            "example": "Badai yang mengamuk, api yang berkobar, banjir yang mengalir"
+          },
+          {
+            "en": "overwhelming",
+            "id": "menguasai",
+            "description": "Environment menjadi protagonis — gerakan alam atau chaos mengambil alih frame, subjek berjuang di dalamnya.",
+            "example": "Hurricane, earthquake, avalanche, volcano eruption"
+          }
+        ]
+      },
+
+      "wind_effect": {
+        "_note": "Efek angin yang mempengaruhi multiple elemen sekaligus — memberikan konsistensi direksional pada semua elemen yang bergerak.",
+        "options": [
+          { "en": "none", "id": "tidak ada angin", "description": "Tidak ada efek angin — semua gerakan berasal dari sumber lain (api, air, gravitasi)." },
+          { "en": "dead_calm", "id": "tenang sempurna", "description": "Udara benar-benar diam — rambut dan kain tidak bergerak karena angin, hanya dari gerakan sendiri." },
+          { "en": "very_light_breeze", "id": "angin sangat sepoi", "description": "Hampir tidak ada angin — hanya rambut halus dan dedaunan paling ringan yang bergerak." },
+          { "en": "light_breeze", "id": "angin sepoi", "description": "Angin ringan yang menyenangkan — rambut sedikit bergerak, daun berdesir, kain ujungnya bergerak." },
+          { "en": "steady_breeze", "id": "angin konsisten", "description": "Angin sedang yang konsisten — semua kain dan rambut bergerak ke satu arah yang sama." },
+          { "en": "strong_wind", "id": "angin kencang", "description": "Angin kuat — perlu berpegangan, pakaian terdorong, rambut terbang ke satu arah." },
+          { "en": "gale_force", "id": "angin badai", "description": "Angin sangat kencang — pakaian dan rambut terbang dramatis, harus menunduk melawan angin." },
+          { "en": "swirling_variable", "id": "berputar berubah arah", "description": "Angin berputar dari berbagai arah — chaos, badai, atau sihir. Kain dan rambut tidak konsisten arahnya." },
+          { "en": "upward_draft", "id": "angin ke atas", "description": "Angin bertiup ke atas — dari api besar, shaft vertikal, atau levitasi. Kain dan rambut terangkat ke atas." }
+        ]
+      }
+    },
+
+    "motion_intensity": {
+      "_note": "Level intensitas gerakan keseluruhan scene — menggabungkan semua gerakan (kamera + subjek + environment) menjadi satu deskriptor global.",
+      "options": [
+        {
+          "en": "still",
+          "id": "diam",
+          "description": "Hampir tidak ada gerakan sama sekali. Kamera statis, subjek idle, environment tenang. Seperti foto yang bernapas.",
+          "suitable_for": "Momen kontemplatif, portrait intim, detil objek",
+          "platform_intensity_reference": { "pika": "--motion 0", "kling": "static, minimal motion" }
+        },
+        {
+          "en": "calm",
+          "id": "tenang",
+          "description": "Gerakan sangat minimal dan lembut. Ada kehidupan tapi tidak ada urgency.",
+          "suitable_for": "Dialog, suasana nostalgik, nature contemplation",
+          "platform_intensity_reference": { "pika": "--motion 1", "kling": "gentle motion" }
+        },
+        {
+          "en": "gentle",
+          "id": "lembut",
+          "description": "Gerakan ada dan terasa — kamera bergerak perlahan, subjek melakukan sesuatu yang sederhana, angin ringan.",
+          "suitable_for": "Everyday life, romance, establishing character",
+          "platform_intensity_reference": { "pika": "--motion 1–2", "kling": "light motion" }
+        },
+        {
+          "en": "moderate",
+          "id": "sedang",
+          "description": "Gerakan normal — kamera tracking, subjek berjalan, environment aktif. Standar kebanyakan scene.",
+          "suitable_for": "Adventure, drama aktif, exploration",
+          "platform_intensity_reference": { "pika": "--motion 2–3", "kling": "moderate motion" }
+        },
+        {
+          "en": "active",
+          "id": "aktif",
+          "description": "Gerakan kuat dan energetik — kamera dinamis, subjek bergerak cepat, environment ramai.",
+          "suitable_for": "Action sequences, chase scenes, battle preparation",
+          "platform_intensity_reference": { "pika": "--motion 3", "kling": "dynamic motion" }
+        },
+        {
+          "en": "intense",
+          "id": "intens",
+          "description": "Gerakan sangat kuat — kamera handheld urgency, subjek berlari atau bertarung, environment bergerak kuat.",
+          "suitable_for": "Combat, escape, climax",
+          "platform_intensity_reference": { "pika": "--motion 3–4", "kling": "intense motion" }
+        },
+        {
+          "en": "explosive",
+          "id": "eksplosif",
+          "description": "Gerakan absolut maksimal — chaos terkontrol atau tidak terkontrol, semua elemen bergerak secara ekstrem.",
+          "suitable_for": "Explosion, battle climax, disaster sequence",
+          "platform_intensity_reference": { "pika": "--motion 4", "kling": "extreme motion" }
+        }
+      ]
+    },
+
+    "temporal_sequence": {
+      "_note": "Layer 4B — Struktur waktu video. Mendefinisikan durasi, fps, urutan shot, dan transisi. Tidak ada padanannya di schema gambar.",
+
+      "total_duration": {
+        "_note": "Total panjang video dalam detik. Platform AI video memiliki batas maksimal berbeda.",
+        "platform_limits": {
+          "runway_gen3": "4–10 detik per shot",
+          "kling": "5–10 detik standar, hingga 60 detik dengan kling pro",
+          "pika": "3–10 detik",
+          "sora": "beberapa detik hingga 1 menit (bervariasi per tier)",
+          "hailuo": "6 detik standar"
+        },
+        "recommended_durations": {
+          "reaction_beat": "2–3 detik",
+          "standard_shot": "4–6 detik",
+          "establishing_shot": "6–8 detik",
+          "hero_moment": "8–10 detik",
+          "extended_sequence": "10–20 detik (gabungkan beberapa shot)"
+        }
+      },
+
+      "fps": {
+        "_note": "Frame per second — menentukan seberapa halus gerakan dan feel temporal.",
+        "options": [
+          {
+            "en": 12,
+            "id": "12fps",
+            "description": "Choppy, animasi awal, stilted — tapi bisa jadi stylistic statement untuk efek tertentu.",
+            "feel": "Retro, choppy, low-budget aesthetic"
+          },
+          {
+            "en": 24,
+            "id": "24fps",
+            "description": "Standar sinema. Terasa 'film'. Motion blur natural pada kecepatan ini memberikan feel organis yang dikenal penonton.",
+            "feel": "Cinematic, film, standar storytelling",
+            "recommended_for": "Semua konten sinematik dan narrative"
+          },
+          {
+            "en": 30,
+            "id": "30fps",
+            "description": "Standar video/broadcast. Lebih halus dari 24fps tapi kurang 'film'. Sering terlihat terlalu 'real'.",
+            "feel": "Video, TV, documentary, sedikit terlalu real",
+            "recommended_for": "Web content, documentary, news style"
+          },
+          {
+            "en": 60,
+            "id": "60fps",
+            "description": "Sangat halus — game feel, olahraga, hyperreal. Terlalu halus untuk drama tapi bagus untuk action yang butuh clarity.",
+            "feel": "Smooth, game, sports, hyperreal",
+            "recommended_for": "Action detail, game cinematics, sports"
+          },
+          {
+            "en": 120,
+            "id": "120fps",
+            "description": "Ultra smooth — biasanya direkam untuk slow motion playback di 24fps. 5x slow-mo.",
+            "feel": "Captured for slow-motion playback",
+            "recommended_for": "Slow motion sequences, impact moments"
+          }
+        ]
+      },
+
+      "shot_sequence": {
+        "_note": "Urutan shot dalam satu video — setiap entry adalah satu shot dengan timing dan konten.",
+        "_structure_example": {
+          "_description": "Contoh struktur shot_sequence untuk video 10 detik",
+          "sequence": [
+            {
+              "shot_index": 1,
+              "start_time": 0.0,
+              "duration": 2.5,
+              "shot_type": "WS",
+              "key_action": "character_appears_in_frame",
+              "camera_movement": "static",
+              "notes": "Establishing — karakter kecil dalam lanskap besar"
+            },
+            {
+              "shot_index": 2,
+              "start_time": 2.5,
+              "duration": 3.0,
+              "shot_type": "MS",
+              "key_action": "character_turns_toward_camera",
+              "camera_movement": "slow_dolly_in",
+              "notes": "Mendekat untuk reveal wajah"
+            },
+            {
+              "shot_index": 3,
+              "start_time": 5.5,
+              "duration": 4.5,
+              "shot_type": "CU",
+              "key_action": "expression_change_realization",
+              "camera_movement": "static",
+              "notes": "Ekspresi menyadari sesuatu — close-up dramatis"
+            }
+          ]
+        },
+        "key_action_vocabulary": {
+          "_note": "Kosakata untuk mengisi field key_action per shot.",
+          "_examples_by_category": {
+            "character_movement": [
+              "character_enters_frame", "character_exits_frame",
+              "character_turns_around", "character_sits_down", "character_stands_up",
+              "character_walks_into_distance", "character_approaches_camera",
+              "character_stops_walking", "character_kneels", "character_falls"
+            ],
+            "expression_emotion": [
+              "expression_change_shock", "expression_change_realization",
+              "expression_change_grief", "expression_change_determination",
+              "expression_change_joy", "expression_change_fear",
+              "smile_appears", "tears_form", "jaw_clenches"
+            ],
+            "interaction_object": [
+              "character_picks_up_object", "character_draws_weapon",
+              "character_opens_door", "character_reads_letter",
+              "character_activates_device", "object_falls_to_ground",
+              "door_opens_by_itself", "light_turns_on"
+            ],
+            "environment_event": [
+              "sun_rises_over_horizon", "storm_begins",
+              "explosion_in_background", "crowd_parts",
+              "fog_rolls_in", "rain_starts", "snow_begins_falling",
+              "fire_spreads", "portal_opens"
+            ],
+            "camera_reveal": [
+              "reveal_full_scene", "reveal_second_character",
+              "reveal_threat_in_background", "reveal_scale_of_environment",
+              "reveal_character_face", "reveal_object_importance"
+            ]
+          }
+        }
+      },
+
+      "transition": {
+
+        "type": {
+          "_note": "Cara perpindahan antar shot.",
+          "options": [
+            {
+              "en": "cut",
+              "id": "cut",
+              "description": "Perpindahan instan tanpa transisi — shot A langsung berganti ke shot B. Paling umum dan serbaguna.",
+              "feel": "Langsung, clean, standar, tidak menarik perhatian ke dirinya sendiri",
+              "best_for": "Kebanyakan perpindahan, dialogue, action sequence"
+            },
+            {
+              "en": "dissolve",
+              "id": "dissolve",
+              "description": "Shot A perlahan memudar sementara shot B perlahan muncul — ada periode di mana keduanya terlihat bersamaan.",
+              "feel": "Lembut, waktu berlalu, mimpi, nostalgia",
+              "best_for": "Perjalanan waktu, memories, transisi emosional lembut"
+            },
+            {
+              "en": "fade_to_black",
+              "id": "fade ke hitam",
+              "description": "Shot A memudar ke hitam, lalu shot B muncul dari hitam.",
+              "feel": "Finality, chapter ends, time passes significantly",
+              "best_for": "Akhir chapter, time jump besar, closing scene"
+            },
+            {
+              "en": "fade_to_white",
+              "id": "fade ke putih",
+              "description": "Shot A memudar ke putih, lalu shot B muncul dari putih.",
+              "feel": "Memory, heaven, overwhelming light, rebirth",
+              "best_for": "Death sequence, memory, supernatural transition, hope"
+            },
+            {
+              "en": "wipe",
+              "id": "wipe",
+              "description": "Shot B 'menyapu' shot A dari satu sisi — bisa dari kiri, kanan, atas, bawah, atau diagonal.",
+              "feel": "Klasik, comic book, Star Wars style",
+              "best_for": "Konten bergaya retro, komik, atau epik klasik"
+            },
+            {
+              "en": "match_cut",
+              "id": "match cut",
+              "description": "Perpindahan yang mencocokkan bentuk, gerakan, atau tema antara dua shot — terasa seperti satu gerakan tapi dua tempat/waktu.",
+              "feel": "Elegan, bermakna, sinematik tinggi",
+              "best_for": "2001 A Space Odyssey style, koneksi visual bermakna"
+            },
+            {
+              "en": "whip_pan_transition",
+              "id": "transisi whip pan",
+              "description": "Pan sangat cepat di akhir shot A menjadi pan sangat cepat di awal shot B — blur menyambungkan keduanya.",
+              "feel": "Energetik, stylish, Edgar Wright, fast-paced",
+              "best_for": "Konten energetik, montase cepat, komedi timing"
+            },
+            {
+              "en": "smash_cut",
+              "id": "smash cut",
+              "description": "Cut mendadak dari sesuatu yang tenang ke sesuatu yang ekstrem (atau sebaliknya) — contrast adalah kuncinya.",
+              "feel": "Shock, komedi, horror reveal",
+              "best_for": "Jump scare, komedi timing, tension break"
+            },
+            {
+              "en": "iris_in_out",
+              "id": "iris masuk-keluar",
+              "description": "Lingkaran yang mengecil menutup shot atau membesar membuka shot — klasik film bisu.",
+              "feel": "Klasik, retro, theatrical, stylized",
+              "best_for": "Konten bergaya retro, akhir komedi, theatrical"
+            },
+            {
+              "en": "seamless_loop",
+              "id": "loop mulus",
+              "description": "Shot terakhir menyambung langsung ke shot pertama tanpa terlihat — video loop yang tidak ada awal atau akhirnya.",
+              "feel": "Endless, meditative, atau infinite",
+              "best_for": "Background video, ambient content, meditative loops"
+            }
+          ]
+        },
+
+        "style": {
+          "_note": "Karakter khusus transisi — lebih spesifik dari type.",
+          "options": [
+            { "en": "hard_cut", "id": "cut keras", "description": "Cut paling bersih — tidak ada frame overlap, tidak ada efek. Frame terakhir A, frame pertama B." },
+            { "en": "soft_dissolve", "id": "dissolve lembut", "description": "Dissolve yang sangat lambat dan lembut — hampir tidak disadari." },
+            { "en": "quick_dissolve", "id": "dissolve cepat", "description": "Dissolve yang cepat — terasa hampir seperti cut tapi ada sedikit blend." },
+            { "en": "match_cut_movement", "id": "match cut gerakan", "description": "Gerakan di shot A dilanjutkan secara visual oleh gerakan di shot B." },
+            { "en": "match_cut_shape", "id": "match cut bentuk", "description": "Bentuk di shot A secara visual menjadi bentuk di shot B — lingkaran matahari menjadi lingkaran planet." },
+            { "en": "match_cut_color", "id": "match cut warna", "description": "Warna dominan shot A menjadi warna dominan shot B — gradual atau mendadak." },
+            { "en": "j_cut", "id": "J-cut", "description": "Audio shot B masuk lebih awal sebelum visual shot B muncul — audio leads video." },
+            { "en": "l_cut", "id": "L-cut", "description": "Visual berganti ke shot B tapi audio shot A masih terdengar — video leads audio." }
+          ]
+        }
+      },
+
+      "loop": {
+        "_note": "Apakah video dirancang untuk diputar berulang tanpa terlihat sambungannya.",
+        "options": [
+          { "en": false, "id": "tidak loop", "description": "Video normal — ada awal dan akhir yang jelas. Diputar sekali atau dengan jeda antar ulangan." },
+          { "en": true, "id": "loop", "description": "Video dirancang untuk loop — frame terakhir menyambung mulus ke frame pertama. Untuk ambient, wallpaper, atau background video." }
+        ],
+        "_loop_design_tips": [
+          "Gerakan environment yang berulang (ombak, api, partikel) lebih mudah di-loop dari gerakan karakter",
+          "Posisi karakter di akhir harus sama dengan awal",
+          "Hindari perubahan cahaya yang tidak simetris",
+          "Perubahan ekspresi tidak cocok untuk loop",
+          "Terbaik: angin yang berhembus, api yang menyala, air yang mengalir, partikel yang mengambang"
+        ]
+      }
+    },
+
+    "motion_presets": {
+      "_note": "Kombinasi motion lengkap yang langsung bisa dipakai — menggabungkan camera_movement + subject_motion + environment_motion + temporal untuk situasi umum.",
+      "options": [
+        {
+          "name": "Slow_Hero_Reveal",
+          "id": "Reveal Heroik Lambat",
+          "description": "Karakter direveal secara sinematik dari bawah ke atas dengan kamera bergerak lambat.",
+          "camera_movement": { "type": "dolly", "direction": "forward", "speed": "very_slow", "easing": "ease_in_out" },
+          "subject_motion": { "primary_motion": "idle_subtle_sway", "motion_path": "stationary", "speed": "real_time" },
+          "environment_motion": { "intensity": "subtle", "wind_effect": "light_breeze" },
+          "motion_intensity": "calm",
+          "temporal": { "fps": 24, "suggested_duration_sec": 6 },
+          "platform_syntax": {
+            "runway": "slow dolly forward, hero reveal, cinematic",
+            "kling": "slow camera push in, character standing still",
+            "pika": "--motion 1"
+          }
+        },
+        {
+          "name": "Tense_Static_Standoff",
+          "id": "Diam Tegang Konfrontasi",
+          "description": "Kamera sepenuhnya diam, dua karakter berhadapan, angin membuat rambut dan pakaian bergerak.",
+          "camera_movement": { "type": "static", "speed": "none" },
+          "subject_motion": { "primary_motion": "idle_breathing", "motion_path": "stationary", "speed": "real_time", "cloth_physics": "gentle_sway", "hair_physics": "light_sway" },
+          "environment_motion": { "elements": ["dust_swirling", "tall_grass_waving"], "intensity": "subtle", "wind_effect": "steady_breeze" },
+          "motion_intensity": "still",
+          "temporal": { "fps": 24, "suggested_duration_sec": 5 },
+          "platform_syntax": {
+            "runway": "static camera, characters face each other, wind moves hair and clothes, tense atmosphere",
+            "pika": "--motion 0"
+          }
+        },
+        {
+          "name": "Epic_Orbit_Character",
+          "id": "Orbit Epik Karakter",
+          "description": "Kamera mengorbit perlahan mengelilingi karakter yang berdiri kokoh.",
+          "camera_movement": { "type": "orbit", "direction": "clockwise", "speed": "slow", "easing": "smooth_continuous", "arc": "circular_arc" },
+          "subject_motion": { "primary_motion": "idle_subtle_sway", "motion_path": "stationary", "speed": "real_time", "cloth_physics": "subtle_flutter", "hair_physics": "light_sway" },
+          "environment_motion": { "elements": ["clouds_moving", "leaves_rustling"], "intensity": "moderate", "wind_effect": "steady_breeze" },
+          "motion_intensity": "gentle",
+          "temporal": { "fps": 24, "suggested_duration_sec": 8 },
+          "platform_syntax": {
+            "runway": "slow orbit around the character, circular camera movement, epic reveal",
+            "kling": "orbit shot, camera circles around subject slowly",
+            "sora": "the camera slowly orbits around the standing character, revealing 360 degrees"
+          }
+        },
+        {
+          "name": "Chase_Sequence_Intense",
+          "id": "Kejar-kejaran Intens",
+          "description": "Karakter berlari, kamera mengikuti dengan handheld urgency, environment bergerak blur.",
+          "camera_movement": { "type": "handheld_follow", "direction": "forward", "speed": "fast", "easing": "linear" },
+          "subject_motion": { "primary_motion": "running_desperate", "motion_path": "away_from_camera", "speed": "fast", "cloth_physics": "extreme_flow", "hair_physics": "extreme_flow" },
+          "environment_motion": { "elements": ["leaves_rustling", "branches_swaying"], "intensity": "dramatic", "wind_effect": "strong_wind" },
+          "motion_intensity": "intense",
+          "temporal": { "fps": 24, "suggested_duration_sec": 6 },
+          "platform_syntax": {
+            "runway": "handheld camera chases running character through forest, shaky urgent movement",
+            "kling": "dynamic handheld follow shot, character running fast",
+            "sora": "shaky handheld camera desperately chasing the running character"
+          }
+        },
+        {
+          "name": "Contemplative_Pan_Landscape",
+          "id": "Pan Kontemplatif Lanskap",
+          "description": "Kamera pan perlahan mengungkap lanskap yang luas, subjek kecil di foreground diam menatap.",
+          "camera_movement": { "type": "pan", "direction": "right", "speed": "very_slow", "easing": "ease_in_out" },
+          "subject_motion": { "primary_motion": "idle_breathing", "motion_path": "stationary", "speed": "real_time" },
+          "environment_motion": { "elements": ["clouds_moving", "tall_grass_waving", "birds_flock_flying"], "intensity": "subtle", "wind_effect": "light_breeze" },
+          "motion_intensity": "calm",
+          "temporal": { "fps": 24, "suggested_duration_sec": 8 },
+          "platform_syntax": {
+            "runway": "slow pan right revealing vast landscape, contemplative",
+            "sora": "the camera pans slowly right to reveal the expansive landscape"
+          }
+        },
+        {
+          "name": "Magical_Float_Ethereal",
+          "id": "Melayang Magis Ethereal",
+          "description": "Karakter melayang perlahan, partikel magis mengelilingi, kamera perlahan naik.",
+          "camera_movement": { "type": "pedestal", "direction": "up", "speed": "very_slow", "easing": "smooth_continuous" },
+          "subject_motion": { "primary_motion": "floating_levitating", "motion_path": "stationary", "speed": "very_slow", "cloth_physics": "floating_weightless", "hair_physics": "floating_upward" },
+          "environment_motion": { "elements": ["magical_particles_orbiting", "runes_glowing_pulsing", "petals_falling"], "intensity": "moderate", "wind_effect": "swirling_variable" },
+          "motion_intensity": "gentle",
+          "temporal": { "fps": 24, "suggested_duration_sec": 8 },
+          "platform_syntax": {
+            "runway": "character slowly levitates, magical particles swirl around, camera rises gently",
+            "sora": "the character floats upward as magical particles orbit around them, camera slowly rises"
+          }
+        },
+        {
+          "name": "Combat_Slow_Motion_Impact",
+          "id": "Impak Pertarungan Slow Motion",
+          "description": "Momen impak dalam pertarungan — direkam dalam slow motion dramatis, kamera static atau sedikit bergerak.",
+          "camera_movement": { "type": "static", "speed": "none" },
+          "subject_motion": { "primary_motion": "fighting_combat", "motion_path": "stationary", "speed": "slow_motion", "cloth_physics": "extreme_flow", "hair_physics": "extreme_flow" },
+          "environment_motion": { "elements": ["dust_swirling", "embers_rising", "leaves_rustling"], "intensity": "dramatic", "wind_effect": "strong_wind" },
+          "motion_intensity": "intense",
+          "temporal": { "fps": 120, "playback_fps": 24, "suggested_duration_sec": 4 },
+          "platform_syntax": {
+            "runway": "slow motion combat impact, particles fly, dramatic slow-mo",
+            "sora": "dramatic slow motion fight scene, impact sends dust and particles flying"
+          }
+        },
+        {
+          "name": "Ambient_Loop_Fire_Night",
+          "id": "Loop Ambient Api Malam",
+          "description": "Scene loop — api menyala, lingkungan bergerak lembut, tidak ada gerakan karakter besar.",
+          "camera_movement": { "type": "static", "speed": "none" },
+          "subject_motion": { "primary_motion": "idle_breathing", "motion_path": "stationary", "speed": "real_time", "cloth_physics": "subtle_flutter" },
+          "environment_motion": { "elements": ["campfire_flickering", "embers_rising", "smoke_rising", "leaves_rustling"], "intensity": "moderate", "wind_effect": "very_light_breeze" },
+          "motion_intensity": "calm",
+          "temporal": { "fps": 24, "suggested_duration_sec": 5, "loop": true },
+          "platform_syntax": {
+            "runway": "seamless loop, campfire flickering, ambient night scene",
+            "pika": "--motion 1, loop"
+          }
+        }
+      ]
+    }
+  }
+}

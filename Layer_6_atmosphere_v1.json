@@ -1,0 +1,798 @@
+{
+  "_readme": "Library pilihan untuk field atmosphere (Layer 6). Atmosphere adalah filter emosional dan estetika yang diterapkan TERAKHIR — membungkus semua elemen visual yang sudah ada. Tidak membangun scene, tapi mewarnai dan memberi jiwa pada scene yang sudah terbentuk. Field ini mempengaruhi warna, kontras, grain, dan overall feel output AI.",
+  "_version": "1.0",
+  "_structure": "atmosphere → emotional_tone | narrative_implication | visual_style | temporal_quality | spatial_quality | audio_implied",
+  "_usage_note": "emotional_tone adalah ARRAY — bisa dan sebaiknya diisi beberapa nilai sekaligus untuk mood yang lebih kaya. Contoh: ['melancholic', 'hopeful', 'mysterious'] menciptakan nuansa yang jauh lebih dalam dari satu nilai saja.",
+
+  "atmosphere": {
+
+    "emotional_tone": {
+      "_note": "Array mood dominan yang dirasakan dari scene. Pilih 1–4 yang saling mendukung atau menciptakan tension yang disengaja. Urutan tidak penting — semua berlaku serentak.",
+      "_combination_tips": {
+        "tension_through_contrast": "Kombinasi dua tone yang berlawanan menciptakan ketegangan emosional. Contoh: ['hopeful', 'dread'] — harapan yang terancam. ['serene', 'uncanny'] — ketenangan yang tidak beres.",
+        "depth_through_layering": "Tiga tone membangun nuansa. Contoh: ['melancholic', 'nostalgic', 'tender'] — kerinduan yang hangat. ['tense', 'desperate', 'defiant'] — perjuangan di ujung tanduk.",
+        "singular_power": "Satu tone saja bisa sangat powerful jika dieksekusi penuh. Contoh: ['epic'] tanpa campuran — murni grandeur."
+      },
+      "options": [
+        {
+          "en": "serene",
+          "id": "damai",
+          "description": "Ketenangan sempurna — tidak ada ketegangan, tidak ada konflik. Harmoni total antara subjek dan lingkungan.",
+          "visual_indicators": "Garis-garis horizontal, warna pastel atau natural, cahaya lembut merata, komposisi seimbang",
+          "pairs_well_with": ["nostalgic", "tender", "wonder", "melancholic"],
+          "conflicts_with": ["dread", "chaotic", "tense", "desperate"]
+        },
+        {
+          "en": "melancholic",
+          "id": "melankolis",
+          "description": "Sedih namun indah — bukan tangisan keras tapi rasa kehilangan yang lembut, kerinduan, refleksi tentang sesuatu yang sudah berlalu.",
+          "visual_indicators": "Warna desaturated, cahaya redup atau golden, komposisi asimetris, ruang negatif besar",
+          "pairs_well_with": ["nostalgic", "lonely", "tender", "serene"],
+          "conflicts_with": ["triumphant", "joyful", "epic"]
+        },
+        {
+          "en": "tense",
+          "id": "tegang",
+          "description": "Antisipasi akan sesuatu yang buruk atau penting — mata waspada, waktu terasa melambat, setiap detail berpotensi penting.",
+          "visual_indicators": "Dutch angle, warna dingin atau desaturated, bayangan keras, frame tight, lead room minimal",
+          "pairs_well_with": ["dread", "desperate", "uncanny", "mysterious"],
+          "conflicts_with": ["serene", "joyful", "whimsical"]
+        },
+        {
+          "en": "wonder",
+          "id": "kagum",
+          "description": "Keajaiban dan kekaguman — dunia lebih besar dan lebih luar biasa dari yang disangka. Mata terbuka lebar, mulut sedikit terbuka.",
+          "visual_indicators": "Wide shot atau worm's eye, skala monumental, cahaya dramatis, warna jenuh, perspektif tidak biasa",
+          "pairs_well_with": ["hopeful", "mysterious", "epic", "ethereal"],
+          "conflicts_with": ["dread", "claustrophobic", "cynical"]
+        },
+        {
+          "en": "dread",
+          "id": "gentar",
+          "description": "Ketakutan mendalam yang belum terwujud — bukan horor yang sudah ada, tapi antisipasi sesuatu yang mengerikan. Lebih kuat dari 'takut'.",
+          "visual_indicators": "Gelap dominan, sumber cahaya tidak jelas, bayangan tersembunyi, ruang kosong mengancam",
+          "pairs_well_with": ["tense", "uncanny", "lonely", "mysterious"],
+          "conflicts_with": ["hopeful", "joyful", "whimsical", "serene"]
+        },
+        {
+          "en": "nostalgic",
+          "id": "nostalgia",
+          "description": "Kerinduan pada masa lalu yang mungkin tidak seindah yang diingat — filter keemasan atas kenangan. Hangat dan menyakitkan sekaligus.",
+          "visual_indicators": "Warna warm, grain film, vignette, cahaya golden hour atau tungsten, objek vintage",
+          "pairs_well_with": ["melancholic", "tender", "serene", "lonely"],
+          "conflicts_with": ["futuristic", "cold", "chaotic"]
+        },
+        {
+          "en": "hopeful",
+          "id": "penuh harapan",
+          "description": "Keyakinan bahwa sesuatu yang baik akan datang — cahaya di ujung terowongan, meski perjalanan masih panjang dan sulit.",
+          "visual_indicators": "Cahaya dari arah tertentu (biasanya atas atau depan), warna warm tapi tidak berlebihan, komposisi terbuka",
+          "pairs_well_with": ["wonder", "tender", "triumphant", "determined"],
+          "conflicts_with": ["dread", "desperate", "nihilistic"]
+        },
+        {
+          "en": "lonely",
+          "id": "sepi",
+          "description": "Kesepian — kesendirian yang tidak dipilih, atau yang dipilih tapi terasa berat. Beda dari 'solitary' yang netral.",
+          "visual_indicators": "Satu figur kecil dalam ruang besar, ruang negatif dominan, cahaya yang memisahkan bukan menyatukan",
+          "pairs_well_with": ["melancholic", "nostalgic", "dread", "serene"],
+          "conflicts_with": ["joyful", "communal", "triumphant"]
+        },
+        {
+          "en": "claustrophobic",
+          "id": "sesak",
+          "description": "Terkekang fisik atau psikologis — dinding yang mendekat, langit-langit yang rendah, tidak ada jalan keluar yang jelas.",
+          "visual_indicators": "Frame sangat ketat, banyak elemen mengisi ruang, dutch angle, warna gelap di tepi frame",
+          "pairs_well_with": ["tense", "dread", "desperate", "trapped"],
+          "conflicts_with": ["liberating", "epic", "open", "serene"]
+        },
+        {
+          "en": "liberating",
+          "id": "membebaskan",
+          "description": "Rasa lepas dari sesuatu — kebebasan setelah terkekang, ruang yang tiba-tiba luas, udara segar setelah terkurung.",
+          "visual_indicators": "Wide shot terbuka, langit besar, gerakan dinamis keluar frame, warna cerah",
+          "pairs_well_with": ["hopeful", "triumphant", "wonder", "joyful"],
+          "conflicts_with": ["claustrophobic", "dread", "trapped"]
+        },
+        {
+          "en": "mysterious",
+          "id": "misterius",
+          "description": "Ada pertanyaan yang belum terjawab — sesuatu yang tidak terlihat penuh, makna yang tersembunyi, detail yang mengundang interpretasi.",
+          "visual_indicators": "Bayangan menyembunyikan detail, framing partial, cahaya selektif, depth of field shallow",
+          "pairs_well_with": ["dread", "wonder", "tense", "uncanny"],
+          "conflicts_with": ["transparent", "joyful", "simple"]
+        },
+        {
+          "en": "epic",
+          "id": "epik",
+          "description": "Skala besar, konsekuensi besar, sejarah sedang dibuat — rasa bahwa momen ini akan diingat, bahwa sesuatu yang penting sedang terjadi.",
+          "visual_indicators": "Wide shot atau EWS, pencahayaan dramatis, banyak elemen, gerakan kamera lambat, warna jenuh",
+          "pairs_well_with": ["triumphant", "wonder", "determined", "hopeful"],
+          "conflicts_with": ["intimate", "mundane", "whimsical"]
+        },
+        {
+          "en": "tender",
+          "id": "lembut",
+          "description": "Kelembutan — momen privat antara dua orang atau diri sendiri, penuh kehati-hatian dan rasa sayang.",
+          "visual_indicators": "Frame dekat, cahaya lembut, warna hangat, kontak atau proximity antara elemen",
+          "pairs_well_with": ["intimate", "nostalgic", "hopeful", "melancholic"],
+          "conflicts_with": ["epic", "chaotic", "tense", "dread"]
+        },
+        {
+          "en": "triumphant",
+          "id": "triumfan",
+          "description": "Kemenangan yang diraih — tidak hanya menang tapi hasil dari perjuangan. Ada rasa layak dan earned.",
+          "visual_indicators": "Worm's eye view, cahaya dari atas atau belakang sebagai halo, warna warm dan jenuh, pose ekspansif",
+          "pairs_well_with": ["epic", "hopeful", "joyful", "determined"],
+          "conflicts_with": ["dread", "desperate", "melancholic", "lonely"]
+        },
+        {
+          "en": "joyful",
+          "id": "gembira",
+          "description": "Kebahagiaan murni dan langsung — tidak rumit, tidak bercampur dengan kesedihan. Momen celebration yang genuine.",
+          "visual_indicators": "Warna cerah jenuh, cahaya terang, komposisi dinamis, gerakan aktif, ekspresi terbuka",
+          "pairs_well_with": ["liberating", "triumphant", "whimsical", "wonder"],
+          "conflicts_with": ["dread", "melancholic", "tense", "dread"]
+        },
+        {
+          "en": "whimsical",
+          "id": "jenaka",
+          "description": "Ringan, playful, sedikit ajaib — dunia tidak terlalu serius, ada ruang untuk keajaiban kecil dan kejutan yang menyenangkan.",
+          "visual_indicators": "Warna pastel atau kontras ceria, proporsi sedikit tidak realistis, detail yang tidak biasa tapi menggemaskan",
+          "pairs_well_with": ["joyful", "wonder", "tender", "innocent"],
+          "conflicts_with": ["dread", "gritty", "tragic", "tense"]
+        },
+        {
+          "en": "uncanny",
+          "id": "janggal",
+          "description": "Sesuatu yang familiar tapi sedikit salah — tidak menakutkan secara eksplisit tapi ada yang mengganggu. Limbic dread, Freudian unheimlich.",
+          "visual_indicators": "Proporsi sedikit off, cahaya dari arah yang tidak biasa, detail yang tidak cocok dengan konteks, terlalu sunyi",
+          "pairs_well_with": ["mysterious", "dread", "tense", "surreal"],
+          "conflicts_with": ["joyful", "serene", "whimsical"]
+        },
+        {
+          "en": "surreal",
+          "id": "surealis",
+          "description": "Logika mimpi — elemen yang tidak mungkin berpadu secara natural, batas antara nyata dan tidak nyata kabur.",
+          "visual_indicators": "Elemen yang tidak konsisten dengan fisika, warna tidak natural, komposisi tidak mengikuti logika ruang",
+          "pairs_well_with": ["uncanny", "mysterious", "wonder", "ethereal"],
+          "conflicts_with": ["grounded", "realistic", "mundane"]
+        },
+        {
+          "en": "ethereal",
+          "id": "ethereal",
+          "description": "Tidak sepenuhnya dari dunia ini — seperti melihat sesuatu dari antara dua dunia, cahaya yang terlalu indah, keindahan yang menyakitkan.",
+          "visual_indicators": "Bokeh ekstrem, cahaya yang glow, warna tersaturasi rendah dengan highlight tinggi, seperti dalam mimpi",
+          "pairs_well_with": ["serene", "wonder", "mystical", "melancholic"],
+          "conflicts_with": ["gritty", "raw", "mundane", "harsh"]
+        },
+        {
+          "en": "gritty",
+          "id": "keras kasar",
+          "description": "Tekstur kehidupan yang tidak dipoles — kenyataan yang tidak diperindah, beton retak, keringat, darah, tanah.",
+          "visual_indicators": "Grain tinggi, warna desaturated, tekstur kasar, bayangan keras, pencahayaan mentah",
+          "pairs_well_with": ["determined", "desperate", "tense", "raw"],
+          "conflicts_with": ["ethereal", "whimsical", "glamorous", "serene"]
+        },
+        {
+          "en": "desperate",
+          "id": "putus asa",
+          "description": "Terpojok, tidak ada pilihan baik tersisa — bukan pasrah tapi masih berjuang meski hampir tidak ada harapan.",
+          "visual_indicators": "Frame ketat, cahaya keras dari satu sisi, ekspresi tegang, environment mengepung",
+          "pairs_well_with": ["tense", "gritty", "determined", "dread"],
+          "conflicts_with": ["serene", "joyful", "hopeful", "triumphant"]
+        },
+        {
+          "en": "determined",
+          "id": "tekad",
+          "description": "Keputusan yang sudah dibuat dan tidak akan berubah — bukan marah, bukan takut, tapi fokus yang absolut.",
+          "visual_indicators": "Postur tegak, gaze langsung, cahaya frontal kuat, warna netral atau desaturated",
+          "pairs_well_with": ["hopeful", "gritty", "triumphant", "tense"],
+          "conflicts_with": ["confused", "whimsical", "serene"]
+        },
+        {
+          "en": "intimate",
+          "id": "intim",
+          "description": "Momen privat yang terasa seperti kita tidak seharusnya melihatnya — jarak dekat, volume rendah, dunia seolah menyempit menjadi dua orang.",
+          "visual_indicators": "Close-up atau MCU, bokeh background, cahaya lembut warm, ruang dalam frame terasa kecil",
+          "pairs_well_with": ["tender", "nostalgic", "melancholic", "hopeful"],
+          "conflicts_with": ["epic", "public", "chaotic"]
+        },
+        {
+          "en": "haunting",
+          "id": "menghantui",
+          "description": "Meninggalkan kesan yang tidak bisa dihilangkan — bukan horor yang lewat tapi sesuatu yang terus kembali. Resonansi yang menetap.",
+          "visual_indicators": "Detail yang tidak biasa tertinggal di memory, komposisi yang tidak simetris secara mengganggu, cahaya yang tidak natural",
+          "pairs_well_with": ["melancholic", "uncanny", "mysterious", "lonely"],
+          "conflicts_with": ["joyful", "whimsical", "serene"]
+        },
+        {
+          "en": "raw",
+          "id": "mentah",
+          "description": "Tanpa filter, tanpa poses — emosi atau realitas ditampilkan apa adanya, dokumenter, tidak ada upaya untuk memperindah.",
+          "visual_indicators": "Handheld shaky, grain tinggi, pencahayaan available light, komposisi tidak sempurna",
+          "pairs_well_with": ["gritty", "desperate", "tense", "intimate"],
+          "conflicts_with": ["glamorous", "ethereal", "whimsical", "polished"]
+        },
+        {
+          "en": "mystical",
+          "id": "mistis",
+          "description": "Kehadiran kekuatan atau makna yang melampaui pemahaman — sakral, supernatural, atau pengalaman transenden.",
+          "visual_indicators": "Cahaya dari sumber tidak jelas, simbol atau pola yang bermakna, atmosphere yang membuat waktu terasa berhenti",
+          "pairs_well_with": ["ethereal", "wonder", "mysterious", "surreal"],
+          "conflicts_with": ["mundane", "gritty", "cynical"]
+        },
+        {
+          "en": "oppressive",
+          "id": "menekan",
+          "description": "Berat yang tidak terlihat — kekuatan atau situasi yang lebih besar dari individu sedang menekan ke bawah. Sistemik, tidak berwajah.",
+          "visual_indicators": "High angle pada subjek, arsitektur masif mengepung, cahaya dari atas keras, komposisi yang menenggelamkan subjek",
+          "pairs_well_with": ["desperate", "claustrophobic", "dread", "gritty"],
+          "conflicts_with": ["liberating", "triumphant", "joyful"]
+        },
+        {
+          "en": "liminal",
+          "id": "liminal",
+          "description": "Di antara dua keadaan — tidak di sini tidak di sana, transisi yang belum selesai, ambang batas yang belum dilewati.",
+          "visual_indicators": "Ruang yang terasa menunggu, pencahayaan yang tidak pada waktu normal, subjek dalam posisi transisi",
+          "pairs_well_with": ["uncanny", "mysterious", "melancholic", "surreal"],
+          "conflicts_with": ["definitive", "grounded", "triumphant"]
+        }
+      ]
+    },
+
+    "narrative_implication": {
+      "_note": "[STRING_BEBAS] — Deskripsi singkat tentang 'cerita yang sedang terjadi' — apa yang implisit dari scene ini tanpa perlu diceritakan secara eksplisit. Kalimat 1–2 baris.",
+      "_examples_by_genre": {
+        "drama": [
+          "seseorang baru saja menerima kabar yang mengubah hidupnya",
+          "dua orang sedang mengatakan selamat tinggal untuk terakhir kalinya tanpa keduanya tahu",
+          "seorang anak melihat sesuatu yang seharusnya tidak ia lihat",
+          "keputusan sudah dibuat dan tidak bisa ditarik kembali",
+          "waktu yang tersisa sedang dihitung"
+        ],
+        "action_thriller": [
+          "target sudah teridentifikasi dan operasi dimulai",
+          "jebakan sudah terpasang dan subjek sedang berjalan menuju",
+          "ada seseorang yang bersembunyi di bayangan yang tidak terlihat",
+          "escape window hanya beberapa detik",
+          "mereka pikir mereka sendirian"
+        ],
+        "fantasy": [
+          "kekuatan tua sedang terbangun",
+          "nubuat sedang terpenuhi dalam momen ini",
+          "batas antara dunia sedang menipis",
+          "seseorang sedang dipilih oleh kekuatan yang lebih besar",
+          "dunia lama sedang berakhir dan dunia baru belum datang"
+        ],
+        "horror": [
+          "sesuatu yang harusnya tidak ada di sini sedang menonton",
+          "benda-benda di ruangan ini sudah bergerak dari posisi semula",
+          "suara itu berhenti tepat sebelum pintu terbuka",
+          "mereka tidak tahu bahwa mereka sedang diikuti",
+          "ini bukan pertama kalinya ini terjadi di tempat ini"
+        ],
+        "romance": [
+          "satu dari keduanya sudah jatuh cinta, yang lain belum menyadari",
+          "ini pertemuan terakhir tapi keduanya belum siap mengatakannya",
+          "keberanian untuk mengucapkan tiga kata itu hampir datang",
+          "janji yang tidak terucap lebih berat dari yang terucap"
+        ],
+        "sci_fi": [
+          "teknologi ini adalah titik tidak bisa kembali bagi peradaban",
+          "kontak pertama sedang terjadi dan tidak ada yang siap",
+          "sistem sudah gagal dan penyelamat satu-satunya adalah manusia yang paling tidak dipercaya",
+          "mesin ini baru saja menjadi sadar"
+        ],
+        "character_study": [
+          "ini adalah momen tenang sebelum ia memilih siapa dirinya",
+          "topeng sudah dilepas karena ia pikir tidak ada yang melihat",
+          "ia sedang mengucapkan selamat tinggal pada versi dirinya yang lama",
+          "untuk pertama kalinya ia melihat dirinya sendiri dengan jelas"
+        ]
+      }
+    },
+
+    "visual_style": {
+
+      "art_movement": {
+        "_note": "Gerakan seni atau estetika visual yang menjadi referensi rendering keseluruhan.",
+        "options": [
+          {
+            "en": "photorealism",
+            "id": "fotorealisme",
+            "description": "Semirip mungkin dengan foto nyata — tidak ada 'gaya', hanya reproduksi realitas yang sempurna.",
+            "color_tendency": "Natural, tidak dimanipulasi",
+            "texture_tendency": "Detail maksimal, semua material terlihat nyata",
+            "ai_prompt_keywords": ["photorealistic", "RAW photo", "DSLR", "8K"]
+          },
+          {
+            "en": "cinematic",
+            "id": "sinematik",
+            "description": "Estetika film — color grading, letterbox ratio, lens flare, bokeh yang didesain. Bukan foto tapi bukan ilustrasi.",
+            "color_tendency": "Color graded, biasanya dengan teal-orange atau silver-orange",
+            "texture_tendency": "Sedikit grain film, depth of field sinematik",
+            "ai_prompt_keywords": ["cinematic", "film still", "movie scene", "Panavision"]
+          },
+          {
+            "en": "impressionism",
+            "id": "impresionisme",
+            "description": "Monet, Renoir — cahaya dan warna lebih penting dari detail. Kuas terlihat, tepi lembut, momen terasa bergerak.",
+            "color_tendency": "Warna cerah, berdampingan tapi tidak dicampur, vibrant",
+            "texture_tendency": "Brushstroke terlihat, permukaan tidak halus",
+            "ai_prompt_keywords": ["impressionist painting", "brushstroke", "Monet style"]
+          },
+          {
+            "en": "expressionism",
+            "id": "ekspresionisme",
+            "description": "Emosi lebih penting dari realita — distorsi, warna dramatis, bayangan yang berlebihan. Dunia sebagai cermin perasaan.",
+            "color_tendency": "Kontras ekstrem, warna tidak natural, dramatis",
+            "texture_tendency": "Kasar, tidak halus, penuh energi",
+            "ai_prompt_keywords": ["expressionist", "distorted", "emotional painting"]
+          },
+          {
+            "en": "art_nouveau",
+            "id": "Art Nouveau",
+            "description": "Klimt, Mucha — garis organik mengalir, ornamen floral, emas, dekoratif tinggi. Wanita dan alam berpadu.",
+            "color_tendency": "Emas, hijau sage, merah marun, cream",
+            "texture_tendency": "Flat dengan detail ornamen, garis kontur kuat",
+            "ai_prompt_keywords": ["Art Nouveau", "Mucha style", "Klimt", "ornate floral"]
+          },
+          {
+            "en": "art_deco",
+            "id": "Art Deco",
+            "description": "Geometris tegas, kemewahan modern, emas dan hitam, garis vertikal kuat. Roaring 20s aesthetic.",
+            "color_tendency": "Emas, hitam, putih gading, merah terang",
+            "texture_tendency": "Permukaan mengkilap, geometris presisi",
+            "ai_prompt_keywords": ["Art Deco", "geometric luxury", "1920s aesthetic"]
+          },
+          {
+            "en": "noir",
+            "id": "Noir",
+            "description": "Film noir klasik — hitam putih atau warna sangat desaturated, bayangan keras, rain-slicked streets, fedora.",
+            "color_tendency": "Monokrom atau sangat desaturated dengan satu aksen warna",
+            "texture_tendency": "Grain tinggi, kontras ekstrem, bayangan dominan",
+            "ai_prompt_keywords": ["film noir", "high contrast B&W", "noir aesthetic", "chiaroscuro"]
+          },
+          {
+            "en": "cyberpunk",
+            "id": "Cyberpunk",
+            "description": "High tech low life — neon di hujan, augmentasi tubuh, korporasi vs jalanan. Kontras antara kemewahan teknologi dan kemiskinan sosial.",
+            "color_tendency": "Magenta, cyan, ungu, hijau neon — saturasi tinggi di atas gelap",
+            "texture_tendency": "Reflektif basah, LED, screen glow, industrial",
+            "ai_prompt_keywords": ["cyberpunk", "neon noir", "futuristic dystopia", "blade runner aesthetic"]
+          },
+          {
+            "en": "solarpunk",
+            "id": "Solarpunk",
+            "description": "Optimisme teknologi hijau — panel surya terintegrasi arsitektur, tanaman di mana-mana, komunitas, cahaya natural.",
+            "color_tendency": "Hijau, kuning matahari, coklat tanah, putih bersih",
+            "texture_tendency": "Organis, kayu, tanaman, material berkelanjutan",
+            "ai_prompt_keywords": ["solarpunk", "green utopia", "sustainable future", "nature integrated technology"]
+          },
+          {
+            "en": "dark_fantasy",
+            "id": "Dark Fantasy",
+            "description": "Bersatu antara keindahan dan kengerian — monster yang indah, hero yang rusak, dunia yang brutal namun penuh keajaiban.",
+            "color_tendency": "Merah darah, ungu gelap, emas sakit, hitam",
+            "texture_tendency": "Organis tapi menyeramkan, darah, batu, tulang",
+            "ai_prompt_keywords": ["dark fantasy", "grimdark", "Berserk aesthetic", "dark souls"]
+          },
+          {
+            "en": "high_fantasy",
+            "id": "High Fantasy",
+            "description": "Keajaiban yang besar dan megah — dunia yang lebih besar dari dunia nyata, makhluk luar biasa, kekuatan yang mengubah sejarah.",
+            "color_tendency": "Emas, biru kerajaan, hijau hutan, putih bersih",
+            "texture_tendency": "Epik dan indah, detail tinggi, marmer dan kayu ukir",
+            "ai_prompt_keywords": ["high fantasy", "epic fantasy", "LOTR aesthetic", "Tolkien"]
+          },
+          {
+            "en": "synthwave",
+            "id": "Synthwave",
+            "description": "Nostalgia masa depan 80an — grid horizon, sunset ungu-merah-oranye, chrome, neon, estetika VHS.",
+            "color_tendency": "Hot pink, ungu, cyan, oranye matahari terbenam",
+            "texture_tendency": "Chrome, grid, permukaan flat retrowave",
+            "ai_prompt_keywords": ["synthwave", "retrowave", "80s aesthetic", "vaporwave"]
+          },
+          {
+            "en": "vaporwave",
+            "id": "Vaporwave",
+            "description": "Nostalgia internet era 90an yang ironis dan melankolis — estatua Yunani, Windows 95, mall kosong, pink dan biru.",
+            "color_tendency": "Pink pastel, lavender, teal, putih gading",
+            "texture_tendency": "CRT scan lines, low-res, marble, chrome",
+            "ai_prompt_keywords": ["vaporwave", "aesthetic 90s", "liminal space", "mall core"]
+          },
+          {
+            "en": "ghibli",
+            "id": "Ghibli",
+            "description": "Studio Ghibli — alam yang hidup dan penuh detail, karakter yang ekspresif, momen tenang yang bermakna, keajaiban dalam kehidupan sehari-hari.",
+            "color_tendency": "Hijau subur, biru langit cerah, warna natural hangat",
+            "texture_tendency": "Painterly, lembut, detail tapi tidak photo-real",
+            "ai_prompt_keywords": ["Studio Ghibli style", "Miyazaki", "anime painterly", "soft anime"]
+          },
+          {
+            "en": "anime_modern",
+            "id": "Anime Modern",
+            "description": "Anime kontemporer Jepang — line art bersih, cell shading, efek emosional yang eksplisit, detail karakter tinggi.",
+            "color_tendency": "Vibrant, skin tone anime, highlight putih, saturasi tinggi",
+            "texture_tendency": "Flat cel-shaded, garis kontur jelas, efek visual khusus anime",
+            "ai_prompt_keywords": ["anime", "manga style", "cel shading", "anime artwork"]
+          },
+          {
+            "en": "ukiyo_e",
+            "id": "Ukiyo-e",
+            "description": "Seni cetak Jepang — kontur tegas, pola dekoratif, perspektif flat, alam sebagai subjek utama. Hokusai, Hiroshige.",
+            "color_tendency": "Indigo, merah bata, hitam, putih, kuning oker",
+            "texture_tendency": "Flat, kontur tegas, pattern dekoratif",
+            "ai_prompt_keywords": ["ukiyo-e", "japanese woodblock print", "Hokusai style"]
+          },
+          {
+            "en": "baroque",
+            "id": "Barok",
+            "description": "Caravaggio, Rembrandt — cahaya dramatis ekstrem keluar dari kegelapan, detail luar biasa, komposisi dinamis diagonal.",
+            "color_tendency": "Emas, coklat tua, merah maroon, dari gelap ke cahaya",
+            "texture_tendency": "Sangat detail, kain, daging, metal — semua terasa nyata",
+            "ai_prompt_keywords": ["baroque painting", "Caravaggio", "chiaroscuro", "old master"]
+          },
+          {
+            "en": "surrealism",
+            "id": "Surealisme",
+            "description": "Dalí, Magritte — logika mimpi dalam eksekusi hyper-realistis. Hal yang tidak mungkin dirender dengan sangat detail dan nyata.",
+            "color_tendency": "Natural tapi tidak normal, sky yang salah warna, bayangan yang tidak logis",
+            "texture_tendency": "Hyper-detail pada elemen yang tidak seharusnya ada",
+            "ai_prompt_keywords": ["surrealist", "Dalí style", "dreamlike surrealism", "Magritte"]
+          },
+          {
+            "en": "watercolor",
+            "id": "Cat air",
+            "description": "Aquarelle — tepi lembut, warna yang bleeding, kertas terlihat, cahaya dari kertas putih yang bersinar melalui cat.",
+            "color_tendency": "Transparan, warna cerah tapi tidak solid, bleeding di tepi",
+            "texture_tendency": "Kertas terlihat, brushstroke, wash yang lebar",
+            "ai_prompt_keywords": ["watercolor painting", "aquarelle", "soft watercolor illustration"]
+          },
+          {
+            "en": "concept_art",
+            "id": "Concept Art",
+            "description": "Gaya industri game dan film — render cepat tapi impactful, fokus pada mood dan silhouette, environment storytelling kuat.",
+            "color_tendency": "Kontras kuat, mood jelas, warna environment storytelling",
+            "texture_tendency": "Painterly tapi dengan sense material yang kuat",
+            "ai_prompt_keywords": ["concept art", "environment design", "digital painting", "ArtStation"]
+          }
+        ]
+      },
+
+      "film_reference": {
+        "_note": "Referensi film atau direktur spesifik sebagai acuan estetika visual. Bisa diisi string bebas dengan nama film atau direktur.",
+        "options": [
+          { "en": "blade_runner_2049", "id": "Blade Runner 2049", "description": "Roger Deakins — warna desaturated dengan aksen oranye dan teal, volume kabut, skala monumental, sedikit karakter dalam ruang besar." },
+          { "en": "mad_max_fury_road", "id": "Mad Max: Fury Road", "description": "George Miller — bleached kuning-putih, warna primer saturasi tinggi, komposisi dalam motion, skala chaos yang terorganisir." },
+          { "en": "2001_space_odyssey", "id": "2001: A Space Odyssey", "description": "Kubrick — simetri sempurna, slow pace, skala kosmik, kemurnian visual, minimalis yang mengancam." },
+          { "en": "spirited_away_ghibli", "id": "Spirited Away / Ghibli", "description": "Miyazaki — detail organis yang kaya, warna cerah natural, makhluk yang ekspresif, momen sunyi yang bermakna." },
+          { "en": "the_revenant", "id": "The Revenant", "description": "Iñárritu / Lubezki — available light saja, handheld intim, alam sebagai protagonis, humanitas vs wilderness." },
+          { "en": "hero_zhang_yimou", "id": "Hero (Zhang Yimou)", "description": "Zhang Yimou — warna monokromatik per babak, movement koreografis, kostum dan lingkungan berwarna solid." },
+          { "en": "pan_labyrinth", "id": "Pan's Labyrinth", "description": "Del Toro — dua palette berbeda (realita dingin, fantasi hangat), creature design organis-menakutkan, detail yang mengundang eksplorasi." },
+          { "en": "princess_mononoke", "id": "Princess Mononoke", "description": "Miyazaki — konflik antara alam dan industri, darah yang tidak ditarik-tarik, alam yang murni dan mengerikan sekaligus." },
+          { "en": "annihilation", "id": "Annihilation", "description": "Alex Garland — nature horror yang berwarna, keindahan yang membunuh, bioluminesensi, batas antara organis dan alien." },
+          { "en": "dune_villeneuve", "id": "Dune (Villeneuve)", "description": "Denis Villeneuve — desaturated beige-emas, skala yang membuat manusia kecil, kostum dan arsitektur monumental, sunyi yang berat." },
+          { "en": "suspiria_argento", "id": "Suspiria (Argento)", "description": "Dario Argento — warna primer sangat jenuh (merah, biru, kuning), tidak natural, horror melalui estetika." },
+          { "en": "in_the_mood_for_love", "id": "In the Mood for Love", "description": "Wong Kar-wai — slow motion di momen kunci, tekstur dan kain, kerinduan yang tidak terpenuhi, keindahan yang menyakitkan." },
+          { "en": "apocalypse_now", "id": "Apocalypse Now", "description": "Coppola / Storaro — napalm dan oranye, kabut dan air, kewarasan yang runtuh perlahan dalam keindahan yang mengerikan." }
+        ]
+      },
+
+      "photography_style": {
+        "_note": "Genre atau teknik fotografi yang menjadi referensi.",
+        "options": [
+          { "en": "documentary", "id": "dokumenter", "description": "Objektif, tidak dibuat-buat, available light, moment of truth. Penonton merasa sedang menyaksikan realita." },
+          { "en": "fashion_editorial", "id": "editorial fashion", "description": "Lighting terkontrol, pose yang diperhitungkan, kostum sebagai bahasa, glamour yang disengaja." },
+          { "en": "street_photography", "id": "street photography", "description": "Momen spontan, komposisi dari chaos, manusia dalam konteks urban, humanisme." },
+          { "en": "fine_art_portrait", "id": "portrait seni rupa", "description": "Subjek sebagai ekspresi artistik, lighting dramatis, komposisi deliberate, emosi atau konsep lebih dari identitas." },
+          { "en": "landscape_nature", "id": "landscape alam", "description": "Alam sebagai subjek utama, golden hour, wide shot, manusia absent atau sangat kecil." },
+          { "en": "war_photography", "id": "fotografi perang", "description": "Momen nyata bahaya, handheld, grain tinggi, kemanusiaan dalam kondisi ekstrem." },
+          { "en": "macro_photography", "id": "makro fotografi", "description": "Dunia mikro, depth of field sangat tipis, detail yang tidak biasa terlihat jelas, skala dibalik." },
+          { "en": "long_exposure", "id": "eksposur panjang", "description": "Waktu terkompres dalam satu gambar — light trail, air smooth, bintang bergerak, kota yang ramai tapi manusia hilang." },
+          { "en": "double_exposure", "id": "double eksposur", "description": "Dua gambar bertumpuk — silhouette diisi landscape, wajah berpadu dengan alam, dualitas." },
+          { "en": "analog_film", "id": "film analog", "description": "Grain film, warna yang sedikit shifting, vignette natural, skin tone khusus film." },
+          { "en": "polaroid_instant", "id": "polaroid instan", "description": "Warna yang slightly off, vignette kuat, format persegi, keintiman dan ketidaksempurnaan." },
+          { "en": "infrared", "id": "inframerah", "description": "Dedaunan putih, langit hitam, kulit bercahaya — dunia yang sama tapi dilihat dengan cahaya yang tidak bisa dilihat mata." },
+          { "en": "high_speed", "id": "kecepatan tinggi", "description": "Momen yang tidak bisa dilihat mata biasa — tetesan air, peluru menembus, percikan api." }
+        ]
+      },
+
+      "color_palette": {
+        "_note": "Palet warna dominan dalam scene — bisa 2–4 warna yang mendefinisikan keseluruhan. Bisa kombinasi dari options berikut.",
+        "options": [
+          { "en": "teal_orange", "id": "teal-oranye", "description": "Palet Hollywood paling umum — komplementer, teal di shadow/background, oranye di skin tone. Cinematic universal." },
+          { "en": "silver_orange", "id": "silver-oranye", "description": "Monokrom silver dengan aksen oranye — modern, premium, action movie feel." },
+          { "en": "neon_dark", "id": "neon-gelap", "description": "Warna neon jenuh di atas hitam atau sangat gelap — cyberpunk, nightlife, rave." },
+          { "en": "earth_tones", "id": "warna tanah", "description": "Coklat, oker, sienna, hijau olive, beige — natural, grounded, historical, warm." },
+          { "en": "monochrome_blue", "id": "monokrom biru", "description": "Berbagai shade biru dari hitam hingga putih — winter, night, melancholy, corporate." },
+          { "en": "warm_golden", "id": "emas hangat", "description": "Emas, kuning, amber, cream — mewah, sejarah, Renaissance, royalti." },
+          { "en": "blood_black", "id": "darah-hitam", "description": "Merah darah dan hitam — dark fantasy, horror, passion, danger." },
+          { "en": "forest_green", "id": "hijau hutan", "description": "Berbagai shade hijau deep — alam, survival, poison, growth, hope." },
+          { "en": "pastel_dream", "id": "pastel mimpi", "description": "Warna pastel lembut — romantis, Ghibli, spring, innocent, sweet." },
+          { "en": "desaturated_muted", "id": "desaturasi muted", "description": "Hampir tidak ada warna — melankolis, realis keras, winter depression, grief." },
+          { "en": "purple_gold", "id": "ungu-emas", "description": "Ungu deep dan emas — royalti, dark fantasy, magic, kemewahan langka." },
+          { "en": "pink_magenta", "id": "pink-magenta", "description": "Pink jenuh dan magenta — feminin bold, Y2K, neon pop, tidak mau diam." },
+          { "en": "arctic_white_blue", "id": "putih-biru arktik", "description": "Putih, biru muda, silver — kutub, isolasi, kesucian, sci-fi bersih." },
+          { "en": "sunset_gradient", "id": "gradient matahari terbenam", "description": "Oranye ke ungu ke biru — transisi, perpisahan, keindahan yang singkat." },
+          { "en": "black_white_accent", "id": "hitam-putih dengan aksen", "description": "Monokrom dengan SATU warna aksen — merah Sin City, kuning Kill Bill. Sangat bold." }
+        ]
+      },
+
+      "contrast_mood": {
+        "_note": "Karakter kontras dan tonal range keseluruhan scene.",
+        "options": [
+          { "en": "high_contrast_dramatic", "id": "kontras tinggi dramatis", "description": "Highlight terang, shadow gelap, sedikit midtone. Film noir, chiaroscuro. Tidak ada abu-abu — hanya hitam dan putih." },
+          { "en": "high_contrast_vivid", "id": "kontras tinggi vivid", "description": "Kontras tinggi tapi semua warna jenuh — bukan gelap-terang tapi semua pop. Action movie, poster." },
+          { "en": "medium_contrast", "id": "kontras menengah", "description": "Rentang tonal lengkap, natural, tidak dramatis. Paling serbaguna." },
+          { "en": "low_contrast_misty", "id": "kontras rendah berkabut", "description": "Highlight dan shadow dekat satu sama lain — kabut, fog, overcast. Lembut, ethereal, atau flat tergantung konteks." },
+          { "en": "low_contrast_faded", "id": "kontras rendah pudar", "description": "Washed out, seperti foto lama yang memudar — nostalgic, tired, dreamy analog." },
+          { "en": "flat_even", "id": "flat merata", "description": "Tidak ada kontras berarti — studio, tutorial, infografis. Sengaja dihilangkan agar tidak mengganggu subjek." },
+          { "en": "selective_contrast", "id": "kontras selektif", "description": "Subjek dalam high contrast, background flat — atau sebaliknya. Mengisolasi elemen penting." }
+        ]
+      },
+
+      "texture_emphasis": {
+        "_note": "Kualitas permukaan dan material yang ditonjolkan dalam scene.",
+        "options": [
+          { "en": "smooth_sleek", "id": "halus licin", "description": "Permukaan mulus, reflektif, tidak ada grain. Futuristik, high-end, steril." },
+          { "en": "gritty_textured", "id": "kasar bertekstur", "description": "Permukaan kasar, pori-pori terlihat, grain tinggi. Gritty realism, war, survival." },
+          { "en": "organic_rough", "id": "organis kasar", "description": "Tekstur alam — kulit kayu, batu, tanah, kulit manusia. Hangat, hidup, tidak sempurna." },
+          { "en": "aged_patina", "id": "patina tua", "description": "Tanda usia — karat, retak, cat mengelupas, lumut. Sejarah, waktu yang berlalu." },
+          { "en": "soft_fabric", "id": "kain lembut", "description": "Tekstur kain dominan — linen, sutra, wol, velvet. Intimate, tactile, sensory." },
+          { "en": "crystalline", "id": "kristalin", "description": "Permukaan kristal, kaca, es — transparan, faceted, cahaya dipecah menjadi prisma." },
+          { "en": "metallic_industrial", "id": "metalik industrial", "description": "Metal, baja, besi — reflektif, dingin, kuat, industrial." },
+          { "en": "painterly", "id": "painterly", "description": "Terlihat seperti lukisan — brushstroke terlihat, tekstur cat, tidak foto-real." },
+          { "en": "film_grain", "id": "grain film", "description": "Grain analog film — nostalgia, humanis, hangat, tidak steril." }
+        ]
+      }
+    },
+
+    "temporal_quality": {
+      "_note": "Bagaimana waktu terasa dalam scene — bukan waktu nyata tapi waktu yang dirasakan.",
+
+      "time_feeling": {
+        "_note": "Kualitas subjektif waktu dalam scene.",
+        "options": [
+          { "en": "time_stopped", "id": "waktu berhenti", "description": "Waktu terasa benar-benar beku — momen ini akan berlangsung selamanya, tidak ada yang bergerak atau berubah." },
+          { "en": "eternal_slow", "id": "lambat abadi", "description": "Waktu bergerak sangat lambat seperti madu — setiap detik terasa berat, penuh, bermakna." },
+          { "en": "leisurely", "id": "santai", "description": "Waktu mengalir perlahan dengan nyaman — tidak ada terburu-buru, setiap momen dinikmati." },
+          { "en": "normal", "id": "normal", "description": "Waktu terasa berjalan biasa — tidak ada manipulasi temporal yang terasa." },
+          { "en": "slightly_rushed", "id": "sedikit terburu", "description": "Ada sedikit urgensi — seseorang atau sesuatu sedang ditunggu." },
+          { "en": "rushed", "id": "terburu-buru", "description": "Waktu terasa tidak cukup — segala sesuatu sedang bergerak terlalu cepat." },
+          { "en": "chaotic_blur", "id": "kabur kacau", "description": "Waktu tidak bisa diikuti — terlalu banyak terjadi terlalu cepat, overdrive total." },
+          { "en": "dreamlike", "id": "seperti mimpi", "description": "Waktu tidak linear atau tidak konsisten — seperti mimpi di mana satu momen bisa berlangsung selamanya atau dilewati seketika." }
+        ]
+      },
+
+      "urgency": {
+        "_note": "Tingkat kemendesakan yang terasa dari scene.",
+        "options": [
+          { "en": "none", "id": "tidak ada", "description": "Tidak ada urgensi sama sekali — tidak ada yang perlu segera dilakukan atau diselesaikan." },
+          { "en": "low", "id": "rendah", "description": "Ada tugas atau tujuan tapi tidak mendesak — santai, contemplative." },
+          { "en": "moderate", "id": "sedang", "description": "Ada deadline atau tujuan yang perlu dikejar — tidak panik tapi tidak santai." },
+          { "en": "high", "id": "tinggi", "description": "Waktu sangat terbatas — setiap detik dihitung, kesalahan mahal." },
+          { "en": "critical", "id": "kritis", "description": "Batas absolut — hitungan detik sebelum sesuatu yang tidak bisa diperbaiki terjadi." }
+        ]
+      },
+
+      "timelessness": {
+        "_note": "Seberapa terikat scene ini pada era atau waktu tertentu.",
+        "options": [
+          { "en": "contemporary_dated", "id": "kontemporer terikat waktu", "description": "Sangat jelas kapan ini — smartphone, fashion, referensi budaya yang spesifik. Ini 2020an." },
+          { "en": "contemporary_neutral", "id": "kontemporer netral", "description": "Modern tapi tidak ada penanda era spesifik — bisa 2000–2030an." },
+          { "en": "timeless", "id": "abadi", "description": "Tidak jelas kapan — bisa ratusan tahun lalu, sekarang, atau ratusan tahun lagi. Emosi universal." },
+          { "en": "anachronistic", "id": "anachronistik", "description": "Elemen dari era berbeda bercampur secara sengaja atau aneh — steampunk, alternate history, time travel." },
+          { "en": "mythological", "id": "mitologis", "description": "Di luar waktu sepenuhnya — ini adalah momen dari cerita yang selalu sudah ada." }
+        ]
+      }
+    },
+
+    "spatial_quality": {
+      "_note": "Bagaimana ruang terasa secara psikologis dan emosional — terlepas dari ukuran fisik aktual.",
+
+      "openness": {
+        "_note": "Rasa keterbukaan atau ketertertutupan ruang.",
+        "options": [
+          { "en": "suffocating", "id": "mencekik", "description": "Ruang terasa ingin mengubur — tidak hanya sempit tapi aktif menekan, tidak ada udara." },
+          { "en": "claustrophobic", "id": "klaustrofobik", "description": "Terlalu sempit, dinding terlalu dekat, langit-langit terlalu rendah — tidak nyaman." },
+          { "en": "intimate_enclosed", "id": "tertutup intim", "description": "Kecil tapi nyaman — seperti kamar tidur favorit atau tempat persembunyian yang aman." },
+          { "en": "personal", "id": "personal", "description": "Ruang yang terasa seperti milik seseorang — tidak terlalu besar tidak terlalu kecil." },
+          { "en": "open", "id": "terbuka", "description": "Cukup ruang untuk bergerak bebas — tidak tertekan, tapi juga tidak overwhelmed oleh keluasan." },
+          { "en": "vast", "id": "luas", "description": "Ruang sangat besar — manusia terasa kecil tapi tidak tertekan, rasa kebebasan." },
+          { "en": "infinite", "id": "tak terbatas", "description": "Tidak ada batas yang terlihat — laut, angkasa, tundra. Bisa menekan atau membebaskan." }
+        ]
+      },
+
+      "intimacy": {
+        "_note": "Kedekatan emosional yang terasa antara subjek dan penonton, atau antar subjek.",
+        "options": [
+          { "en": "alienating", "id": "mengasingkan", "description": "Penonton sengaja dijauhkan dari subjek — cold, distant, observational, tidak invited." },
+          { "en": "distant", "id": "jauh", "description": "Ada jarak emosional — kita melihat dari luar, tidak masuk ke dalam perasaan subjek." },
+          { "en": "neutral", "id": "netral", "description": "Tidak ada jarak khusus — kita mengamati tanpa distansi atau keterlibatan yang dipaksakan." },
+          { "en": "engaged", "id": "terlibat", "description": "Kita mulai merasakan bersama subjek — empati terbangun, kita peduli apa yang terjadi." },
+          { "en": "intimate", "id": "intim", "description": "Kita sangat dekat secara emosional — kita di dalam pengalaman subjek, bukan hanya menyaksikan." },
+          { "en": "voyeuristic", "id": "voyeuristik", "description": "Kita melihat sesuatu yang tidak seharusnya kita lihat — privat, mencuri pandang, sedikit rasa bersalah." }
+        ]
+      },
+
+      "verticality": {
+        "_note": "Rasa ketinggian dan dominasi vertikal dalam scene.",
+        "options": [
+          { "en": "underground_crushing", "id": "bawah tanah menghimpit", "description": "Di bawah segalanya — langit-langit ada di mana-mana, bumi di atas dan bawah." },
+          { "en": "low_grounded", "id": "rendah membumi", "description": "Dekat dengan tanah — berat, stabil, terhubung dengan bumi. Tidak ada ketinggian." },
+          { "en": "eye_level_neutral", "id": "setinggi mata netral", "description": "Normal — tidak ada emphasis vertikal dalam satu arah." },
+          { "en": "elevated_commanding", "id": "tinggi mendominasi", "description": "Dari ketinggian yang memberikan pandangan dan kekuatan — di atas orang lain, melihat ke bawah." },
+          { "en": "towering_overwhelming", "id": "menjulang mengepung", "description": "Dikelilingi oleh struktur atau alam yang jauh lebih tinggi — rasa kecil, kagum, atau tertekan." },
+          { "en": "floating_weightless", "id": "melayang tanpa bobot", "description": "Tidak terikat gravitasi — terbang, di ruang angkasa, atau dalam mimpi." },
+          { "en": "infinite_vertical", "id": "vertikal tak terbatas", "description": "Atas dan bawah sama-sama tidak terlihat ujungnya — jurang, angkasa, abyss." }
+        ]
+      }
+    },
+
+    "audio_implied": {
+      "_note": "Suara yang 'terasa' dari visual — tidak ada suara nyata, tapi deskripsi ini membantu AI membangun mood yang lebih tepat dan konsisten dengan feel scene. Penonton 'mendengar' gambar yang baik.",
+
+      "ambient": {
+        "_note": "Suara latar yang mengisi ruang — bisa kombinasi beberapa.",
+        "_examples_by_category": {
+          "nature": [
+            "distant_thunder_approaching", "rain_on_leaves", "rain_on_metal_roof",
+            "wind_through_tall_grass", "ocean_waves_far", "ocean_waves_crashing",
+            "forest_insects_night", "bird_chorus_morning", "absolute_silence_of_snow",
+            "river_constant_rushing", "cave_dripping_echo", "desert_wind_empty"
+          ],
+          "urban": [
+            "city_traffic_distant", "subway_rumble_underground", "crowd_murmur_market",
+            "industrial_machinery_low_hum", "police_siren_passing", "construction_jackhammer",
+            "empty_street_at_3am", "neon_sign_electrical_buzz", "bar_noise_through_wall"
+          ],
+          "interior": [
+            "clock_ticking_loud", "fireplace_crackling", "air_conditioning_hum",
+            "refrigerator_hum", "fluorescent_light_buzz", "typing_keyboard",
+            "distant_conversation_muffled", "house_settling_creak", "absolute_interior_silence"
+          ],
+          "fantasy_scifi": [
+            "magical_energy_humming", "portal_dimensional_vibration", "ancient_machinery_grinding",
+            "alien_ambient_unidentifiable", "spell_casting_resonance", "dragon_breathing_distant",
+            "spaceship_engine_constant", "force_field_crackling", "hologram_digital_tone"
+          ],
+          "conflict": [
+            "distant_explosions", "gunfire_far_away", "battle_cries_mixed",
+            "helicopter_blades_approaching", "emergency_broadcast_crackle",
+            "alarm_bells_continuous", "crowd_panic_distant"
+          ]
+        }
+      },
+
+      "foreground": {
+        "_note": "Suara yang paling menonjol di depan — suara utama yang 'terdengar' dari scene.",
+        "_examples_by_category": {
+          "human": [
+            "single_footstep_slow", "rapid_breathing_close", "whispered_conversation",
+            "sob_suppressed", "laugh_sudden", "heartbeat_audible",
+            "sword_drawn_slowly", "paper_rustling", "door_opening_carefully"
+          ],
+          "action": [
+            "sword_clashing_sharp", "arrow_whistling", "glass_shattering",
+            "explosion_close", "running_footsteps_urgent", "car_engine_revving",
+            "punch_landing_impact", "body_falling_silence_after"
+          ],
+          "environment": [
+            "single_drop_falling_in_pool", "branch_snapping", "fire_suddenly_erupting",
+            "ice_cracking_underfoot", "sand_shifting", "metal_groaning_stress"
+          ],
+          "magical": [
+            "spell_releasing_sharp", "crystal_resonating", "time_stopping_ringing",
+            "portal_opening_tear", "prophecy_whispering"
+          ]
+        }
+      },
+
+      "emotional_cue": {
+        "_note": "Musik atau suara yang 'seharusnya bermain' sesuai mood scene — imajiner soundtrack.",
+        "options": [
+          { "en": "tense_silence", "id": "keheningan tegang", "description": "Tidak ada musik — keheningan sendiri adalah tension. Setiap suara kecil terdengar sangat keras." },
+          { "en": "hopeful_rising", "id": "harapan meningkat", "description": "Melodi yang membangun ke atas — mayor, instrumen yang semakin penuh, menuju sesuatu." },
+          { "en": "melancholic_strings", "id": "string melankolis", "description": "Biola atau cello tunggal — mengalir, minor, indah dan menyedihkan. Piano mungkin ada." },
+          { "en": "epic_orchestra", "id": "orkestra epik", "description": "Full orchestral swell — brass, strings, perkusi bersama. Hans Zimmer, John Williams. Sejarah sedang dibuat." },
+          { "en": "dark_ambient_drone", "id": "ambient gelap drone", "description": "Suara berfrekuensi rendah yang konstan — menekan, mengancam, tidak ada melodi. Hanya tekstur." },
+          { "en": "ethereal_choir", "id": "paduan suara ethereal", "description": "Suara vokal yang tidak bisa diidentifikasi sebagai manusia atau bukan — sakral, supernatural, membawa." },
+          { "en": "rhythmic_percussion", "id": "perkusi berirama", "description": "Ritme yang konstan — mendekat, degup jantung yang dipercepat, tribal, trance." },
+          { "en": "whimsical_playful", "id": "jenaka playful", "description": "Ringan, mungkin ukulele atau music box — tidak serius, dunia yang menyenangkan." },
+          { "en": "electronic_cold", "id": "elektronik dingin", "description": "Synth yang tidak organis — futuristik, steril, alien, cyberpunk, teknologi menggantikan manusia." },
+          { "en": "acoustic_intimate", "id": "akustik intim", "description": "Gitar atau piano akustik tunggal yang terdengar dekat — seseorang memainkan untuk diri sendiri." },
+          { "en": "silence_after_storm", "id": "senyap setelah badai", "description": "Keheningan yang datang setelah sesuatu yang besar — semua telah selesai, apa yang tersisa?" },
+          { "en": "nostalgic_lo_fi", "id": "lo-fi nostalgia", "description": "Suara sedikit degraded, vinyl crackle — kenangan yang tidak sempurna, masa lalu yang dirindukan." }
+        ]
+      }
+    },
+
+    "atmosphere_presets": {
+      "_note": "Kombinasi atmosphere lengkap yang siap dipakai — menggabungkan semua sub-field sekaligus. Gunakan sebagai template atau referensi cepat.",
+      "options": [
+        {
+          "name": "Midnight_Rain_Cyberpunk",
+          "id": "Malam Hujan Cyberpunk",
+          "emotional_tone": ["tense", "lonely", "mysterious"],
+          "narrative_implication": "seseorang sedang menunggu seseorang yang mungkin tidak akan datang",
+          "visual_style": { "art_movement": "cyberpunk", "color_palette": "neon_dark", "contrast_mood": "high_contrast_dramatic" },
+          "temporal_quality": { "time_feeling": "eternal_slow", "urgency": "low", "timelessness": "contemporary_neutral" },
+          "spatial_quality": { "openness": "open", "intimacy": "distant", "verticality": "towering_overwhelming" },
+          "audio_implied": { "ambient": ["rain_on_metal_roof", "neon_sign_electrical_buzz"], "emotional_cue": "electronic_cold" }
+        },
+        {
+          "name": "Golden_Hour_Reunion",
+          "id": "Reuni Jam Emas",
+          "emotional_tone": ["hopeful", "tender", "nostalgic"],
+          "narrative_implication": "dua orang yang lama tidak bertemu akhirnya menemukan satu sama lain",
+          "visual_style": { "art_movement": "cinematic", "color_palette": "warm_golden", "contrast_mood": "medium_contrast" },
+          "temporal_quality": { "time_feeling": "eternal_slow", "urgency": "none", "timelessness": "timeless" },
+          "spatial_quality": { "openness": "open", "intimacy": "intimate", "verticality": "eye_level_neutral" },
+          "audio_implied": { "ambient": ["wind_through_tall_grass"], "emotional_cue": "hopeful_rising" }
+        },
+        {
+          "name": "Ancient_Temple_Horror",
+          "id": "Kuil Kuno Horror",
+          "emotional_tone": ["dread", "mysterious", "uncanny"],
+          "narrative_implication": "sesuatu yang tidur ribuan tahun baru saja terbangun",
+          "visual_style": { "art_movement": "dark_fantasy", "color_palette": "blood_black", "contrast_mood": "high_contrast_dramatic" },
+          "temporal_quality": { "time_feeling": "dreamlike", "urgency": "high", "timelessness": "mythological" },
+          "spatial_quality": { "openness": "claustrophobic", "intimacy": "alienating", "verticality": "towering_overwhelming" },
+          "audio_implied": { "ambient": ["magical_energy_humming", "cave_dripping_echo"], "emotional_cue": "dark_ambient_drone" }
+        },
+        {
+          "name": "Epic_Battle_Dawn",
+          "id": "Pertempuran Epik Fajar",
+          "emotional_tone": ["epic", "determined", "hopeful"],
+          "narrative_implication": "ini adalah pertempuran yang akan menentukan segalanya dan semua orang tahu",
+          "visual_style": { "art_movement": "cinematic", "color_palette": "teal_orange", "contrast_mood": "high_contrast_vivid" },
+          "temporal_quality": { "time_feeling": "time_stopped", "urgency": "critical", "timelessness": "timeless" },
+          "spatial_quality": { "openness": "vast", "intimacy": "neutral", "verticality": "elevated_commanding" },
+          "audio_implied": { "ambient": ["battle_cries_mixed", "wind_through_tall_grass"], "emotional_cue": "epic_orchestra" }
+        },
+        {
+          "name": "Quiet_Aftermath_Grief",
+          "id": "Diam Setelah Kehilangan",
+          "emotional_tone": ["melancholic", "lonely", "haunting"],
+          "narrative_implication": "seseorang berdiri di tempat di mana sesuatu yang berharga sudah tidak ada lagi",
+          "visual_style": { "art_movement": "cinematic", "color_palette": "desaturated_muted", "contrast_mood": "low_contrast_misty" },
+          "temporal_quality": { "time_feeling": "time_stopped", "urgency": "none", "timelessness": "timeless" },
+          "spatial_quality": { "openness": "vast", "intimacy": "distant", "verticality": "low_grounded" },
+          "audio_implied": { "ambient": ["absolute_silence_of_snow"], "emotional_cue": "melancholic_strings" }
+        },
+        {
+          "name": "Magical_Forest_Wonder",
+          "id": "Hutan Magis Kagum",
+          "emotional_tone": ["wonder", "ethereal", "mystical"],
+          "narrative_implication": "seseorang baru pertama kali melihat bahwa dunia jauh lebih luas dari yang ia kira",
+          "visual_style": { "art_movement": "ghibli", "color_palette": "forest_green", "contrast_mood": "medium_contrast" },
+          "temporal_quality": { "time_feeling": "dreamlike", "urgency": "none", "timelessness": "timeless" },
+          "spatial_quality": { "openness": "intimate_enclosed", "intimacy": "engaged", "verticality": "towering_overwhelming" },
+          "audio_implied": { "ambient": ["forest_insects_night", "river_constant_rushing"], "emotional_cue": "ethereal_choir" }
+        },
+        {
+          "name": "Dystopian_Resistance",
+          "id": "Perlawanan Distopia",
+          "emotional_tone": ["determined", "gritty", "desperate"],
+          "narrative_implication": "mereka sudah kalah di atas kertas tapi belum menyerah",
+          "visual_style": { "art_movement": "cinematic", "color_palette": "earth_tones", "contrast_mood": "high_contrast_dramatic" },
+          "temporal_quality": { "time_feeling": "rushed", "urgency": "high", "timelessness": "contemporary_neutral" },
+          "spatial_quality": { "openness": "claustrophobic", "intimacy": "engaged", "verticality": "low_grounded" },
+          "audio_implied": { "ambient": ["industrial_machinery_low_hum", "distant_explosions"], "emotional_cue": "rhythmic_percussion" }
+        },
+        {
+          "name": "Intimate_Last_Moment",
+          "id": "Momen Terakhir yang Intim",
+          "emotional_tone": ["tender", "melancholic", "hopeful"],
+          "narrative_implication": "dua orang tahu ini adalah terakhir kali tapi tidak bisa mengatakannya",
+          "visual_style": { "art_movement": "cinematic", "color_palette": "warm_golden", "contrast_mood": "low_contrast_misty" },
+          "temporal_quality": { "time_feeling": "eternal_slow", "urgency": "none", "timelessness": "timeless" },
+          "spatial_quality": { "openness": "intimate_enclosed", "intimacy": "intimate", "verticality": "eye_level_neutral" },
+          "audio_implied": { "ambient": ["fireplace_crackling"], "emotional_cue": "acoustic_intimate" }
+        }
+      ]
+    }
+  }
+}

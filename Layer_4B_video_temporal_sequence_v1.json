@@ -1,0 +1,967 @@
+{
+  "_readme": "Library pilihan untuk field temporal_sequence (Layer 4B). KHUSUS VIDEO — tidak ada padanannya di schema gambar. Mendefinisikan arsitektur waktu video: durasi total, frame rate, struktur urutan shot, pacing, ritme, dan transisi. Diisi SETELAH motion (Layer 4A) karena shot_sequence merujuk pada gerakan yang sudah didefinisikan.",
+  "_version": "1.0",
+  "_structure": "temporal_sequence → total_duration | fps | shot_sequence | transition | loop | pacing | rhythm_pattern | sequence_templates",
+  "_relationship_note": "shot_sequence.key_action dan shot_type harus konsisten dengan motion.subject_motion dan composition.camera.shot_type. Jika ada konflik, temporal_sequence mengikuti motion — karena motion adalah yang menggerakkan, temporal_sequence adalah yang mengatur kapan.",
+
+  "temporal_sequence": {
+
+    "total_duration": {
+      "_note": "Total panjang video dalam detik. Setiap platform AI video memiliki batas dan sweet-spot yang berbeda. Durasi optimal berbeda dari durasi maksimal.",
+
+      "platform_limits": {
+        "_note": "Referensi batas dan sweet-spot per platform — selalu verifikasi karena platform sering update.",
+        "runway_gen3": {
+          "minimum": 4.0,
+          "maximum": 10.0,
+          "sweet_spot": 6.0,
+          "notes": "Di atas 8 detik kualitas konsistensi karakter mulai turun. 4–6 detik paling solid."
+        },
+        "kling_standard": {
+          "minimum": 5.0,
+          "maximum": 10.0,
+          "sweet_spot": 5.0,
+          "notes": "5 detik paling konsisten. Mode pro bisa hingga 30 detik."
+        },
+        "kling_pro": {
+          "minimum": 5.0,
+          "maximum": 30.0,
+          "sweet_spot": 10.0,
+          "notes": "Lebih panjang = lebih besar kemungkinan drift karakter."
+        },
+        "pika": {
+          "minimum": 3.0,
+          "maximum": 15.0,
+          "sweet_spot": 4.0,
+          "notes": "Di atas 6 detik seringkali ada degradasi kualitas. Lebih efektif membuat beberapa shot pendek."
+        },
+        "hailuo_minimax": {
+          "minimum": 6.0,
+          "maximum": 6.0,
+          "sweet_spot": 6.0,
+          "notes": "Fixed 6 detik — tidak bisa diubah."
+        },
+        "sora": {
+          "minimum": 5.0,
+          "maximum": 60.0,
+          "sweet_spot": 10.0,
+          "notes": "Tier berbeda = batas berbeda. Semakin panjang semakin sulit mempertahankan konsistensi."
+        },
+        "luma_dream_machine": {
+          "minimum": 5.0,
+          "maximum": 10.0,
+          "sweet_spot": 5.0,
+          "notes": "5 detik per shot paling reliabel."
+        }
+      },
+
+      "duration_by_shot_purpose": {
+        "_note": "Berapa lama shot sebaiknya berlangsung berdasarkan fungsinya dalam narasi.",
+        "options": [
+          {
+            "en": "flash_cut",
+            "id": "flash cut",
+            "seconds": "0.5–1.5",
+            "description": "Shot kilat — hampir subliminal, lebih dirasakan daripada dilihat. Memori, mimpi, trauma, atau ritme cepat.",
+            "use_case": "Montase kilat, horror flash, memory fragmen, musik video"
+          },
+          {
+            "en": "reaction_beat",
+            "id": "beat reaksi",
+            "seconds": "1.5–3.0",
+            "description": "Shot reaksi singkat — cukup untuk menangkap satu ekspresi atau momen kecil.",
+            "use_case": "Reaksi karakter, close-up emosi singkat, punchline visual"
+          },
+          {
+            "en": "standard_shot",
+            "id": "shot standar",
+            "seconds": "3.0–6.0",
+            "description": "Durasi shot paling umum dalam storytelling visual. Cukup untuk satu aksi dan reaksi.",
+            "use_case": "Kebanyakan shot naratif, dialog, aksi tunggal"
+          },
+          {
+            "en": "establishing_shot",
+            "id": "shot establishing",
+            "seconds": "5.0–8.0",
+            "description": "Cukup lama untuk penonton menyerap environment dan konteks spatial.",
+            "use_case": "Opening scene, lokasi baru, world reveal"
+          },
+          {
+            "en": "hero_moment",
+            "id": "momen hero",
+            "seconds": "6.0–10.0",
+            "description": "Shot terpanjang untuk satu momen — digunakan untuk klimaks atau beat emosional terpenting.",
+            "use_case": "Reveal dramatis, klimaks emosional, epic landscape"
+          },
+          {
+            "en": "extended_take",
+            "id": "take panjang",
+            "seconds": "10.0–30.0",
+            "description": "Shot sangat panjang — one-take feel. Hanya platform tertentu yang support. Konsistensi karakter bisa menurun.",
+            "use_case": "Sequence kontinu, ambient, art film, loop"
+          }
+        ]
+      },
+
+      "pacing_math": {
+        "_note": "Referensi cepat kalkulasi durasi berdasarkan jumlah shot dan ritme.",
+        "examples": [
+          { "total_shots": 1, "avg_duration_sec": 6.0, "total_sec": 6.0, "feel": "Satu momen tunggal yang kuat" },
+          { "total_shots": 2, "avg_duration_sec": 5.0, "total_sec": 10.0, "feel": "Establishing + hero moment" },
+          { "total_shots": 3, "avg_duration_sec": 4.0, "total_sec": 12.0, "feel": "Setup → confrontation → resolution mini" },
+          { "total_shots": 4, "avg_duration_sec": 3.5, "total_sec": 14.0, "feel": "Ritme sedang, cukup untuk mini story" },
+          { "total_shots": 5, "avg_duration_sec": 3.0, "total_sec": 15.0, "feel": "Action sequence atau montase cepat" },
+          { "total_shots": 6, "avg_duration_sec": 2.5, "total_sec": 15.0, "feel": "Editing agresif, music video feel" },
+          { "total_shots": 8, "avg_duration_sec": 2.0, "total_sec": 16.0, "feel": "Musikal atau action klimaks" }
+        ]
+      }
+    },
+
+    "fps": {
+      "_note": "Frame per second — menentukan seberapa halus gerakan dan feel temporal keseluruhan video.",
+      "options": [
+        {
+          "en": 12,
+          "id": "12fps",
+          "description": "Choppy yang disengaja — animasi tradisional pada budget rendah, atau stylistic statement.",
+          "motion_blur": "Sangat sedikit — setiap frame terlihat distinct",
+          "feel": "Retro, anime lama, stop-motion, lo-fi",
+          "best_for": "Animasi retro stylized, lo-fi aesthetic",
+          "not_for": "Live action realistis, slow motion"
+        },
+        {
+          "en": 24,
+          "id": "24fps",
+          "description": "Standar sinema global sejak 1927. Otak manusia mengasosiasikan frame rate ini dengan 'film' dan 'cerita'. Motion blur alami pada kecepatan ini memberikan feel organis.",
+          "motion_blur": "Natural — standard 180° shutter angle",
+          "feel": "Cinematic, film, storytelling, drama",
+          "best_for": "Semua konten narrative — drama, fantasi, aksi, horor, romance",
+          "not_for": "Konten yang butuh clarity gerakan ekstrem cepat",
+          "notes": "Default untuk hampir semua AI video platform. Jika ragu, pilih ini."
+        },
+        {
+          "en": 30,
+          "id": "30fps",
+          "description": "Standar broadcast TV dan video online. Lebih halus dari 24fps tapi punya 'video feel' yang kurang sinematik.",
+          "motion_blur": "Sedikit lebih sedikit dari 24fps",
+          "feel": "Video, broadcast, documentary, news, YouTube standar",
+          "best_for": "Konten online, tutorial, documentary, vlog",
+          "not_for": "Konten yang ingin tampak seperti film bioskop"
+        },
+        {
+          "en": 60,
+          "id": "60fps",
+          "description": "Ultra smooth — sering disebut 'soap opera effect' karena terlalu real. Bagus untuk sports dan gaming content.",
+          "motion_blur": "Sangat sedikit — gerakan sangat jernih dan tajam",
+          "feel": "Hyperreal, sports, game, video game cutscene",
+          "best_for": "Action dengan detail gerakan yang butuh clarity, gaming content, sports",
+          "not_for": "Drama emosional, konten yang ingin feel 'film'"
+        },
+        {
+          "en": 120,
+          "id": "120fps",
+          "description": "Biasanya direkam untuk playback slow-motion di 24fps. 120÷24 = 5x slow motion.",
+          "motion_blur": "Sangat minimal per frame",
+          "feel": "Captured at high speed for slow-motion playback",
+          "best_for": "Shot yang direncanakan untuk slow-motion: combat impact, bullet time, emotional peak",
+          "slow_motion_ratio": "Diputar di 24fps = 5x slow motion",
+          "not_for": "Shot yang dimaksud diputar real-time"
+        },
+        {
+          "en": 240,
+          "id": "240fps",
+          "description": "Super slow motion — untuk momen ekstrem seperti ledakan, air memercik, atau impact keras.",
+          "motion_blur": "Hampir tidak ada per frame",
+          "feel": "Ultra slow motion, scientific/nature documentary feel",
+          "best_for": "Moment impact yang sangat singkat — tetes air, ledakan, benturan",
+          "slow_motion_ratio": "Diputar di 24fps = 10x slow motion",
+          "not_for": "Shot panjang atau scene dengan banyak gerakan"
+        }
+      ],
+
+      "fps_for_slow_motion": {
+        "_note": "Kalkulasi referensi untuk merencanakan shot slow-motion.",
+        "table": [
+          { "recorded_fps": 48, "playback_fps": 24, "slowdown_factor": "2x", "feel": "Sedikit lambat, halus" },
+          { "recorded_fps": 60, "playback_fps": 24, "slowdown_factor": "2.5x", "feel": "Jelas lambat, still natural" },
+          { "recorded_fps": 120, "playback_fps": 24, "slowdown_factor": "5x", "feel": "Sinematik slow-mo standar" },
+          { "recorded_fps": 240, "playback_fps": 24, "slowdown_factor": "10x", "feel": "Extreme slow-mo, detail terlihat" },
+          { "recorded_fps": 1000, "playback_fps": 24, "slowdown_factor": "41x", "feel": "Ultra scientific — air memercik" }
+        ]
+      }
+    },
+
+    "shot_sequence": {
+      "_note": "Array of objects yang mendefinisikan tiap shot dalam video. Setiap object adalah satu shot dengan timing, framing, dan konten.",
+
+      "shot_index": {
+        "_note": "Nomor urut shot dalam sequence — mulai dari 1. Digunakan untuk referensi saat mendeskripsikan transisi atau editing.",
+        "_format": "Integer dimulai dari 1"
+      },
+
+      "start_time": {
+        "_note": "Kapan shot ini dimulai dalam detik dari awal video total.",
+        "_format": "Float dalam detik. Shot pertama selalu 0.0.",
+        "_calculation": "start_time[n] = start_time[n-1] + duration[n-1] + transition_duration[n-1]"
+      },
+
+      "duration": {
+        "_note": "Berapa lama shot ini berlangsung dalam detik.",
+        "_format": "Float dalam detik. Lihat total_duration.duration_by_shot_purpose untuk panduan."
+      },
+
+      "shot_type": {
+        "_note": "Framing shot — harus konsisten dengan composition.camera.shot_type. Referensi singkatan standar sinematik.",
+        "reference": {
+          "ECU": "Extreme Close-Up — detail sangat kecil (mata, bibir)",
+          "CU": "Close-Up — wajah dari bahu ke atas",
+          "MCU": "Medium Close-Up — dari dada ke atas",
+          "MS": "Medium Shot — dari pinggang ke atas",
+          "MFS": "Medium Full Shot — dari lutut ke atas",
+          "FS": "Full Shot — tubuh penuh",
+          "LS": "Long Shot — karakter + environment signifikan",
+          "WS": "Wide Shot — environment dominan",
+          "EWS": "Extreme Wide Shot — karakter hampir tidak terlihat",
+          "OTS": "Over-The-Shoulder — dari balik bahu ke subjek kedua",
+          "POV": "Point of View — mata karakter",
+          "BEV": "Bird's Eye View — tepat dari atas",
+          "WEV": "Worm's Eye View — dari bawah ke atas"
+        }
+      },
+
+      "key_action": {
+        "_note": "[STRING_BEBAS] — Deskripsi singkat apa yang terjadi dalam shot ini. Jadi panduan AI untuk konten shot.",
+        "_examples_by_category": {
+          "character_entrance_exit": [
+            "character_enters_frame_from_left",
+            "character_exits_frame_to_right",
+            "character_emerges_from_shadows",
+            "character_appears_from_behind_object",
+            "character_walks_into_distance",
+            "character_approaches_camera_directly",
+            "character_runs_into_frame_urgently",
+            "character_stumbles_into_frame",
+            "character_floats_down_from_above",
+            "character_fades_into_existence"
+          ],
+          "character_action": [
+            "character_draws_weapon_slowly",
+            "character_sheathes_weapon",
+            "character_kneels_on_ground",
+            "character_stands_up_from_sitting",
+            "character_turns_around_to_face_camera",
+            "character_looks_up_at_sky",
+            "character_looks_down_at_object",
+            "character_reaches_out_hand",
+            "character_crosses_arms",
+            "character_sits_down_wearily",
+            "character_raises_hand_to_cast_spell",
+            "character_catches_falling_object",
+            "character_opens_door",
+            "character_picks_up_item",
+            "character_drops_something",
+            "character_reads_letter_or_scroll",
+            "character_activates_device"
+          ],
+          "expression_emotion": [
+            "expression_shifts_from_neutral_to_shock",
+            "expression_shifts_from_anger_to_grief",
+            "expression_shifts_from_fear_to_determination",
+            "expression_shifts_from_sadness_to_hope",
+            "smile_breaks_slowly",
+            "jaw_clenches",
+            "eyes_fill_with_tears",
+            "tear_falls_down_cheek",
+            "breath_catches_visible",
+            "lips_part_in_awe",
+            "eyes_widen_in_realization",
+            "face_goes_blank_in_shock",
+            "chin_lifts_in_defiance",
+            "gaze_hardens"
+          ],
+          "camera_reveal": [
+            "reveal_character_face_from_obscured",
+            "reveal_second_character_in_background",
+            "reveal_threat_lurking_in_shadow",
+            "reveal_true_scale_of_environment",
+            "reveal_landscape_beyond_obstacle",
+            "reveal_detail_of_important_object",
+            "reveal_aftermath_of_event",
+            "reveal_character_full_body_costume",
+            "reveal_another_character_behind_first"
+          ],
+          "environment_event": [
+            "sun_rises_over_horizon",
+            "storm_begins_building",
+            "rain_starts_falling",
+            "snow_begins",
+            "explosion_occurs_in_distance",
+            "fire_erupts",
+            "portal_opens_mid_air",
+            "ground_cracks_open",
+            "fog_rolls_in_from_distance",
+            "light_beam_descends_from_sky",
+            "crowd_parts_to_reveal_subject",
+            "door_opens_by_itself",
+            "candles_extinguish_one_by_one",
+            "window_shatters"
+          ],
+          "interaction_between_characters": [
+            "two_characters_face_each_other",
+            "characters_embrace",
+            "character_a_extends_hand_to_character_b",
+            "confrontation_begins",
+            "one_character_turns_away_from_other",
+            "characters_look_at_same_object",
+            "one_character_steps_in_front_of_other_protectively"
+          ],
+          "object_focus": [
+            "object_falls_to_ground_in_slow_motion",
+            "light_catches_surface_of_object",
+            "object_activates_glows",
+            "object_breaks_apart",
+            "hand_closes_around_object",
+            "object_floats_upward",
+            "inscription_becomes_visible"
+          ]
+        }
+      },
+
+      "shot_composition_notes": {
+        "_note": "Catatan tambahan per shot untuk memastikan konsistensi dengan Layer 3 (composition). Field opsional tapi berguna untuk shot yang kompleks.",
+        "_examples": [
+          "subject_positioned_rule_of_thirds_left",
+          "heavy_foreground_element_right_side",
+          "symmetrical_framing_with_architecture",
+          "subject_silhouetted_against_light_source",
+          "camera_angle_low_to_emphasize_height",
+          "shallow_dof_background_bokeh",
+          "deep_focus_both_characters_sharp",
+          "lead_room_right_for_subject_facing_left"
+        ]
+      }
+    },
+
+    "transition": {
+
+      "type": {
+        "_note": "Cara perpindahan dari satu shot ke shot berikutnya. Transisi adalah editorial statement — pilihan transisi mengkomunikasikan hubungan antar shot.",
+        "options": [
+          {
+            "en": "cut",
+            "id": "cut",
+            "description": "Perpindahan instan — frame terakhir shot A langsung digantikan frame pertama shot B. Tidak ada overlap, tidak ada efek.",
+            "editorial_meaning": "Kontinuitas, energi, realitas — tidak ada jarak waktu atau ruang yang implisit",
+            "feel": "Langsung, bersih, standar, tidak menarik perhatian ke dirinya sendiri",
+            "duration_sec": 0.0,
+            "best_for": "Dialog, action, kebanyakan perpindahan — default universal",
+            "sub_types": {
+              "hard_cut": "Cut bersih sempurna — paling umum",
+              "smash_cut": "Cut mendadak dari suasana tenang ke dramatis (atau sebaliknya) — shock, komedi",
+              "jump_cut": "Cut ke shot serupa tapi dengan sedikit lompatan waktu — dokumenter, video artsy",
+              "cross_cut": "Bergantian antara dua atau lebih lokasi paralel — terjadi bersamaan"
+            }
+          },
+          {
+            "en": "dissolve",
+            "id": "dissolve",
+            "description": "Shot A perlahan memudar sementara Shot B perlahan muncul — ada periode keduanya terlihat bersamaan (superimpose).",
+            "editorial_meaning": "Waktu berlalu, hubungan emosional antar shot, dreamlike transition",
+            "feel": "Lembut, waktu berlalu, nostalgik, mimpi",
+            "duration_sec": "0.5–2.0",
+            "best_for": "Time passing, kenangan, transisi lembut antar scene emosional",
+            "sub_types": {
+              "soft_dissolve": "Sangat lambat — hampir tidak disadari",
+              "quick_dissolve": "Cepat — hampir seperti cut tapi ada sedikit blend",
+              "match_dissolve": "Dissolve yang mencocokkan elemen visual — wajah A menjadi wajah B"
+            }
+          },
+          {
+            "en": "fade_to_black",
+            "id": "fade ke hitam",
+            "description": "Shot A memudar ke hitam sempurna, kemudian Shot B muncul dari hitam.",
+            "editorial_meaning": "Chapter selesai, waktu lompat besar, kematian atau tidur, akhir",
+            "feel": "Finality, pemisahan temporal besar, epik, serius",
+            "duration_sec": "0.5–3.0",
+            "best_for": "Akhir babak, time jump besar, kematian karakter, closing scene",
+            "variant": "fade_from_black — Shot B muncul dari hitam tanpa fade out terlebih dahulu"
+          },
+          {
+            "en": "fade_to_white",
+            "id": "fade ke putih",
+            "description": "Shot A memudar ke putih sempurna, kemudian Shot B muncul dari putih.",
+            "editorial_meaning": "Memory, afterlife, overwhelming experience, rebirth, transcendence",
+            "feel": "Surgawi, memory, harapan ekstrem, atau blindness",
+            "duration_sec": "0.5–2.0",
+            "best_for": "Near-death experience, flashback ke memory, supernatural transition, revelation",
+            "variant": "fade_from_white — Shot B muncul dari putih tanpa fade out terlebih dahulu"
+          },
+          {
+            "en": "fade_to_color",
+            "id": "fade ke warna",
+            "description": "Shot A memudar ke warna solid tertentu, kemudian Shot B muncul.",
+            "editorial_meaning": "Tergantung warna — merah (darah, bahaya), biru (air, malam), emas (kenangan)",
+            "feel": "Sangat stylized, intentional, symbolik",
+            "duration_sec": "0.5–2.0",
+            "best_for": "Transisi dengan makna simbolik kuat, film stylized",
+            "color_meanings": {
+              "red": "Darah, bahaya, gairah, kematian",
+              "blue": "Air, malam, dingin, melankolis",
+              "gold_orange": "Kenangan, nostalgia, warmth",
+              "green": "Alam, racun, otherworldly",
+              "purple": "Sihir, royalti, supernatural"
+            }
+          },
+          {
+            "en": "wipe",
+            "id": "wipe",
+            "description": "Shot B 'menyapu' menggantikan Shot A dari satu tepi frame ke tepi lainnya.",
+            "editorial_meaning": "Pergerakan ke lokasi/waktu baru yang definitif, energik",
+            "feel": "Klasik, Star Wars, komik, epik bergaya",
+            "duration_sec": "0.3–1.0",
+            "best_for": "Transisi antara lokasi berbeda, konten bergaya retro atau comic book",
+            "directions": ["left_to_right", "right_to_left", "top_to_bottom", "bottom_to_top", "diagonal", "circular_expanding", "circular_shrinking"]
+          },
+          {
+            "en": "match_cut",
+            "id": "match cut",
+            "description": "Cut yang mencocokkan elemen visual — bentuk, gerakan, atau warna antara dua shot yang berbeda lokasi/waktu.",
+            "editorial_meaning": "Koneksi tematik yang dalam antara dua hal yang berbeda — kesamaan tersembunyi",
+            "feel": "Elegan secara sinematik, bermakna, reward untuk penonton yang jeli",
+            "duration_sec": 0.0,
+            "best_for": "2001 A Space Odyssey style, koneksi tematik, perpindahan waktu atau karakter yang penuh makna",
+            "match_types": {
+              "shape_match": "Lingkaran bulan menjadi piring, tulang menjadi pesawat luar angkasa",
+              "movement_match": "Gerakan tangan A dilanjutkan secara visual oleh gerakan tangan B",
+              "color_match": "Shot dengan dominasi warna merah → shot lain dengan dominasi warna merah",
+              "action_match": "Karakter berlari di Shot A, karakter lain berlari di Shot B dengan angle sama",
+              "eyeline_match": "Karakter A melihat ke kiri → Shot B menampilkan apa yang dilihat"
+            }
+          },
+          {
+            "en": "whip_pan",
+            "id": "whip pan",
+            "description": "Pan sangat cepat hingga frame blur total di tengah, kemudian Shot B dimulai dengan pan cepat yang melambat.",
+            "editorial_meaning": "Pergerakan energetik yang menghubungkan dua hal yang terpisah dengan instan",
+            "feel": "Energetik, stylish, music video, Edgar Wright aesthetic",
+            "duration_sec": "0.2–0.5",
+            "best_for": "Montase energetik, koneksi dua lokasi yang cepat, komedi timing, music video"
+          },
+          {
+            "en": "iris_in",
+            "id": "iris masuk",
+            "description": "Lingkaran mengecil menutup frame dari pinggir ke titik kecil di tengah, mengakhiri Shot A.",
+            "editorial_meaning": "Klasik, akhir yang definitif, theatrical",
+            "feel": "Retro film bisu, theatrical, komedi klasik",
+            "duration_sec": "0.5–1.5",
+            "best_for": "Akhir scene komedi, konten bergaya retro"
+          },
+          {
+            "en": "iris_out",
+            "id": "iris keluar",
+            "description": "Lingkaran mengembang membuka frame dari titik kecil ke penuh, memulai Shot B.",
+            "editorial_meaning": "Klasik, pembukaan yang definitif, theatrical",
+            "feel": "Retro, theatrical, focus expand",
+            "duration_sec": "0.5–1.5",
+            "best_for": "Pembuka scene setelah iris_in, konten bergaya retro"
+          },
+          {
+            "en": "l_cut",
+            "id": "L-cut",
+            "description": "Visual Shot B muncul sebelum audio Shot A selesai — penonton melihat tempat baru tapi masih mendengar suara tempat lama.",
+            "editorial_meaning": "Hubungan temporal antara audio dan visual — audio mendahului perpindahan",
+            "feel": "Sinematik, smooth, profesional — sangat umum di film",
+            "duration_sec": "overlap 0.5–2.0",
+            "best_for": "Perpindahan scene yang mulus, dialogue yang terus berlanjut ke scene lain",
+            "note": "Hanya relevan jika video memiliki audio track"
+          },
+          {
+            "en": "j_cut",
+            "id": "J-cut",
+            "description": "Audio Shot B masuk sebelum visual Shot A selesai — penonton mendengar suara baru sebelum melihatnya.",
+            "editorial_meaning": "Antisipasi, perpindahan yang mengundang rasa ingin tahu",
+            "feel": "Smooth, sinematik, anticipatory",
+            "duration_sec": "overlap 0.5–2.0",
+            "best_for": "Membangun antisipasi, masuk ke scene aksi atau lokasi baru",
+            "note": "Hanya relevan jika video memiliki audio track"
+          },
+          {
+            "en": "invisible_cut",
+            "id": "invisible cut",
+            "description": "Cut yang disembunyikan dalam gerakan atau elemen dalam frame — penonton tidak menyadari perpindahan terjadi.",
+            "editorial_meaning": "Kontinuitas sempurna — tidak ada penandaan editorial",
+            "feel": "Seamless, one-take illusion, immersif",
+            "duration_sec": 0.0,
+            "best_for": "One-take feel, immersive sequence, aksi yang tidak boleh terinterupsi",
+            "techniques": ["hidden_behind_pan", "behind_dark_object", "motion_blur_cover", "through_narrow_gap"]
+          }
+        ]
+      },
+
+      "duration": {
+        "_note": "Berapa lama transisi berlangsung dalam detik. Tidak berlaku untuk cut (0 detik).",
+        "options": [
+          { "en": "instant", "id": "instan", "seconds": 0.0, "description": "Cut sempurna — tidak ada durasi transisi." },
+          { "en": "very_quick", "id": "sangat cepat", "seconds": 0.1, "description": "Transisi kilat — hampir seperti cut tapi ada sedikit efek." },
+          { "en": "quick", "id": "cepat", "seconds": 0.3, "description": "Transisi singkat — terasa sebagai perpindahan bukan pause." },
+          { "en": "standard", "id": "standar", "seconds": 0.5, "description": "Durasi standar untuk dissolve atau wipe biasa." },
+          { "en": "moderate", "id": "sedang", "seconds": 1.0, "description": "Terasa jelas — penonton merasakan weight dari perpindahan." },
+          { "en": "slow", "id": "lambat", "seconds": 1.5, "description": "Perpindahan yang lambat dan bermakna — waktu yang terasa berlalu." },
+          { "en": "very_slow", "id": "sangat lambat", "seconds": 2.0, "description": "Dissolve atau fade yang sangat lambat — meditative, weight besar." },
+          { "en": "extended", "id": "diperpanjang", "seconds": "3.0+", "description": "Transisi yang sangat panjang — seperti opening film serius atau closing epik." }
+        ]
+      },
+
+      "style": {
+        "_note": "Karakter khusus dari transisi yang dipilih.",
+        "options": [
+          { "en": "hard_cut", "id": "cut keras", "description": "Cut paling bersih — frame terakhir A, frame pertama B. Tidak ada overlap." },
+          { "en": "smash_cut", "id": "smash cut", "description": "Cut mendadak dengan kontras ekstrem — biasanya dari tenang ke intensitas tinggi atau sebaliknya." },
+          { "en": "jump_cut", "id": "jump cut", "description": "Cut ke shot yang hampir sama tapi dengan sedikit lompatan waktu — terasa sengaja tidak mulus." },
+          { "en": "soft_dissolve", "id": "dissolve lembut", "description": "Dissolve yang sangat gradual — hampir tidak disadari." },
+          { "en": "quick_dissolve", "id": "dissolve cepat", "description": "Dissolve pendek — antara cut dan dissolve penuh." },
+          { "en": "match_cut_movement", "id": "match cut gerakan", "description": "Gerakan di Shot A dilanjutkan secara visual oleh gerakan serupa di Shot B." },
+          { "en": "match_cut_shape", "id": "match cut bentuk", "description": "Bentuk geometris di Shot A menjadi bentuk di Shot B." },
+          { "en": "match_cut_color", "id": "match cut warna", "description": "Warna dominan Shot A berlanjut ke Shot B." },
+          { "en": "match_cut_eyeline", "id": "match cut arah pandang", "description": "Karakter A melihat ke satu arah → Shot B menampilkan apa yang dilihat." },
+          { "en": "j_cut_audio_lead", "id": "J-cut audio masuk duluan", "description": "Audio Shot B masuk sebelum visual Shot B — audio anticipates visual." },
+          { "en": "l_cut_visual_lead", "id": "L-cut visual masuk duluan", "description": "Visual Shot B muncul sebelum audio Shot A selesai." },
+          { "en": "invisible_behind_motion", "id": "tersembunyi di balik gerakan", "description": "Cut disembunyikan di balik gerakan cepat dalam frame." }
+        ]
+      }
+    },
+
+    "loop": {
+      "_note": "Apakah video dirancang untuk diputar berulang secara mulus.",
+      "options": [
+        {
+          "en": false,
+          "id": "tidak loop",
+          "description": "Video normal dengan awal dan akhir. Diputar sekali atau dengan jeda antar ulangan yang terlihat.",
+          "best_for": "Konten narrative, story beat, promo clip, adegan"
+        },
+        {
+          "en": true,
+          "id": "loop",
+          "description": "Video dirancang agar frame terakhir menyambung mulus ke frame pertama — tidak ada 'sambungan' yang terlihat.",
+          "best_for": "Background video, wallpaper, ambient loop, social media loop, NFT animation",
+          "design_requirements": [
+            "Posisi semua elemen di frame terakhir harus sama dengan frame pertama",
+            "Pencahayaan harus konsisten dari awal ke akhir",
+            "Gerakan karakter tidak boleh ada awal/akhir yang eksplisit",
+            "Gerakan environment yang natural untuk loop: api, air, angin, partikel, awan",
+            "Hindari perubahan warna langit atau pencahayaan yang progress linear",
+            "Jika ada karakter, mereka harus dalam state idle atau motion yang bisa dikembalikan"
+          ],
+          "loop_friendly_motions": [
+            "Api atau lilin berkedip",
+            "Air mengalir atau beriak",
+            "Angin melalui dedaunan",
+            "Partikel mengambang",
+            "Rambut atau kain berayun ringan",
+            "Napas karakter",
+            "Cahaya berkedip",
+            "Awan bergerak lambat",
+            "Asap naik"
+          ]
+        }
+      ]
+    },
+
+    "pacing": {
+      "_note": "Ritme editorial keseluruhan video — seberapa cepat shot berganti dan bagaimana energi dikelola. Field tambahan yang tidak ada di README tapi kritis untuk perencanaan.",
+
+      "overall_pace": {
+        "_note": "Deskriptor kecepatan editing keseluruhan.",
+        "options": [
+          {
+            "en": "languid",
+            "id": "lamban",
+            "description": "Shot sangat panjang, jarang berganti. Penonton diundang untuk tinggal dalam setiap momen.",
+            "avg_shot_duration": "8–15+ detik",
+            "feel": "Art film, meditasi, contemplative, European cinema",
+            "best_for": "Drama intim, art film, ambient, nature documentary"
+          },
+          {
+            "en": "slow_burn",
+            "id": "lambat membangun",
+            "description": "Shot panjang yang perlahan membangun tension. Penonton merasa semakin terjepit.",
+            "avg_shot_duration": "5–10 detik",
+            "feel": "Thriller psikologis, horror, drama yang membangun",
+            "best_for": "Suspense, horror, drama emosional berat"
+          },
+          {
+            "en": "deliberate",
+            "id": "deliberate",
+            "description": "Shot terasa diperhitungkan — tidak cepat tidak lambat. Setiap shot ada alasannya.",
+            "avg_shot_duration": "4–7 detik",
+            "feel": "Cinematic standar, drama berkualitas, kebanyakan film",
+            "best_for": "Narrative standar, drama, fantasy, action yang tidak terburu"
+          },
+          {
+            "en": "brisk",
+            "id": "gesit",
+            "description": "Shot cukup cepat, energi terasa. Ada momentum yang membangun.",
+            "avg_shot_duration": "2.5–4 detik",
+            "feel": "Adventure, action sekuen, thriller, energetik",
+            "best_for": "Adventure, action opening, introduction sequence"
+          },
+          {
+            "en": "rapid",
+            "id": "cepat",
+            "description": "Shot cepat berganti — penonton harus mengikuti. Editing menjadi elemen cerita.",
+            "avg_shot_duration": "1.5–2.5 detik",
+            "feel": "Action intens, music video, montase",
+            "best_for": "Climax action, music video, highlight montage"
+          },
+          {
+            "en": "frenetic",
+            "id": "frenetik",
+            "description": "Editing sangat cepat — chaos yang dikontrol atau tidak terkontrol. Penonton bisa kewalahan.",
+            "avg_shot_duration": "0.5–1.5 detik",
+            "feel": "Battle climax, panic, information overload",
+            "best_for": "Battle sequence, horror intensity, extreme action"
+          }
+        ]
+      },
+
+      "rhythm_pattern": {
+        "_note": "Pola ritme perubahan shot — bagaimana durasi shot berubah sepanjang video.",
+        "options": [
+          {
+            "en": "constant",
+            "id": "konstan",
+            "description": "Semua shot berdurasi hampir sama — ritme metronomis. Terasa teratur, bisa hypnotic atau monoton.",
+            "example_durations": [5, 5, 5, 5, 5],
+            "feel": "Metronomis, ritual, eksperimental, music video ketat",
+            "best_for": "Musikal, ritual, eksperimental"
+          },
+          {
+            "en": "accelerating",
+            "id": "mempercepat",
+            "description": "Shot semakin pendek menuju akhir — membangun momentum dan urgency. Teknik paling umum untuk klimaks.",
+            "example_durations": [8, 6, 5, 4, 3, 2, 1],
+            "feel": "Momentum membangun, roller coaster, klimaks",
+            "best_for": "Sequence menuju klimaks, action building, reveal sequence"
+          },
+          {
+            "en": "decelerating",
+            "id": "melambat",
+            "description": "Shot semakin panjang — dekompresi setelah intensitas, atau pembangunan yang meditasi.",
+            "example_durations": [1, 2, 3, 5, 7, 10],
+            "feel": "Aftermath, settling, contemplative ending",
+            "best_for": "Akhir sequence intens, resolusi, epilogue"
+          },
+          {
+            "en": "tension_release",
+            "id": "tegangan-pelepasan",
+            "description": "Bergantian antara shot pendek (tension) dan shot panjang (release) — ritme napas.",
+            "example_durations": [2, 6, 2, 6, 2, 8],
+            "feel": "Organic breathing rhythm, drama yang bernapas",
+            "best_for": "Drama emosional, scene yang bergantian antara aksi dan reaksi"
+          },
+          {
+            "en": "long_short_long",
+            "id": "panjang-pendek-panjang",
+            "description": "Shot panjang, lalu beberapa shot pendek cepat, lalu shot panjang lagi. Sandwhich tension.",
+            "example_durations": [7, 2, 1, 2, 7],
+            "feel": "Intensitas di tengah, tenang di ujung",
+            "best_for": "Scene dengan satu momen action di tengah drama"
+          },
+          {
+            "en": "short_long_short",
+            "id": "pendek-panjang-pendek",
+            "description": "Masuk cepat, tinggal lama di momen utama, keluar cepat.",
+            "example_durations": [2, 8, 2],
+            "feel": "Emphasis pada momen pusat",
+            "best_for": "Momen penting yang perlu waktu, flanked oleh aksi cepat"
+          },
+          {
+            "en": "irregular_organic",
+            "id": "tidak beraturan organis",
+            "description": "Durasi shot bervariasi tanpa pola — mengikuti kebutuhan konten. Paling natural seperti film sungguhan.",
+            "example_durations": [5, 3, 7, 2, 4, 9, 3],
+            "feel": "Natural, film editing, tidak terasa disengaja",
+            "best_for": "Kebanyakan narrative film, drama realistis"
+          }
+        ]
+      }
+    },
+
+    "sequence_templates": {
+      "_note": "Template sequence lengkap siap pakai — kombinasi total_duration + fps + shot_sequence + transition + pacing untuk situasi naratif umum. Modifikasi sesuai kebutuhan.",
+      "options": [
+        {
+          "name": "Single_Hero_Shot",
+          "id": "Shot Tunggal Hero",
+          "description": "Satu shot kuat tanpa perpindahan — untuk maximum impact satu momen.",
+          "total_duration": 6.0,
+          "fps": 24,
+          "loop": false,
+          "pacing": "deliberate",
+          "shots": [
+            {
+              "shot_index": 1,
+              "start_time": 0.0,
+              "duration": 6.0,
+              "shot_type": "MS",
+              "key_action": "character_turns_around_to_face_camera",
+              "transition_out": "none"
+            }
+          ],
+          "best_for": "Profile intro karakter, single moment reveal, portrait clip"
+        },
+        {
+          "name": "Reveal_Sequence_3Shot",
+          "id": "Sequence Reveal 3 Shot",
+          "description": "Wide → Medium → Close — sequence reveal klasik yang membangun dari konteks ke detail.",
+          "total_duration": 14.0,
+          "fps": 24,
+          "loop": false,
+          "pacing": "deliberate",
+          "shots": [
+            {
+              "shot_index": 1,
+              "start_time": 0.0,
+              "duration": 5.0,
+              "shot_type": "WS",
+              "key_action": "character_stands_alone_in_landscape",
+              "transition_out": { "type": "cut", "duration": 0.0 }
+            },
+            {
+              "shot_index": 2,
+              "start_time": 5.0,
+              "duration": 4.0,
+              "shot_type": "MS",
+              "key_action": "character_turns_toward_camera",
+              "transition_out": { "type": "cut", "duration": 0.0 }
+            },
+            {
+              "shot_index": 3,
+              "start_time": 9.0,
+              "duration": 5.0,
+              "shot_type": "CU",
+              "key_action": "expression_shifts_from_neutral_to_determination",
+              "transition_out": "none"
+            }
+          ],
+          "best_for": "Character introduction, hero reveal, scene opening"
+        },
+        {
+          "name": "Climax_Accelerating_5Shot",
+          "id": "Klimaks 5 Shot Mempercepat",
+          "description": "Shot semakin pendek menuju momen puncak — ritme membangun maksimal.",
+          "total_duration": 14.0,
+          "fps": 24,
+          "loop": false,
+          "pacing": "accelerating",
+          "shots": [
+            {
+              "shot_index": 1,
+              "start_time": 0.0,
+              "duration": 5.0,
+              "shot_type": "MS",
+              "key_action": "confrontation_begins",
+              "transition_out": { "type": "cut" }
+            },
+            {
+              "shot_index": 2,
+              "start_time": 5.0,
+              "duration": 3.5,
+              "shot_type": "MCU",
+              "key_action": "gaze_hardens",
+              "transition_out": { "type": "cut" }
+            },
+            {
+              "shot_index": 3,
+              "start_time": 8.5,
+              "duration": 2.5,
+              "shot_type": "CU",
+              "key_action": "jaw_clenches",
+              "transition_out": { "type": "cut" }
+            },
+            {
+              "shot_index": 4,
+              "start_time": 11.0,
+              "duration": 1.5,
+              "shot_type": "ECU",
+              "key_action": "eyes_widen_in_realization",
+              "transition_out": { "type": "cut" }
+            },
+            {
+              "shot_index": 5,
+              "start_time": 12.5,
+              "duration": 1.5,
+              "shot_type": "WS",
+              "key_action": "explosion_occurs_in_distance",
+              "transition_out": { "type": "cut" }
+            }
+          ],
+          "best_for": "Action climax, confrontation peak, revelation beat"
+        },
+        {
+          "name": "Emotional_Resolution_3Shot",
+          "id": "Resolusi Emosional 3 Shot",
+          "description": "Dari intense ke release — sequence yang bernapas setelah klimaks.",
+          "total_duration": 18.0,
+          "fps": 24,
+          "loop": false,
+          "pacing": "decelerating",
+          "shots": [
+            {
+              "shot_index": 1,
+              "start_time": 0.0,
+              "duration": 4.0,
+              "shot_type": "CU",
+              "key_action": "face_goes_blank_in_shock",
+              "transition_out": { "type": "cut" }
+            },
+            {
+              "shot_index": 2,
+              "start_time": 4.0,
+              "duration": 6.0,
+              "shot_type": "MCU",
+              "key_action": "tears_form",
+              "transition_out": { "type": "dissolve", "duration": 1.0 }
+            },
+            {
+              "shot_index": 3,
+              "start_time": 11.0,
+              "duration": 7.0,
+              "shot_type": "WS",
+              "key_action": "character_stands_alone_in_landscape",
+              "transition_out": { "type": "fade_to_black", "duration": 2.0 }
+            }
+          ],
+          "best_for": "Grief beat, aftermath, epilogue, emotional resolution"
+        },
+        {
+          "name": "Ambient_Loop_5sec",
+          "id": "Ambient Loop 5 Detik",
+          "description": "Satu shot loop ambient — untuk background, wallpaper, atau atmospheric content.",
+          "total_duration": 5.0,
+          "fps": 24,
+          "loop": true,
+          "pacing": "languid",
+          "shots": [
+            {
+              "shot_index": 1,
+              "start_time": 0.0,
+              "duration": 5.0,
+              "shot_type": "MS",
+              "key_action": "character_idle_breathing_wind_moves_hair",
+              "transition_out": "seamless_loop"
+            }
+          ],
+          "best_for": "Character wallpaper, background video, ambient content, NFT"
+        },
+        {
+          "name": "Two_Character_Exchange",
+          "id": "Pertukaran Dua Karakter",
+          "description": "OTS ping-pong klasik antara dua karakter — dialog atau konfrontasi.",
+          "total_duration": 16.0,
+          "fps": 24,
+          "loop": false,
+          "pacing": "deliberate",
+          "shots": [
+            {
+              "shot_index": 1,
+              "start_time": 0.0,
+              "duration": 4.0,
+              "shot_type": "WS",
+              "key_action": "two_characters_face_each_other",
+              "transition_out": { "type": "cut" }
+            },
+            {
+              "shot_index": 2,
+              "start_time": 4.0,
+              "duration": 3.0,
+              "shot_type": "OTS",
+              "key_action": "character_a_speaks_or_reacts",
+              "transition_out": { "type": "cut" }
+            },
+            {
+              "shot_index": 3,
+              "start_time": 7.0,
+              "duration": 3.0,
+              "shot_type": "OTS",
+              "key_action": "character_b_responds",
+              "transition_out": { "type": "cut" }
+            },
+            {
+              "shot_index": 4,
+              "start_time": 10.0,
+              "duration": 3.0,
+              "shot_type": "CU",
+              "key_action": "expression_shifts_key_emotion",
+              "transition_out": { "type": "cut" }
+            },
+            {
+              "shot_index": 5,
+              "start_time": 13.0,
+              "duration": 3.0,
+              "shot_type": "MS",
+              "key_action": "one_character_turns_away_from_other",
+              "transition_out": { "type": "fade_to_black", "duration": 1.0 }
+            }
+          ],
+          "best_for": "Dialog scene, confrontation, negotiation, emotional exchange"
+        },
+        {
+          "name": "Epic_Landscape_Reveal",
+          "id": "Reveal Lanskap Epik",
+          "description": "Dari detail ke luas — sequence yang membangun skala dari kecil ke epik.",
+          "total_duration": 16.0,
+          "fps": 24,
+          "loop": false,
+          "pacing": "slow_burn",
+          "shots": [
+            {
+              "shot_index": 1,
+              "start_time": 0.0,
+              "duration": 4.0,
+              "shot_type": "CU",
+              "key_action": "character_eyes_open_or_looks_up",
+              "transition_out": { "type": "cut" }
+            },
+            {
+              "shot_index": 2,
+              "start_time": 4.0,
+              "duration": 5.0,
+              "shot_type": "FS",
+              "key_action": "character_walks_toward_edge_or_viewpoint",
+              "transition_out": { "type": "cut" }
+            },
+            {
+              "shot_index": 3,
+              "start_time": 9.0,
+              "duration": 7.0,
+              "shot_type": "EWS",
+              "key_action": "reveal_true_scale_of_environment",
+              "transition_out": "none"
+            }
+          ],
+          "best_for": "World reveal, establishing epic location, awe moment, journey arrival"
+        },
+        {
+          "name": "Training_Montage_Fast",
+          "id": "Montase Cepat",
+          "description": "Multiple shot pendek — montase aksi atau training dengan ritme cepat.",
+          "total_duration": 12.0,
+          "fps": 24,
+          "loop": false,
+          "pacing": "rapid",
+          "shots": [
+            { "shot_index": 1, "start_time": 0.0, "duration": 2.0, "shot_type": "MS", "key_action": "action_beat_1", "transition_out": { "type": "cut" } },
+            { "shot_index": 2, "start_time": 2.0, "duration": 1.5, "shot_type": "CU", "key_action": "impact_or_detail_1", "transition_out": { "type": "cut" } },
+            { "shot_index": 3, "start_time": 3.5, "duration": 2.0, "shot_type": "FS", "key_action": "action_beat_2", "transition_out": { "type": "cut" } },
+            { "shot_index": 4, "start_time": 5.5, "duration": 1.5, "shot_type": "MCU", "key_action": "expression_determination", "transition_out": { "type": "cut" } },
+            { "shot_index": 5, "start_time": 7.0, "duration": 2.0, "shot_type": "MS", "key_action": "action_beat_3", "transition_out": { "type": "cut" } },
+            { "shot_index": 6, "start_time": 9.0, "duration": 3.0, "shot_type": "WS", "key_action": "final_pose_triumphant", "transition_out": "none" }
+          ],
+          "best_for": "Montase training, highlight reel, music video beat, action showcase"
+        }
+      ]
+    }
+  }
+}
