@@ -1,0 +1,949 @@
+{
+  "_readme": "Library untuk field metadata (Layer 8A) dan variations (Layer 8B). TIDAK MASUK PROMPT — weight 0.0 untuk keduanya. Metadata adalah sistem administrasi template (tracking, versioning, tagging). Variations adalah sistem kontrol variasi dan batch generation. Keduanya adalah lapisan terakhir schema — operational infrastructure, bukan konten kreatif.",
+  "_version": "1.0",
+  "_structure": "metadata (8A) → title | description | author | created_date | last_modified | category | subcategories | complexity_level | target_ai | language | version_notes | variations (8B) → randomizable_elements | variation_rules | seed_system | batch_config",
+  "_critical_note": "Layer ini tidak mempengaruhi hasil generate apapun. Tujuannya murni untuk manajemen koleksi template — mencari, filter, sort, dan track perubahan template dari waktu ke waktu.",
+
+  "metadata": {
+    "_note": "Layer 8A — Informasi administratif template. Isi sekali saat template dibuat, update saat ada perubahan signifikan.",
+
+    "title": {
+      "_note": "[STRING_BEBAS] — Nama template yang deskriptif dan unik dalam koleksi. Format disarankan: [Karakter]_[Scene/Mood]_[Versi]",
+      "_format": "String, disarankan di bawah 60 karakter",
+      "_naming_conventions": {
+        "character_scene": "EIRA_CyberpunkRain_v2",
+        "character_mood": "EIRA_BattleReady_v1",
+        "scene_only": "SciFiLaboratory_NeonGreen_v1",
+        "thematic": "DarkElf_AncientTemple_Dramatic"
+      },
+      "_examples_by_type": {
+        "fantasy": [
+          "ARIA_EnchantedForest_Ethereal",
+          "KIRA_DragonRider_Heroic",
+          "LUNA_MoonTemple_Mystical",
+          "SERAPH_CrystalCave_Wonder",
+          "NYX_ShadowRealm_Dark"
+        ],
+        "sci_fi": [
+          "ZARA_NeonDistrict_Cyberpunk",
+          "NOVA_SpaceStation_Isolated",
+          "REX_WastelandRunner_Gritty",
+          "ECHO_HologramLab_Clean",
+          "VOLT_CyberMarket_Chaotic"
+        ],
+        "realistic": [
+          "MIRA_GoldenHour_Portrait",
+          "ALEX_UrbanStreet_Documentary",
+          "SUKI_CafeWindow_Nostalgic",
+          "JUNO_BeachSunset_Serene",
+          "MAYA_RainyNight_Melancholic"
+        ],
+        "historical": [
+          "YUKI_FeudalJapan_Warrior",
+          "ELENA_VictorianEra_Noble",
+          "AMARA_AncientEgypt_Priestess",
+          "IVAN_MedievalCastle_Guard",
+          "SITA_MughalCourt_Dancer"
+        ],
+        "horror": [
+          "VERA_AbandonedHospital_Dread",
+          "MOTH_FoggyMoor_Haunting",
+          "ASHA_BloodMoon_Terror",
+          "GRIM_DecayedManor_Gothic"
+        ]
+      }
+    },
+
+    "description": {
+      "_note": "[STRING_BEBAS] — Penjelasan singkat template: siapa karakternya, scene seperti apa, mood apa, dan penggunaan utamanya. 1–3 kalimat.",
+      "_format": "String, disarankan 50–200 karakter",
+      "_examples_by_purpose": {
+        "character_introduction": [
+          "Template portrait Eira — elf muda East Asian, rambut hitam panjang. Scene bervariasi, karakter dikunci penuh via multi-angle reference.",
+          "Karakter Zara versi cyberpunk — detective urban, selalu dalam setting neon dan hujan malam. Optimized untuk Kling dan Runway.",
+          "Mira — barista modern 20an, style casual, ekspresi hangat. Cocok untuk konten lifestyle dan daily life series."
+        ],
+        "scene_focused": [
+          "Scene hutan gelap dengan kabut dan cahaya bulan — bisa digunakan untuk berbagai karakter fantasi.",
+          "Interior kafe vintage Jepang — warm dan nostalgic, cocok untuk momen kontemplatif dan slice of life.",
+          "Rooftop kota malam dengan neon bawah — establishing scene cyberpunk untuk karakter manapun."
+        ],
+        "series_template": [
+          "Template seri 'Four Seasons' untuk Eira — versi musim gugur. Gunakan bersama Spring, Summer, Winter template.",
+          "Battle sequence template — dioptimalkan untuk video Kling Pro 10 detik dengan face lock aktif.",
+          "Mood board ambient loop — untuk konten sosial media looping, minimal motion, karakter idle."
+        ]
+      }
+    },
+
+    "author": {
+      "_note": "[STRING_BEBAS] — Username atau identifier pembuat template. Berguna untuk koleksi multi-user atau saat berbagi template.",
+      "_format": "String, username atau nama",
+      "_examples": [
+        "username_creator",
+        "studio_mythara",
+        "indie_dev_kira",
+        "anon",
+        "team_visual",
+        "ai_artist_neon"
+      ]
+    },
+
+    "created_date": {
+      "_note": "Tanggal pembuatan template dalam format ISO 8601. Diisi sekali, tidak diubah.",
+      "_format": "YYYY-MM-DD",
+      "_example": "2025-03-15",
+      "_iso8601_reference": {
+        "date_only": "2025-03-15",
+        "date_with_time": "2025-03-15T14:30:00Z",
+        "date_with_timezone": "2025-03-15T14:30:00+07:00"
+      }
+    },
+
+    "last_modified": {
+      "_note": "Timestamp update terakhir — perbarui setiap ada perubahan signifikan pada template.",
+      "_format": "ISO 8601 dengan waktu: YYYY-MM-DDTHH:MM:SSZ",
+      "_example": "2025-06-20T09:15:00Z",
+      "_what_counts_as_modification": [
+        "Perubahan identity_anchor atau technical_constraints",
+        "Penambahan atau perubahan outfit di dressing_room",
+        "Update reference_images dengan foto baru",
+        "Perubahan scene_core atau environment signifikan",
+        "Perbaikan negative prompts",
+        "Perubahan target platform",
+        "Bump versi (lihat version_notes)"
+      ],
+      "_what_does_not_count": [
+        "Perubahan metadata saja (title, description cosmetic)",
+        "Update last_modified itu sendiri",
+        "Perubahan komentar internal (_note fields)"
+      ]
+    },
+
+    "category": {
+      "_note": "Kategori utama template — satu kategori primer. Digunakan untuk filter dan sorting koleksi.",
+      "options": [
+        {
+          "en": "fantasy",
+          "id": "fantasi",
+          "description": "Dunia fiksi dengan elemen magis, makhluk supernatural, atau setting medieval-fantastis.",
+          "subcategory_pool": ["high_fantasy", "dark_fantasy", "urban_fantasy", "sword_and_sorcery", "isekai", "fairy_tale", "mythological"]
+        },
+        {
+          "en": "sci_fi",
+          "id": "fiksi ilmiah",
+          "description": "Teknologi futuristik, luar angkasa, AI, atau ekstrapolasi sains.",
+          "subcategory_pool": ["cyberpunk", "space_opera", "post_apocalyptic", "solarpunk", "biopunk", "hard_sci_fi", "dystopia"]
+        },
+        {
+          "en": "realistic",
+          "id": "realistis",
+          "description": "Setting dunia nyata kontemporer atau mendekati nyata — fotorealistis.",
+          "subcategory_pool": ["portrait", "street", "lifestyle", "documentary", "fashion", "commercial", "editorial"]
+        },
+        {
+          "en": "historical",
+          "id": "historis",
+          "description": "Setting era masa lalu yang spesifik — mengacu pada periode sejarah nyata.",
+          "subcategory_pool": ["feudal_japan", "victorian", "ancient_egypt", "medieval_europe", "ming_dynasty", "renaissance", "roaring_20s", "cold_war"]
+        },
+        {
+          "en": "horror",
+          "id": "horor",
+          "description": "Atmosfer menakutkan, supernatural gelap, atau ketegangan psikologis.",
+          "subcategory_pool": ["gothic", "psychological", "supernatural", "body_horror", "cosmic_horror", "slasher", "folk_horror"]
+        },
+        {
+          "en": "romance",
+          "id": "romansa",
+          "description": "Fokus pada hubungan emosional, intimacy, atau momen romantis.",
+          "subcategory_pool": ["contemporary_romance", "historical_romance", "fantasy_romance", "slice_of_life", "tender_moment"]
+        },
+        {
+          "en": "action",
+          "id": "aksi",
+          "description": "Pertarungan, pergerakan cepat, konflik fisik, atau adegan berenergi tinggi.",
+          "subcategory_pool": ["combat", "chase", "battle", "martial_arts", "tactical", "superhero"]
+        },
+        {
+          "en": "nature",
+          "id": "alam",
+          "description": "Fokus pada landscape, environment alam, atau interaksi karakter dengan alam.",
+          "subcategory_pool": ["forest", "ocean", "mountain", "desert", "arctic", "jungle", "underwater"]
+        },
+        {
+          "en": "abstract_artistic",
+          "id": "abstrak artistik",
+          "description": "Gaya visual non-representasional atau sangat stylized — bukan fotorealistis.",
+          "subcategory_pool": ["surrealism", "impressionism", "expressionism", "minimalism", "conceptual", "experimental"]
+        },
+        {
+          "en": "cultural",
+          "id": "budaya",
+          "description": "Terinspirasi budaya spesifik — kostum, arsitektur, atau tradisi tertentu.",
+          "subcategory_pool": ["japanese", "korean", "chinese", "indonesian", "indian", "african", "middle_eastern", "european"]
+        },
+        {
+          "en": "ambient_loop",
+          "id": "loop ambient",
+          "description": "Template khusus untuk konten loop — video berulang tanpa awal atau akhir.",
+          "subcategory_pool": ["character_wallpaper", "background_video", "social_loop", "nft_animation"]
+        },
+        {
+          "en": "commercial",
+          "id": "komersial",
+          "description": "Template untuk tujuan komersial — iklan, produk, brand content.",
+          "subcategory_pool": ["product_placement", "brand_character", "advertisement", "packaging", "promotional"]
+        }
+      ]
+    },
+
+    "subcategories": {
+      "_note": "Array tag spesifik — bisa 1 hingga 8 tag. Memungkinkan pencarian multi-dimensi dalam koleksi besar.",
+      "_format": "Array of strings, lowercase dengan underscore",
+      "_tag_taxonomy": {
+
+        "setting_tags": [
+          "night", "day", "golden_hour", "blue_hour", "dawn", "dusk", "midnight",
+          "indoor", "outdoor", "underground", "underwater", "aerial", "rooftop",
+          "forest", "ocean", "mountain", "desert", "arctic", "jungle", "cave",
+          "urban", "rural", "suburban", "wilderness", "void_space",
+          "asia", "japan", "korea", "china", "indonesia", "europe", "africa", "middle_east"
+        ],
+
+        "mood_atmosphere_tags": [
+          "dark", "bright", "moody", "ethereal", "gritty", "clean", "dreamy",
+          "tense", "serene", "chaotic", "melancholic", "hopeful", "epic", "intimate",
+          "mysterious", "whimsical", "brutal", "tender", "haunting", "surreal"
+        ],
+
+        "character_tags": [
+          "solo", "duo", "group", "female", "male", "nonbinary",
+          "young_adult", "adult", "elder", "child_adjacent",
+          "warrior", "mage", "assassin", "healer", "scholar", "noble", "commoner",
+          "elf", "human", "dark_elf", "half_blood", "android", "demon", "angel",
+          "east_asian", "south_asian", "african", "middle_eastern", "caucasian", "mixed"
+        ],
+
+        "visual_style_tags": [
+          "photorealistic", "anime", "semi_realistic", "painterly", "concept_art",
+          "dark_fantasy", "high_fantasy", "cyberpunk", "solarpunk", "noir",
+          "watercolor", "ink", "cel_shaded", "3d_render"
+        ],
+
+        "technical_tags": [
+          "portrait", "landscape", "close_up", "full_body", "action_shot",
+          "static_image", "video", "loop", "slow_motion",
+          "midjourney_optimized", "sdxl_optimized", "dalle3_optimized",
+          "runway_optimized", "kling_optimized", "pika_optimized",
+          "high_detail", "draft_speed", "lora_ready", "ip_adapter_ready"
+        ],
+
+        "content_tags": [
+          "sfw", "action", "romance", "slice_of_life", "horror", "drama",
+          "comedy", "tragedy", "mystery", "adventure", "coming_of_age",
+          "battle_scene", "dialogue_scene", "monologue_scene", "ambient_scene"
+        ],
+
+        "production_tags": [
+          "wip", "draft", "review", "approved", "final", "archived",
+          "client_project", "personal", "commission", "open_source",
+          "series_main", "series_variant", "standalone",
+          "v1", "v2", "v3", "experimental"
+        ]
+      },
+
+      "_example_combinations": [
+        { "template": "Eira_CyberpunkNight", "tags": ["night", "urban", "cyberpunk", "moody", "female", "elf", "east_asian", "photorealistic", "solo", "sdxl_optimized"] },
+        { "template": "Kira_BattleReady", "tags": ["outdoor", "dark_fantasy", "female", "warrior", "full_body", "action_shot", "video", "kling_optimized", "approved"] },
+        { "template": "Luna_AmbientLoop", "tags": ["night", "forest", "ethereal", "female", "elf", "loop", "pika_optimized", "sfw", "ambient_scene"] },
+        { "template": "Zara_Portrait", "tags": ["golden_hour", "portrait", "female", "east_asian", "photorealistic", "close_up", "midjourney_optimized", "final"] }
+      ]
+    },
+
+    "complexity_level": {
+      "_note": "Seberapa kompleks template ini dari sisi teknis dan konten — mempengaruhi berapa lama setup dan seberapa susah dimodifikasi.",
+      "options": [
+        {
+          "en": "low",
+          "id": "rendah",
+          "description": "Template sederhana — sedikit field yang diisi, scene simpel, tidak ada outfit library kompleks, mudah dimodifikasi.",
+          "indicators": [
+            "Hanya scene_core dasar",
+            "Tidak ada outfit_library",
+            "Negative prompts minimal",
+            "Tidak ada variation_rules",
+            "Single platform target"
+          ],
+          "setup_time": "5–15 menit",
+          "suitable_for": "Eksperimen cepat, template sketsa, one-off generate"
+        },
+        {
+          "en": "medium",
+          "id": "sedang",
+          "description": "Template lengkap standar — semua layer terisi, 1–3 outfit, negative prompts lengkap, targeting 1–2 platform.",
+          "indicators": [
+            "Semua layer utama terisi",
+            "1–3 outfit di outfit_library",
+            "Negative prompts per kategori",
+            "Referensi gambar 1–2 angle",
+            "1–2 platform target"
+          ],
+          "setup_time": "30–60 menit",
+          "suitable_for": "Karakter reguler, seri kecil, personal project"
+        },
+        {
+          "en": "high",
+          "id": "tinggi",
+          "description": "Template komprehensif — seluruh layer detail, multiple outfit, 4-angle reference, variation rules, multi-platform.",
+          "indicators": [
+            "Seluruh layer terisi penuh dan detail",
+            "4+ outfit di outfit_library",
+            "4-angle reference images",
+            "Variation rules untuk batch",
+            "3+ platform target",
+            "Version history lengkap"
+          ],
+          "setup_time": "1–3 jam",
+          "suitable_for": "Karakter IP utama, seri besar, client work"
+        },
+        {
+          "en": "ultra",
+          "id": "ultra",
+          "description": "Template produksi penuh — semua field terisi detail ekstrem, library outfit lengkap, LoRA siap, automation batch.",
+          "indicators": [
+            "Setiap field diisi dengan presisi",
+            "6+ outfit dengan semua variant",
+            "LoRA model link tersedia",
+            "Batch automation dikonfigurasi",
+            "Semua platform dikonfigurasi",
+            "QA dan approval trail terdokumentasi"
+          ],
+          "setup_time": "3–8 jam",
+          "suitable_for": "Karakter komersial, brand IP, studio production pipeline"
+        }
+      ]
+    },
+
+    "target_ai": {
+      "_note": "Array platform AI yang dioptimalkan untuk template ini. Penting karena beberapa field behave berbeda per platform.",
+      "available_platforms": {
+
+        "image_generators": [
+          {
+            "en": "midjourney",
+            "id": "MidJourney",
+            "version": "v6 / v6.1 / niji 6",
+            "generator_type": "image",
+            "strength": "Estetika konsisten, lighting cantik, atmosphere kuat",
+            "weakness": "Kontrol terbatas, tidak ada negative prompt eksplisit",
+            "best_for": "Art direction, concept art, portfolio, mood illustration"
+          },
+          {
+            "en": "sdxl",
+            "id": "Stable Diffusion XL",
+            "version": "SDXL 1.0 / Turbo / Lightning",
+            "generator_type": "image",
+            "strength": "Kontrol penuh via prompts dan weights, LoRA, negative prompts, sangat customizable",
+            "weakness": "Setup lebih kompleks, hasil bisa inconsistent tanpa setup yang baik",
+            "best_for": "Kontrol detail karakter, batch generation, produksi massal"
+          },
+          {
+            "en": "dalle3",
+            "id": "DALL-E 3",
+            "version": "DALL-E 3",
+            "generator_type": "image",
+            "strength": "Instruction following sangat baik, prompt panjang diproses dengan baik",
+            "weakness": "Tidak ada negative prompt, konsistensi karakter lemah, biaya per generate",
+            "best_for": "Scene complex, ilustrasi naratif, gambar dengan detail cerita"
+          },
+          {
+            "en": "leonardo_ai",
+            "id": "Leonardo AI",
+            "version": "Leonardo Diffusion / Phoenix",
+            "generator_type": "image",
+            "strength": "Motion image, PhotoReal mode, banyak model built-in",
+            "weakness": "Kurang konsistensi karakter vs SDXL",
+            "best_for": "Game asset, concept art, stylized character"
+          },
+          {
+            "en": "adobe_firefly",
+            "id": "Adobe Firefly",
+            "version": "Firefly 3",
+            "generator_type": "image",
+            "strength": "Integrasi Adobe CC, commercially safe (trained on licensed data)",
+            "weakness": "Lebih konservatif, estetika lebih 'corporate clean'",
+            "best_for": "Commercial work yang butuh lisensi bersih, editorial"
+          },
+          {
+            "en": "ideogram",
+            "id": "Ideogram",
+            "version": "Ideogram 2.0",
+            "generator_type": "image",
+            "strength": "Text rendering terbaik di gambar, tipografi akurat",
+            "weakness": "Karakter konsistensi lemah",
+            "best_for": "Konten dengan teks terintegrasi, poster, typographic design"
+          },
+          {
+            "en": "flux",
+            "id": "FLUX (Black Forest Labs)",
+            "version": "FLUX.1 Pro / Dev / Schnell",
+            "generator_type": "image",
+            "strength": "Detail sangat tinggi, anatomy lebih akurat dari SD, instruksi kompleks diikuti",
+            "weakness": "Relatif baru, ekosistem LoRA masih berkembang",
+            "best_for": "High quality realism, anatomy akurat, prompt following"
+          }
+        ],
+
+        "video_generators": [
+          {
+            "en": "runway",
+            "id": "Runway Gen-3",
+            "version": "Gen-3 Alpha",
+            "generator_type": "video",
+            "strength": "Kualitas motion tinggi, kontrol kamera baik, konsistensi visual",
+            "weakness": "Durasi terbatas (4–10 detik), karakter bisa drift di video panjang",
+            "best_for": "Cinematic video, controlled camera movement, quality first"
+          },
+          {
+            "en": "kling",
+            "id": "Kling AI",
+            "version": "Kling 1.5 / Pro",
+            "generator_type": "video",
+            "strength": "Face consistency mode, durasi hingga 30 detik (pro), karakter lock kuat",
+            "weakness": "Motion kadang kaku, kurang smooth dari Runway",
+            "best_for": "Karakter video dengan konsistensi wajah tinggi, long-form"
+          },
+          {
+            "en": "pika",
+            "id": "Pika Labs",
+            "version": "Pika 1.5 / 2.0",
+            "generator_type": "video",
+            "strength": "Interface mudah, motion control intuitif, loop bagus",
+            "weakness": "Kualitas lebih rendah dari Runway dan Kling",
+            "best_for": "Social media loop, quick turnaround, ambient video"
+          },
+          {
+            "en": "hailuo",
+            "id": "Hailuo (MiniMax)",
+            "version": "Hailuo AI",
+            "generator_type": "video",
+            "strength": "Kualitas motion sangat baik, cloth dan hair physics kuat",
+            "weakness": "Fixed 6 detik, kurang kontrol",
+            "best_for": "Portrait video berkualitas, cloth physics showcase"
+          },
+          {
+            "en": "sora",
+            "id": "OpenAI Sora",
+            "version": "Sora",
+            "generator_type": "video",
+            "strength": "Pemahaman instruksi kompleks, durasi panjang, physics environment",
+            "weakness": "Akses terbatas, karakter konsistensi bisa lemah",
+            "best_for": "Environment complex, cinematic scene, instruksi natural language"
+          },
+          {
+            "en": "luma",
+            "id": "Luma Dream Machine",
+            "version": "Luma 1.6",
+            "generator_type": "video",
+            "strength": "Camera movement detail, smooth motion, text-to-video bagus",
+            "weakness": "Karakter konsistensi lebih lemah dari Kling",
+            "best_for": "Camera movement showcase, product video, nature"
+          },
+          {
+            "en": "vidu",
+            "id": "Vidu AI",
+            "version": "Vidu 1.5",
+            "generator_type": "video",
+            "strength": "Konsistensi karakter baik, affordable",
+            "weakness": "Ekosistem masih berkembang",
+            "best_for": "Character consistent video dengan budget lebih rendah"
+          }
+        ]
+      }
+    },
+
+    "language": {
+      "_note": "Bahasa prompt output yang digunakan dalam template ini. Mempengaruhi bagaimana teks prompt diassemble.",
+      "options": [
+        {
+          "code": "en",
+          "name": "English",
+          "description": "Bahasa Inggris — direkomendasikan untuk semua platform AI image/video. Model di-train dominan dalam bahasa Inggris, hasil lebih konsisten.",
+          "recommendation": "SANGAT DIREKOMENDASIKAN untuk semua platform",
+          "notes": "Bahkan untuk karakter dan scene Indonesia/Asia, prompt dalam Bahasa Inggris menghasilkan output lebih baik"
+        },
+        {
+          "code": "id",
+          "name": "Bahasa Indonesia",
+          "description": "Bahasa Indonesia — sebagian model mendukung tapi hasil umumnya kurang konsisten dari English.",
+          "recommendation": "Gunakan untuk metadata dan notes internal saja",
+          "notes": "Beberapa platform seperti DALL-E 3 dan Sora memiliki pemahaman Bahasa Indonesia yang cukup baik"
+        },
+        {
+          "code": "ja",
+          "name": "日本語 (Japanese)",
+          "description": "Bahasa Jepang — bagus untuk model anime-focused seperti NovelAI dan Niji.",
+          "recommendation": "Gunakan untuk anime platform: NovelAI, Niji Journey",
+          "notes": "NovelAI terutama di-train dalam campuran EN+JP dangling tag"
+        },
+        {
+          "code": "zh",
+          "name": "中文 (Chinese)",
+          "description": "Bahasa Mandarin — beberapa platform China (Kling, Hailuo) mendukung prompt Mandarin.",
+          "recommendation": "Opsional untuk platform China (Kling, Hailuo, Vidu)",
+          "notes": "Beberapa model China merespons lebih baik pada prompt Mandarin"
+        },
+        {
+          "code": "ko",
+          "name": "한국어 (Korean)",
+          "description": "Bahasa Korea — dukungan terbatas di platform umum.",
+          "recommendation": "Tidak direkomendasikan kecuali platform khusus Korea"
+        },
+        {
+          "code": "bilingual_en_id",
+          "name": "Bilingual EN+ID",
+          "description": "Template ini menggunakan dua bahasa — prompt output dalam English, metadata dan notes dalam Bahasa Indonesia.",
+          "recommendation": "Pendekatan yang direkomendasikan untuk workflow Indonesia",
+          "notes": "Prompt ke AI dalam EN, dokumentasi internal dalam ID"
+        }
+      ]
+    },
+
+    "version_notes": {
+      "_note": "Changelog template — log semua perubahan signifikan dengan tanggal. Format: v[major].[minor]: [deskripsi perubahan]. Terbaru di atas.",
+      "_format": "Array of strings atau single string multi-line",
+      "_versioning_convention": {
+        "major_bump": "v2.0 — perubahan besar: identity_anchor baru, karakter di-redesign, platform berubah",
+        "minor_bump": "v1.1 — penambahan: outfit baru, negative prompts ditambah, scene baru",
+        "patch": "v1.0.1 — perbaikan kecil: typo, metadata update, minor tweak"
+      },
+      "_examples": [
+        "v1.0 (2025-03-15): Template pertama — Eira basic portrait, single reference image",
+        "v1.1 (2025-04-02): Tambah 3 outfit baru (battle, casual, formal). Update negative prompts dengan racial locks lebih spesifik",
+        "v1.2 (2025-04-20): 4-angle reference images selesai. Identity lock diperkuat",
+        "v2.0 (2025-05-10): Major overhaul — Redesign wajah berdasarkan feedback. Semua reference image diganti. Breaking change dari v1.x",
+        "v2.1 (2025-05-25): Tambah Kling Pro config. Video template pertama. Face consistency diaktifkan",
+        "v2.2 (2025-06-08): Optimize untuk MidJourney v6.1. Update parameter_append",
+        "v3.0 (2025-07-01): Integration dengan LoRA model baru. Pipeline SD otomatis. Semua platform dikonfigurasi"
+      ],
+      "_what_to_log": [
+        "Perubahan identity_anchor (wajah, proporsi, usia)",
+        "Penambahan atau penghapusan outfit",
+        "Update reference images",
+        "Perubahan target platform",
+        "Major negative prompt overhaul",
+        "Perubahan generator_type (image → video atau sebaliknya)",
+        "Integrasi LoRA atau model baru",
+        "Perubahan scene_core fundamental"
+      ]
+    },
+
+    "template_status": {
+      "_note": "Status workflow template dalam pipeline produksi. Field tambahan yang tidak ada di README tapi sangat berguna untuk tim.",
+      "options": [
+        { "en": "draft", "id": "draft", "description": "Template masih dalam pengerjaan — belum siap digunakan untuk generate final." },
+        { "en": "review", "id": "review", "description": "Template selesai dibangun, menunggu review dari pemilik atau klien." },
+        { "en": "approved", "id": "disetujui", "description": "Template sudah disetujui — siap digunakan untuk generate produksi." },
+        { "en": "active", "id": "aktif", "description": "Template sedang aktif digunakan dalam produksi reguler." },
+        { "en": "frozen", "id": "beku", "description": "Template tidak akan diubah lagi — hasil sudah diterima, hanya untuk referensi." },
+        { "en": "deprecated", "id": "usang", "description": "Template sudah digantikan oleh versi baru — jangan gunakan untuk generate baru." },
+        { "en": "archived", "id": "diarsipkan", "description": "Template disimpan untuk referensi historis — tidak aktif digunakan." }
+      ]
+    },
+
+    "related_templates": {
+      "_note": "Array ID template lain yang terkait — untuk seri karakter, variasi scene, atau template yang saling melengkapi. Field tambahan.",
+      "_format": "Array of template_id strings",
+      "_relationship_types": {
+        "same_character_different_scene": "EIRA_Forest_v2, EIRA_City_v1, EIRA_Battle_v3 — karakter sama, scene berbeda",
+        "same_scene_different_character": "CyberpunkNight_EIRA, CyberpunkNight_ZARA, CyberpunkNight_LUNA",
+        "series": "FourSeasons_Spring, FourSeasons_Summer, FourSeasons_Autumn, FourSeasons_Winter",
+        "image_video_pair": "EIRA_Portrait_IMAGE, EIRA_Portrait_VIDEO — sama tapi satu image satu video",
+        "platform_variant": "EIRA_Forest_MJ, EIRA_Forest_SDXL, EIRA_Forest_DALLE3"
+      }
+    }
+  },
+
+  "variations": {
+    "_note": "Layer 8B — Sistem kontrol variasi dan batch generation. Menentukan elemen mana yang boleh berubah antar generate, bagaimana randomisasi dikontrol, dan konfigurasi batch output.",
+
+    "randomizable_elements": {
+      "_note": "Array field path yang BOLEH divariasi antar generate dalam batch. Field di luar list ini dianggap locked. Path menggunakan dot notation dari root schema.",
+      "_format": "Array of strings — dot notation field paths",
+      "_path_examples_by_layer": {
+
+        "scene_core": [
+          "scene_core.time_of_day",
+          "scene_core.lighting_condition",
+          "scene_core.weather",
+          "scene_core.season",
+          "scene_core.mood",
+          "scene_core.narrative_beat"
+        ],
+
+        "environment": [
+          "environment.location",
+          "environment.architecture.style",
+          "environment.weather_climate.precipitation",
+          "environment.natural_elements.vegetation",
+          "environment.props_objects"
+        ],
+
+        "composition": [
+          "composition.camera.shot_type",
+          "composition.camera.angle",
+          "composition.camera.lens.focal_length",
+          "composition.framing.subject_placement",
+          "composition.geometry.compositional_rule"
+        ],
+
+        "lighting": [
+          "lighting.preset",
+          "lighting.key_light.color.hue",
+          "lighting.key_light.color.temperature",
+          "lighting.key_light.position",
+          "lighting.ambient_light.color",
+          "lighting.rim_light.color.hue"
+        ],
+
+        "atmosphere": [
+          "atmosphere.emotional_tone",
+          "atmosphere.visual_style.color_palette",
+          "atmosphere.visual_style.contrast_mood",
+          "atmosphere.temporal_quality.time_feeling",
+          "atmosphere.spatial_quality.openness"
+        ],
+
+        "subjects_variable": [
+          "subjects.primary_subject.dressing_room.active_outfit",
+          "subjects.primary_subject.pose.base_pose",
+          "subjects.primary_subject.pose.action_verb",
+          "subjects.primary_subject.pose.line_of_sight",
+          "subjects.primary_subject.expression_emotion.primary_emotion",
+          "subjects.primary_subject.expression_emotion.micro_expressions"
+        ],
+
+        "motion_video": [
+          "motion.camera_movement.type",
+          "motion.camera_movement.speed",
+          "motion.subject_motion.primary_motion",
+          "motion.environment_motion.elements",
+          "motion.motion_intensity"
+        ],
+
+        "technical": [
+          "technical.post_processing.color_grading",
+          "technical.post_processing.grain_noise",
+          "technical.render_specs.aspect_ratio"
+        ],
+
+        "never_randomize": {
+          "_note": "Field-field ini TIDAK BOLEH masuk randomizable_elements — selalu locked ke identity karakter.",
+          "locked_paths": [
+            "identity_anchor",
+            "technical_constraints",
+            "subjects.primary_subject.physical_attributes.race",
+            "subjects.primary_subject.physical_attributes.skin_tone",
+            "subjects.primary_subject.physical_attributes.eye_color",
+            "subjects.primary_subject.physical_attributes.hair.color",
+            "subjects.primary_subject.physical_attributes.body_type"
+          ]
+        }
+      },
+
+      "_preset_randomizable_sets": {
+        "minimal_safe": {
+          "description": "Variasi paling aman — hanya lighting dan pose yang berubah",
+          "elements": [
+            "lighting.preset",
+            "lighting.key_light.color.temperature",
+            "subjects.primary_subject.pose.base_pose",
+            "subjects.primary_subject.expression_emotion.primary_emotion"
+          ]
+        },
+        "scene_variety": {
+          "description": "Variasi scene penuh — beda waktu, cuaca, komposisi",
+          "elements": [
+            "scene_core.time_of_day",
+            "scene_core.weather",
+            "scene_core.season",
+            "lighting.preset",
+            "atmosphere.visual_style.color_palette",
+            "composition.camera.shot_type",
+            "composition.camera.angle"
+          ]
+        },
+        "outfit_rotation": {
+          "description": "Ganti outfit per generate — scene dan lighting tetap",
+          "elements": [
+            "subjects.primary_subject.dressing_room.active_outfit"
+          ]
+        },
+        "full_creative": {
+          "description": "Variasi maksimal — semua elemen non-identity boleh berubah",
+          "elements": [
+            "scene_core.time_of_day", "scene_core.weather", "scene_core.season", "scene_core.mood",
+            "environment.location", "environment.architecture.style",
+            "composition.camera.shot_type", "composition.camera.angle", "composition.framing.subject_placement",
+            "lighting.preset", "lighting.key_light.color.temperature",
+            "atmosphere.emotional_tone", "atmosphere.visual_style.color_palette", "atmosphere.visual_style.contrast_mood",
+            "subjects.primary_subject.dressing_room.active_outfit",
+            "subjects.primary_subject.pose.base_pose", "subjects.primary_subject.pose.action_verb",
+            "subjects.primary_subject.expression_emotion.primary_emotion",
+            "technical.post_processing.color_grading"
+          ]
+        }
+      }
+    },
+
+    "variation_rules": {
+      "_note": "Array of objects yang mendefinisikan constraint dan cara perubahan untuk setiap elemen yang boleh divariasi.",
+      "_structure_reference": "Setiap rule: { target_element, variation_type, options/range, probability, constraints }",
+
+      "variation_type": {
+        "_note": "Cara elemen berubah dalam variasi.",
+        "options": [
+          {
+            "en": "random_pick",
+            "id": "pilih acak",
+            "description": "Pilih satu nilai secara acak dari array options yang disediakan.",
+            "syntax_example": { "target_element": "lighting.preset", "variation_type": "random_pick", "options": ["golden_hour", "blue_hour", "dramatic_chiaroscuro", "neon_cyberpunk"] }
+          },
+          {
+            "en": "sequential",
+            "id": "berurutan",
+            "description": "Gilir nilai dari array secara berurutan — item 1 di generate 1, item 2 di generate 2, dst.",
+            "syntax_example": { "target_element": "subjects.primary_subject.dressing_room.active_outfit", "variation_type": "sequential", "options": ["outfit_casual", "outfit_battle", "outfit_formal"] }
+          },
+          {
+            "en": "range",
+            "id": "rentang",
+            "description": "Pilih nilai numerik dalam rentang min–max. Untuk field yang menerima nilai numerik.",
+            "syntax_example": { "target_element": "technical.render_specs.sampling.cfg_scale", "variation_type": "range", "min": 6.5, "max": 8.5, "step": 0.5 }
+          },
+          {
+            "en": "toggle",
+            "id": "toggle",
+            "description": "Boolean — aktifkan atau nonaktifkan field tertentu.",
+            "syntax_example": { "target_element": "atmosphere.visual_style.grain", "variation_type": "toggle", "options": [true, false] }
+          },
+          {
+            "en": "weighted_random",
+            "id": "acak berbobot",
+            "description": "Seperti random_pick tapi beberapa opsi lebih sering muncul dari yang lain.",
+            "syntax_example": { "target_element": "scene_core.time_of_day", "variation_type": "weighted_random", "options": [{ "value": "golden_hour", "weight": 0.4 }, { "value": "blue_hour", "weight": 0.3 }, { "value": "midnight", "weight": 0.2 }, { "value": "harsh_noon", "weight": 0.1 }] }
+          },
+          {
+            "en": "conditional",
+            "id": "kondisional",
+            "description": "Nilai berubah hanya jika kondisi field lain terpenuhi.",
+            "syntax_example": { "target_element": "lighting.key_light.color.temperature", "variation_type": "conditional", "condition": { "field": "scene_core.time_of_day", "equals": "golden_hour" }, "then": "2700K_warm_amber", "else": "random_pick" }
+          }
+        ]
+      },
+
+      "probability": {
+        "_note": "Probabilitas field ini berubah dalam setiap generate. 0.0 = tidak pernah, 1.0 = selalu berubah.",
+        "options": [
+          { "value": 1.0, "label": "selalu", "description": "Field selalu berubah di setiap generate — guaranteed variety" },
+          { "value": 0.8, "label": "sering", "description": "80% chance berubah — kadang sama, tapi mayoritas berbeda" },
+          { "value": 0.5, "label": "setengah", "description": "50/50 — sama atau berbeda" },
+          { "value": 0.3, "label": "jarang", "description": "30% chance — mostly sama, kadang surprise variety" },
+          { "value": 0.1, "label": "sangat jarang", "description": "10% chance — hampir selalu sama, sesekali berubah" },
+          { "value": 0.0, "label": "tidak pernah", "description": "Field tidak pernah berubah — sama dengan locked" }
+        ]
+      },
+
+      "rule_presets": {
+        "_note": "Contoh variation_rules lengkap untuk situasi umum — salin dan modifikasi.",
+        "options": [
+          {
+            "name": "lighting_mood_rotator",
+            "id": "Rotasi Lighting dan Mood",
+            "description": "Setiap generate memiliki lighting dan mood yang berbeda — cocok untuk mood board series.",
+            "rules": [
+              { "target_element": "lighting.preset", "variation_type": "random_pick", "options": ["golden_hour", "blue_hour", "dramatic_chiaroscuro", "candlelight", "neon_cyberpunk"], "probability": 1.0 },
+              { "target_element": "atmosphere.emotional_tone", "variation_type": "random_pick", "options": ["melancholic", "hopeful", "mysterious", "tense", "serene"], "probability": 0.8 },
+              { "target_element": "atmosphere.visual_style.color_palette", "variation_type": "random_pick", "options": ["teal_orange", "warm_golden", "monochrome_blue", "neon_dark", "earth_tones"], "probability": 0.7 }
+            ]
+          },
+          {
+            "name": "outfit_showcase",
+            "id": "Showcase Outfit",
+            "description": "Ganti outfit secara berurutan — ideal untuk outfit reveal series.",
+            "rules": [
+              { "target_element": "subjects.primary_subject.dressing_room.active_outfit", "variation_type": "sequential", "options": ["outfit_casual", "outfit_battle", "outfit_formal", "outfit_festival"], "probability": 1.0 },
+              { "target_element": "subjects.primary_subject.pose.base_pose", "variation_type": "random_pick", "options": ["standing", "three_quarter_turn", "slight_lean"], "probability": 0.6 }
+            ]
+          },
+          {
+            "name": "time_of_day_series",
+            "id": "Seri Waktu Hari",
+            "description": "Karakter yang sama di empat waktu berbeda — dawn, day, golden hour, night.",
+            "rules": [
+              { "target_element": "scene_core.time_of_day", "variation_type": "sequential", "options": ["dawn", "harsh_noon", "golden_hour", "midnight"], "probability": 1.0 },
+              { "target_element": "lighting.preset", "variation_type": "conditional", "conditions": [{ "if_time": "dawn", "then_preset": "sunrise_atmospheric" }, { "if_time": "harsh_noon", "then_preset": "harsh_noon" }, { "if_time": "golden_hour", "then_preset": "golden_hour" }, { "if_time": "midnight", "then_preset": "moonlight" }], "probability": 1.0 }
+            ]
+          },
+          {
+            "name": "expression_emotion_series",
+            "id": "Seri Ekspresi Emosi",
+            "description": "Karakter yang sama menampilkan range emosi — potret emosional.",
+            "rules": [
+              { "target_element": "subjects.primary_subject.expression_emotion.primary_emotion", "variation_type": "sequential", "options": ["determination", "grief", "joy", "fear", "wonder", "anger"], "probability": 1.0 },
+              { "target_element": "subjects.primary_subject.expression_emotion.intensity", "variation_type": "random_pick", "options": ["subtle", "moderate", "intense"], "probability": 0.7 }
+            ]
+          }
+        ]
+      }
+    },
+
+    "seed_system": {
+      "_note": "Sistem seed untuk kontrol reproducibility. Seed yang sama + prompt yang sama = hasil yang sama (di platform yang mendukung).",
+
+      "base_seed": {
+        "_note": "Angka integer sebagai seed dasar. Seed 0 atau null = random setiap kali. Seed spesifik = reproducible.",
+        "_format": "Integer atau null",
+        "_examples": [
+          { "seed": null, "behavior": "Random setiap generate — variety maksimal, tidak reproducible" },
+          { "seed": 42, "behavior": "Classic seed — selalu hasilkan titik awal yang sama" },
+          { "seed": 1337, "behavior": "Seed populer — banyak dipakai di komunitas" },
+          { "seed": 999999, "behavior": "Seed besar — distribusi acak berbeda" }
+        ],
+        "_seed_strategy": {
+          "exploration_phase": "Gunakan seed null — explore variety dulu",
+          "refinement_phase": "Setelah menemukan seed yang bagus, catat dan lock",
+          "production_phase": "Gunakan seed spesifik untuk tiap 'look' yang sudah disetujui",
+          "batch_generation": "Gunakan base_seed + increment untuk batch: 1000, 1001, 1002, dst"
+        }
+      },
+
+      "deterministic": {
+        "_note": "Apakah mode deterministik aktif — seed sama selalu menghasilkan output identik.",
+        "options": [
+          {
+            "en": true,
+            "id": "deterministik aktif",
+            "description": "Seed sama = hasil sama. Reproducible dan predictable. Ideal untuk production dan verifikasi.",
+            "use_case": "Final production, client delivery, A/B testing, quality assurance"
+          },
+          {
+            "en": false,
+            "id": "deterministik nonaktif",
+            "description": "Seed hanya sebagai starting point — hasil bisa sedikit berbeda karena floating point variance. Lebih variety.",
+            "use_case": "Exploration, finding the best look dalam range seed tertentu"
+          }
+        ]
+      },
+
+      "seed_archive": {
+        "_note": "Arsip seed-seed yang menghasilkan output bagus — referensi untuk regenerasi. Field tambahan.",
+        "_format": "Array of objects: { seed, label, platform, notes }",
+        "_example": [
+          { "seed": 42156, "label": "wajah_terbaik_v2", "platform": "sdxl", "notes": "Seed ini menghasilkan akurasi wajah Eira paling tinggi di SDXL. Gunakan untuk semua portrait formal." },
+          { "seed": 88304, "label": "ekspresi_melankolis", "platform": "midjourney", "notes": "Seed MidJourney yang menghasilkan ekspresi melankolis paling natural." },
+          { "seed": 12776, "label": "battle_pose_dynamic", "platform": "sdxl", "notes": "Pose battle terbaik — dynamic tapi tetap anatomis benar." }
+        ]
+      }
+    },
+
+    "batch_config": {
+      "_note": "Konfigurasi untuk generate massal — berapa banyak variasi, bagaimana penamaan file, dan ke mana output disimpan.",
+
+      "count": {
+        "_note": "Jumlah generate dalam satu batch run.",
+        "options": [
+          { "value": 1, "label": "single", "description": "Satu generate — bukan batch, untuk testing" },
+          { "value": 4, "label": "quad", "description": "4 generates — satu set 2×2, cocok untuk exploration awal" },
+          { "value": 8, "label": "octet", "description": "8 generates — range variety yang baik, tidak terlalu banyak" },
+          { "value": 16, "label": "sixteen", "description": "16 generates — batch serius, butuh waktu" },
+          { "value": 32, "label": "full_batch", "description": "32 generates — production batch, budget dan waktu signifikan" },
+          { "value": 100, "label": "hundred", "description": "100 generates — mass production atau data collection" }
+        ]
+      },
+
+      "naming_pattern": {
+        "_note": "Pattern nama file output. Gunakan placeholder dalam kurung kurawal yang akan diisi otomatis.",
+        "available_placeholders": {
+          "{character}": "Nama karakter dari identity_anchor.name",
+          "{template_id}": "ID template dari metadata",
+          "{seed}": "Seed yang digunakan",
+          "{n}": "Nomor urut dalam batch (001, 002, dst)",
+          "{date}": "Tanggal generate (YYYYMMDD)",
+          "{time}": "Waktu generate (HHMMSS)",
+          "{platform}": "Platform yang digunakan",
+          "{outfit}": "Outfit aktif saat generate",
+          "{scene}": "Scene core time of day",
+          "{version}": "Versi template"
+        },
+        "examples": [
+          { "pattern": "{character}_{n}", "result_example": "EIRA_001.png, EIRA_002.png" },
+          { "pattern": "{character}_{scene}_{n}", "result_example": "EIRA_golden_hour_001.png" },
+          { "pattern": "{character}_{outfit}_{seed}", "result_example": "EIRA_battle_42156.png" },
+          { "pattern": "{date}_{character}_{n}", "result_example": "20250615_EIRA_001.png" },
+          { "pattern": "{platform}_{character}_{version}_{n}", "result_example": "sdxl_EIRA_v2_001.png" },
+          { "pattern": "{character}_{template_id}_{seed}_{n}", "result_example": "EIRA_EIRA_FOREST_001_42156_001.png" }
+        ]
+      },
+
+      "output_directory": {
+        "_note": "[STRING_BEBAS] — Path folder tujuan output. Bisa relatif atau absolut.",
+        "_examples": [
+          "./output/{character}/",
+          "./output/{character}/{date}/",
+          "./output/batch_{date}_{template_id}/",
+          "/projects/character_name/renders/",
+          "./approved/",
+          "./review_queue/"
+        ],
+        "_directory_structure_recommendation": {
+          "description": "Struktur folder yang disarankan untuk koleksi besar",
+          "structure": [
+            "project_root/",
+            "  characters/",
+            "    EIRA/",
+            "      templates/          <- file JSON template",
+            "      reference_images/   <- gambar referensi",
+            "      outputs/",
+            "        approved/         <- output yang sudah disetujui",
+            "        review/           <- menunggu review",
+            "        archive/          <- output lama",
+            "      lora/               <- model LoRA jika ada"
+          ]
+        }
+      },
+
+      "batch_strategy": {
+        "_note": "Strategi batch — bagaimana urutan generate dieksekusi. Field tambahan.",
+        "options": [
+          {
+            "en": "random_all",
+            "id": "acak semua",
+            "description": "Semua randomizable_elements berubah secara acak di setiap generate — maximum variety.",
+            "use_case": "Exploration, finding best combination"
+          },
+          {
+            "en": "one_variable_at_a_time",
+            "id": "satu variabel per batch",
+            "description": "Hanya satu elemen yang berubah per batch, sisanya tetap — untuk isolasi pengaruh satu variable.",
+            "use_case": "Testing, A/B comparison, understanding platform behavior"
+          },
+          {
+            "en": "grid_search",
+            "id": "grid search",
+            "description": "Semua kombinasi dari dua atau lebih variable — N×M generates.",
+            "use_case": "Finding optimal combination systematically",
+            "example": "4 lighting × 3 outfit = 12 generates"
+          },
+          {
+            "en": "sequential_rules",
+            "id": "aturan berurutan",
+            "description": "Ikuti variation_rules secara berurutan — satu rule aktif per generate.",
+            "use_case": "Seri yang terstruktur (time of day series, outfit showcase)"
+          }
+        ]
+      }
+    }
+  }
+}
