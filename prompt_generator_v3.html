@@ -1,1725 +1,2570 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Prompt Generator V3 — readme_v3.md</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prompt Generator V4 — 14 Layer System</title>
 
-<!-- ===== MODERN DARK UI (SAME AS V1) ===== -->
-<style>
-/* ---------- CSS VARIABLES (token system) ---------- */
-:root{
-  /* neutrals */
-  --bg0:#0b0f14;          /* page background */
-  --bg1:#11161d;          /* sidebar / topbar */
-  --bg2:#151b23;          /* panel cards */
-  --bg3:#0a0f15;          /* textarea inner */
-
-  /* accents */
-  --accent:#9fef00;       /* primary action */
-  --accent-soft:rgba(159,239,0,.15);  /* focus glow */
-
-  /* text */
-  --text:#d7dce3;
-  --text-dim:#9aa4b2;
-
-  /* border & effect */
-  --border:rgba(255,255,255,.08);
-  --radius:10px;
-  --radius-sm:6px;
-  --shadow-soft:0 6px 18px rgba(0,0,0,.45);
-}
-
-/* ---------- RESET ---------- */
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;font-size:13px;color:var(--text);}
-
-body{background:linear-gradient(180deg,var(--bg0),#0a0e13);display:flex;height:100vh;overflow:hidden;}
-
-/* ---------- BUTTON ---------- */
-button{
-  background:linear-gradient(180deg,var(--accent),#8adc00);
-  color:#081018;border:none;padding:6px 12px;border-radius:var(--radius-sm);
-  cursor:pointer;font-weight:600;transition:.15s ease;
-}
-button:hover{transform:translateY(-1px);filter:brightness(1.05);}
-button:active{transform:translateY(0);}
-
-/* ---------- SIDEBAR ---------- */
-#sidebar{width:270px;background:linear-gradient(180deg,var(--bg1),#0f141b);
-  border-right:1px solid var(--border);display:flex;flex-direction:column;transition:width .25s ease;}
-#sidebar.collapsed{width:48px;}
-
-#sidebar .head{display:flex;align-items:center;justify-content:space-between;
-  padding:10px 12px;border-bottom:1px solid var(--border);}
-#sidebar .head h2{color:var(--accent);font-size:14px;font-weight:600;letter-spacing:.2px;}
-#toggleSidebarBtn{background:none;color:var(--accent);width:30px;height:30px;
-  display:grid;place-items:center;border-radius:6px;}
-#toggleSidebarBtn:hover{background:rgba(255,255,255,.06);}
-#sidebar.collapsed .head h2,#sidebar.collapsed .menu-label{display:none;}
-
-/* ---------- MENU TREE ---------- */
-.menu-tree{flex:1;overflow:auto;padding:8px;}
-.menu-tree details{margin-bottom:6px;}
-.menu-tree summary{list-style:none;cursor:pointer;padding:6px 8px;border-radius:var(--radius-sm);
-  display:flex;align-items:center;gap:6px;font-weight:500;color:var(--accent);transition:.12s ease;}
-.menu-tree summary:hover{background:rgba(255,255,255,.06);}
-.menu-tree summary::before{content:'▸';font-size:11px;opacity:.7;transition:transform .15s ease;}
-.menu-tree details[open]>summary::before{transform:rotate(90deg);}
-
-/* inputs */
-.menu-tree select,.menu-tree input[type=text],.menu-tree textarea,.menu-tree input[type=number]{width:100%;background:var(--bg3);
-  border:1px solid var(--border);border-radius:var(--radius-sm);padding:5px 7px;margin-top:4px;}
-.menu-tree select:focus,.menu-tree input:focus,.menu-tree textarea:focus{outline:none;
-  border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-soft);}
-.menu-tree .optgroup{margin-left:12px;margin-bottom:6px;}
-.menu-tree .optgroup summary{font-size:12px;color:var(--text-dim);}
-
-/* Lock indicator */
-.lock-field{display:flex;align-items:center;gap:6px;margin-top:4px;}
-.lock-field input[type=checkbox]{width:auto;margin:0;}
-.lock-field label{font-size:11px;color:var(--text-dim);cursor:pointer;}
-.locked{border:1px solid #ff6b6b !important;background:rgba(255,107,107,0.05) !important;}
-
-/* Weight slider */
-.weight-control{margin-top:6px;}
-.weight-control label{display:block;font-size:11px;color:var(--text-dim);margin-bottom:4px;}
-.weight-control input[type=range]{width:100%;height:4px;background:var(--bg3);border-radius:2px;outline:none;
-  -webkit-appearance:none;appearance:none;}
-.weight-control input[type=range]::-webkit-slider-thumb{
-  -webkit-appearance:none;appearance:none;width:14px;height:14px;background:var(--accent);
-  border-radius:50%;cursor:pointer;}
-.weight-control input[type=range]::-moz-range-thumb{
-  width:14px;height:14px;background:var(--accent);border-radius:50%;cursor:pointer;border:none;}
-.weight-value{display:inline-block;font-size:11px;color:var(--accent);margin-left:6px;font-weight:600;}
-
-/* ---------- MAIN AREA ---------- */
-main{flex:1;display:flex;flex-direction:column;}
-.topbar{height:46px;background:linear-gradient(180deg,var(--bg1),#0f141b);
-  border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;padding:0 14px;}
-.content{flex:1;display:flex;flex-direction:column;padding:14px;gap:14px;}
-
-/* ---------- PANELS ---------- */
-.panels{display:flex;gap:14px;flex:1;}
-.panel{flex:1;background:linear-gradient(180deg,#121821,var(--bg2));
-  border:1px solid var(--border);border-radius:var(--radius);display:flex;flex-direction:column;
-  box-shadow:var(--shadow-soft);}
-.panel header{padding:8px 10px;border-bottom:1px solid var(--border);
-  font-weight:600;font-size:12.5px;color:var(--text-dim);}
-.panel textarea{flex:1;background:var(--bg3);border:none;resize:none;padding:10px;line-height:1.5;
-  font-family:monospace;}
-.panel textarea:focus{outline:none;}
-.panel .actions{padding:8px;border-top:1px solid var(--border);display:flex;gap:6px;}
-
-/* ---------- RESULT BOX ---------- */
-#finalPrompt{display:flex;align-items:center;justify-content:center;min-height:180px;
-  background:var(--bg3);border-radius:0 0 var(--radius) var(--radius);font-size:12px;color:var(--text-dim);text-align:center;padding:10px;}
-
-/* ---------- SCROLLBAR ---------- */
-#sidebar ::-webkit-scrollbar{width:8px;}
-#sidebar ::-webkit-scrollbar-track{background:transparent;}
-#sidebar ::-webkit-scrollbar-thumb{background:var(--accent);border-radius:4px;}
-#sidebar ::-webkit-scrollbar-thumb:hover{background:#aaff33;}
-
-.content ::-webkit-scrollbar{width:8px;}
-.content ::-webkit-scrollbar-track{background:transparent;}
-.content ::-webkit-scrollbar-thumb{background:var(--accent);border-radius:4px;}
-.content ::-webkit-scrollbar-thumb:hover{background:#aaff33;}
-
-main{min-height:100vh;}
-.content{flex:1 1 auto;overflow:auto;}
-.panels{flex:1 1 auto;height:0;}
-.panel:last-of-type{min-height:220px;}
-#jsonBox{min-height:160px;}
-.panel{margin:2px 0;}
-
-/* ---------- COLLAPSED SIDEBAR ---------- */
-#sidebar.collapsed .menu-tree,
-#sidebar.collapsed .optgroup,
-#sidebar.collapsed select,
-#sidebar.collapsed input,
-#sidebar.collapsed textarea,
-#sidebar.collapsed summary,
-#sidebar.collapsed label,
-#sidebar.collapsed .optgroup summary {
-  display: none !important;
-}
-
-/* ---------- MOBILE ---------- */
-@media(max-width:800px){
- #sidebar{position:absolute;inset:0 auto 0 0;z-index:10;box-shadow:var(--shadow-soft);}
-}
-
-/* ---------- BADGE ---------- */
-.badge{display:inline-block;padding:2px 6px;border-radius:3px;font-size:10px;font-weight:600;
-  background:rgba(159,239,0,.2);color:var(--accent);margin-left:6px;}
-.badge.new{background:rgba(255,107,107,.2);color:#ff6b6b;}
-.badge.important{background:rgba(255,193,7,.2);color:#ffc107;}
-
-/* ---------- INFO TEXT ---------- */
-.info-text{font-size:11px;color:var(--text-dim);padding:4px 8px;margin:4px 0;
-  background:rgba(159,239,0,.05);border-left:2px solid var(--accent);border-radius:var(--radius-sm);}
-</style>
+<link rel="stylesheet" href="style_v1.css">
+<script src="prompt-generator_v1.js"></script>
 
 </head>
 <body>
 
-<!-- ===== SIDEBAR (RESTRUCTURED MENU) ===== -->
+<!-- ============================
+     SIDEBAR
+============================= -->
 <aside id="sidebar">
-    <div class="head">
-        <h2>Prompt Generator V3</h2>
-        <button id="toggleSidebarBtn" title="Collapse/Expand">☰</button>
+
+  <!-- Head -->
+  <div class="sidebar-head">
+    <h2>⚡ Prompt Gen V4</h2>
+    <button id="toggleBtn" title="Toggle sidebar">☰</button>
+  </div>
+
+  <!-- Scrollable menu tree -->
+  <nav class="menu-tree">
+
+    <!-- ============ TEMPLATE MANAGEMENT ============ -->
+    <div class="layer-section">
+      <details>
+        <summary>
+          📌 Template Management
+          <span class="arr">▸</span>
+        </summary>
+        <div class="section-body">
+          <div class="sub-body">
+            <label>Load Template</label>
+            <select>
+              <option value="">-- New Character --</option>
+              <option>Eira Shadowleaf (Example)</option>
+              <option>Custom Character 1</option>
+            </select>
+            <label>Template ID</label>
+            <input type="text" placeholder="e.g., EIRA_SHADOWLEAF_v1">
+            <label>Generator Type</label>
+            <select>
+              <option>image</option>
+              <option>video</option>
+              <option>both</option>
+            </select>
+            <div class="row" style="margin-top:6px">
+              <button class="ghost">📂 Import</button>
+              <button class="ghost">💾 Export</button>
+            </div>
+            <button class="full">💾 Save Template</button>
+          </div>
+        </div>
+      </details>
     </div>
-    
-    <nav class="menu-tree">
 
-        <!-- ========== TEMPLATE MANAGEMENT (ADMIN) ========== -->
-        <details open>
-            <summary>📌 Template Management</summary>
-            <div class="optgroup">
-                <label>Load Template</label>
-                <select id="loadTemplate">
-                    <option value="">-- New Character --</option>
-                    <option value="eira">Eira Shadowleaf (Example)</option>
-                    <option value="custom1">My Character 1</option>
-                </select>
-                
-                <label>Template ID</label>
-                <input type="text" id="templateId" placeholder="e.g., EIRA_001">
-                
-                <button style="width:100%;margin-top:6px;">💾 Save as Template</button>
-            </div>
-        </details>
+    <!-- ============ LAYER 0 — SUBJECTS ============ -->
+    <div class="layer-section">
+      <details>
+        <summary>
+          👤 L0 Subjects — Character Design
+          <span class="arr">▸</span>
+        </summary>
+        <div class="section-body">
+          <div class="info">💡 Layer desain karakter. Setelah di-approve, ekstrak ke L1A sebagai identity_anchor.</div>
 
-        <!-- ========== LAYER 0A — IDENTITY ANCHOR ========== -->
-        <details open>
-            <summary>🔐 [L0A] Identity Anchor <span class="badge important">LOCK</span></summary>
-            <div class="info-text">⚠️ Dikunci pertama. AI tidak bisa mengubah field ini tanpa izin eksplisit.</div>
-            <div class="optgroup">
-                <label>Character Name</label>
-                <input type="text" id="charName" placeholder="e.g., Eira Shadowleaf">
-
-                <label>Base Body Reference</label>
-                <input type="text" id="baseBodyRef" placeholder="e.g., eira, character_01">
-
-                <label>Race / Ethnicity (realistic)</label>
-                <select id="raceEthnicity">
-                    <option value="">-- choose --</option>
-                    <option>East Asian descent</option>
-                    <option>South Asian descent</option>
-                    <option>Southeast Asian descent</option>
-                    <option>European descent</option>
-                    <option>African descent</option>
-                    <option>Middle Eastern descent</option>
-                    <option>Hispanic/Latino descent</option>
-                    <option>Mixed descent</option>
-                </select>
-                <div class="lock-field">
-                    <input type="checkbox" id="lockRace">
-                    <label for="lockRace">🔒 Lock Race</label>
-                </div>
-
-                <label>Species (fantasy)</label>
-                <select id="speciesType">
-                    <option value="">-- choose --</option>
-                    <option>Human</option>
-                    <option>High Elf</option>
-                    <option>Dark Elf</option>
-                    <option>Half-Elf</option>
-                    <option>Dwarf</option>
-                    <option>Android</option>
-                    <option>Cyborg</option>
-                    <option>Demon</option>
-                    <option>Angel</option>
-                    <option>Vampire</option>
+          <!-- Primary Subject -->
+          <div class="sub-group">
+            <details open>
+              <summary>Primary Subject <span class="arr2">▸</span></summary>
+              <div class="sub-body">
+                <label>Subject Type</label>
+                <select>
+                  <option>human</option>
+                  <option>humanoid_fantasy</option>
+                  <option>android_cyborg</option>
+                  <option>creature_monster</option>
+                  <option>spirit_ethereal</option>
+                  <option>object_personified</option>
+                  <option>vehicle</option>
                 </select>
 
-                <label>Age Range</label>
-                <input type="text" id="ageRange" placeholder="e.g., 18-20 years old">
-                <div class="lock-field">
-                    <input type="checkbox" id="lockAge">
-                    <label for="lockAge">🔒 Lock Age</label>
-                </div>
-
-                <label>Skin Condition</label>
-                <input type="text" id="skinCondition" placeholder="e.g., smooth_porcelain_non_porous">
-                <div class="lock-field">
-                    <input type="checkbox" id="lockSkin">
-                    <label for="lockSkin">🔒 Lock Skin Condition</label>
-                </div>
-
-                <label>Skull / Facial Structure Logic</label>
-                <input type="text" id="skullLogic" placeholder="e.g., locks_out: European facial structure">
-
-                <label>Locked Features (list)</label>
-                <input type="text" id="lockedFeatures" placeholder="race, age, height, chest_volume">
-            </div>
-        </details>
-
-        <!-- ========== LAYER 0B — TECHNICAL CONSTRAINTS ========== -->
-        <details open>
-            <summary>🚫 [L0B] Technical Constraints <span class="badge important">NEGATIVE DNA</span></summary>
-            <div class="info-text">⚠️ "Pagar" identitas. Semua larangan keras agar AI tidak berimprovisasi.</div>
-            <div class="optgroup">
-                <label>Negative Prompts (DNA)</label>
-                <textarea id="negativeDNA" rows="5" placeholder="western facial features:1.3&#10;blonde hair&#10;blue eyes&#10;huge breasts:1.2&#10;aged skin, wrinkles"></textarea>
-
-                <label>Identity Locks (fields yang tidak bisa di-override)</label>
-                <input type="text" id="identityLocks" placeholder="race_matrix, age_profile, body_proportions">
-            </div>
-        </details>
-
-        <!-- ========== METADATA (ADMIN — tidak masuk prompt) ========== -->
-        <details>
-            <summary>📝 Metadata <span class="badge">ADMIN</span></summary>
-            <div class="optgroup">
-                <label>Title</label>
-                <input type="text" id="metaTitle" placeholder="e.g., Eira in Forest">
-                
-                <label>Description</label>
-                <textarea id="metaDescription" rows="2" placeholder="Brief description..."></textarea>
-                
-                <label>Author</label>
-                <input type="text" id="metaAuthor" placeholder="Your name">
-                
-                <label>Category</label>
-                <select id="metaCategory">
-                    <option value="">-- choose --</option>
-                    <option>fantasy</option>
-                    <option>sci-fi</option>
-                    <option>realistic</option>
-                    <option>anime</option>
-                    <option>horror</option>
+                <label>Archetype / Role</label>
+                <select>
+                  <option value="">-- pilih --</option>
+                  <option>warrior</option>
+                  <option>assassin</option>
+                  <option>mage_wizard</option>
+                  <option>healer_cleric</option>
+                  <option>archer_ranger</option>
+                  <option>rogue_thief</option>
+                  <option>noble_royalty</option>
+                  <option>scholar_sage</option>
+                  <option>merchant_trader</option>
+                  <option>outlaw_rebel</option>
+                  <option>detective_investigator</option>
+                  <option>idol_performer</option>
+                  <option>survivor</option>
+                  <option>deity_divine</option>
+                  <option>child_prodigy</option>
                 </select>
-                
-                <label>Target AI (multi-select)</label>
-                <select id="metaTargetAI" multiple size="4">
-                    <option>Midjourney</option>
-                    <option>Stable Diffusion XL</option>
-                    <option>DALL-E 3</option>
-                    <option>Runway/Pika (Video)</option>
-                </select>
-                
-                <label>Generator Type</label>
-                <select id="generatorType">
-                    <option>image</option>
-                    <option>video</option>
-                    <option>both</option>
-                </select>
-            </div>
-        </details>
 
-        <!-- ========== LAYER 1 — SUBJECTS ========== -->
-        <details open>
-            <summary>👤 [L1] Subjects</summary>
-            
-            <!-- Primary Subject -->
-            <details class="optgroup">
-                <summary>Primary Subject</summary>
-                
-                <!-- Physical Attributes -->
-                <details class="optgroup">
-                    <summary>Physical Attributes - Face</summary>
-                    <label>Head Shape</label>
-                    <select id="headShape">
-                        <option value="">-- choose --</option>
-                        <option>oval</option>
-                        <option>round</option>
-                        <option>square</option>
-                        <option>heart-shaped</option>
-                        <option>diamond-shaped</option>
-                        <option>long/rectangular</option>
-                    </select>
-                    
-                    <label>Eyes</label>
-                    <select id="eyes">
-                        <option value="">-- choose --</option>
-                        <option>large almond-shaped</option>
-                        <option>small round</option>
-                        <option>narrow/slanted</option>
-                        <option>wide-set</option>
-                        <option>close-set</option>
-                        <option>deep-set</option>
-                        <option>hooded</option>
-                    </select>
-                    
-                    <label>Eye Color</label>
-                    <select id="eyeColor">
-                        <option value="">-- choose --</option>
-                        <option>dark brown</option>
-                        <option>light brown</option>
-                        <option>hazel</option>
-                        <option>blue</option>
-                        <option>green</option>
-                        <option>grey</option>
-                        <option>amber</option>
-                        <option>heterochromatic</option>
-                    </select>
-                    
-                    <label>Nose</label>
-                    <select id="nose">
-                        <option value="">-- choose --</option>
-                        <option>small, straight bridge</option>
-                        <option>button nose</option>
-                        <option>aquiline/hooked</option>
-                        <option>wide/flat</option>
-                        <option>pointed tip</option>
-                        <option>upturned</option>
-                    </select>
-                    
-                    <label>Mouth</label>
-                    <select id="mouth">
-                        <option value="">-- choose --</option>
-                        <option>thin lips</option>
-                        <option>full lips</option>
-                        <option>plump lower lip</option>
-                        <option>wide smile</option>
-                        <option>small/delicate</option>
-                    </select>
-                    
-                    <label>Ears (for fantasy)</label>
-                    <select id="ears">
-                        <option value="">-- human/normal --</option>
-                        <option>pointed elf ears (45° upward)</option>
-                        <option>long elf ears (vertical)</option>
-                        <option>small/petite</option>
-                        <option>large/prominent</option>
-                    </select>
-                </details>
-                
-                <!-- Body Structure -->
-                <details class="optgroup">
-                    <summary>Physical Attributes - Body</summary>
-                    <label>Height</label>
-                    <input type="text" id="height" placeholder="e.g., 158cm or 5'2\"">
-                    <div class="lock-field">
-                        <input type="checkbox" id="lockHeight">
-                        <label for="lockHeight">🔒 Lock Height</label>
-                    </div>
-                    
-                    <label>Body Frame</label>
-                    <select id="bodyFrame">
-                        <option value="">-- choose --</option>
-                        <option>ectomorph (slender/delicate)</option>
-                        <option>mesomorph (athletic/muscular)</option>
-                        <option>endomorph (soft/curvy)</option>
-                    </select>
-                    <div class="lock-field">
-                        <input type="checkbox" id="lockFrame">
-                        <label for="lockFrame">🔒 Lock Frame</label>
-                    </div>
-                    
-                    <label>Shoulders</label>
-                    <select id="shoulders">
-                        <option value="">-- choose --</option>
-                        <option>narrow/sloping</option>
-                        <option>proportional</option>
-                        <option>broad/square</option>
-                    </select>
-                    
-                    <label>Chest/Bust</label>
-                    <select id="chest">
-                        <option value="">-- choose --</option>
-                        <option>flat/athletic</option>
-                        <option>A-cup (small)</option>
-                        <option>B-cup (modest)</option>
-                        <option>C-cup (average)</option>
-                        <option>D-cup (full)</option>
-                        <option>DD+ (large)</option>
-                    </select>
-                    <div class="lock-field">
-                        <input type="checkbox" id="lockChest">
-                        <label for="lockChest">🔒 Lock Chest Size</label>
-                    </div>
-                    
-                    <label>Waist</label>
-                    <select id="waist">
-                        <option value="">-- choose --</option>
-                        <option>very narrow (cinched)</option>
-                        <option>narrow/tapered</option>
-                        <option>proportional</option>
-                        <option>thick/wide</option>
-                    </select>
-                    
-                    <label>Hips</label>
-                    <select id="hips">
-                        <option value="">-- choose --</option>
-                        <option>narrow/straight</option>
-                        <option>proportional</option>
-                        <option>wide/curvy</option>
-                        <option>very wide</option>
-                    </select>
-                </details>
-                
-                <!-- Skin & Hair -->
-                <details class="optgroup">
-                    <summary>Physical Attributes - Skin & Hair</summary>
-                    <label>Skin Color</label>
-                    <select id="skinColor">
-                        <option value="">-- choose --</option>
-                        <option>porcelain white</option>
-                        <option>pale/fair</option>
-                        <option>light beige</option>
-                        <option>warm tan</option>
-                        <option>olive</option>
-                        <option>medium brown</option>
-                        <option>deep brown</option>
-                        <option>dark/ebony</option>
-                    </select>
-                    
-                    <label>Skin Texture</label>
-                    <select id="skinTexture">
-                        <option value="">-- choose --</option>
-                        <option>smooth/porcelain</option>
-                        <option>freckled</option>
-                        <option>porous/textured</option>
-                        <option>weathered/rough</option>
-                        <option>scarred</option>
-                    </select>
-                    
-                    <label>Hair Color</label>
-                    <select id="hairColor">
-                        <option value="">-- choose --</option>
-                        <option>jet black</option>
-                        <option>dark brown</option>
-                        <option>light brown</option>
-                        <option>blonde</option>
-                        <option>red/auburn</option>
-                        <option>white/silver</option>
-                        <option>platinum</option>
-                        <option>dyed (specify in notes)</option>
-                    </select>
-                    
-                    <label>Hair Style</label>
-                    <select id="hairStyle">
-                        <option value="">-- choose --</option>
-                        <option>high bun</option>
-                        <option>low ponytail</option>
-                        <option>braided</option>
-                        <option>loose/flowing</option>
-                        <option>short/pixie</option>
-                        <option>shoulder-length</option>
-                        <option>long/waist-length</option>
-                        <option>messy/wild</option>
-                    </select>
-                </details>
-                
-                <!-- Pose & Action -->
-                <details class="optgroup">
-                    <summary>Pose & Action</summary>
-                    <label>Primary Pose</label>
-                    <select id="primaryPose">
-                        <option value="">-- choose --</option>
-                        <option>standing naturally</option>
-                        <option>standing confident (hands on hips)</option>
-                        <option>sitting relaxed</option>
-                        <option>sitting cross-legged</option>
-                        <option>kneeling</option>
-                        <option>crouching</option>
-                        <option>lying on back</option>
-                        <option>lying on side</option>
-                        <option>walking</option>
-                        <option>running</option>
-                        <option>leaning against wall</option>
-                    </select>
-                    
-                    <label>Hand Position</label>
-                    <select id="handPosition">
-                        <option value="">-- choose --</option>
-                        <option>relaxed at sides</option>
-                        <option>hands on hips</option>
-                        <option>arms crossed</option>
-                        <option>one hand on hip</option>
-                        <option>hands behind back</option>
-                        <option>hands in pockets</option>
-                        <option>holding object</option>
-                    </select>
-                    
-                    <label>Dynamic Action</label>
-                    <select id="dynamicAction">
-                        <option value="">-- none/idle --</option>
-                        <option>jumping</option>
-                        <option>fighting stance</option>
-                        <option>casting spell</option>
-                        <option>drawing weapon</option>
-                        <option>dodging</option>
-                        <option>falling</option>
-                    </select>
-                </details>
-                
-                <!-- Expression & Emotion -->
-                <details class="optgroup">
-                    <summary>Expression & Emotion</summary>
-                    <label>Facial Expression</label>
-                    <select id="facialExpression">
-                        <option value="">-- choose --</option>
-                        <option>neutral/relaxed</option>
-                        <option>slight smile</option>
-                        <option>confident smirk</option>
-                        <option>serious/stern</option>
-                        <option>sad/melancholic</option>
-                        <option>angry/fierce</option>
-                        <option>surprised/shocked</option>
-                        <option>fearful/worried</option>
-                        <option>playful/teasing</option>
-                    </select>
-                    
-                    <label>Eye Direction</label>
-                    <select id="eyeDirection">
-                        <option value="">-- choose --</option>
-                        <option>looking at camera/viewer</option>
-                        <option>looking away</option>
-                        <option>looking down</option>
-                        <option>looking up</option>
-                        <option>looking to the side</option>
-                        <option>eyes closed</option>
-                    </select>
-                    
-                    <label>Emotional Intensity</label>
-                    <input type="range" id="emotionIntensity" min="1" max="10" value="5">
-                    <span class="weight-value" id="emotionValue">5</span>
-                    <small style="display:block;color:var(--text-dim);font-size:10px;">1=subtle, 10=intense</small>
-                </details>
-                
-                <!-- Costume & Gear -->
-                <details class="optgroup">
-                    <summary>Costume & Gear</summary>
-                    <label>Outfit Set Name</label>
-                    <input type="text" id="outfitSetName" placeholder="e.g., Wilderness Survival">
-                    
-                    <label>Upper Body</label>
-                    <select id="upperBody">
-                        <option value="">-- choose --</option>
-                        <option>t-shirt</option>
-                        <option>blouse</option>
-                        <option>tank top</option>
-                        <option>crop top</option>
-                        <option>hoodie</option>
-                        <option>jacket</option>
-                        <option>armor (light)</option>
-                        <option>armor (heavy)</option>
-                        <option>robe/cloak</option>
-                        <option>dress</option>
-                        <option>halter-neck top</option>
-                        <option>shirtless/bare</option>
-                    </select>
-                    
-                    <label>Lower Body</label>
-                    <select id="lowerBody">
-                        <option value="">-- choose --</option>
-                        <option>jeans</option>
-                        <option>pants</option>
-                        <option>shorts</option>
-                        <option>skirt (short)</option>
-                        <option>skirt (long)</option>
-                        <option>leggings</option>
-                        <option>armor pants</option>
-                        <option>dress (full body)</option>
-                        <option>no pants/bare legs</option>
-                    </select>
-                    
-                    <label>Footwear</label>
-                    <select id="footwear">
-                        <option value="">-- choose --</option>
-                        <option>barefoot</option>
-                        <option>sandals</option>
-                        <option>boots (short)</option>
-                        <option>boots (knee-high)</option>
-                        <option>sneakers</option>
-                        <option>heels</option>
-                        <option>armor boots</option>
-                    </select>
-                    
-                    <label>Accessories (multi-select)</label>
-                    <select id="accessories" multiple size="4">
-                        <option>choker/necklace</option>
-                        <option>earrings</option>
-                        <option>bracelet</option>
-                        <option>ring</option>
-                        <option>belt</option>
-                        <option>scarf</option>
-                        <option>gloves</option>
-                        <option>hat</option>
-                    </select>
-                    
-                    <button style="width:100%;margin-top:6px;">💾 Save Outfit</button>
-                </details>
+                <label>Species</label>
+                <select>
+                  <option>human</option>
+                  <option>high_elf</option>
+                  <option>dark_elf</option>
+                  <option>wood_elf</option>
+                  <option>half_elf</option>
+                  <option>dwarf</option>
+                  <option>demon_half_demon</option>
+                  <option>angel_fallen</option>
+                  <option>beastkin_wolf</option>
+                  <option>beastkin_cat</option>
+                  <option>android_robot</option>
+                  <option>vampire</option>
+                  <option>werewolf_partial</option>
+                </select>
+
+                <label>Gender Presentation</label>
+                <select>
+                  <option>feminine</option>
+                  <option>masculine</option>
+                  <option>androgynous</option>
+                  <option>feminine_leaning</option>
+                  <option>masculine_leaning</option>
+                  <option>non_conforming</option>
+                </select>
+              </div>
             </details>
-            
-            <!-- Secondary Subjects -->
-            <details class="optgroup">
-                <summary>Secondary Subjects (optional)</summary>
-                <button style="width:100%;">+ Add Secondary Character/Object</button>
-            </details>
-        </details>
+          </div>
 
-        <!-- ========== LAYER 2A — SCENE CORE ========== -->
-        <details>
-            <summary>🎬 [L2A] Scene Core</summary>
-            
-            <details class="optgroup">
-                <summary>Scene Type</summary>
-                <label>Scene Type</label>
-                <select id="sceneType">
-                    <option value="">-- choose --</option>
-                    <option>wide shot/establishing</option>
-                    <option>full body</option>
-                    <option>medium shot</option>
-                    <option>portrait/close-up</option>
-                    <option>extreme close-up</option>
-                    <option>macro</option>
-                    <option>aerial/bird's eye</option>
+          <!-- Physical - Face -->
+          <div class="sub-group">
+            <details>
+              <summary>Physical — Face Detail <span class="arr2">▸</span></summary>
+              <div class="sub-body">
+                <div class="info">↑ Field utama di-lock di L1A · Face DNA. Di sini untuk desain awal.</div>
+                <label>Stature / Height</label>
+                <select>
+                  <option>petite (sangat mungil)</option>
+                  <option>short (pendek)</option>
+                  <option>average (rata-rata)</option>
+                  <option>tall (tinggi)</option>
+                  <option>very_tall (sangat tinggi)</option>
+                  <option>towering_non_human</option>
                 </select>
-                
+
+                <label>Body Frame</label>
+                <select>
+                  <option>ectomorph_lean (ramping)</option>
+                  <option>slim_delicate (fragile)</option>
+                  <option>mesomorph_athletic</option>
+                  <option>endomorph_solid</option>
+                  <option>muscular_powerful</option>
+                  <option>curvy_hourglass</option>
+                  <option>stocky_compact</option>
+                </select>
+
+                <label>Ears (Fantasy Override)</label>
+                <select>
+                  <option>human_normal</option>
+                  <option>pointed_elf_long (45° upward)</option>
+                  <option>pointed_elf_short</option>
+                  <option>cat_ears_on_head</option>
+                  <option>wolf_ears_on_head</option>
+                  <option>large_prominent</option>
+                </select>
+              </div>
+            </details>
+          </div>
+
+          <!-- Skin & Hair -->
+          <div class="sub-group">
+            <details>
+              <summary>Physical — Skin &amp; Hair <span class="arr2">▸</span></summary>
+              <div class="sub-body">
+                <label>Skin Color</label>
+                <select>
+                  <option value="">-- pilih --</option>
+                  <option>porcelain_white</option>
+                  <option>fair_light</option>
+                  <option>light_neutral</option>
+                  <option>light_warm_beige</option>
+                  <option>medium_tan</option>
+                  <option>olive_warm</option>
+                  <option>warm_brown</option>
+                  <option>deep_brown</option>
+                  <option>very_dark_ebony</option>
+                  <option>dark_ashen_grey (Dark Elf)</option>
+                  <option>pale_blue_tint (Fantasy)</option>
+                  <option>golden_metallic (Divine)</option>
+                </select>
+
+                <label>Skin Texture</label>
+                <select>
+                  <option>smooth_porcelain</option>
+                  <option>smooth_natural</option>
+                  <option>slightly_textured</option>
+                  <option>weathered_rugged</option>
+                  <option>scarred</option>
+                  <option>aged_with_lines</option>
+                  <option>synthetic_perfect (Android)</option>
+                </select>
+
+                <label>Hair Color</label>
+                <select>
+                  <option value="">-- pilih --</option>
+                  <option>jet_black (hitam pekat)</option>
+                  <option>dark_brown_black</option>
+                  <option>dark_brown</option>
+                  <option>medium_brown</option>
+                  <option>warm_auburn</option>
+                  <option>chestnut</option>
+                  <option>golden_blonde</option>
+                  <option>platinum_blonde</option>
+                  <option>strawberry_blonde</option>
+                  <option>bright_red</option>
+                  <option>grey_silver</option>
+                  <option>pure_white (Dark Elf / Elder)</option>
+                  <option>fantasy_purple</option>
+                  <option>fantasy_blue</option>
+                  <option>fantasy_pink</option>
+                  <option>fantasy_green</option>
+                  <option>multicolor_streaks</option>
+                </select>
+
+                <label>Hair Style</label>
+                <select>
+                  <option value="">-- pilih --</option>
+                  <option>straight_sleek</option>
+                  <option>straight_loose</option>
+                  <option>wavy_natural</option>
+                  <option>wavy_tousled</option>
+                  <option>curly_defined</option>
+                  <option>curly_wild</option>
+                  <option>coily_natural</option>
+                  <option>braided_single</option>
+                  <option>braided_double</option>
+                  <option>twin_tails</option>
+                  <option>high_ponytail</option>
+                  <option>low_ponytail</option>
+                  <option>half_up_half_down</option>
+                  <option>messy_bun</option>
+                  <option>elegant_updo</option>
+                  <option>short_pixie</option>
+                  <option>bob_cut</option>
+                  <option>undercut</option>
+                  <option>wild_windswept</option>
+                  <option>flowing_long_loose</option>
+                </select>
+
+                <label>Hair Length</label>
+                <select>
+                  <option>bald_shaved</option>
+                  <option>very_short</option>
+                  <option>short_ear_length</option>
+                  <option>medium_chin_length</option>
+                  <option>medium_shoulder_length</option>
+                  <option>long_chest_length</option>
+                  <option>very_long_waist</option>
+                  <option>ultra_long_hip</option>
+                </select>
+
+                <label>Distinctive Features</label>
+                <input type="text" placeholder="e.g., scar_across_left_eye, glowing_rune_markings">
+              </div>
+            </details>
+          </div>
+
+          <!-- Dressing Room -->
+          <div class="sub-group">
+            <details>
+              <summary>Dressing Room — Active Outfit <span class="arr2">▸</span></summary>
+              <div class="sub-body">
+                <div class="info">🎭 Outfit overlay — tidak mengubah proporsi tubuh. Bisa diganti tiap generate.</div>
+                <label>Outfit Set Name</label>
+                <input type="text" placeholder="e.g., Battle_Ready_v1">
+
+                <label>Outfit Preset (Quick Load)</label>
+                <select>
+                  <option value="">-- Custom --</option>
+                  <option>casual_everyday</option>
+                  <option>battle_ready</option>
+                  <option>formal_elegant</option>
+                  <option>mage_robe</option>
+                  <option>streetwear_urban</option>
+                  <option>armor_fantasy_full</option>
+                </select>
+
+                <label>Upper Body</label>
+                <select>
+                  <option value="">-- pilih --</option>
+                  <option>fitted white t-shirt</option>
+                  <option>oversized hoodie</option>
+                  <option>crop top</option>
+                  <option>halter-neck top</option>
+                  <option>button-up shirt loose</option>
+                  <option>leather jerkin</option>
+                  <option>chainmail vest</option>
+                  <option>plate armor chestpiece ornate</option>
+                  <option>ornate robe upper wide sleeves</option>
+                  <option>strapless corset embroidery</option>
+                  <option>tactical vest with panels</option>
+                  <option>form-fitting bodysuit</option>
+                </select>
+
+                <label>Lower Body</label>
+                <select>
+                  <option value="">-- pilih --</option>
+                  <option>skinny jeans dark wash</option>
+                  <option>high-waist shorts</option>
+                  <option>flowy maxi skirt</option>
+                  <option>jogger pants</option>
+                  <option>armor greaves leather</option>
+                  <option>tattered combat pants</option>
+                  <option>flowing robe lower layered</option>
+                  <option>ball gown skirt</option>
+                  <option>tactical cargo pants</option>
+                  <option>armored leggings</option>
+                </select>
+
+                <label>Outerwear</label>
+                <select>
+                  <option value="">-- none --</option>
+                  <option>long black trench coat</option>
+                  <option>weathered brown duster coat</option>
+                  <option>royal cape crimson velvet</option>
+                  <option>tattered mage robe outer</option>
+                  <option>biker jacket leather</option>
+                  <option>cloak with hood dark</option>
+                  <option>military longcoat brass buttons</option>
+                  <option>fur-lined winter coat</option>
+                </select>
+
+                <label>Footwear</label>
+                <select>
+                  <option>barefoot</option>
+                  <option>worn leather boots knee-high</option>
+                  <option>combat boots black steel-toed</option>
+                  <option>elegant heeled boots</option>
+                  <option>armored sabatons</option>
+                  <option>simple leather sandals</option>
+                  <option>modern sneakers white</option>
+                  <option>platform boots chunky</option>
+                  <option>ankle boots with buckles</option>
+                </select>
+
+                <label>Headwear</label>
+                <select>
+                  <option>no headwear</option>
+                  <option>hood drawn up</option>
+                  <option>hood down on shoulders</option>
+                  <option>flower crown woven</option>
+                  <option>crown gold and ruby</option>
+                  <option>knight helmet visor up</option>
+                  <option>wide brim adventurer hat</option>
+                  <option>circlet thin silver</option>
+                  <option>tiara delicate</option>
+                </select>
+
+                <label>Accessories</label>
+                <select multiple size="4">
+                  <option>silver choker</option>
+                  <option>pendant emerald</option>
+                  <option>multiple ear cuffs</option>
+                  <option>armband leather</option>
+                  <option>ring ornate</option>
+                  <option>sword at hip scabbard</option>
+                  <option>staff magical in hand</option>
+                  <option>grimoire at belt</option>
+                  <option>satchel leather worn</option>
+                  <option>goggles on forehead</option>
+                </select>
+
+                <label>Physics Engine</label>
+                <select>
+                  <option>realistic</option>
+                  <option>stylized</option>
+                  <option>rigid (armor berat)</option>
+                  <option>flowing_enhanced</option>
+                </select>
+
+                <button class="full ghost">💾 Save Outfit to Library</button>
+              </div>
+            </details>
+          </div>
+
+          <!-- Pose & Action -->
+          <div class="sub-group">
+            <details>
+              <summary>Pose &amp; Action <span class="arr2">▸</span></summary>
+              <div class="sub-body">
+                <label>Base Pose</label>
+                <select>
+                  <option value="">-- pilih --</option>
+                  <option>standing_neutral</option>
+                  <option>standing_composed</option>
+                  <option>standing_relaxed</option>
+                  <option>standing_combat</option>
+                  <option>sitting_formal</option>
+                  <option>sitting_casual</option>
+                  <option>sitting_perched (tepi/rooftop)</option>
+                  <option>crouching</option>
+                  <option>kneeling_one_knee</option>
+                  <option>lying_down</option>
+                  <option>mid_walk</option>
+                  <option>mid_run</option>
+                  <option>leaning_against</option>
+                  <option>floating_hovering</option>
+                  <option>action_mid_strike</option>
+                </select>
+
+                <label>Action Verb</label>
+                <select>
+                  <option value="">-- none / idle --</option>
+                  <option>staring_into_distance</option>
+                  <option>examining_object</option>
+                  <option>reading</option>
+                  <option>meditating</option>
+                  <option>laughing</option>
+                  <option>crying</option>
+                  <option>drawing_sword</option>
+                  <option>mid_sword_swing</option>
+                  <option>casting_spell</option>
+                  <option>dodging</option>
+                  <option>walking_forward</option>
+                  <option>running_toward_camera</option>
+                  <option>stepping_forward_determined</option>
+                  <option>reaching_for_something</option>
+                </select>
+
+                <label>Action Object (optional)</label>
+                <input type="text" placeholder="e.g., ancient_artifact, glowing_sword">
+
+                <label>Energy Level</label>
+                <select>
+                  <option>static</option>
+                  <option>subtle</option>
+                  <option>controlled</option>
+                  <option>dynamic</option>
+                  <option>high_energy</option>
+                  <option>explosive</option>
+                </select>
+
+                <label>Balance</label>
+                <select>
+                  <option>stable</option>
+                  <option>shifting</option>
+                  <option>precarious</option>
+                  <option>mid_motion</option>
+                  <option>weightless</option>
+                </select>
+
+                <label>Line of Sight</label>
+                <select>
+                  <option>at_camera (menatap langsung)</option>
+                  <option>slightly_off_camera</option>
+                  <option>away_left</option>
+                  <option>away_right</option>
+                  <option>looking_up</option>
+                  <option>looking_down</option>
+                  <option>distant_unfocused</option>
+                  <option>at_subject_companion</option>
+                  <option>scanning_alert</option>
+                </select>
+              </div>
+            </details>
+          </div>
+
+          <!-- Expression & Emotion -->
+          <div class="sub-group">
+            <details>
+              <summary>Expression &amp; Emotion <span class="arr2">▸</span></summary>
+              <div class="sub-body">
+                <label>Primary Emotion</label>
+                <select>
+                  <option value="">-- pilih --</option>
+                  <option>neutral_calm</option>
+                  <option>determination (tekad kuat)</option>
+                  <option>joy_happiness</option>
+                  <option>sadness_grief</option>
+                  <option>anger_rage</option>
+                  <option>fear_terror</option>
+                  <option>wonder_awe (kagum)</option>
+                  <option>melancholy_wistful</option>
+                  <option>confidence</option>
+                  <option>pride</option>
+                  <option>shame_guilt</option>
+                  <option>curiosity</option>
+                  <option>suspicion_distrust</option>
+                  <option>exhaustion</option>
+                  <option>serenity_peace</option>
+                  <option>loneliness</option>
+                  <option>hope</option>
+                  <option>love_adoration</option>
+                  <option>stoic_unreadable</option>
+                  <option>smug_satisfied</option>
+                </select>
+
+                <label>Secondary Emotion (Undercurrent)</label>
+                <select>
+                  <option value="">-- none --</option>
+                  <option>underlying_sadness</option>
+                  <option>lingering_anger</option>
+                  <option>suppressed_fear</option>
+                  <option>hidden_hope</option>
+                  <option>quiet_determination</option>
+                  <option>unspoken_guilt</option>
+                  <option>jealousy_hidden</option>
+                  <option>love_unrequited</option>
+                  <option>nostalgia_bittersweet</option>
+                  <option>relief_mixed_with_grief</option>
+                </select>
+
+                <label>Intensity</label>
+                <select>
+                  <option>repressed (hampir tidak terlihat)</option>
+                  <option>subtle</option>
+                  <option>moderate</option>
+                  <option>strong</option>
+                  <option>intense</option>
+                  <option>overwhelming</option>
+                </select>
+
+                <label>Micro Expressions</label>
+                <select multiple size="4">
+                  <option>tight_jaw</option>
+                  <option>furrowed_brow</option>
+                  <option>slight_smile</option>
+                  <option>watery_eyes</option>
+                  <option>chin_slightly_raised</option>
+                  <option>flared_nostrils</option>
+                  <option>half_lidded_eyes</option>
+                  <option>head_tilt_slight</option>
+                  <option>direct_gaze</option>
+                </select>
+
+                <label>Eye State</label>
+                <select>
+                  <option>sharp_focused</option>
+                  <option>soft_warm</option>
+                  <option>cold_calculating</option>
+                  <option>tired_heavy</option>
+                  <option>bright_alive</option>
+                  <option>sad_distant</option>
+                  <option>wide_surprised</option>
+                  <option>squinting_suspicious</option>
+                  <option>glowing_power</option>
+                  <option>glazed_shock</option>
+                </select>
+              </div>
+            </details>
+          </div>
+
+          <!-- Modifiers -->
+          <div class="sub-group">
+            <details>
+              <summary>Modifiers (Cybernetics / Magic / Condition) <span class="arr2">▸</span></summary>
+              <div class="sub-body">
+                <label>Cybernetics</label>
+                <input type="text" placeholder="e.g., cybernetic_right_arm_full, neural_interface_temple">
+
+                <label>Magical Effects</label>
+                <input type="text" placeholder="e.g., aura_golden_light, dark_energy_wisps_around_hands">
+
+                <label>Physical Condition</label>
+                <select>
+                  <option value="">-- normal --</option>
+                  <option>battle_damaged_armor</option>
+                  <option>wounds_bandaged</option>
+                  <option>blood_on_clothing</option>
+                  <option>rain_soaked_thoroughly</option>
+                  <option>dust_covered</option>
+                  <option>fire_ash_covered</option>
+                  <option>extreme_wind_effect</option>
+                </select>
+              </div>
+            </details>
+          </div>
+
+          <!-- Secondary Subjects -->
+          <div class="sub-group">
+            <details>
+              <summary>Secondary Subjects &amp; Crowd <span class="arr2">▸</span></summary>
+              <div class="sub-body">
+                <label>Relationship to Primary</label>
+                <select>
+                  <option value="">-- none / solo --</option>
+                  <option>back_to_back_allies</option>
+                  <option>one_protecting_other</option>
+                  <option>confrontational</option>
+                  <option>intimate_close</option>
+                  <option>mentor_student</option>
+                  <option>stranger_wary</option>
+                  <option>rivalry_tense</option>
+                </select>
+
+                <label>Background Entities</label>
+                <select>
+                  <option value="">-- none --</option>
+                  <option>crowd_vague (kerumunan blur)</option>
+                  <option>soldier_patrol</option>
+                  <option>civilian_passing</option>
+                  <option>animal_companion</option>
+                  <option>silhouette_only</option>
+                  <option>distant_riders</option>
+                </select>
+
+                <label>Crowd Density</label>
+                <select>
+                  <option value="">-- none --</option>
+                  <option>sparse_few</option>
+                  <option>moderate_crowd</option>
+                  <option>dense_crowd</option>
+                  <option>mob_chaos</option>
+                </select>
+
+                <button class="full ghost">+ Add Secondary Character</button>
+              </div>
+            </details>
+          </div>
+
+        </div>
+      </details>
+    </div>
+
+    <!-- ============ LAYER 1A — IDENTITY ANCHOR ============ -->
+    <div class="layer-section">
+      <details>
+        <summary>
+          🔐 L1A Identity Anchor <span class="badge lock">PERMANEN</span>
+          <span class="arr">▸</span>
+        </summary>
+        <div class="section-body">
+          <div class="info warn">⚠️ DIKUNCI. Tidak boleh diubah setelah karakter di-approve. Paspor digital karakter.</div>
+
+          <div class="sub-body">
+            <label>Character Name</label>
+            <input type="text" placeholder="e.g., Eira Shadowleaf">
+
+            <label>Lock Method</label>
+            <select>
+              <option>image_reference_primary (⭐⭐⭐⭐⭐ — Terkuat)</option>
+              <option>lora_model (⭐⭐⭐⭐⭐ — Terkuat / SD only)</option>
+              <option>ip_adapter_controlnet (⭐⭐⭐⭐⭐ — SD only)</option>
+              <option>image_reference_secondary (⭐⭐⭐)</option>
+              <option>prompt_only (⭐⭐ — Lemah)</option>
+            </select>
+
+            <div class="lock-row">
+              <input type="checkbox" id="lockIdentity" checked>
+              <label for="lockIdentity">🔒 Identity Anchor Locked</label>
+            </div>
+          </div>
+
+          <!-- Race Matrix -->
+          <div class="sub-group">
+            <details open>
+              <summary>Race Matrix <span class="arr2">▸</span></summary>
+              <div class="sub-body">
+                <label>Ras Realistis (Basis Tengkorak)</label>
+                <select>
+                  <option value="">-- pilih --</option>
+                  <option>East Asian (Chinese / Japanese / Korean)</option>
+                  <option>Southeast Asian (Indonesian / Filipino / Thai)</option>
+                  <option>South Asian (Indian / Pakistani / Sri Lankan)</option>
+                  <option>Middle Eastern (Arab / Persian / Turkish)</option>
+                  <option>East African (Ethiopian / Somali / Kenyan)</option>
+                  <option>West African (Nigerian / Ghanaian / Senegalese)</option>
+                  <option>Northern European (Scandinavian / German / British)</option>
+                  <option>Southern European (Italian / Spanish / Greek)</option>
+                  <option>Latin American (Mexican / Colombian / Brazilian)</option>
+                  <option>Pacific Islander (Hawaiian / Maori / Samoan)</option>
+                </select>
+                <div class="lock-row">
+                  <input type="checkbox" id="lockRace" checked>
+                  <label for="lockRace">🔒 Lock Race</label>
+                </div>
+
+                <label>Ras Fantasi (Overlay)</label>
+                <select>
+                  <option value="">-- none / human --</option>
+                  <option>High Elf</option>
+                  <option>Dark Elf</option>
+                  <option>Wood Elf</option>
+                  <option>Half-Elf</option>
+                  <option>Dwarf</option>
+                  <option>Human Fantasy</option>
+                  <option>Demon Hybrid</option>
+                  <option>Angel / Seraph</option>
+                  <option>Vampire Noble</option>
+                </select>
+
+                <label>Skull Logic — Locks Out</label>
+                <input type="text" placeholder="e.g., European_facial_structure, caucasian_features">
+
+                <label>Skin Tone Range</label>
+                <select>
+                  <option value="">-- pilih --</option>
+                  <option>porcelain_to_fair_only</option>
+                  <option>fair_to_light_beige</option>
+                  <option>light_beige_to_warm_tan</option>
+                  <option>tan_to_warm_brown</option>
+                  <option>warm_brown_to_deep_brown</option>
+                  <option>deep_brown_to_ebony</option>
+                  <option>ashen_grey_only (Dark Elf / Fantasy)</option>
+                </select>
+              </div>
+            </details>
+          </div>
+
+          <!-- Age Profile -->
+          <div class="sub-group">
+            <details>
+              <summary>Age Profile <span class="arr2">▸</span></summary>
+              <div class="sub-body">
+                <label>Age Range Target</label>
+                <select>
+                  <option value="">-- pilih --</option>
+                  <option>10-12 years old ⚠️ MINOR</option>
+                  <option>13-15 years old ⚠️ MINOR</option>
+                  <option>16-17 years old ⚠️ MINOR</option>
+                  <option>18-20 years old</option>
+                  <option>20-25 years old</option>
+                  <option>25-30 years old</option>
+                  <option>30-40 years old</option>
+                  <option>40-55 years old</option>
+                  <option>55-70 years old</option>
+                  <option>ageless immortal appearance</option>
+                </select>
+                <div class="lock-row">
+                  <input type="checkbox" id="lockAge" checked>
+                  <label for="lockAge">🔒 Lock Age</label>
+                </div>
+
+                <label>Maturity Level</label>
+                <select>
+                  <option>juvenile</option>
+                  <option>juvenile_to_young_adult</option>
+                  <option>young_adult</option>
+                  <option>adult</option>
+                  <option>mature_adult</option>
+                  <option>elder</option>
+                  <option>adult_ageless</option>
+                </select>
+
+                <label>Skin Condition (age-based)</label>
+                <select>
+                  <option>smooth_porcelain_non_porous (juvenile)</option>
+                  <option>smooth_natural (young adult)</option>
+                  <option>natural_textured (adult)</option>
+                  <option>textured_with_lines (mature)</option>
+                  <option>aged_prominently_wrinkled (elder)</option>
+                </select>
+              </div>
+            </details>
+          </div>
+
+          <!-- Face DNA -->
+          <div class="sub-group">
+            <details>
+              <summary>Face DNA <span class="arr2">▸</span></summary>
+              <div class="sub-body">
+                <label>Face Shape</label>
+                <select>
+                  <option value="">-- pilih --</option>
+                  <option>oval</option>
+                  <option>soft_oval (lembut, narrow jaw)</option>
+                  <option>round</option>
+                  <option>heart</option>
+                  <option>square</option>
+                  <option>diamond</option>
+                  <option>oblong_long (Elven)</option>
+                  <option>sharp_v (angular, villain)</option>
+                  <option>chubby_round</option>
+                </select>
+
+                <label>Eye Shape</label>
+                <select>
+                  <option value="">-- pilih --</option>
+                  <option>almond (upward tilt — East Asian)</option>
+                  <option>monolid (no fold — East Asian)</option>
+                  <option>double_lid (lipatan kelopak jelas)</option>
+                  <option>hooded (kelopak menutupi)</option>
+                  <option>round (besar dan bundar)</option>
+                  <option>upturned (sudut naik — cat-like)</option>
+                  <option>downturned (sudut turun — melancholic)</option>
+                  <option>deep_set (jauh ke dalam)</option>
+                  <option>elven_elongated (lebih panjang dari manusia)</option>
+                </select>
+
+                <label>Eye Color</label>
+                <select>
+                  <option value="">-- pilih --</option>
+                  <option>dark_brown_black (hitam/cokelat pekat)</option>
+                  <option>warm_brown (cokelat hangat)</option>
+                  <option>hazel (campuran)</option>
+                  <option>green</option>
+                  <option>blue</option>
+                  <option>grey</option>
+                  <option>amber_golden</option>
+                  <option>red_crimson (vampir/demon)</option>
+                  <option>purple_violet (fantasi)</option>
+                  <option>silver_white (divine/undead)</option>
+                  <option>glowing_any_color</option>
+                  <option>heterochromia (dua warna)</option>
+                  <option>slit_pupil (vertikal — beastkin)</option>
+                </select>
+                <div class="lock-row">
+                  <input type="checkbox" id="lockEyes" checked>
+                  <label for="lockEyes">🔒 Lock Eye Shape + Color</label>
+                </div>
+
+                <label>Nose Shape</label>
+                <select>
+                  <option value="">-- pilih --</option>
+                  <option>small_button (kecil, flat — East Asian)</option>
+                  <option>straight_refined</option>
+                  <option>straight_with_bump (Mediterranean)</option>
+                  <option>wide_flat (African / SEA)</option>
+                  <option>aquiline_hawk (paruh elang)</option>
+                  <option>turned_up_cute (pesek)</option>
+                  <option>strong_broad</option>
+                </select>
+
+                <label>Lip Shape</label>
+                <select>
+                  <option value="">-- pilih --</option>
+                  <option>thin_natural</option>
+                  <option>medium_balanced</option>
+                  <option>full_plump</option>
+                  <option>cupid_bow</option>
+                  <option>wide_expressive</option>
+                  <option>pouty_soft</option>
+                </select>
+
+                <label>Jaw Line</label>
+                <select>
+                  <option value="">-- pilih --</option>
+                  <option>soft_rounded</option>
+                  <option>defined_medium</option>
+                  <option>sharp_angular</option>
+                  <option>square_strong</option>
+                  <option>pointed_delicate (Elven)</option>
+                </select>
+
+                <label>Cheek Structure</label>
+                <select>
+                  <option value="">-- pilih --</option>
+                  <option>high_prominent (East Asian / Slavic)</option>
+                  <option>soft_medium</option>
+                  <option>flat_subtle</option>
+                  <option>chubby_full</option>
+                  <option>gaunt_hollow</option>
+                </select>
+
+                <label>Skin Undertone</label>
+                <select>
+                  <option value="">-- pilih --</option>
+                  <option>warm_peachy (East Asian / N. European)</option>
+                  <option>warm_golden_yellow (East / SEA / Latin)</option>
+                  <option>neutral_beige</option>
+                  <option>cool_pink (N. European lighter)</option>
+                  <option>olive_warm (Mediterranean / Middle East)</option>
+                  <option>warm_brown_golden (South Asian / SEA)</option>
+                  <option>cool_deep_brown (African)</option>
+                  <option>ashen_cool_grey (Dark Elf / Fantasy)</option>
+                </select>
+              </div>
+            </details>
+          </div>
+
+          <!-- Body DNA -->
+          <div class="sub-group">
+            <details>
+              <summary>Body DNA <span class="arr2">▸</span></summary>
+              <div class="sub-body">
+                <label>Height Category</label>
+                <select>
+                  <option value="">-- pilih --</option>
+                  <option>petite (di bawah 160cm)</option>
+                  <option>below_average (160–165cm fem)</option>
+                  <option>average (165–170cm fem)</option>
+                  <option>above_average (170–178cm fem)</option>
+                  <option>tall (178–185cm fem)</option>
+                  <option>very_tall (185cm+ fem)</option>
+                </select>
+                <div class="lock-row">
+                  <input type="checkbox" id="lockHeight" checked>
+                  <label for="lockHeight">🔒 Lock Height</label>
+                </div>
+
+                <label>Frame Type</label>
+                <select>
+                  <option value="">-- pilih --</option>
+                  <option>ectomorph_lean (ramping natural)</option>
+                  <option>slim_delicate (fragile elegance)</option>
+                  <option>mesomorph_athletic (atletis)</option>
+                  <option>endomorph_solid (solid, besar rangka)</option>
+                  <option>muscular_powerful (berotot kuat)</option>
+                  <option>curvy_hourglass (lekukan penuh)</option>
+                  <option>stocky_compact (dwarf / kekar pendek)</option>
+                </select>
+                <div class="lock-row">
+                  <input type="checkbox" id="lockFrame" checked>
+                  <label for="lockFrame">🔒 Lock Frame</label>
+                </div>
+
+                <label>Shoulder Width</label>
+                <select>
+                  <option>narrow (sempit, lebih kecil dari pinggul)</option>
+                  <option>medium (seimbang)</option>
+                  <option>broad (lebar, atletis)</option>
+                </select>
+
+                <label>Waist Definition</label>
+                <select>
+                  <option>undefined_straight</option>
+                  <option>subtle</option>
+                  <option>defined_natural</option>
+                  <option>hourglass_prominent</option>
+                </select>
+
+                <label>Limb Proportion</label>
+                <select>
+                  <option>short_limbed</option>
+                  <option>average_proportion</option>
+                  <option>long_limbed (model / elf)</option>
+                </select>
+              </div>
+            </details>
+          </div>
+
+          <!-- Reference Images -->
+          <div class="sub-group">
+            <details>
+              <summary>Reference Images <span class="arr2">▸</span></summary>
+              <div class="sub-body">
+                <div class="info">💡 Lebih banyak angle = konsistensi lebih tinggi. Minimum 1, ideal 4+ angle.</div>
+                <label>Front View (Primary) — Priority 1</label>
+                <input type="text" placeholder="eira_front_v1.png atau URL">
+                <label>3/4 Left — Priority 2</label>
+                <input type="text" placeholder="eira_three_quarter_left.png">
+                <label>3/4 Right — Priority 2</label>
+                <input type="text" placeholder="eira_three_quarter_right.png">
+                <label>Side Profile — Priority 3</label>
+                <input type="text" placeholder="eira_side_v1.png">
+                <label>Back View — Priority 3</label>
+                <input type="text" placeholder="eira_back_v1.png">
+                <label>Face Closeup — Priority 2</label>
+                <input type="text" placeholder="eira_face_closeup.png">
+              </div>
+            </details>
+          </div>
+
+          <!-- Platform Usage -->
+          <div class="sub-group">
+            <details>
+              <summary>Platform Usage <span class="arr2">▸</span></summary>
+              <div class="sub-body">
+                <label>MidJourney — Image Weight</label>
+                <select>
+                  <option>--iw 0.5 (lemah)</option>
+                  <option>--iw 1.0 (balance)</option>
+                  <option>--iw 1.5 (dominan — recommended)</option>
+                  <option>--iw 2.0 (maksimal)</option>
+                </select>
+                <label>MidJourney — Char Ref Weight (--cw)</label>
+                <select>
+                  <option>--cw 100 (lock wajah + outfit)</option>
+                  <option>--cw 75 (lock wajah, outfit bebas)</option>
+                  <option>--cw 50 (hanya wajah)</option>
+                  <option>--cw 0 (style saja)</option>
+                </select>
+                <label>SDXL — IP-Adapter Scale</label>
+                <select>
+                  <option>0.85 (recommended)</option>
+                  <option>0.70</option>
+                  <option>0.90</option>
+                  <option>1.00 (maksimal)</option>
+                </select>
+                <label>Kling — Face Reference Weight</label>
+                <select>
+                  <option>0.85 (recommended)</option>
+                  <option>0.70 (lebih bebas)</option>
+                  <option>1.00 (maksimal lock)</option>
+                </select>
+              </div>
+            </details>
+          </div>
+
+        </div>
+      </details>
+    </div>
+
+    <!-- ============ LAYER 1B — TECHNICAL CONSTRAINTS ============ -->
+    <div class="layer-section">
+      <details>
+        <summary>
+          🚫 L1B Technical Constraints <span class="badge lock">NEG DNA</span>
+          <span class="arr">▸</span>
+        </summary>
+        <div class="section-body">
+          <div class="info warn">⚠️ PERMANEN. "Pagar" identitas — apa yang DILARANG keras di setiap generate.</div>
+          <div class="sub-body">
+            <label>Negative DNA (Identity Protection)</label>
+            <textarea rows="5" placeholder="wrong race:1.5&#10;european facial structure:1.4&#10;age drift&#10;extra limbs&#10;mature anatomy (jika karakter muda)"></textarea>
+
+            <label>Anatomy Locks</label>
+            <select multiple size="4">
+              <option selected>no_extra_fingers</option>
+              <option selected>no_deformed_hands</option>
+              <option selected>no_extra_limbs</option>
+              <option selected>no_anatomy_distortion</option>
+              <option>no_merged_fingers</option>
+              <option>no_floating_limbs</option>
+            </select>
+
+            <label>Face Protection Locks</label>
+            <select multiple size="4">
+              <option selected>no_wrong_race</option>
+              <option selected>no_age_drift</option>
+              <option selected>no_deformed_face</option>
+              <option selected>no_asymmetric_face</option>
+              <option>no_crossed_eyes</option>
+              <option>no_plastic_skin</option>
+            </select>
+
+            <label>Quality Locks</label>
+            <select multiple size="3">
+              <option selected>no_worst_quality</option>
+              <option selected>no_low_quality</option>
+              <option selected>no_blurry</option>
+              <option>no_watermark</option>
+              <option>no_text_artifacts</option>
+            </select>
+
+            <label>Identity Locked Fields (tidak bisa di-override)</label>
+            <input type="text" placeholder="race_matrix, age_profile, face_dna, body_dna">
+          </div>
+        </div>
+      </details>
+    </div>
+
+    <!-- ============ LAYER 2A — SCENE CORE ============ -->
+    <div class="layer-section">
+      <details>
+        <summary>
+          🎬 L2A Scene Core
+          <span class="arr">▸</span>
+        </summary>
+        <div class="section-body">
+          <div class="sub-group">
+            <details open>
+              <summary>Scene Type &amp; Focus <span class="arr2">▸</span></summary>
+              <div class="sub-body">
                 <label>Primary Focus</label>
-                <select id="primaryFocus">
-                    <option>character</option>
-                    <option>landscape</option>
-                    <option>action</option>
-                    <option>object</option>
-                    <option>atmosphere</option>
+                <select>
+                  <option>character</option>
+                  <option>landscape</option>
+                  <option>action</option>
+                  <option>object</option>
+                  <option>atmosphere</option>
                 </select>
-                
                 <label>Narrative Moment</label>
-                <select id="narrativeMoment">
-                    <option value="">-- choose --</option>
-                    <option>calm before storm</option>
-                    <option>rising tension</option>
-                    <option>climax/peak action</option>
-                    <option>resolution</option>
-                    <option>aftermath</option>
-                    <option>peaceful/idle</option>
+                <select>
+                  <option value="">-- pilih --</option>
+                  <option>calm_before_storm</option>
+                  <option>rising_tension</option>
+                  <option>climax_peak_action</option>
+                  <option>resolution</option>
+                  <option>aftermath</option>
+                  <option>peaceful_idle</option>
+                  <option>moment_of_realization</option>
+                  <option>reunion</option>
+                  <option>farewell</option>
                 </select>
+              </div>
             </details>
-            
-            <details class="optgroup">
-                <summary>Time Setting</summary>
-                <label>Period</label>
-                <select id="timePeriod">
-                    <option value="">-- choose --</option>
-                    <option>ancient/prehistoric</option>
-                    <option>medieval</option>
-                    <option>renaissance</option>
-                    <option>victorian/steampunk</option>
-                    <option>early 1900s</option>
-                    <option>1950s-60s</option>
-                    <option>1980s-90s</option>
-                    <option>present day</option>
-                    <option>near future (2030s-2050s)</option>
-                    <option>far future (2100+)</option>
-                    <option>timeless/anachronistic</option>
+          </div>
+
+          <div class="sub-group">
+            <details>
+              <summary>Time Setting <span class="arr2">▸</span></summary>
+              <div class="sub-body">
+                <label>Era / Period</label>
+                <select>
+                  <option value="">-- pilih --</option>
+                  <option>ancient / prehistoric</option>
+                  <option>medieval</option>
+                  <option>renaissance</option>
+                  <option>victorian / steampunk</option>
+                  <option>early 1900s</option>
+                  <option>1950s–60s</option>
+                  <option>1980s–90s</option>
+                  <option>present day</option>
+                  <option>near future (2030s–2050s)</option>
+                  <option>far future (2100+)</option>
+                  <option>high fantasy (timeless)</option>
+                  <option>post-apocalyptic</option>
                 </select>
-                
-                <label>Season</label>
-                <select id="season">
-                    <option value="">-- choose --</option>
-                    <option>spring</option>
-                    <option>summer</option>
-                    <option>autumn/fall</option>
-                    <option>winter</option>
-                    <option>late autumn (dying)</option>
-                    <option>early spring (blooming)</option>
-                </select>
-                
+
                 <label>Time of Day</label>
-                <select id="timeOfDay">
-                    <option value="">-- choose --</option>
-                    <option>pre-dawn/blue hour</option>
-                    <option>sunrise/golden hour</option>
-                    <option>morning</option>
-                    <option>noon/midday</option>
-                    <option>afternoon</option>
-                    <option>sunset/golden hour</option>
-                    <option>dusk/blue hour</option>
-                    <option>night (early)</option>
-                    <option>midnight</option>
-                    <option>night (late/3am)</option>
+                <select>
+                  <option value="">-- pilih --</option>
+                  <option>dawn_pre_sunrise</option>
+                  <option>golden_hour_morning</option>
+                  <option>morning_soft</option>
+                  <option>noon_harsh_midday</option>
+                  <option>afternoon_warm</option>
+                  <option>golden_hour_sunset</option>
+                  <option>blue_hour_dusk</option>
+                  <option>night_early</option>
+                  <option>midnight</option>
+                  <option>late_night_3am</option>
+                  <option>magic_hour (transisi siang-malam)</option>
                 </select>
-                
+
+                <label>Season</label>
+                <select>
+                  <option value="">-- pilih --</option>
+                  <option>spring</option>
+                  <option>summer</option>
+                  <option>autumn_fall</option>
+                  <option>winter</option>
+                  <option>late_autumn_dying</option>
+                  <option>early_spring_blooming</option>
+                </select>
+
                 <label>Time Flow</label>
-                <select id="timeFlow">
-                    <option>real-time</option>
-                    <option>frozen moment</option>
-                    <option>slow-motion</option>
-                    <option>time-lapse</option>
+                <select>
+                  <option>real_time</option>
+                  <option>frozen_moment</option>
+                  <option>slow_motion</option>
+                  <option>time_lapse</option>
                 </select>
+              </div>
             </details>
-            
-            <details class="optgroup">
-                <summary>Space Setting</summary>
+          </div>
+
+          <div class="sub-group">
+            <details>
+              <summary>Space Setting <span class="arr2">▸</span></summary>
+              <div class="sub-body">
                 <label>Location Type</label>
-                <select id="locationType">
-                    <option value="">-- choose --</option>
-                    <option>urban/city</option>
-                    <option>suburban</option>
-                    <option>rural/countryside</option>
-                    <option>wilderness/forest</option>
-                    <option>desert</option>
-                    <option>mountain</option>
-                    <option>beach/coastal</option>
-                    <option>underwater</option>
-                    <option>interior/indoor</option>
-                    <option>space/void</option>
+                <select>
+                  <option value="">-- pilih --</option>
+                  <option>urban_city</option>
+                  <option>suburban</option>
+                  <option>rural_countryside</option>
+                  <option>wilderness_forest</option>
+                  <option>desert</option>
+                  <option>mountain</option>
+                  <option>beach_coastal</option>
+                  <option>underwater</option>
+                  <option>cave_underground</option>
+                  <option>interior_indoor</option>
+                  <option>rooftop</option>
+                  <option>void_space</option>
                 </select>
-                
-                <label>Region</label>
-                <input type="text" id="region" placeholder="e.g., downtown, countryside, orbit">
-                
                 <label>Specific Place</label>
-                <input type="text" id="specificPlace" placeholder="e.g., abandoned metro station">
-                
+                <input type="text" placeholder="e.g., abandoned metro station, grand library">
                 <label>Scale</label>
-                <select id="scale">
-                    <option>intimate/small</option>
-                    <option>personal</option>
-                    <option>expansive/large</option>
-                    <option>monumental/epic</option>
+                <select>
+                  <option>intimate_small</option>
+                  <option>personal</option>
+                  <option>expansive_large</option>
+                  <option>monumental_epic</option>
                 </select>
+                <label>Spatial Quality</label>
+                <select>
+                  <option>open_vast</option>
+                  <option>enclosed_intimate</option>
+                  <option>claustrophobic_tight</option>
+                  <option>vertical_towering</option>
+                  <option>labyrinthine</option>
+                </select>
+              </div>
             </details>
-        </details>
+          </div>
+        </div>
+      </details>
+    </div>
 
-        <!-- ========== LAYER 3 — COMPOSITION ========== -->
-        <details>
-            <summary>📷 [L3] Composition <span class="badge important">IMPORTANT</span></summary>
-            
-            <details class="optgroup">
-                <summary>Camera</summary>
-                <label>Shot Type</label>
-                <select id="shotType">
-                    <option value="">-- choose --</option>
-                    <option>extreme close-up (ECU)</option>
-                    <option>close-up (CU)</option>
-                    <option>medium close-up (MCU)</option>
-                    <option>medium shot (MS)</option>
-                    <option>medium full shot</option>
-                    <option>full shot/body</option>
-                    <option>wide shot</option>
-                    <option>extreme wide shot</option>
-                </select>
-                
-                <label>Camera Angle</label>
-                <select id="cameraAngle">
-                    <option value="">-- choose --</option>
-                    <option>eye level</option>
-                    <option>slightly low angle</option>
-                    <option>low angle</option>
-                    <option>extreme low angle (worm's eye)</option>
-                    <option>slightly high angle</option>
-                    <option>high angle</option>
-                    <option>extreme high angle (bird's eye)</option>
-                    <option>overhead/top-down</option>
-                    <option>dutch angle/tilted</option>
-                </select>
-                
-                <label>Focal Length</label>
-                <select id="focalLength">
-                    <option value="">-- choose --</option>
-                    <option>14mm (ultra wide)</option>
-                    <option>24mm (wide)</option>
-                    <option>35mm (standard wide)</option>
-                    <option>50mm (normal/standard)</option>
-                    <option>85mm (portrait)</option>
-                    <option>135mm (telephoto)</option>
-                    <option>200mm+ (super telephoto)</option>
-                </select>
-                
-                <label>Aperture / Depth of Field</label>
-                <select id="aperture">
-                    <option value="">-- choose --</option>
-                    <option>f/1.4 (ultra shallow DoF, bokeh)</option>
-                    <option>f/2.8 (shallow DoF)</option>
-                    <option>f/5.6 (moderate DoF)</option>
-                    <option>f/8 (balanced)</option>
-                    <option>f/11 (deep DoF)</option>
-                    <option>f/16+ (everything in focus)</option>
-                </select>
-                
-                <label>Camera Height</label>
-                <select id="cameraHeight">
-                    <option>ground level</option>
-                    <option>knee level</option>
-                    <option>waist level</option>
-                    <option>chest level</option>
-                    <option>eye level</option>
-                    <option>overhead</option>
-                </select>
-                
-                <label>Distance to Subject</label>
-                <select id="cameraDistance">
-                    <option>intimate (very close)</option>
-                    <option>personal (close)</option>
-                    <option>social (medium)</option>
-                    <option>public (far)</option>
-                </select>
-                
-                <label>Camera Movement/Stability</label>
-                <select id="cameraStability">
-                    <option>static/locked</option>
-                    <option>handheld (slight shake)</option>
-                    <option>gimbal (smooth)</option>
-                    <option>crane/jib</option>
-                    <option>dolly track</option>
-                    <option>steadicam</option>
-                </select>
-            </details>
-            
-            <details class="optgroup">
-                <summary>Framing</summary>
-                <label>Subject Placement</label>
-                <select id="subjectPlacement">
-                    <option>center</option>
-                    <option>rule of thirds (left)</option>
-                    <option>rule of thirds (right)</option>
-                    <option>golden ratio</option>
-                    <option>off-center dynamic</option>
-                </select>
-                
-                <label>Symmetry</label>
-                <select id="symmetry">
-                    <option>asymmetric</option>
-                    <option>symmetric (centered)</option>
-                    <option>radial symmetry</option>
-                </select>
-                
-                <label>Frame Within Frame</label>
-                <select id="frameWithinFrame">
-                    <option>no</option>
-                    <option>yes (doorway, window, arch)</option>
-                </select>
-            </details>
-        </details>
-
-        <!-- ========== LAYER 4 — LIGHTING ========== -->
-        <details>
-            <summary>💡 [L4] Lighting <span class="badge important">CRITICAL</span></summary>
-            
-            <div class="optgroup">
-                <label>Lighting Preset (Quick Setup)</label>
-                <select id="lightingPreset">
-                    <option value="">-- Custom --</option>
-                    <option>natural daylight</option>
-                    <option>golden hour (warm)</option>
-                    <option>blue hour (cool)</option>
-                    <option>studio 3-point</option>
-                    <option>rembrandt lighting</option>
-                    <option>cyberpunk neon</option>
-                    <option>horror low-key</option>
-                    <option>soft diffused</option>
-                    <option>dramatic high contrast</option>
-                </select>
-            </div>
-            
-            <details class="optgroup">
-                <summary>Key Light (Primary)</summary>
-                <label>Source Type</label>
-                <select id="keyLightSource">
-                    <option value="">-- choose --</option>
-                    <option>sun/daylight</option>
-                    <option>window light</option>
-                    <option>softbox/diffused</option>
-                    <option>spotlight/hard light</option>
-                    <option>neon sign</option>
-                    <option>fire/flame</option>
-                    <option>candle</option>
-                    <option>screen/monitor glow</option>
-                    <option>magical/supernatural</option>
-                </select>
-                
-                <label>Position</label>
-                <select id="keyLightPosition">
-                    <option>front (flat)</option>
-                    <option>45° left (standard)</option>
-                    <option>45° right</option>
-                    <option>side (90° left)</option>
-                    <option>side (90° right)</option>
-                    <option>back (rim/silhouette)</option>
-                    <option>top (overhead)</option>
-                    <option>bottom (under-lighting)</option>
-                </select>
-                
-                <label>Intensity</label>
-                <input type="range" id="keyLightIntensity" min="1" max="10" value="7">
-                <span class="weight-value" id="keyIntensityValue">7</span>
-                
-                <label>Quality</label>
-                <select id="keyLightQuality">
-                    <option>hard (sharp shadows)</option>
-                    <option>soft (diffused shadows)</option>
-                </select>
-                
-                <label>Color</label>
-                <input type="text" id="keyLightColor" placeholder="e.g., warm orange, cool blue, magenta">
-            </details>
-            
-            <details class="optgroup">
-                <summary>Fill Light (Secondary)</summary>
-                <label>Source Type</label>
-                <select id="fillLightSource">
-                    <option value="">-- none --</option>
-                    <option>ambient/environmental</option>
-                    <option>reflector</option>
-                    <option>soft diffused</option>
-                    <option>bounce light</option>
-                </select>
-                
-                <label>Intensity</label>
-                <input type="range" id="fillLightIntensity" min="1" max="10" value="3">
-                <span class="weight-value" id="fillIntensityValue">3</span>
-            </details>
-            
-            <details class="optgroup">
-                <summary>Rim/Back Light</summary>
-                <div class="lock-field">
-                    <input type="checkbox" id="enableRimLight">
-                    <label for="enableRimLight">Enable Rim/Back Light</label>
-                </div>
-                
-                <label>Color</label>
-                <input type="text" id="rimLightColor" placeholder="e.g., cyan, white, gold">
-                
-                <label>Intensity</label>
-                <input type="range" id="rimLightIntensity" min="1" max="10" value="5">
-                <span class="weight-value" id="rimIntensityValue">5</span>
-            </details>
-            
-            <details class="optgroup">
-                <summary>Ambient & Effects</summary>
-                <label>Ambient Light Intensity</label>
-                <input type="range" id="ambientIntensity" min="1" max="10" value="4">
-                <span class="weight-value" id="ambientValue">4</span>
-                
-                <label>Color Temperature</label>
-                <select id="colorTemp">
-                    <option>warm (golden/orange)</option>
-                    <option>neutral (white)</option>
-                    <option>cool (blue/cyan)</option>
-                </select>
-                
-                <div class="lock-field" style="margin-top:8px;">
-                    <input type="checkbox" id="enableFog">
-                    <label for="enableFog">Enable Volumetric Fog/Mist</label>
-                </div>
-                
-                <div class="lock-field">
-                    <input type="checkbox" id="enableGodRays">
-                    <label for="enableGodRays">Enable God Rays</label>
-                </div>
-                
-                <label>Shadow Style</label>
-                <select id="shadowStyle">
-                    <option>realistic/natural</option>
-                    <option>stylized/artistic</option>
-                    <option>no shadows</option>
-                </select>
-                
-                <label>Shadow Softness</label>
-                <select id="shadowSoftness">
-                    <option>hard/sharp</option>
-                    <option>soft/diffused</option>
-                </select>
-            </details>
-        </details>
-
-        <!-- ========== LAYER 2B — ENVIRONMENT ========== -->
-        <details>
-            <summary>🌍 [L2B] Environment</summary>
-            
-            <details class="optgroup">
-                <summary>Location</summary>
+    <!-- ============ LAYER 2B — ENVIRONMENT ============ -->
+    <div class="layer-section">
+      <details>
+        <summary>
+          🌍 L2B Environment
+          <span class="arr">▸</span>
+        </summary>
+        <div class="section-body">
+          <div class="sub-group">
+            <details open>
+              <summary>Location Detail <span class="arr2">▸</span></summary>
+              <div class="sub-body">
                 <label>Setting Type</label>
-                <select id="settingType">
-                    <option value="">-- choose --</option>
-                    <option>urban/city street</option>
-                    <option>interior room</option>
-                    <option>forest/jungle</option>
-                    <option>desert</option>
-                    <option>mountains</option>
-                    <option>beach/coast</option>
-                    <option>cave/underground</option>
-                    <option>ruins/abandoned</option>
-                    <option>futuristic/sci-fi</option>
+                <select>
+                  <option value="">-- pilih --</option>
+                  <option>urban_city_street</option>
+                  <option>interior_room</option>
+                  <option>forest_jungle</option>
+                  <option>desert</option>
+                  <option>mountains</option>
+                  <option>beach_coast</option>
+                  <option>cave_underground</option>
+                  <option>ruins_abandoned</option>
+                  <option>futuristic_sci_fi</option>
+                  <option>fantasy_realm</option>
+                  <option>underwater</option>
                 </select>
-                
-                <label>Specific Location</label>
-                <input type="text" id="specificLocation" placeholder="e.g., narrow service alley, grand library">
-                
-                <label>Geographic Region</label>
-                <input type="text" id="geoRegion" placeholder="e.g., Neo Tokyo, European countryside">
-                
-                <label>Cultural Context</label>
-                <input type="text" id="culturalContext" placeholder="e.g., Japanese cyberpunk, Victorian Gothic">
-                
+                <label>Geographic / Cultural Context</label>
+                <input type="text" placeholder="e.g., Neo Tokyo, European countryside, ancient ruins">
                 <label>Maintenance State</label>
-                <select id="maintenanceState">
-                    <option>pristine/new</option>
-                    <option>well-maintained</option>
-                    <option>lived-in/worn</option>
-                    <option>decaying but functional</option>
-                    <option>ruined/abandoned</option>
+                <select>
+                  <option>pristine_new</option>
+                  <option>well_maintained</option>
+                  <option>lived_in_worn</option>
+                  <option>decaying_but_functional</option>
+                  <option>ruined_abandoned</option>
                 </select>
+                <label>Structural Features</label>
+                <input type="text" placeholder="e.g., exposed_pipes, neon_signs, ancient_columns">
+              </div>
             </details>
-            
-            <details class="optgroup">
-                <summary>Weather & Climate</summary>
+          </div>
+
+          <div class="sub-group">
+            <details>
+              <summary>Weather &amp; Climate <span class="arr2">▸</span></summary>
+              <div class="sub-body">
                 <label>Precipitation</label>
-                <select id="precipitation">
-                    <option>none/clear</option>
-                    <option>light drizzle</option>
-                    <option>moderate rain</option>
-                    <option>heavy rain/storm</option>
-                    <option>snow (light)</option>
-                    <option>snow (heavy blizzard)</option>
-                    <option>fog/mist</option>
+                <select>
+                  <option>none_clear</option>
+                  <option>light_drizzle</option>
+                  <option>moderate_rain</option>
+                  <option>heavy_rain_storm</option>
+                  <option>snow_light</option>
+                  <option>blizzard_heavy</option>
+                  <option>fog_mist</option>
+                  <option>ash_falling (post-apocalyptic)</option>
                 </select>
-                
-                <label>Wind</label>
-                <select id="wind">
-                    <option>calm/still</option>
-                    <option>light breeze</option>
-                    <option>moderate wind</option>
-                    <option>strong wind/gale</option>
+                <label>Wind Effect</label>
+                <select>
+                  <option>calm_still</option>
+                  <option>light_breeze</option>
+                  <option>moderate_wind</option>
+                  <option>strong_gale</option>
                 </select>
-                
                 <label>Visibility</label>
-                <select id="visibility">
-                    <option>crystal clear</option>
-                    <option>clear</option>
-                    <option>hazy</option>
-                    <option>foggy/low visibility</option>
-                    <option>near zero (storm/fog)</option>
+                <select>
+                  <option>crystal_clear</option>
+                  <option>clear</option>
+                  <option>hazy</option>
+                  <option>foggy_low_visibility</option>
+                  <option>near_zero</option>
                 </select>
-                
                 <label>Sky Condition</label>
-                <select id="skyCondition">
-                    <option>clear/sunny</option>
-                    <option>partly cloudy</option>
-                    <option>overcast/grey</option>
-                    <option>dramatic clouds</option>
-                    <option>stormy/dark</option>
-                    <option>city glow (night)</option>
-                    <option>starry night</option>
+                <select>
+                  <option>clear_sunny</option>
+                  <option>partly_cloudy</option>
+                  <option>overcast_grey</option>
+                  <option>dramatic_clouds</option>
+                  <option>stormy_dark</option>
+                  <option>city_glow_night</option>
+                  <option>starry_night</option>
+                  <option>aurora</option>
+                  <option>eclipse</option>
                 </select>
+              </div>
             </details>
-            
-            <details class="optgroup">
-                <summary>Props & Objects</summary>
-                <button style="width:100%;">+ Add Prop/Object</button>
-                <small style="display:block;color:var(--text-dim);margin-top:4px;">Click to add props with details (name, condition, importance)</small>
-            </details>
-        </details>
+          </div>
 
-        <!-- ========== LAYER 5 — ATMOSPHERE ========== -->
-        <details>
-            <summary>🎨 [L5] Atmosphere</summary>
-            
-            <details class="optgroup">
-                <summary>Emotional Tone (multi-select)</summary>
-                <select id="emotionalTone" multiple size="6">
-                    <option>tense/anxious</option>
-                    <option>peaceful/calm</option>
-                    <option>mysterious/enigmatic</option>
-                    <option>hopeful/optimistic</option>
-                    <option>ominous/foreboding</option>
-                    <option>melancholic/sad</option>
-                    <option>joyful/uplifting</option>
-                    <option>dramatic/intense</option>
-                    <option>romantic/intimate</option>
-                    <option>eerie/unsettling</option>
+          <div class="sub-group">
+            <details>
+              <summary>Props &amp; Objects <span class="arr2">▸</span></summary>
+              <div class="sub-body">
+                <label>Key Props</label>
+                <input type="text" placeholder="e.g., ancient_sword_in_stone, floating_lanterns">
+                <label>Prop Importance</label>
+                <select>
+                  <option>hero_prop (fokus utama)</option>
+                  <option>supporting_prop</option>
+                  <option>background_detail</option>
                 </select>
+                <button class="full ghost">+ Add Another Prop</button>
+              </div>
             </details>
-            
-            <details class="optgroup">
-                <summary>Visual Style</summary>
-                <label>Art Movement</label>
-                <select id="artMovement">
-                    <option value="">-- choose --</option>
-                    <option>realism/photorealistic</option>
-                    <option>impressionism</option>
-                    <option>expressionism</option>
-                    <option>surrealism</option>
-                    <option>cyberpunk/tech noir</option>
-                    <option>steampunk</option>
-                    <option>solarpunk</option>
-                    <option>fantasy/ethereal</option>
-                    <option>gothic/dark</option>
-                    <option>minimalist</option>
+          </div>
+        </div>
+      </details>
+    </div>
+
+    <!-- ============ LAYER 3 — COMPOSITION ============ -->
+    <div class="layer-section">
+      <details>
+        <summary>
+          📷 L3 Composition <span class="badge imp">IMPORTANT</span>
+          <span class="arr">▸</span>
+        </summary>
+        <div class="section-body">
+          <div class="sub-group">
+            <details open>
+              <summary>Camera Setup <span class="arr2">▸</span></summary>
+              <div class="sub-body">
+                <label>Shot Type</label>
+                <select>
+                  <option value="">-- pilih --</option>
+                  <option>extreme_close_up ECU (wajah saja)</option>
+                  <option>close_up CU</option>
+                  <option>medium_close_up MCU</option>
+                  <option>medium_shot MS</option>
+                  <option>medium_full_shot MFS</option>
+                  <option>full_shot FS (full body)</option>
+                  <option>wide_shot WS</option>
+                  <option>extreme_wide_shot EWS</option>
                 </select>
-                
-                <label>Film/Photography Reference</label>
-                <input type="text" id="filmReference" placeholder="e.g., Blade Runner 2049, Ghibli, Wes Anderson">
-                
-                <label>Photography Style</label>
-                <select id="photoStyle">
-                    <option value="">-- choose --</option>
-                    <option>documentary/candid</option>
-                    <option>fashion/editorial</option>
-                    <option>street photography</option>
-                    <option>cinematic/filmic</option>
-                    <option>portrait studio</option>
-                    <option>fine art</option>
+
+                <label>Camera Angle</label>
+                <select>
+                  <option>eye_level</option>
+                  <option>slightly_low_angle</option>
+                  <option>low_angle (hero, imposing)</option>
+                  <option>extreme_low_worms_eye</option>
+                  <option>slightly_high_angle</option>
+                  <option>high_angle</option>
+                  <option>extreme_high_birds_eye</option>
+                  <option>overhead_top_down</option>
+                  <option>dutch_angle_tilted</option>
                 </select>
-                
+
+                <label>Focal Length</label>
+                <select>
+                  <option value="">-- pilih --</option>
+                  <option>14mm (ultra wide — distorsi)</option>
+                  <option>24mm (wide)</option>
+                  <option>35mm (standard wide)</option>
+                  <option>50mm (normal)</option>
+                  <option>85mm (portrait — ideal)</option>
+                  <option>135mm (telephoto)</option>
+                  <option>200mm+ (super telephoto)</option>
+                </select>
+
+                <label>Aperture / Depth of Field</label>
+                <select>
+                  <option>f/1.4 (ultra shallow — bokeh kuat)</option>
+                  <option>f/2.8 (shallow — bokeh natural)</option>
+                  <option>f/5.6 (moderate)</option>
+                  <option>f/8 (balanced)</option>
+                  <option>f/11 (deep)</option>
+                  <option>f/16+ (semua fokus)</option>
+                </select>
+
+                <label>Camera Stability</label>
+                <select>
+                  <option>static_locked</option>
+                  <option>handheld_slight_shake</option>
+                  <option>gimbal_smooth</option>
+                  <option>crane_jib</option>
+                  <option>dolly_track</option>
+                  <option>steadicam</option>
+                </select>
+              </div>
+            </details>
+          </div>
+
+          <div class="sub-group">
+            <details>
+              <summary>Framing &amp; Composition Rules <span class="arr2">▸</span></summary>
+              <div class="sub-body">
+                <label>Subject Placement</label>
+                <select>
+                  <option>center</option>
+                  <option>rule_of_thirds_left</option>
+                  <option>rule_of_thirds_right</option>
+                  <option>golden_ratio</option>
+                  <option>off_center_dynamic</option>
+                </select>
+
+                <label>Symmetry</label>
+                <select>
+                  <option>asymmetric (lebih dinamis)</option>
+                  <option>symmetric_centered</option>
+                  <option>radial_symmetry</option>
+                </select>
+
+                <label>Leading Lines</label>
+                <select>
+                  <option>none</option>
+                  <option>diagonal_left_to_right</option>
+                  <option>converging_to_subject</option>
+                  <option>horizontal_stabilizing</option>
+                  <option>curved_flowing</option>
+                </select>
+
+                <label>Depth / Layers</label>
+                <select>
+                  <option>flat_no_depth</option>
+                  <option>foreground_subject_background</option>
+                  <option>deep_three_layers</option>
+                  <option>extreme_depth_miniature</option>
+                </select>
+
+                <label>Foreground Element</label>
+                <input type="text" placeholder="e.g., blurred foliage, rain on glass, bokeh lights">
+
+                <label>Frame Within Frame</label>
+                <select>
+                  <option>none</option>
+                  <option>yes (doorway / window / arch)</option>
+                  <option>yes (trees / branches)</option>
+                  <option>yes (tunnel / corridor)</option>
+                </select>
+              </div>
+            </details>
+          </div>
+        </div>
+      </details>
+    </div>
+
+    <!-- ============ LAYER 5 — LIGHTING ============ -->
+    <div class="layer-section">
+      <details>
+        <summary>
+          💡 L5 Lighting <span class="badge imp">CRITICAL</span>
+          <span class="arr">▸</span>
+        </summary>
+        <div class="section-body">
+          <div class="sub-body" style="padding:6px 8px 4px">
+            <label>Lighting Preset (Quick Setup)</label>
+            <select>
+              <option value="">-- Custom --</option>
+              <option>natural_daylight</option>
+              <option>golden_hour_warm</option>
+              <option>blue_hour_cool</option>
+              <option>magic_hour</option>
+              <option>studio_3point</option>
+              <option>rembrandt_lighting</option>
+              <option>chiaroscuro_dramatic</option>
+              <option>cyberpunk_neon</option>
+              <option>horror_low_key</option>
+              <option>soft_diffused</option>
+              <option>moonlight</option>
+              <option>candlelight_warm</option>
+            </select>
+          </div>
+
+          <div class="sub-group">
+            <details>
+              <summary>Key Light (Primary) <span class="arr2">▸</span></summary>
+              <div class="sub-body">
+                <label>Source Type</label>
+                <select>
+                  <option>sun_daylight</option>
+                  <option>window_light</option>
+                  <option>softbox_diffused</option>
+                  <option>spotlight_hard</option>
+                  <option>neon_sign</option>
+                  <option>fire_flame</option>
+                  <option>candle</option>
+                  <option>moonlight</option>
+                  <option>screen_monitor_glow</option>
+                  <option>magical_supernatural</option>
+                  <option>bioluminescent</option>
+                </select>
+
+                <label>Position</label>
+                <select>
+                  <option>front_flat</option>
+                  <option>45deg_left_standard</option>
+                  <option>45deg_right</option>
+                  <option>side_90deg_left</option>
+                  <option>side_90deg_right</option>
+                  <option>back_rim_silhouette</option>
+                  <option>top_overhead</option>
+                  <option>bottom_underlighting</option>
+                </select>
+
+                <label>Quality</label>
+                <select>
+                  <option>hard (shadow tajam)</option>
+                  <option>soft (shadow halus)</option>
+                  <option>diffused (sangat halus)</option>
+                </select>
+
+                <label>Color Temperature</label>
+                <select>
+                  <option>very_warm_2700K (candlelight)</option>
+                  <option>warm_3200K (tungsten)</option>
+                  <option>warm_3500K (golden hour)</option>
+                  <option>neutral_5500K (daylight)</option>
+                  <option>cool_6500K (overcast)</option>
+                  <option>very_cool_8000K+ (blue hour)</option>
+                </select>
+
+                <div class="slider-row">
+                  <div class="slider-header">
+                    <label>Intensity</label>
+                    <span class="slider-val">7</span>
+                  </div>
+                  <input type="range" min="1" max="10" value="7">
+                </div>
+              </div>
+            </details>
+          </div>
+
+          <div class="sub-group">
+            <details>
+              <summary>Fill Light &amp; Rim Light <span class="arr2">▸</span></summary>
+              <div class="sub-body">
+                <label>Fill Light Source</label>
+                <select>
+                  <option value="">-- none --</option>
+                  <option>ambient_environmental</option>
+                  <option>reflector</option>
+                  <option>soft_diffused</option>
+                  <option>bounce_light</option>
+                </select>
+                <div class="slider-row">
+                  <div class="slider-header">
+                    <label>Fill Intensity</label>
+                    <span class="slider-val">3</span>
+                  </div>
+                  <input type="range" min="1" max="10" value="3">
+                </div>
+
+                <hr class="divider">
+
+                <div class="lock-row" style="background:none;border:none;padding:0">
+                  <input type="checkbox" id="rimEnable">
+                  <label for="rimEnable" style="color:var(--text-dim)">Enable Rim / Back Light</label>
+                </div>
+                <label>Rim Color</label>
+                <input type="text" placeholder="e.g., cyan, gold, white">
+                <div class="slider-row">
+                  <div class="slider-header">
+                    <label>Rim Intensity</label>
+                    <span class="slider-val">5</span>
+                  </div>
+                  <input type="range" min="1" max="10" value="5">
+                </div>
+              </div>
+            </details>
+          </div>
+
+          <div class="sub-group">
+            <details>
+              <summary>Shadow &amp; Ambient Effects <span class="arr2">▸</span></summary>
+              <div class="sub-body">
+                <label>Shadow Style</label>
+                <select>
+                  <option>realistic_natural</option>
+                  <option>hard_deep</option>
+                  <option>soft_gentle</option>
+                  <option>stylized_artistic</option>
+                  <option>no_shadows</option>
+                </select>
+
+                <div class="lock-row" style="background:none;border:none;padding:0">
+                  <input type="checkbox" id="fogEnable">
+                  <label for="fogEnable" style="color:var(--text-dim)">Volumetric Fog / Mist</label>
+                </div>
+                <div class="lock-row" style="background:none;border:none;padding:0">
+                  <input type="checkbox" id="godrayEnable">
+                  <label for="godrayEnable" style="color:var(--text-dim)">God Rays / Crepuscular</label>
+                </div>
+                <div class="lock-row" style="background:none;border:none;padding:0">
+                  <input type="checkbox" id="causticEnable">
+                  <label for="causticEnable" style="color:var(--text-dim)">Caustic Light (air / glass)</label>
+                </div>
+
+                <label>Lighting Condition</label>
+                <select>
+                  <option>high_key (terang, shadow minim)</option>
+                  <option>balanced</option>
+                  <option>low_key (gelap, shadow dalam)</option>
+                  <option>silhouette</option>
+                </select>
+              </div>
+            </details>
+          </div>
+        </div>
+      </details>
+    </div>
+
+    <!-- ============ LAYER 6 — ATMOSPHERE ============ -->
+    <div class="layer-section">
+      <details>
+        <summary>
+          🎨 L6 Atmosphere
+          <span class="arr">▸</span>
+        </summary>
+        <div class="section-body">
+          <div class="sub-group">
+            <details open>
+              <summary>Emotional Tone <span class="arr2">▸</span></summary>
+              <div class="sub-body">
+                <label>Primary Tone</label>
+                <select>
+                  <option value="">-- pilih --</option>
+                  <option>tense_anxious</option>
+                  <option>peaceful_serene</option>
+                  <option>mysterious_enigmatic</option>
+                  <option>hopeful_optimistic</option>
+                  <option>ominous_foreboding</option>
+                  <option>melancholic_sad</option>
+                  <option>joyful_uplifting</option>
+                  <option>dramatic_intense</option>
+                  <option>romantic_intimate</option>
+                  <option>eerie_unsettling</option>
+                  <option>epic_grand</option>
+                  <option>whimsical_playful</option>
+                  <option>nostalgic_wistful</option>
+                  <option>dread_horror</option>
+                  <option>wonder_magical</option>
+                </select>
+
+                <label>Secondary Tone</label>
+                <select>
+                  <option value="">-- none --</option>
+                  <option>tense_anxious</option>
+                  <option>peaceful_serene</option>
+                  <option>mysterious_enigmatic</option>
+                  <option>hopeful_optimistic</option>
+                  <option>melancholic_sad</option>
+                  <option>romantic_intimate</option>
+                  <option>eerie_unsettling</option>
+                  <option>nostalgic_wistful</option>
+                </select>
+              </div>
+            </details>
+          </div>
+
+          <div class="sub-group">
+            <details>
+              <summary>Visual Style <span class="arr2">▸</span></summary>
+              <div class="sub-body">
+                <label>Art Movement / Style</label>
+                <select>
+                  <option value="">-- pilih --</option>
+                  <option>photorealism</option>
+                  <option>cinematic_photography</option>
+                  <option>impressionism</option>
+                  <option>expressionism</option>
+                  <option>surrealism</option>
+                  <option>cyberpunk_tech_noir</option>
+                  <option>steampunk</option>
+                  <option>solarpunk</option>
+                  <option>dark_fantasy</option>
+                  <option>gothic_dark</option>
+                  <option>anime_manga_adjacent</option>
+                  <option>minimalist_clean</option>
+                  <option>painterly_oil</option>
+                  <option>watercolor_soft</option>
+                </select>
+
+                <label>Film / Director Reference</label>
+                <input type="text" placeholder="e.g., Blade Runner 2049, Studio Ghibli, Wes Anderson">
+
                 <label>Color Palette</label>
-                <input type="text" id="colorPalette" placeholder="e.g., neon magenta, cyan, deep shadow black">
-                
-                <label>Contrast/Mood</label>
-                <select id="contrastMood">
-                    <option>low contrast (soft/dreamy)</option>
-                    <option>balanced/natural</option>
-                    <option>high contrast (dramatic)</option>
-                    <option>selective color (noir)</option>
+                <select>
+                  <option value="">-- pilih --</option>
+                  <option>warm_golden (amber, orange, cream)</option>
+                  <option>cool_blue (steel blue, slate, deep navy)</option>
+                  <option>neon_dark (neon on black)</option>
+                  <option>teal_orange_cinematic</option>
+                  <option>pastel_dream (soft pinks, lavender)</option>
+                  <option>monochrome_blue (desaturated + blue tint)</option>
+                  <option>earth_tones (brown, rust, green)</option>
+                  <option>blood_black (crimson + dark)</option>
+                  <option>purple_gold (violet + gold)</option>
+                  <option>pink_magenta (neon pink)</option>
                 </select>
-                
-                <label>Texture Emphasis</label>
-                <select id="textureEmphasis">
-                    <option>smooth/clean</option>
-                    <option>gritty/textured</option>
-                    <option>wet/reflective</option>
-                    <option>rough/weathered</option>
-                    <option>painterly/artistic</option>
+
+                <label>Custom Color Notes</label>
+                <input type="text" placeholder="e.g., neon magenta + deep shadow + cyan accent">
+
+                <label>Contrast</label>
+                <select>
+                  <option>low_soft_dreamy</option>
+                  <option>balanced_natural</option>
+                  <option>high_dramatic</option>
+                  <option>selective_color_noir</option>
                 </select>
+              </div>
             </details>
-        </details>
+          </div>
 
-        <!-- ========== LAYER 6 — MOTION (VIDEO ONLY) ========== -->
-        <details>
-            <summary>🎥 [L6] Motion <span class="badge new">VIDEO ONLY</span></summary>
-            <div class="info-text">⚠️ Section ini hanya aktif jika Generator Type = "video" atau "both".</div>
+          <div class="sub-group">
+            <details>
+              <summary>Texture &amp; Grain <span class="arr2">▸</span></summary>
+              <div class="sub-body">
+                <label>Texture Emphasis</label>
+                <select>
+                  <option>smooth_clean</option>
+                  <option>gritty_textured</option>
+                  <option>wet_reflective</option>
+                  <option>rough_weathered</option>
+                  <option>painterly_artistic</option>
+                </select>
+                <label>Film Grain</label>
+                <select>
+                  <option>none_clean</option>
+                  <option>very_subtle</option>
+                  <option>light_grain_35mm</option>
+                  <option>medium_grain</option>
+                  <option>heavy_grain_artistic</option>
+                </select>
+              </div>
+            </details>
+          </div>
+        </div>
+      </details>
+    </div>
 
-            <details class="optgroup">
-                <summary>Camera Movement</summary>
-                <label>Type</label>
-                <select id="camMoveType">
-                    <option value="">-- none/static --</option>
-                    <option>pan (horizontal)</option>
-                    <option>tilt (vertical)</option>
-                    <option>zoom in</option>
-                    <option>zoom out</option>
-                    <option>dolly forward</option>
-                    <option>dolly back</option>
-                    <option>orbit/arc</option>
-                    <option>crane up</option>
-                    <option>crane down</option>
+    <!-- ============ LAYER 4A — MOTION (VIDEO) ============ -->
+    <div class="layer-section">
+      <details>
+        <summary>
+          🎥 L4A Motion <span class="badge vid">VIDEO ONLY</span>
+          <span class="arr">▸</span>
+        </summary>
+        <div class="section-body">
+          <div class="info blue">⚙️ Aktif hanya jika Generator Type = "video" atau "both".</div>
+
+          <div class="sub-group">
+            <details>
+              <summary>Camera Movement <span class="arr2">▸</span></summary>
+              <div class="sub-body">
+                <label>Movement Type</label>
+                <select>
+                  <option>static_locked</option>
+                  <option>pan_horizontal</option>
+                  <option>tilt_vertical</option>
+                  <option>zoom_in</option>
+                  <option>zoom_out</option>
+                  <option>dolly_in_forward</option>
+                  <option>dolly_out_backward</option>
+                  <option>orbit_arc_left</option>
+                  <option>orbit_arc_right</option>
+                  <option>crane_up</option>
+                  <option>crane_down</option>
+                  <option>handheld_follow</option>
+                  <option>combo_dolly_pan</option>
                 </select>
                 <label>Direction</label>
-                <select id="camMoveDir">
-                    <option>left</option>
-                    <option>right</option>
-                    <option>up</option>
-                    <option>down</option>
-                    <option>forward</option>
-                    <option>backward</option>
+                <select>
+                  <option>left</option>
+                  <option>right</option>
+                  <option>up</option>
+                  <option>down</option>
+                  <option>forward</option>
+                  <option>backward</option>
                 </select>
                 <label>Speed</label>
-                <select id="camMoveSpeed">
-                    <option>slow</option>
-                    <option>normal</option>
-                    <option>fast</option>
-                    <option>sudden</option>
+                <select>
+                  <option>very_slow</option>
+                  <option>slow</option>
+                  <option>normal</option>
+                  <option>fast</option>
+                  <option>sudden_snap</option>
                 </select>
                 <label>Easing</label>
-                <select id="camMoveEasing">
-                    <option>smooth</option>
-                    <option>linear</option>
-                    <option>ease_in</option>
-                    <option>ease_out</option>
+                <select>
+                  <option>smooth_ease_in_out</option>
+                  <option>linear</option>
+                  <option>ease_in</option>
+                  <option>ease_out</option>
                 </select>
+              </div>
             </details>
+          </div>
 
-            <details class="optgroup">
-                <summary>Subject Motion</summary>
+          <div class="sub-group">
+            <details>
+              <summary>Subject Motion <span class="arr2">▸</span></summary>
+              <div class="sub-body">
                 <label>Primary Motion</label>
-                <select id="subjectMotion">
-                    <option value="">-- idle/none --</option>
-                    <option>walking</option>
-                    <option>running</option>
-                    <option>turning</option>
-                    <option>sitting down</option>
-                    <option>standing up</option>
-                    <option>fighting</option>
-                    <option>falling</option>
-                    <option>dancing</option>
+                <select>
+                  <option>idle_breathing (ambient)</option>
+                  <option>idle_subtle_sway</option>
+                  <option>walking</option>
+                  <option>running</option>
+                  <option>turning_to_look</option>
+                  <option>sitting_down</option>
+                  <option>standing_up</option>
+                  <option>fighting</option>
+                  <option>falling</option>
+                  <option>dancing</option>
+                  <option>flying</option>
+                  <option>casting_spell</option>
                 </select>
-                <label>Motion Speed</label>
-                <select id="subjectMotionSpeed">
-                    <option>slow_motion</option>
-                    <option>normal</option>
-                    <option>fast</option>
-                    <option>explosive</option>
+                <label>Motion Intensity</label>
+                <select>
+                  <option>static (tidak bergerak)</option>
+                  <option>very_subtle</option>
+                  <option>moderate</option>
+                  <option>active</option>
+                  <option>intense</option>
+                  <option>explosive</option>
                 </select>
                 <label>Cloth Physics</label>
-                <select id="clothPhysics">
-                    <option>none</option>
-                    <option>subtle_flutter</option>
-                    <option>moderate_flow</option>
-                    <option>dramatic_flow</option>
+                <select>
+                  <option>none</option>
+                  <option>very_subtle</option>
+                  <option>light_flutter</option>
+                  <option>gentle_sway</option>
+                  <option>dramatic_flow</option>
+                  <option>floating_weightless</option>
                 </select>
                 <label>Hair Physics</label>
-                <select id="hairPhysics">
-                    <option>none</option>
-                    <option>light_sway</option>
-                    <option>dynamic_flow</option>
+                <select>
+                  <option>none</option>
+                  <option>subtle_movement</option>
+                  <option>light_sway</option>
+                  <option>dynamic_flow</option>
+                  <option>windswept_dramatic</option>
                 </select>
+                <label>Particle Effects (optional)</label>
+                <input type="text" placeholder="e.g., floating_petals, sparks, snow_particles">
+              </div>
             </details>
-
-            <details class="optgroup">
-                <summary>Temporal Sequence</summary>
-                <label>Total Duration (seconds)</label>
-                <input type="number" id="totalDuration" value="5" min="1" max="60" step="0.5">
-
-                <label>FPS</label>
-                <select id="videoFps">
-                    <option>24</option>
-                    <option>30</option>
-                    <option>60</option>
-                    <option>120</option>
-                </select>
-
-                <label>Loop</label>
-                <select id="videoLoop">
-                    <option>false</option>
-                    <option>true</option>
-                </select>
-
-                <label>Transition Type</label>
-                <select id="transitionType">
-                    <option>none</option>
-                    <option>cut</option>
-                    <option>dissolve</option>
-                    <option>fade</option>
-                    <option>match_cut</option>
-                </select>
-            </details>
-        </details>
-
-        <!-- ========== LAYER 7 — TECHNICAL ========== -->
-        <details>
-            <summary>⚙️ [L7] Technical</summary>
-            
-            <details class="optgroup">
-                <summary>Render Specs</summary>
-                <label>Resolution</label>
-                <select id="resolution">
-                    <option>720p (1280x720)</option>
-                    <option>1080p (1920x1080)</option>
-                    <option>2K (2560x1440)</option>
-                    <option>4K (3840x2160)</option>
-                    <option>8K (7680x4320)</option>
-                </select>
-                
-                <label>Aspect Ratio</label>
-                <select id="aspectRatio">
-                    <option>1:1 (square)</option>
-                    <option>4:3 (classic)</option>
-                    <option>3:2 (photo)</option>
-                    <option>16:9 (widescreen)</option>
-                    <option>21:9 (cinematic)</option>
-                    <option>9:16 (vertical/mobile)</option>
-                    <option>2:3 (portrait)</option>
-                </select>
-                
-                <label>Render Engine</label>
-                <select id="renderEngine">
-                    <option value="">-- choose --</option>
-                    <option>Unreal Engine 5</option>
-                    <option>Octane Render</option>
-                    <option>Cycles (Blender)</option>
-                    <option>Arnold</option>
-                    <option>V-Ray</option>
-                    <option>Redshift</option>
-                </select>
-                
-                <label>Quality Settings</label>
-                <select id="qualitySettings">
-                    <option>draft</option>
-                    <option>good</option>
-                    <option>high</option>
-                    <option>ultra</option>
-                    <option>cinematic</option>
-                </select>
-            </details>
-            
-            <details class="optgroup">
-                <summary>Camera Tech (Virtual Camera)</summary>
-                <label>ISO</label>
-                <select id="iso">
-                    <option>100 (bright, low noise)</option>
-                    <option>400 (balanced)</option>
-                    <option>800</option>
-                    <option>1600 (low light)</option>
-                    <option>3200 (very low light)</option>
-                    <option>6400+ (extreme low light, grainy)</option>
-                </select>
-                
-                <label>Shutter Speed</label>
-                <select id="shutterSpeed">
-                    <option>1/30 (motion blur)</option>
-                    <option>1/60 (standard)</option>
-                    <option>1/125</option>
-                    <option>1/250 (freeze motion)</option>
-                    <option>1/500 (fast action)</option>
-                    <option>1/1000+ (ultra fast)</option>
-                </select>
-            </details>
-            
-            <details class="optgroup">
-                <summary>Post Processing</summary>
-                <label>Color Grading</label>
-                <select id="colorGrading">
-                    <option>none/natural</option>
-                    <option>teal & orange (cinematic)</option>
-                    <option>desaturated/bleach bypass</option>
-                    <option>warm nostalgic</option>
-                    <option>cool/blue tint</option>
-                    <option>high saturation (vibrant)</option>
-                </select>
-                
-                <label>Grain/Noise</label>
-                <select id="grainNoise">
-                    <option>none/clean</option>
-                    <option>subtle digital noise</option>
-                    <option>film grain (35mm)</option>
-                    <option>heavy grain (artistic)</option>
-                </select>
-                
-                <label>Lens Effects (multi-select)</label>
-                <select id="lensEffects" multiple size="4">
-                    <option>vignette</option>
-                    <option>chromatic aberration</option>
-                    <option>lens flare</option>
-                    <option>anamorphic flare</option>
-                    <option>lens distortion</option>
-                    <option>lens dirt/dust</option>
-                </select>
-                
-                <label>Sharpening</label>
-                <select id="sharpening">
-                    <option>none/soft</option>
-                    <option>natural</option>
-                    <option>enhanced/crisp</option>
-                </select>
-            </details>
-            <details class="optgroup">
-                <summary>Video Specs <span class="badge new">VIDEO ONLY</span></summary>
-                <label>Codec</label>
-                <select id="videoCodec">
-                    <option>h264</option>
-                    <option>h265</option>
-                    <option>prores</option>
-                    <option>av1</option>
-                </select>
-                <label>Bitrate</label>
-                <select id="videoBitrate">
-                    <option>8mbps</option>
-                    <option>25mbps</option>
-                    <option>50mbps</option>
-                    <option>lossless</option>
-                </select>
-                <label>Audio Track</label>
-                <select id="audioTrack">
-                    <option>none</option>
-                    <option>ambient_only</option>
-                    <option>music</option>
-                    <option>dialogue</option>
-                </select>
-                <label>Delivery Format</label>
-                <select id="deliveryFormat">
-                    <option>mp4</option>
-                    <option>mov</option>
-                    <option>webm</option>
-                    <option>gif</option>
-                </select>
-                <label>Stabilization</label>
-                <select id="videoStabilization">
-                    <option>none</option>
-                    <option>subtle</option>
-                    <option>strong</option>
-                </select>
-            </details>
-        </details>
-        <!-- ========== LAYER 8A — VARIATIONS ========== -->
-        <details>
-            <summary>🔄 [L8A] Variations</summary>
-            <div class="info-text">⚙️ For batch generation with controlled randomization</div>
-            
-            <div class="optgroup">
-                <label>Base Seed</label>
-                <input type="number" id="baseSeed" value="42">
-                
-                <div class="lock-field">
-                    <input type="checkbox" id="deterministicSeed" checked>
-                    <label for="deterministicSeed">Deterministic (same seed = same result)</label>
-                </div>
-                
-                <label>Batch Count</label>
-                <input type="number" id="batchCount" value="1" min="1" max="100">
-                
-                <button style="width:100%;margin-top:6px;">⚙️ Configure Randomization Rules</button>
-                <small style="display:block;color:var(--text-dim);margin-top:4px;">Define which fields can vary and how</small>
-            </div>
-        </details>
-
-        <!-- ========== LAYER 8C — OUTPUT CONFIG ========== -->
-        <details open>
-            <summary>📤 [L8C] Output Config <span class="badge important">CRITICAL</span></summary>
-            
-            <details class="optgroup">
-                <summary>Prompt Structure</summary>
-                <label>Section Order</label>
-                <select id="sectionOrder">
-                    <option value="character">Character Priority: identity → subjects → composition → lighting → atmosphere → environment</option>
-                    <option value="environment">Environment Priority: scene → environment → atmosphere → lighting → subjects</option>
-                    <option value="cinematic">Cinematic Priority: atmosphere → composition → lighting → subjects → environment</option>
-                    <option value="custom">Custom (drag to reorder)</option>
-                </select>
-                
-                <label>Separator</label>
-                <select id="separator">
-                    <option>, (comma space)</option>
-                    <option>. (period space)</option>
-                    <option> | (pipe)</option>
-                </select>
-                
-                <label>Emphasis Syntax</label>
-                <select id="emphasisSyntax">
-                    <option>parentheses: (text:1.5)</option>
-                    <option>brackets: [text:1.5]</option>
-                    <option>weight suffix: text::1.5</option>
-                </select>
-                
-                <label>Length Limit (characters)</label>
-                <input type="number" id="lengthLimit" value="2000" min="500" max="5000">
-            </details>
-            
-            <details class="optgroup" open>
-                <summary>Section Weights ⚖️ <span class="badge important">IMPORTANT</span></summary>
-                <div class="info-text">💡 Skala: 0.5 (hint) → 1.0 (normal) → 2.0 (critical). Weight 0.0 = tidak masuk prompt.</div>
-
-                <div class="weight-control">
-                    <label>Identity Anchor <span class="weight-value" id="weightIdentity">2.0</span></label>
-                    <input type="range" id="weightIdentitySlider" min="0.5" max="2.0" step="0.1" value="2.0">
-                </div>
-
-                <div class="weight-control">
-                    <label>Technical Constraints <span class="weight-value" id="weightConstraints">2.0</span></label>
-                    <input type="range" id="weightConstraintsSlider" min="0.5" max="2.0" step="0.1" value="2.0">
-                </div>
-
-                <div class="weight-control">
-                    <label>Subjects <span class="weight-value" id="weightSubjects">1.5</span></label>
-                    <input type="range" id="weightSubjectsSlider" min="0.5" max="2.0" step="0.1" value="1.5">
-                </div>
-
-                <div class="weight-control">
-                    <label>Lighting <span class="weight-value" id="weightLighting">1.5</span></label>
-                    <input type="range" id="weightLightingSlider" min="0.5" max="2.0" step="0.1" value="1.5">
-                </div>
-
-                <div class="weight-control">
-                    <label>Composition <span class="weight-value" id="weightComposition">1.3</span></label>
-                    <input type="range" id="weightCompositionSlider" min="0.5" max="2.0" step="0.1" value="1.3">
-                </div>
-
-                <div class="weight-control">
-                    <label>Atmosphere <span class="weight-value" id="weightAtmosphere">1.2</span></label>
-                    <input type="range" id="weightAtmosphereSlider" min="0.5" max="2.0" step="0.1" value="1.2">
-                </div>
-
-                <div class="weight-control">
-                    <label>Scene Core <span class="weight-value" id="weightScene">1.0</span></label>
-                    <input type="range" id="weightSceneSlider" min="0.5" max="2.0" step="0.1" value="1.0">
-                </div>
-
-                <div class="weight-control">
-                    <label>Environment <span class="weight-value" id="weightEnvironment">1.0</span></label>
-                    <input type="range" id="weightEnvironmentSlider" min="0.5" max="2.0" step="0.1" value="1.0">
-                </div>
-
-                <div class="weight-control">
-                    <label>Motion <span class="weight-value" id="weightMotion">1.0</span> <small style="color:var(--text-dim)">(video only)</small></label>
-                    <input type="range" id="weightMotionSlider" min="0.5" max="2.0" step="0.1" value="1.0">
-                </div>
-
-                <div class="weight-control">
-                    <label>Temporal Sequence <span class="weight-value" id="weightTemporal">0.8</span> <small style="color:var(--text-dim)">(video only)</small></label>
-                    <input type="range" id="weightTemporalSlider" min="0.5" max="2.0" step="0.1" value="0.8">
-                </div>
-
-                <div class="weight-control">
-                    <label>Technical <span class="weight-value" id="weightTechnical">0.8</span></label>
-                    <input type="range" id="weightTechnicalSlider" min="0.5" max="2.0" step="0.1" value="0.8">
-                </div>
-
-                <div style="margin-top:8px;padding:6px 8px;background:rgba(159,239,0,0.05);border-radius:6px;font-size:11px;color:var(--text-dim);">
-                    Variations & Metadata = 0.0 (tidak masuk prompt)
-                </div>
-            </details>
-            
-            <details class="optgroup">
-                <summary>Negative Prompt</summary>
-                <div class="lock-field">
-                    <input type="checkbox" id="autoNegative">
-                    <label for="autoNegative">Auto-generate from locked fields</label>
-                </div>
-                
-                <label>Additional Negative Prompts</label>
-                <textarea id="additionalNegative" rows="3" placeholder="e.g., blurry, low quality, distorted..."></textarea>
-            </details>
-            
-            <details class="optgroup">
-                <summary>Platform Parameters</summary>
-                <label>Midjourney</label>
-                <input type="text" id="paramMidjourney" placeholder="--ar 2:3 --v 6 --style raw --s 250">
-
-                <label>Stable Diffusion</label>
-                <input type="text" id="paramSD" placeholder="--steps 30 --cfg 7 --sampler DPM">
-
-                <label>DALL-E 3</label>
-                <input type="text" id="paramDalle" placeholder="quality=hd, style=vivid">
-
-                <label>Runway (Video)</label>
-                <input type="text" id="paramRunway" placeholder="--fps 24 --motion 1.2 --duration 4">
-
-                <label>Pika (Video)</label>
-                <input type="text" id="paramPika" placeholder="--ar 16:9 --motion 2">
-            </details>
-        </details>
-
-    </nav>
-</aside>
-
-<!-- ===== MAIN AREA ===== -->
-<main>
-    <div class="topbar">
-        <button id="toggleSidebarBtn">☰</button>
-        <span style="color:var(--accent);font-weight:600;font-size:13px;">Prompt Generator V3</span>
-        <span style="color:var(--text-dim);font-size:11px;margin-left:4px;">— readme_v3.md</span>
-        <button>📂 Import JSON</button>
-        <button>💾 Export JSON</button>
-        <button style="margin-left:auto;">❓ Help</button>
+          </div>
+        </div>
+      </details>
     </div>
 
-    <section class="content">
-        <!-- PROMPT PANEL -->
-        <div class="panel">
-            <header>🎯 Text Prompt (Final Output)</header>
-            <textarea id="promptBox" placeholder="Generated text prompt will appear here..." readonly></textarea>
-            <div class="actions">
-                <button id="generateBtn" style="margin-left:auto;">🎨 GENERATE PROMPT</button>
-            </div>
-        </div>
+    <!-- ============ LAYER 4B — TEMPORAL SEQUENCE (VIDEO) ============ -->
+    <div class="layer-section">
+      <details>
+        <summary>
+          ⏱ L4B Temporal Sequence <span class="badge vid">VIDEO ONLY</span>
+          <span class="arr">▸</span>
+        </summary>
+        <div class="section-body">
+          <div class="sub-body">
+            <label>Total Duration (seconds)</label>
+            <input type="number" value="5" min="1" max="60" step="0.5">
 
-        <!-- NEGATIVE PROMPT -->
-        <div class="panel">
-            <header>🚫 Negative Prompt (Auto dari Technical Constraints + tambahan manual)</header>
-            <textarea id="negBox" placeholder="Negative prompt will appear here..." readonly></textarea>
-            <div class="actions">
-                <button id="copyNegBtn">📋 Copy</button>
-            </div>
-        </div>
+            <label>FPS</label>
+            <select>
+              <option>24 (cinematic — recommended)</option>
+              <option>30 (smooth)</option>
+              <option>60 (hyper smooth)</option>
+              <option>120 (slow-mo source)</option>
+            </select>
 
-        <!-- JSON OUTPUT -->
-        <div class="panel">
-            <header>📄 JSON Output — Struktur readme_v3.md (Editable)</header>
-            <textarea id="jsonBox" placeholder="Structured JSON (Layer 0→8) akan muncul di sini. Bisa diedit langsung." style="font-family:monospace;"></textarea>
-            <div class="actions">
-                <button id="validateJsonBtn">✓ Validate</button>
-                <button id="formatJsonBtn">⚡ Format</button>
-                <button id="applyJsonBtn">↩ Apply to Form</button>
-                <button id="copyBtn" style="margin-left:auto;">📋 Copy Prompt</button>
-                <button id="copyJsonBtn">📋 Copy JSON</button>
-            </div>
-        </div>
+            <label>Loop</label>
+            <select>
+              <option>false</option>
+              <option>true (seamless loop)</option>
+            </select>
 
-        <!-- PLATFORM PARAMETERS -->
-        <div class="panel">
-            <header>🚀 Platform Parameters</header>
-            <div id="platformParams" style="padding:10px;background:var(--bg3);border-radius:var(--radius);font-size:11px;line-height:2;">
-                <div><strong style="color:var(--accent);">Midjourney:</strong> <span id="paramMJDisplay">--ar 2:3 --v 6 --style raw</span></div>
-                <div><strong style="color:var(--accent);">Stable Diffusion:</strong> <span id="paramSDDisplay">--steps 30 --cfg 7</span></div>
-                <div><strong style="color:var(--accent);">DALL-E 3:</strong> <span id="paramDalleDisplay">quality=hd</span></div>
-                <div><strong style="color:var(--accent);">Runway:</strong> <span id="paramRunwayDisplay">--fps 24 --motion 1.2</span></div>
-                <div><strong style="color:var(--accent);">Pika:</strong> <span id="paramPikaDisplay">--ar 16:9 --motion 2</span></div>
-            </div>
+            <label>Transition Type</label>
+            <select>
+              <option>none (cut hard)</option>
+              <option>dissolve_fade</option>
+              <option>fade_to_black</option>
+              <option>match_cut</option>
+              <option>smash_cut</option>
+            </select>
+
+            <label>Key Action at Start</label>
+            <input type="text" placeholder="e.g., character_stands_still">
+
+            <label>Key Action at End</label>
+            <input type="text" placeholder="e.g., character_turns_and_walks_away">
+
+            <label>Peak Moment (midpoint)</label>
+            <input type="text" placeholder="e.g., expression_change, spell_released">
+          </div>
         </div>
-    </section>
+      </details>
+    </div>
+
+    <!-- ============ LAYER 7 — TECHNICAL ============ -->
+    <div class="layer-section">
+      <details>
+        <summary>
+          ⚙️ L7 Technical
+          <span class="arr">▸</span>
+        </summary>
+        <div class="section-body">
+          <div class="sub-group">
+            <details open>
+              <summary>Render Specs <span class="arr2">▸</span></summary>
+              <div class="sub-body">
+                <label>Aspect Ratio</label>
+                <select>
+                  <option>9:16 (vertikal mobile — TikTok / Reels)</option>
+                  <option>2:3 (portrait — foto)</option>
+                  <option>4:5 (Instagram feed)</option>
+                  <option>1:1 (square)</option>
+                  <option>3:2 (foto landscape)</option>
+                  <option>16:9 (widescreen)</option>
+                  <option>21:9 (cinematic ultra wide)</option>
+                </select>
+
+                <label>Resolution</label>
+                <select>
+                  <option>512x512 (SD legacy)</option>
+                  <option>1024x1024 (standard)</option>
+                  <option>1024x1536 (portrait HD)</option>
+                  <option>1536x1024 (landscape HD)</option>
+                  <option>1280x720 (720p)</option>
+                  <option>1920x1080 (1080p)</option>
+                  <option>2560x1440 (2K)</option>
+                  <option>3840x2160 (4K)</option>
+                </select>
+
+                <label>Quality / Detail Level</label>
+                <select>
+                  <option>draft (cepat, iterasi)</option>
+                  <option>good</option>
+                  <option>high</option>
+                  <option>ultra</option>
+                  <option>cinematic_master</option>
+                </select>
+              </div>
+            </details>
+          </div>
+
+          <div class="sub-group">
+            <details>
+              <summary>Virtual Camera Tech <span class="arr2">▸</span></summary>
+              <div class="sub-body">
+                <label>ISO</label>
+                <select>
+                  <option>100 (bright, noise-free)</option>
+                  <option>400 (balanced)</option>
+                  <option>800</option>
+                  <option>1600 (low light)</option>
+                  <option>3200 (grainy — dramatic)</option>
+                  <option>6400+ (extreme grain)</option>
+                </select>
+
+                <label>Shutter Speed</label>
+                <select>
+                  <option>1/30 (motion blur)</option>
+                  <option>1/60 (standard)</option>
+                  <option>1/125</option>
+                  <option>1/250 (freeze motion)</option>
+                  <option>1/500 (fast action)</option>
+                  <option>1/1000+ (ultra fast)</option>
+                </select>
+
+                <label>Render Engine</label>
+                <select>
+                  <option value="">-- choose --</option>
+                  <option>Unreal Engine 5</option>
+                  <option>Octane Render</option>
+                  <option>Cycles (Blender)</option>
+                  <option>Arnold</option>
+                  <option>V-Ray</option>
+                </select>
+              </div>
+            </details>
+          </div>
+
+          <div class="sub-group">
+            <details>
+              <summary>Post Processing <span class="arr2">▸</span></summary>
+              <div class="sub-body">
+                <label>Color Grading</label>
+                <select>
+                  <option>none_natural</option>
+                  <option>teal_orange_cinematic</option>
+                  <option>desaturated_bleach_bypass</option>
+                  <option>warm_nostalgic</option>
+                  <option>cool_blue_tint</option>
+                  <option>high_saturation_vibrant</option>
+                  <option>monochrome_bw</option>
+                </select>
+
+                <label>Lens Effects</label>
+                <select multiple size="4">
+                  <option>vignette</option>
+                  <option>chromatic_aberration</option>
+                  <option>lens_flare</option>
+                  <option>anamorphic_flare</option>
+                  <option>lens_distortion</option>
+                  <option>lens_dirt_dust</option>
+                </select>
+
+                <label>Sharpening</label>
+                <select>
+                  <option>none_soft</option>
+                  <option>natural</option>
+                  <option>enhanced_crisp</option>
+                </select>
+              </div>
+            </details>
+          </div>
+
+          <div class="sub-group">
+            <details>
+              <summary>Video Specs <span class="badge vid">VIDEO</span> <span class="arr2">▸</span></summary>
+              <div class="sub-body">
+                <label>Codec</label>
+                <select>
+                  <option>h264 (kompatibel universal)</option>
+                  <option>h265 (efisien, kualitas tinggi)</option>
+                  <option>prores (editing grade)</option>
+                  <option>av1</option>
+                </select>
+                <label>Delivery Format</label>
+                <select>
+                  <option>mp4</option>
+                  <option>mov</option>
+                  <option>webm</option>
+                  <option>gif (loop)</option>
+                </select>
+                <label>Stabilization</label>
+                <select>
+                  <option>none</option>
+                  <option>subtle</option>
+                  <option>strong</option>
+                </select>
+              </div>
+            </details>
+          </div>
+        </div>
+      </details>
+    </div>
+
+    <!-- ============ LAYER 8C — OUTPUT CONFIG ============ -->
+    <div class="layer-section">
+      <details>
+        <summary>
+          📤 L8C Output Config <span class="badge imp">CRITICAL</span>
+          <span class="arr">▸</span>
+        </summary>
+        <div class="section-body">
+
+          <div class="sub-group">
+            <details open>
+              <summary>Prompt Structure <span class="arr2">▸</span></summary>
+              <div class="sub-body">
+                <label>Section Order</label>
+                <select>
+                  <option>identity_first — identity → subjects → lighting → composition → atmosphere → scene → environment</option>
+                  <option>cinematic_order — composition → subjects → lighting → scene → atmosphere</option>
+                  <option>scene_first — scene → environment → atmosphere → lighting → identity → subjects</option>
+                  <option>mood_first — atmosphere → lighting → identity → subjects → scene</option>
+                  <option>video_optimized — identity → subjects → motion → temporal → composition → lighting</option>
+                  <option>sdxl_budget — identity → subjects → lighting → composition (token-optimized)</option>
+                </select>
+
+                <label>Separator</label>
+                <select>
+                  <option>, (comma space — universal)</option>
+                  <option>. (period — natural language / DALL-E)</option>
+                  <option> | (pipe — MidJourney style)</option>
+                  <option>\n (new line — human readable)</option>
+                </select>
+
+                <label>Emphasis Syntax</label>
+                <select>
+                  <option>none (semua platform)</option>
+                  <option>parentheses: (token:1.x) — SDXL only</option>
+                  <option>weight_suffix: (token:1.x) — SDXL</option>
+                  <option>brackets_reduce: [token] — SDXL</option>
+                  <option>natural_repetition — semua platform</option>
+                  <option>attention_markers — semua platform</option>
+                </select>
+
+                <label>Length Limit (characters)</label>
+                <select>
+                  <option>250 (Pika — ultra short)</option>
+                  <option>500 (Kling / Runway — video)</option>
+                  <option>1000 (MidJourney)</option>
+                  <option>1500 (SDXL — 75 token limit)</option>
+                  <option>2000 (DALL-E 3)</option>
+                  <option>4000 (Sora — long narrative)</option>
+                </select>
+
+                <label>Truncation Strategy</label>
+                <select>
+                  <option>priority_only (weight ≥ 1.0 stays)</option>
+                  <option>proportional_trim</option>
+                  <option>front_preserve</option>
+                  <option>keyword_compress (SDXL)</option>
+                  <option>split_dual_pass (SDXL CLIP1+CLIP2)</option>
+                </select>
+              </div>
+            </details>
+          </div>
+
+          <div class="sub-group">
+            <details open>
+              <summary>Section Weights ⚖️ <span class="arr2">▸</span></summary>
+              <div class="sub-body">
+                <div class="info">💡 Skala: 0.5=hint → 1.0=normal → 2.0=critical. Weight 0.0 = tidak masuk prompt.</div>
+
+                <div class="weight-grid">
+                  <div class="w-item">
+                    <div class="w-header">
+                      <span class="w-label">🔐 Identity Anchor</span>
+                      <span class="w-val locked">2.0 🔒</span>
+                    </div>
+                    <div class="w-bar-bg"><div class="w-bar red" style="width:100%"></div></div>
+                  </div>
+                  <div class="w-item">
+                    <div class="w-header">
+                      <span class="w-label">🚫 Tech Constraints</span>
+                      <span class="w-val locked">2.0 🔒</span>
+                    </div>
+                    <div class="w-bar-bg"><div class="w-bar red" style="width:100%"></div></div>
+                  </div>
+                  <div class="w-item">
+                    <div class="w-header">
+                      <span class="w-label">👤 Subjects</span>
+                      <span class="w-val" id="wSubj">1.5</span>
+                    </div>
+                    <div class="w-bar-bg"><div class="w-bar" style="width:75%"></div></div>
+                    <input type="range" min="0" max="2" step="0.1" value="1.5">
+                  </div>
+                  <div class="w-item">
+                    <div class="w-header">
+                      <span class="w-label">💡 Lighting</span>
+                      <span class="w-val" id="wLight">1.5</span>
+                    </div>
+                    <div class="w-bar-bg"><div class="w-bar" style="width:75%"></div></div>
+                    <input type="range" min="0" max="2" step="0.1" value="1.5">
+                  </div>
+                  <div class="w-item">
+                    <div class="w-header">
+                      <span class="w-label">📷 Composition</span>
+                      <span class="w-val" id="wComp">1.3</span>
+                    </div>
+                    <div class="w-bar-bg"><div class="w-bar" style="width:65%"></div></div>
+                    <input type="range" min="0" max="2" step="0.1" value="1.3">
+                  </div>
+                  <div class="w-item">
+                    <div class="w-header">
+                      <span class="w-label">🎨 Atmosphere</span>
+                      <span class="w-val" id="wAtmo">1.2</span>
+                    </div>
+                    <div class="w-bar-bg"><div class="w-bar" style="width:60%"></div></div>
+                    <input type="range" min="0" max="2" step="0.1" value="1.2">
+                  </div>
+                  <div class="w-item">
+                    <div class="w-header">
+                      <span class="w-label">🎬 Scene Core</span>
+                      <span class="w-val" id="wScene">1.0</span>
+                    </div>
+                    <div class="w-bar-bg"><div class="w-bar" style="width:50%"></div></div>
+                    <input type="range" min="0" max="2" step="0.1" value="1.0">
+                  </div>
+                  <div class="w-item">
+                    <div class="w-header">
+                      <span class="w-label">🌍 Environment</span>
+                      <span class="w-val" id="wEnv">1.0</span>
+                    </div>
+                    <div class="w-bar-bg"><div class="w-bar" style="width:50%"></div></div>
+                    <input type="range" min="0" max="2" step="0.1" value="1.0">
+                  </div>
+                  <div class="w-item">
+                    <div class="w-header">
+                      <span class="w-label">🎥 Motion <small style="color:var(--text-dim)">(video)</small></span>
+                      <span class="w-val" id="wMot">1.0</span>
+                    </div>
+                    <div class="w-bar-bg"><div class="w-bar" style="width:50%"></div></div>
+                    <input type="range" min="0" max="2" step="0.1" value="1.0">
+                  </div>
+                  <div class="w-item">
+                    <div class="w-header">
+                      <span class="w-label">⏱ Temporal <small style="color:var(--text-dim)">(video)</small></span>
+                      <span class="w-val" id="wTemp">0.8</span>
+                    </div>
+                    <div class="w-bar-bg"><div class="w-bar" style="width:40%"></div></div>
+                    <input type="range" min="0" max="2" step="0.1" value="0.8">
+                  </div>
+                  <div class="w-item">
+                    <div class="w-header">
+                      <span class="w-label">⚙️ Technical</span>
+                      <span class="w-val" id="wTech">0.8</span>
+                    </div>
+                    <div class="w-bar-bg"><div class="w-bar" style="width:40%"></div></div>
+                    <input type="range" min="0" max="2" step="0.1" value="0.8">
+                  </div>
+                  <div class="w-item">
+                    <div class="w-header">
+                      <span class="w-label">🔄 Variations</span>
+                      <span class="w-val zero">0.0 — tidak masuk prompt</span>
+                    </div>
+                    <div class="w-bar-bg"><div class="w-bar dim" style="width:0%"></div></div>
+                  </div>
+                  <div class="w-item">
+                    <div class="w-header">
+                      <span class="w-label">📝 Metadata</span>
+                      <span class="w-val zero">0.0 — tidak masuk prompt</span>
+                    </div>
+                    <div class="w-bar-bg"><div class="w-bar dim" style="width:0%"></div></div>
+                  </div>
+                </div>
+
+                <label style="margin-top:8px">Weight Preset</label>
+                <select>
+                  <option>default_balanced</option>
+                  <option>character_portrait_extreme</option>
+                  <option>environment_showcase</option>
+                  <option>cinematic_balanced</option>
+                  <option>mood_atmosphere_heavy</option>
+                  <option>video_action_focused</option>
+                  <option>sdxl_token_budget</option>
+                </select>
+              </div>
+            </details>
+          </div>
+
+          <div class="sub-group">
+            <details>
+              <summary>Negative Prompt <span class="arr2">▸</span></summary>
+              <div class="sub-body">
+                <div class="info">🔗 Auto-merge dengan technical_constraints negative DNA.</div>
+
+                <label>Situational Negative Banks</label>
+                <select multiple size="5">
+                  <option>clean_portrait_background</option>
+                  <option>no_text_artifacts</option>
+                  <option>no_extra_characters</option>
+                  <option>cinematic_quality</option>
+                  <option>anatomy_protection</option>
+                  <option>face_protection</option>
+                  <option>style_protection (no cartoon/anime)</option>
+                  <option>video_motion_quality</option>
+                  <option>outdoor_scene_clean</option>
+                  <option>period_accuracy (no modern elements)</option>
+                </select>
+
+                <label>Additional Negative (manual)</label>
+                <textarea rows="3" placeholder="e.g., cluttered background, text in image, multiple people..."></textarea>
+              </div>
+            </details>
+          </div>
+
+          <div class="sub-group">
+            <details>
+              <summary>Platform Parameters <span class="arr2">▸</span></summary>
+              <div class="sub-body">
+                <label>MidJourney</label>
+                <input type="text" placeholder="--v 6 --style raw --ar 2:3 --s 100 --q 2">
+                <label>Stable Diffusion XL</label>
+                <input type="text" placeholder="steps:25, cfg:7.5, sampler:DPM++ 2M Karras">
+                <label>DALL-E 3</label>
+                <input type="text" placeholder="quality=hd, style=natural, size=1024x1792">
+                <label>Runway Gen-3</label>
+                <input type="text" placeholder="fps=24, duration=6, motion=medium">
+                <label>Kling</label>
+                <input type="text" placeholder="mode=pro, duration=10, face_ref=0.85">
+                <label>Pika</label>
+                <input type="text" placeholder="--motion 2 --ar 9:16 --fps 24">
+                <label>Sora</label>
+                <input type="text" placeholder="resolution=1080p, duration=10s, ar=16:9">
+              </div>
+            </details>
+          </div>
+
+        </div>
+      </details>
+    </div>
+
+    <!-- ============ LAYER 8B — VARIATIONS ============ -->
+    <div class="layer-section">
+      <details>
+        <summary>
+          🔄 L8B Variations <span class="badge adm">INTERNAL</span>
+          <span class="arr">▸</span>
+        </summary>
+        <div class="section-body">
+          <div class="info">⚙️ Weight 0.0 — tidak masuk prompt. Hanya mengontrol sistem batch.</div>
+          <div class="sub-body">
+            <label>Base Seed</label>
+            <input type="number" value="42">
+            <div class="lock-row" style="margin-top:4px">
+              <input type="checkbox" id="seedLock" checked>
+              <label for="seedLock" style="color:var(--text-dim)">Deterministic (same seed = same result)</label>
+            </div>
+
+            <label>Batch Count</label>
+            <input type="number" value="1" min="1" max="100">
+
+            <label>Genre Profile</label>
+            <select>
+              <option>none (custom)</option>
+              <option>dark_fantasy</option>
+              <option>cyberpunk</option>
+              <option>slice_of_life</option>
+              <option>epic_fantasy</option>
+              <option>horror</option>
+              <option>romance</option>
+            </select>
+
+            <label>Video Preset</label>
+            <select>
+              <option value="">-- none --</option>
+              <option>Character_Idle_Loop_Series</option>
+              <option>Dynamic_Action_Shots</option>
+              <option>Portrait_Reveal_Series</option>
+            </select>
+
+            <label>Production Profile</label>
+            <select>
+              <option value="">-- none --</option>
+              <option>Character_Launch_Pack</option>
+              <option>Social_Media_Content_Week</option>
+              <option>Story_Arc_Visual_Novel</option>
+              <option>Platform_Comparison_Test</option>
+            </select>
+
+            <button class="full ghost">⚙️ Configure Variation Rules</button>
+          </div>
+        </div>
+      </details>
+    </div>
+
+    <!-- ============ LAYER 8A — METADATA (ADMIN) ============ -->
+    <div class="layer-section">
+      <details>
+        <summary>
+          📝 L8A Metadata <span class="badge adm">ADMIN</span>
+          <span class="arr">▸</span>
+        </summary>
+        <div class="section-body">
+          <div class="info">📋 Weight 0.0 — tidak masuk prompt. Hanya untuk administrasi dan tracking.</div>
+          <div class="sub-body">
+            <label>Title</label>
+            <input type="text" placeholder="e.g., Eira in Forest — Battle Scene">
+            <label>Description</label>
+            <textarea rows="2" placeholder="Brief scene description..."></textarea>
+            <label>Author / Creator</label>
+            <input type="text" placeholder="Your name or handle">
+            <label>Tags</label>
+            <input type="text" placeholder="e.g., fantasy, dark, action, eira">
+            <label>Category</label>
+            <select>
+              <option value="">-- pilih --</option>
+              <option>dark_fantasy</option>
+              <option>sci_fi_cyberpunk</option>
+              <option>realistic_contemporary</option>
+              <option>anime_adjacent</option>
+              <option>horror</option>
+              <option>romance</option>
+              <option>slice_of_life</option>
+              <option>epic_fantasy</option>
+            </select>
+            <label>Target AI Platform</label>
+            <select multiple size="4">
+              <option>MidJourney</option>
+              <option>Stable Diffusion XL</option>
+              <option>DALL-E 3</option>
+              <option>Runway Gen-3</option>
+              <option>Kling</option>
+              <option>Pika</option>
+              <option>Sora</option>
+            </select>
+            <label>Version</label>
+            <input type="text" placeholder="e.g., v1.0">
+            <label>Notes</label>
+            <textarea rows="2" placeholder="Any additional notes, reference files, decisions..."></textarea>
+          </div>
+        </div>
+      </details>
+    </div>
+
+  </nav><!-- end menu-tree -->
+</aside>
+
+<!-- ============================
+     MAIN AREA
+============================= -->
+<main>
+
+  <!-- Topbar -->
+  <header class="topbar">
+    <button id="toggleBtnMain" title="Toggle sidebar" style="background:none;color:var(--accent);width:30px;height:30px;border-radius:6px;display:grid;place-items:center;font-size:14px;">☰</button>
+    <span class="topbar-title">Prompt Generator V4</span>
+    <span class="topbar-sub">14-Layer System</span>
+    <div class="topbar-sep"></div>
+    <button class="ghost">📂 Import JSON</button>
+    <button class="ghost">💾 Export JSON</button>
+    <div class="topbar-right">
+      <button>🎨 GENERATE PROMPT</button>
+      <button class="ghost">❓ Help</button>
+    </div>
+  </header>
+
+  <!-- Content -->
+  <section class="content">
+
+    <!-- Layer Map Overview -->
+    <div class="panel">
+      <div class="panel-header">
+        <span class="ph-icon">🗺</span> Layer Architecture — 14 Layer System
+        <span class="badge ok" style="margin-left:auto">Visual Preview Only</span>
+      </div>
+      <div class="panel-body">
+        <div class="layer-map">
+          <div class="lm-card lock-card">
+            <div class="lm-title red">L1A · PERMANEN 🔒</div>
+            <div class="lm-label">Identity Anchor</div>
+            <div class="lm-desc">Paspor digital karakter. Race, age, face DNA, body DNA. Tidak boleh diubah setelah di-approve.</div>
+          </div>
+          <div class="lm-card lock-card">
+            <div class="lm-title red">L1B · PERMANEN 🔒</div>
+            <div class="lm-label">Technical Constraints</div>
+            <div class="lm-desc">Negative DNA — pagar identitas. Semua larangan keras agar AI tidak drift.</div>
+          </div>
+          <div class="lm-card">
+            <div class="lm-title">L0 · Desain Bebas</div>
+            <div class="lm-label">Subjects</div>
+            <div class="lm-desc">Blueprint karakter — anatomi, kostum, pose, ekspresi. Bisa divariasi, locked field ikut L1A.</div>
+          </div>
+          <div class="lm-card">
+            <div class="lm-title">L2A · Variabel</div>
+            <div class="lm-label">Scene Core</div>
+            <div class="lm-desc">Waktu, tempat, fokus narasi. Bisa diganti setiap generate.</div>
+          </div>
+          <div class="lm-card">
+            <div class="lm-title">L2B · Variabel</div>
+            <div class="lm-label">Environment</div>
+            <div class="lm-desc">Detail lokasi, cuaca, props. Bebas divariasi.</div>
+          </div>
+          <div class="lm-card">
+            <div class="lm-title">L3 · Variabel</div>
+            <div class="lm-label">Composition</div>
+            <div class="lm-desc">Framing kamera, focal length, DoF, shot type, placement.</div>
+          </div>
+          <div class="lm-card vid-card">
+            <div class="lm-title blue">L4A · VIDEO ONLY</div>
+            <div class="lm-label">Motion</div>
+            <div class="lm-desc">Pergerakan kamera, gerakan subjek, cloth &amp; hair physics.</div>
+          </div>
+          <div class="lm-card vid-card">
+            <div class="lm-title blue">L4B · VIDEO ONLY</div>
+            <div class="lm-label">Temporal Sequence</div>
+            <div class="lm-desc">Durasi, FPS, loop, transisi, timing key events.</div>
+          </div>
+          <div class="lm-card">
+            <div class="lm-title">L5 · Variabel</div>
+            <div class="lm-label">Lighting</div>
+            <div class="lm-desc">Preset, key/fill/rim light, warna, suhu, shadow, fog, god rays.</div>
+          </div>
+          <div class="lm-card">
+            <div class="lm-title">L6 · Variabel</div>
+            <div class="lm-label">Atmosphere</div>
+            <div class="lm-desc">Emotional tone, visual style, color palette, grain, texture.</div>
+          </div>
+          <div class="lm-card">
+            <div class="lm-title">L7 · Platform</div>
+            <div class="lm-label">Technical</div>
+            <div class="lm-desc">Resolusi, AR, ISO, shutter, color grading, post-processing.</div>
+          </div>
+          <div class="lm-card active">
+            <div class="lm-title">L8C · Output Engine</div>
+            <div class="lm-label">Output Config</div>
+            <div class="lm-desc">Section order, weights, negative banks, platform params. Merakit prompt final.</div>
+          </div>
+          <div class="lm-card">
+            <div class="lm-title dim">L8B · Internal</div>
+            <div class="lm-label">Variations</div>
+            <div class="lm-desc">Batch config, seed, genre profiles, randomization rules. Weight 0.0.</div>
+          </div>
+          <div class="lm-card">
+            <div class="lm-title dim">L8A · Admin</div>
+            <div class="lm-label">Metadata</div>
+            <div class="lm-desc">Title, author, tags, target platform. Weight 0.0.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Positive Prompt Output -->
+    <div class="panel">
+      <div class="panel-header">
+        <span class="ph-icon">🎯</span> Positive Prompt — Final Output
+      </div>
+      <div class="panel-body">
+        <textarea class="output" readonly placeholder="Generated prompt akan muncul di sini setelah logic diimplementasikan...&#10;&#10;Contoh output:&#10;young East Asian woman, 20-22 years old, monolid almond dark eyes, small button nose, jet black hair high bun, standing on rooftop, golden hour warm light from left, rule of thirds, atmospheric haze, dark fantasy armor, determination expression, medium shot, cinematic..."></textarea>
+      </div>
+      <div class="panel-footer">
+        <button>🎨 GENERATE PROMPT</button>
+        <button class="ghost">📋 Copy</button>
+        <button class="ghost">🔄 Regenerate</button>
+      </div>
+    </div>
+
+    <!-- Negative Prompt Output -->
+    <div class="panel">
+      <div class="panel-header">
+        <span class="ph-icon">🚫</span> Negative Prompt — Auto dari L1B Technical Constraints + Output Config Banks
+      </div>
+      <div class="panel-body">
+        <textarea class="output neg" readonly placeholder="Negative prompt akan muncul di sini...&#10;&#10;Contoh: wrong race:1.5, european facial structure:1.4, extra fingers:1.4, deformed hands, age drift, worst quality, low quality, blurry, text, watermark, cluttered background..."></textarea>
+      </div>
+      <div class="panel-footer">
+        <button class="ghost">📋 Copy Negative</button>
+      </div>
+    </div>
+
+    <!-- JSON Output -->
+    <div class="panel">
+      <div class="panel-header">
+        <span class="ph-icon">📄</span> JSON Output — Struktur 14 Layer (L1A → L8A)
+      </div>
+      <div class="panel-body">
+        <textarea class="output json" readonly placeholder='{&#10;  "schema_version": "4.0",&#10;  "generator_type": "image",&#10;  "identity_anchor": { ... },&#10;  "technical_constraints": { ... },&#10;  "subjects": { "primary_subject": { ... } },&#10;  "scene_core": { ... },&#10;  "environment": { ... },&#10;  "composition": { ... },&#10;  "motion": null,&#10;  "temporal_sequence": null,&#10;  "lighting": { ... },&#10;  "atmosphere": { ... },&#10;  "technical": { ... },&#10;  "output_config": { ... },&#10;  "variations": { ... },&#10;  "metadata": { ... }&#10;}'></textarea>
+      </div>
+      <div class="panel-footer">
+        <button class="ghost">✓ Validate JSON</button>
+        <button class="ghost">⚡ Format</button>
+        <button class="ghost">↩ Apply to Form</button>
+        <button class="ghost" style="margin-left:auto">📋 Copy JSON</button>
+      </div>
+    </div>
+
+    <!-- Platform Parameters Display -->
+    <div class="panel">
+      <div class="panel-header">
+        <span class="ph-icon">🚀</span> Platform Parameters — Ready to Append
+      </div>
+      <div class="panel-body">
+        <div class="platform-grid">
+          <div class="plat-card">
+            <div class="plat-name">MidJourney v6</div>
+            <div class="plat-params">--v 6 --style raw --ar 2:3 --s 100 --q 2 --cref [URL] --cw 100</div>
+          </div>
+          <div class="plat-card">
+            <div class="plat-name">Stable Diffusion XL</div>
+            <div class="plat-params">steps:25, cfg:7.5, sampler:DPM++ 2M Karras, hires:1.5x</div>
+          </div>
+          <div class="plat-card">
+            <div class="plat-name">DALL-E 3</div>
+            <div class="plat-params">quality=hd, style=natural, size=1024x1792</div>
+          </div>
+          <div class="plat-card">
+            <div class="plat-name">Runway Gen-3</div>
+            <div class="plat-params">fps=24, duration=6, motion=medium, camera=slow dolly in</div>
+          </div>
+          <div class="plat-card">
+            <div class="plat-name">Kling Pro</div>
+            <div class="plat-params">mode=pro, duration=10, face_ref=ON, ref_weight=0.85</div>
+          </div>
+          <div class="plat-card">
+            <div class="plat-name">Pika</div>
+            <div class="plat-params">--motion 2 --ar 9:16 --fps 24</div>
+          </div>
+          <div class="plat-card">
+            <div class="plat-name">Sora</div>
+            <div class="plat-params">resolution=1080p, duration=10s, ar=16:9</div>
+          </div>
+          <div class="plat-card">
+            <div class="plat-name">Hailuo / MiniMax</div>
+            <div class="plat-params">subject_ref=ON, duration=6s, quality=high</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </section>
 </main>
-
-<script>
-// ===== BASIC INTERACTIVITY — LAYOUT PREVIEW =====
-(() => {
-  const $ = sel => document.querySelector(sel);
-  const $$ = sel => document.querySelectorAll(sel);
-
-  // Sidebar toggle
-  const sidebar = $('#sidebar');
-  $$('#toggleSidebarBtn').forEach(btn => {
-    btn.addEventListener('click', () => sidebar.classList.toggle('collapsed'));
-  });
-  const autoSide = () => sidebar.classList[window.innerWidth > 800 ? 'remove' : 'add']('collapsed');
-  window.addEventListener('resize', autoSide);
-  autoSide();
-
-  // All range sliders → update display value
-  $$('input[type=range]').forEach(slider => {
-    const updateDisplay = () => {
-      // weight sliders: id pattern weightXxxSlider → weightXxx
-      const targetId = slider.id.replace('Slider', '');
-      const display = document.getElementById(targetId);
-      if (display) display.textContent = parseFloat(slider.value).toFixed(1);
-      // other sliders (intensity, emotion)
-      const valId = slider.id + 'Value';
-      const valDisplay = document.getElementById(valId.replace('Slider',''));
-      // handled by direct id
-    };
-    slider.addEventListener('input', updateDisplay);
-    updateDisplay();
-  });
-
-  // Emotion intensity
-  const emo = $('#emotionIntensity');
-  const emoVal = $('#emotionValue');
-  if (emo && emoVal) emo.addEventListener('input', () => emoVal.textContent = emo.value);
-
-  // Generate placeholder
-  const gen = $('#generateBtn');
-  if (gen) {
-    gen.addEventListener('click', () => {
-      if ($('#promptBox')) $('#promptBox').value = '[Layer 0→8 prompt akan di-generate di sini setelah implementasi logic]';
-      if ($('#negBox')) $('#negBox').value = '[Negative prompt dari technical_constraints akan muncul di sini]';
-      if ($('#jsonBox')) $('#jsonBox').value = JSON.stringify({
-        schema_version: "3.0",
-        generator_type: "image",
-        note: "Layout preview — logic belum diimplementasikan",
-        layers: {
-          L0: "identity_anchor + technical_constraints",
-          L1: "subjects",
-          L2: "scene_core + environment",
-          L3: "composition",
-          L4: "lighting",
-          L5: "atmosphere",
-          L6: "motion + temporal_sequence (video only)",
-          L7: "technical",
-          L8: "output_config + variations + metadata"
-        }
-      }, null, 2);
-    });
-  }
-
-  // Copy buttons
-  ['copyBtn','copyNegBtn','copyJsonBtn'].forEach(id => {
-    const btn = document.getElementById(id);
-    if (!btn) return;
-    btn.addEventListener('click', function() {
-      const prev = this.innerHTML;
-      this.innerHTML = '✓ Copied!';
-      setTimeout(() => this.innerHTML = prev, 1000);
-    });
-  });
-
-  console.log('✅ Prompt Generator V3 — readme_v3.md structure loaded');
-  console.log('Layer order: L0(Identity) → L1(Subject) → L2(Scene) → L3(Camera) → L4(Light) → L5(Atmosphere) → L6(Motion/Video) → L7(Technical) → L8(Output)');
-})();
-</script>
 
 </body>
 </html>
