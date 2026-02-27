@@ -1,0 +1,1131 @@
+{
+  "_readme": "Library dedicated untuk field output_config (Layer 8C). Fungsi: mengontrol bagaimana seluruh data schema dikemas menjadi prompt teks final yang dikirim ke AI platform. Ini adalah 'mesin assembly' — menentukan urutan, bobot, format, dan parameter output. Weight 0.0 untuk metadata dan variations (tidak masuk prompt), semua layer lain dikontrol dari sini.",
+  "_version": "1.0",
+  "_structure": "output_config → prompt_structure | section_weights | negative_prompt | parameter_append | assembly_templates",
+  "_relationship_note": "output_config adalah layer terakhir yang dieksekusi — semua layer 0–7 sudah didefinisikan, output_config menentukan bagaimana semua itu dirakit menjadi satu string prompt. Ubah output_config tanpa mengubah konten apapun = prompt berbeda, hasil berbeda.",
+
+  "output_config": {
+
+    "prompt_structure": {
+      "_note": "Mendefinisikan bagaimana potongan-potongan konten dari setiap layer disusun menjadi satu string prompt akhir.",
+
+      "order": {
+        "_note": "Urutan section dalam prompt — field yang disebutkan lebih awal mendapat attention lebih besar di kebanyakan AI model karena attention mechanism (awal prompt = bobot lebih tinggi). Urutan menentukan hierarki visual dalam output.",
+        "_principle": "Letakkan elemen yang PALING INGIN Anda pertahankan di AWAL prompt. Identity dan karakter selalu duluan, detail environment di belakang.",
+        "options": [
+          {
+            "en": "identity_first",
+            "id": "identitas-pertama",
+            "description": "Prioritas mutlak pada karakter — identity dan subjects di depan sebelum apapun.",
+            "sequence": [
+              "identity_anchor",
+              "technical_constraints",
+              "subjects",
+              "lighting",
+              "composition",
+              "atmosphere",
+              "scene_core",
+              "environment",
+              "motion",
+              "temporal_sequence",
+              "technical"
+            ],
+            "best_for": "Portrait series, IP karakter kuat, situasi di mana wajah harus 100% konsisten",
+            "trade_off": "Scene dan environment mendapat perhatian lebih sedikit"
+          },
+          {
+            "en": "cinematic_order",
+            "id": "urutan-sinematik",
+            "description": "Mengikuti cara director berpikir: framing → isi → mood → teknis.",
+            "sequence": [
+              "identity_anchor",
+              "technical_constraints",
+              "composition",
+              "subjects",
+              "lighting",
+              "scene_core",
+              "environment",
+              "atmosphere",
+              "motion",
+              "technical"
+            ],
+            "best_for": "Still sinematik, fan art bergaya film, frame yang komposisinya kritis",
+            "trade_off": "Komposisi didahulukan — subjek ikut mengisi frame bukan mendominasi"
+          },
+          {
+            "en": "scene_first",
+            "id": "scene-pertama",
+            "description": "Dunia dan environment didefinisikan dulu — karakter hadir di dalamnya.",
+            "sequence": [
+              "scene_core",
+              "environment",
+              "atmosphere",
+              "lighting",
+              "identity_anchor",
+              "technical_constraints",
+              "subjects",
+              "composition",
+              "technical"
+            ],
+            "best_for": "Environment showcase, establishing shot luas, karakter kecil dalam world besar",
+            "trade_off": "Risiko karakter kurang kuat jika tidak punya identity_anchor yang solid"
+          },
+          {
+            "en": "mood_first",
+            "id": "mood-pertama",
+            "description": "Atmosphere dan mood menjadi anchor utama — semua elemen lain mengikuti mood.",
+            "sequence": [
+              "atmosphere",
+              "lighting",
+              "identity_anchor",
+              "technical_constraints",
+              "subjects",
+              "scene_core",
+              "environment",
+              "composition",
+              "technical"
+            ],
+            "best_for": "Art piece dengan mood kuat, poster, konten yang digerakkan oleh emosi",
+            "trade_off": "Mood bisa 'overpower' detail teknis jika tidak hati-hati"
+          },
+          {
+            "en": "standard_weighted",
+            "id": "standar-berbobot",
+            "description": "Urutan berdasarkan section_weights default — yang paling penting di awal, pendukung di belakang.",
+            "sequence": [
+              "identity_anchor",
+              "technical_constraints",
+              "subjects",
+              "lighting",
+              "composition",
+              "atmosphere",
+              "scene_core",
+              "environment",
+              "motion",
+              "temporal_sequence",
+              "technical"
+            ],
+            "best_for": "Default untuk kebanyakan kasus — seimbang dan predictable",
+            "trade_off": "Tidak ada — ini adalah urutan yang paling 'safe'"
+          },
+          {
+            "en": "video_optimized",
+            "id": "dioptimalkan-video",
+            "description": "Untuk video AI — motion dan temporal di depan agar platform video memprioritaskan gerakan.",
+            "sequence": [
+              "identity_anchor",
+              "technical_constraints",
+              "subjects",
+              "motion",
+              "temporal_sequence",
+              "composition",
+              "lighting",
+              "scene_core",
+              "environment",
+              "atmosphere",
+              "technical"
+            ],
+            "best_for": "Runway, Kling, Pika, Sora — platform video",
+            "trade_off": "Atmosphere dan environment dikurangi untuk memberi ruang motion"
+          },
+          {
+            "en": "minimal_character_only",
+            "id": "minimal-karakter-saja",
+            "description": "Hanya layer karakter — untuk test identity lock atau generate portrait pure tanpa scene.",
+            "sequence": [
+              "identity_anchor",
+              "technical_constraints",
+              "subjects",
+              "lighting",
+              "composition"
+            ],
+            "best_for": "Test karakter baru, verifikasi identity lock, reference sheet",
+            "trade_off": "Background akan auto-generated oleh AI tanpa kontrol"
+          }
+        ]
+      },
+
+      "separator": {
+        "_note": "String pemisah antar section dalam prompt. Pilihan separator mempengaruhi bagaimana model membaca batas antar konsep.",
+        "options": [
+          {
+            "en": ", ",
+            "id": "koma-spasi",
+            "description": "Separator standar — paling umum, digunakan hampir semua platform. Model memperlakukan koma sebagai batas konsep ringan.",
+            "token_cost": "minimal",
+            "readability": "good",
+            "best_for": "MidJourney, SDXL, semua platform image",
+            "example": "young woman, dark hair, golden hour lighting, rule of thirds composition"
+          },
+          {
+            "en": ". ",
+            "id": "titik-spasi",
+            "description": "Pemisah kalimat — lebih natural language, batas konsep lebih kuat dari koma. Model natural language seperti DALL-E 3 merespons lebih baik.",
+            "token_cost": "minimal",
+            "readability": "excellent",
+            "best_for": "DALL-E 3, Sora, Runway — model yang dilatih dengan natural language",
+            "example": "A young woman with dark hair. Golden hour lighting from the left. Composed using rule of thirds."
+          },
+          {
+            "en": " | ",
+            "id": "pipe",
+            "description": "Separator tegas — batas antar konsep sangat jelas. Beberapa model membaca pipe sebagai pemisah yang kuat.",
+            "token_cost": "minimal",
+            "readability": "medium",
+            "best_for": "MidJourney style chaining, beberapa SDXL workflow",
+            "example": "young woman dark hair | golden hour lighting | rule of thirds | cinematic"
+          },
+          {
+            "en": "\\n",
+            "id": "baris-baru",
+            "description": "Setiap section di baris baru — paling mudah dibaca manusia, beberapa model memprosesnya per baris sebagai konsep terpisah.",
+            "token_cost": "satu token per baris",
+            "readability": "excellent untuk manusia",
+            "best_for": "Dokumentasi internal, template yang sering diedit manusia, beberapa LLM-based generator",
+            "example": "young woman dark hair\\ngolden hour lighting\\nrule of thirds composition"
+          },
+          {
+            "en": "; ",
+            "id": "titik-koma",
+            "description": "Semi-colon — lebih kuat dari koma, lebih lemah dari titik. Beberapa model natural language merespons dengan baik.",
+            "token_cost": "minimal",
+            "readability": "good",
+            "best_for": "Natural language model yang butuh grouping lebih kuat dari koma",
+            "example": "young woman, dark hair; golden hour lighting; rule of thirds"
+          },
+          {
+            "en": ", \\n",
+            "id": "koma-baris-baru",
+            "description": "Koma di akhir tiap konsep, lalu baris baru — hybrid yang mudah dibaca dan punya structure token yang familiar.",
+            "token_cost": "satu token per baris",
+            "readability": "excellent",
+            "best_for": "SDXL dengan format yang rapi, template yang perlu diedit manual",
+            "example": "young woman, dark hair,\\ngolden hour lighting,\\nrule of thirds composition"
+          }
+        ]
+      },
+
+      "emphasis_syntax": {
+        "_note": "Cara menambahkan emphasis atau weight pada token tertentu. Platform berbeda menggunakan sintaks berbeda — pilih yang sesuai target platform.",
+        "options": [
+          {
+            "en": "none",
+            "id": "tanpa-emphasis",
+            "description": "Tidak ada emphasis syntax — semua token equal weight. Paling clean dan kompatibel universal.",
+            "platform_compatibility": "semua platform",
+            "example": "dark eyes, sharp features, black hair",
+            "best_for": "DALL-E 3, Sora, platform natural language, atau saat tidak butuh kontrol granular"
+          },
+          {
+            "en": "parentheses",
+            "id": "tanda-kurung",
+            "description": "Stable Diffusion standard — setiap layer kurung menambah weight 1.1x. (token)=1.1x, ((token))=1.21x, (((token)))=1.33x.",
+            "platform_compatibility": "Stable Diffusion / SDXL only",
+            "math": { "one_level": "×1.10", "two_levels": "×1.21", "three_levels": "×1.33", "four_levels": "×1.46" },
+            "example": "(dark eyes:1.3), ((asian features)), black hair",
+            "best_for": "SDXL — kontrol granular untuk fitur penting karakter",
+            "warning": "Tidak berfungsi di MidJourney, DALL-E 3, atau platform video"
+          },
+          {
+            "en": "weight_suffix",
+            "id": "sufiks-weight",
+            "description": "Weight eksplisit dengan notasi (token:nilai) — lebih presisi dari parentheses. Hanya Stable Diffusion.",
+            "platform_compatibility": "Stable Diffusion / SDXL only",
+            "range": { "min": 0.1, "max": 1.5, "safe_max": 1.4, "default": 1.0 },
+            "example": "(dark asian eyes:1.4), (black straight hair:1.3), (young woman:1.2)",
+            "best_for": "SDXL saat butuh kontrol presisi per fitur",
+            "warning": "Di atas 1.5 bisa menyebabkan artifact atau distorsi"
+          },
+          {
+            "en": "brackets_reduce",
+            "id": "kurung-kotak-kurang",
+            "description": "Square brackets mengurangi weight — [token]=0.9x. Untuk menekan elemen yang tidak diinginkan dalam positive prompt.",
+            "platform_compatibility": "Stable Diffusion / SDXL only",
+            "math": { "one_level": "×0.90", "two_levels": "×0.81" },
+            "example": "[blurry background], sharp focus on subject",
+            "best_for": "Menekan elemen tanpa memindahkannya ke negative prompt"
+          },
+          {
+            "en": "natural_repetition",
+            "id": "repetisi-natural",
+            "description": "Menyebutkan fitur penting beberapa kali dengan variasi kata — efek emphasis alami untuk model natural language.",
+            "platform_compatibility": "DALL-E 3, Sora, MidJourney, Runway — semua model natural language",
+            "example": "young East Asian woman with dark eyes, Asian facial features, East Asian appearance",
+            "best_for": "Platform natural language — cara paling safe untuk emphasis lintas platform",
+            "warning": "Terlalu banyak repetisi bisa membingungkan model — max 2–3x per fitur"
+          },
+          {
+            "en": "attention_markers",
+            "id": "attention-marker",
+            "description": "Kata-kata yang secara natural menarik attention model — VERY, extremely, absolutely, perfectly.",
+            "platform_compatibility": "semua platform — terutama natural language",
+            "example": "perfectly sharp face, extremely detailed features, absolutely consistent race",
+            "best_for": "Tambahan emphasis ringan yang kompatibel semua platform",
+            "warning": "Overuse terasa spam — gunakan hemat untuk 2–3 elemen terpenting saja"
+          }
+        ],
+
+        "platform_emphasis_guide": {
+          "_note": "Referensi cepat — emphasis mana yang digunakan per platform.",
+          "midjourney": "none atau natural_repetition — tidak ada syntax khusus",
+          "stable_diffusion_xl": "parentheses atau weight_suffix untuk fitur kunci, brackets_reduce untuk suppression",
+          "dalle3": "natural_repetition atau attention_markers — natural language only",
+          "runway": "none — deskripsi natural, emphasis dari kata sifat",
+          "kling": "none — natural language, emphasis dari urutan dan repetisi ringan",
+          "pika": "none — prompt pendek, emphasis dari urutan",
+          "sora": "natural_repetition — natural language panjang dengan detail berulang"
+        }
+      },
+
+      "length_limit": {
+        "_note": "Batas maksimum panjang prompt yang dikirim ke AI platform. Melebihi limit = konten terpotong, diabaikan, atau error.",
+        "options": [
+          {
+            "en": 250,
+            "id": "250 karakter",
+            "description": "Ultra singkat — untuk Pika dan platform dengan prompt sangat pendek. Hanya elemen paling krusial.",
+            "what_fits": "Identity + 1–2 scene descriptor + format parameter",
+            "platform_match": ["pika"],
+            "token_estimate": "~60 tokens"
+          },
+          {
+            "en": 500,
+            "id": "500 karakter",
+            "description": "Singkat — untuk platform video seperti Kling dan Runway. Fokus pada karakter dan gerakan utama.",
+            "what_fits": "Identity + scene + motion + 1 atmosphere descriptor",
+            "platform_match": ["kling", "runway", "hailuo"],
+            "token_estimate": "~120 tokens"
+          },
+          {
+            "en": 1000,
+            "id": "1000 karakter",
+            "description": "Medium — untuk MidJourney. Cukup untuk karakter lengkap + scene + mood tanpa detail ekstrem.",
+            "what_fits": "Identity + subjects + scene + lighting + atmosphere ringan",
+            "platform_match": ["midjourney"],
+            "token_estimate": "~250 tokens"
+          },
+          {
+            "en": 1500,
+            "id": "1500 karakter",
+            "description": "Medium-panjang — untuk SDXL. Mendekati batas CLIP tokenizer di 75 token, konten setelahnya diabaikan.",
+            "what_fits": "Semua layer utama tapi ringkas",
+            "platform_match": ["stable_diffusion_xl"],
+            "token_estimate": "~375 tokens — PERHATIAN: SDXL CLIP limit 75 tokens efektif",
+            "sdxl_note": "SDXL CLIP tokenizer hanya memproses ~75 token dengan baik. Konten di token 76+ sering diabaikan. Prioritas sangat penting."
+          },
+          {
+            "en": 2000,
+            "id": "2000 karakter",
+            "description": "Panjang — untuk DALL-E 3 dan platform natural language. Semua layer bisa dimasukkan dengan detail.",
+            "what_fits": "Semua layer termasuk detail environment dan atmosphere",
+            "platform_match": ["dalle3", "leonardo_ai"],
+            "token_estimate": "~500 tokens"
+          },
+          {
+            "en": 4000,
+            "id": "4000 karakter",
+            "description": "Sangat panjang — untuk Sora dan model yang dilatih menerima instruksi panjang.",
+            "what_fits": "Seluruh schema dengan detail naratif",
+            "platform_match": ["sora"],
+            "token_estimate": "~1000 tokens"
+          }
+        ],
+
+        "platform_effective_limits": {
+          "_note": "Batas EFEKTIF per platform — bukan batas maksimal yang diterima, tapi batas di mana konten masih diproses secara optimal.",
+          "midjourney_v6": {
+            "max_accepted": "~6000 karakter",
+            "effective_optimal": "~1500 karakter",
+            "note": "Konten setelah ~1500 karakter mulai kehilangan influence. Front-loading penting."
+          },
+          "stable_diffusion_xl": {
+            "max_accepted": "tidak ada limit teknis",
+            "effective_optimal": "~300 karakter / 75 CLIP tokens",
+            "note": "KRITIS — CLIP tokenizer memotong di 75 token. Token ke-76+ sepenuhnya diabaikan. Gunakan teknik long prompt split jika butuh lebih."
+          },
+          "dalle3": {
+            "max_accepted": "~4000 karakter",
+            "effective_optimal": "~2000 karakter",
+            "note": "DALL-E 3 memproses natural language dengan baik. Detail panjang diterima dan diproses. Terlalu panjang bisa mengurangi focus."
+          },
+          "runway_gen3": {
+            "max_accepted": "~500 karakter",
+            "effective_optimal": "~300 karakter",
+            "note": "Runway lebih baik dengan prompt pendek dan fokus. Deskripsi gerakan dan mood lebih penting dari detail karakter."
+          },
+          "kling": {
+            "max_accepted": "~500 karakter",
+            "effective_optimal": "~250 karakter",
+            "note": "Face consistency berasal dari reference image, bukan prompt panjang. Prompt cukup mendeskripsikan action dan mood."
+          },
+          "pika": {
+            "max_accepted": "~300 karakter",
+            "effective_optimal": "~150 karakter",
+            "note": "Prompt sangat singkat. Gunakan parameter --motion, --ar, --fps untuk kontrol teknis, bukan prompt panjang."
+          },
+          "sora": {
+            "max_accepted": "~2000+ karakter",
+            "effective_optimal": "~1000 karakter",
+            "note": "Sora dilatih untuk memahami instruksi panjang dan naratif. Detail scene dan motion sangat diperhatikan."
+          }
+        }
+      },
+
+      "truncation_strategy": {
+        "_note": "Strategi pemotongan prompt jika melebihi length_limit — menentukan bagian mana yang dipertahankan.",
+        "options": [
+          {
+            "en": "priority_only",
+            "id": "prioritas-saja",
+            "description": "Hanya section dengan weight ≥ threshold yang dipertahankan — sisanya dibuang sepenuhnya. Paling aman untuk menjaga karakter.",
+            "threshold_default": 1.0,
+            "result": "Prompt pendek tapi semua elemen kritis ada",
+            "best_for": "Platform dengan batas ketat seperti SDXL dan video platform",
+            "example": "weight ≥ 1.0 → identity_anchor, subjects, lighting, composition tetap. scene_core dan environment dibuang."
+          },
+          {
+            "en": "proportional_trim",
+            "id": "potong-proporsional",
+            "description": "Setiap section dikurangi jumlah token secara proporsional terhadap weightnya — semua ada tapi semua lebih ringkas.",
+            "result": "Semua section terwakili tapi dalam versi singkat",
+            "best_for": "Situasi di mana semua layer penting tapi butuh fit ke batas tertentu",
+            "example": "identity (weight 2.0) dapat 40% token. atmosphere (weight 1.2) dapat 24% token."
+          },
+          {
+            "en": "front_preserve",
+            "id": "pertahankan-depan",
+            "description": "Section di awal array order mendapat token penuh. Section di belakang terpotong jika melebihi limit. Memanfaatkan attention bias.",
+            "result": "Bagian awal lengkap, bagian belakang mungkin terpotong",
+            "best_for": "Ketika order sudah diatur dengan bijak — elemen terpenting sudah di depan",
+            "example": "identity, subjects, lighting → penuh. atmosphere, environment → terpotong sesuai sisa token."
+          },
+          {
+            "en": "keyword_compress",
+            "id": "kompres-keyword",
+            "description": "Setiap section diringkas ke keyword paling esensial sebelum digabungkan — mengurangi prose menjadi tag cloud.",
+            "result": "Semua section ada dalam bentuk keyword, tidak ada prose",
+            "best_for": "SDXL — model tag-based lebih cocok dengan keyword daripada kalimat panjang",
+            "example": "'young East Asian woman, dark eyes, black long straight hair' bukan kalimat naratif"
+          },
+          {
+            "en": "split_dual_pass",
+            "id": "split-dua-pass",
+            "description": "Teknik khusus SDXL — prompt dibagi dua bagian: CLIP1 (karakter + kunci) dan CLIP2 (detail + style). Keduanya diproses bersamaan oleh dual-CLIP SDXL.",
+            "result": "Kapasitas efektif double — 150 token alih-alih 75",
+            "best_for": "SDXL dengan banyak detail penting yang tidak muat di 75 token",
+            "implementation": "clip_l: identity + subjects + lighting (priority). clip_g: atmosphere + style + technical (detail)"
+          }
+        ]
+      }
+    },
+
+    "section_weights": {
+      "_note": "Bobot per section — menentukan berapa banyak token dan emphasis diberikan ke setiap layer. Skala 0.0 (tidak masuk prompt) sampai 2.0 (critical, emphasis penuh).",
+
+      "default_weights": {
+        "_note": "Bobot default yang berlaku jika tidak ada override.",
+        "table": [
+          { "section": "identity_anchor", "weight": 2.0, "status": "LOCKED", "token_allocation": "40% dari total token", "rationale": "DNA karakter — hilang satu token bisa ubah ras atau usia" },
+          { "section": "technical_constraints", "weight": 2.0, "status": "LOCKED", "token_allocation": "masuk negative prompt, tidak mengurangi positive token", "rationale": "Negative DNA — filter yang melindungi identitas" },
+          { "section": "subjects", "weight": 1.5, "status": "LOCKED", "token_allocation": "25% dari total token", "rationale": "Blueprint pose, ekspresi, outfit — karakter dalam scene" },
+          { "section": "lighting", "weight": 1.5, "status": "variabel", "token_allocation": "15% dari total token", "rationale": "Cahaya mempengaruhi keterbacaan wajah — kritis untuk konsistensi" },
+          { "section": "composition", "weight": 1.3, "status": "variabel", "token_allocation": "10% dari total token", "rationale": "Framing menentukan apa yang terlihat dan tidak" },
+          { "section": "atmosphere", "weight": 1.2, "status": "variabel", "token_allocation": "8% dari total token", "rationale": "Mood dan feel — penting tapi lebih fleksibel" },
+          { "section": "scene_core", "weight": 1.0, "status": "variabel", "token_allocation": "5% dari total token", "rationale": "Konteks waktu dan tempat — penting tapi bisa singkat" },
+          { "section": "environment", "weight": 1.0, "status": "variabel", "token_allocation": "5% dari total token", "rationale": "Detail lokasi — bisa dikurangi jika butuh ruang" },
+          { "section": "motion", "weight": 1.0, "status": "variabel_video", "token_allocation": "10% dari total token (video only)", "rationale": "Gerakan — kritis untuk video, tidak relevan untuk gambar" },
+          { "section": "temporal_sequence", "weight": 0.8, "status": "variabel_video", "token_allocation": "5% dari total token (video only)", "rationale": "Timing dan transisi — supporting untuk video" },
+          { "section": "technical", "weight": 0.8, "status": "platform", "token_allocation": "append terpisah — tidak masuk body prompt", "rationale": "Parameter platform — di-append setelah prompt, bukan di dalamnya" },
+          { "section": "variations", "weight": 0.0, "status": "internal", "token_allocation": "tidak masuk prompt", "rationale": "Sistem operasional — tidak relevan untuk AI" },
+          { "section": "metadata", "weight": 0.0, "status": "admin", "token_allocation": "tidak masuk prompt", "rationale": "Administrasi — tidak relevan untuk AI" }
+        ]
+      },
+
+      "weight_presets": {
+        "_note": "Override bobot default untuk use case spesifik — override partial, field yang tidak disebutkan ikut default.",
+        "options": [
+          {
+            "name": "character_portrait_extreme",
+            "id": "Portrait Karakter Ekstrem",
+            "description": "Karakter over scene — semua token diprioritaskan ke identitas. Scene hanya hint.",
+            "use_case": "Verifikasi identity lock, reference sheet, head shot murni",
+            "overrides": {
+              "identity_anchor": 2.0,
+              "subjects": 2.0,
+              "lighting": 1.8,
+              "composition": 1.2,
+              "atmosphere": 0.5,
+              "scene_core": 0.3,
+              "environment": 0.1
+            }
+          },
+          {
+            "name": "environment_showcase",
+            "id": "Showcase Environment",
+            "description": "Environment dominan — karakter hanya elemen dalam scene besar.",
+            "use_case": "World-building, establishing shot luas, landscape dengan karakter kecil",
+            "overrides": {
+              "scene_core": 1.8,
+              "environment": 1.8,
+              "atmosphere": 1.6,
+              "lighting": 1.5,
+              "subjects": 1.0,
+              "identity_anchor": 1.5,
+              "composition": 1.4
+            }
+          },
+          {
+            "name": "cinematic_balanced",
+            "id": "Sinematik Seimbang",
+            "description": "Semua elemen sinematik seimbang — komposisi, cahaya, karakter, dan mood sama penting.",
+            "use_case": "Film still, cinematic frame, konten berkualitas tinggi",
+            "overrides": {
+              "identity_anchor": 2.0,
+              "subjects": 1.5,
+              "composition": 1.6,
+              "lighting": 1.6,
+              "atmosphere": 1.5,
+              "scene_core": 1.2,
+              "environment": 1.0
+            }
+          },
+          {
+            "name": "mood_and_atmosphere_heavy",
+            "id": "Mood Berat",
+            "description": "Atmosphere mendominasi — mood visual adalah focal point, karakter adalah kendaraan emosi.",
+            "use_case": "Art poster, mood board, konten yang digerakkan emosi",
+            "overrides": {
+              "atmosphere": 2.0,
+              "lighting": 1.8,
+              "identity_anchor": 1.8,
+              "subjects": 1.3,
+              "scene_core": 1.4,
+              "environment": 1.3,
+              "composition": 1.0
+            }
+          },
+          {
+            "name": "video_action_focused",
+            "id": "Video Aksi",
+            "description": "Motion dan temporal jadi prioritas — untuk video aksi dinamis.",
+            "use_case": "Battle video, action sequence, chase scene",
+            "overrides": {
+              "identity_anchor": 2.0,
+              "subjects": 1.5,
+              "motion": 1.8,
+              "temporal_sequence": 1.4,
+              "composition": 1.2,
+              "lighting": 1.3,
+              "atmosphere": 0.8,
+              "environment": 0.7
+            }
+          },
+          {
+            "name": "sdxl_token_budget",
+            "id": "Budget Token SDXL",
+            "description": "Dioptimalkan untuk SDXL 75-token limit — hanya yang benar-benar krusial masuk.",
+            "use_case": "SDXL generation dengan budget token sangat ketat",
+            "overrides": {
+              "identity_anchor": 2.0,
+              "subjects": 1.8,
+              "lighting": 1.2,
+              "composition": 0.6,
+              "atmosphere": 0.4,
+              "scene_core": 0.3,
+              "environment": 0.0
+            },
+            "special_note": "environment 0.0 — tidak masuk prompt sama sekali karena token habis"
+          }
+        ]
+      }
+    },
+
+    "negative_prompt": {
+      "_note": "Apa yang TIDAK boleh ada dalam output. Negatif prompt adalah pencegahan — bukan instruksi. Field ini BERBEDA dari technical_constraints.negative_prompts: negative_prompt di output_config adalah negatif situasional (per scene/batch), sedangkan technical_constraints adalah negatif permanen karakter.",
+
+      "_relationship_to_technical_constraints": {
+        "technical_constraints.negative_prompts": "Permanen — selalu aktif, melindungi identitas karakter di semua situasi. Contoh: wrong_race, age_drift, anatomy_major.",
+        "output_config.negative_prompt": "Situasional — spesifik untuk template atau batch ini. Contoh: no_text_in_image (untuk scene tertentu), no_people_in_background (untuk portrait murni)."
+      },
+
+      "composition_by_platform": {
+        "_note": "Cara menggunakan negative prompt berbeda per platform.",
+        "stable_diffusion_xl": {
+          "method": "Field negative_prompt terpisah dalam UI atau API",
+          "syntax": "Comma-separated tokens, optional weights dengan (token:1.2) atau [[token]]",
+          "example": "worst quality, low quality, blurry, (extra limbs:1.4), text, watermark"
+        },
+        "midjourney": {
+          "method": "--no parameter di akhir prompt",
+          "syntax": "--no keyword1, keyword2, keyword3",
+          "example": "beautiful portrait --no text, watermark, logo, extra fingers"
+        },
+        "dalle3": {
+          "method": "Ditulis dalam positive prompt sebagai instruksi larangan",
+          "syntax": "Do not include X. Without Y. Exclude Z.",
+          "example": "A portrait of a woman. Do not include text or watermarks. Without any other people in frame."
+        },
+        "runway": {
+          "method": "Negative text field terpisah",
+          "syntax": "Natural language description dari apa yang tidak diinginkan",
+          "example": "blurry faces, distorted limbs, inconsistent lighting"
+        },
+        "kling": {
+          "method": "Negative prompt field terpisah",
+          "syntax": "Comma-separated natural language",
+          "example": "camera shake, motion blur, face distortion"
+        }
+      },
+
+      "situational_negative_banks": {
+        "_note": "Bank negative prompt berdasarkan situasi — bukan per karakter tapi per use case output.",
+        "options": [
+          {
+            "name": "clean_portrait_background",
+            "id": "Background Bersih Portrait",
+            "description": "Untuk portrait murni — tidak ada distraksi latar yang tidak diminta.",
+            "tokens": ["cluttered background", "busy background", "people in background", "distracting elements", "text in background", "logos", "watermarks"],
+            "platform_syntax": {
+              "sdxl": "cluttered background, busy background, people in background, distracting elements",
+              "midjourney": "--no cluttered background, text, watermarks, people in background",
+              "dalle3": "Do not include other people in the background. Keep the background clean and minimal."
+            }
+          },
+          {
+            "name": "no_text_artifacts",
+            "id": "Tanpa Artefak Teks",
+            "description": "Mencegah teks atau karakter huruf yang tidak diminta muncul dalam gambar.",
+            "tokens": ["text", "letters", "words", "typography", "captions", "subtitles", "labels", "signs with text", "watermark", "copyright text"],
+            "platform_syntax": {
+              "sdxl": "text, letters, words, watermark, (typography:1.3)",
+              "midjourney": "--no text, letters, watermark, captions",
+              "dalle3": "Do not include any text, letters, words, or typography in the image."
+            }
+          },
+          {
+            "name": "no_extra_characters",
+            "id": "Tanpa Karakter Tambahan",
+            "description": "Solo shot — hanya satu karakter utama, tidak ada orang lain.",
+            "tokens": ["multiple people", "second person", "crowd", "group", "other characters", "background people", "silhouette of person"],
+            "platform_syntax": {
+              "sdxl": "multiple people, crowd, second person, other characters",
+              "midjourney": "--no other people, crowd, multiple characters",
+              "dalle3": "Only one person in the image. Do not include other people, crowds, or additional characters."
+            }
+          },
+          {
+            "name": "cinematic_quality",
+            "id": "Kualitas Sinematik",
+            "description": "Mencegah kualitas rendah dan artefak yang merusak look sinematik.",
+            "tokens": ["amateur photography", "snapshot", "phone camera", "flat lighting", "harsh flash", "noise", "grain", "pixelated", "compression artifacts", "oversaturated", "HDR overdone"],
+            "platform_syntax": {
+              "sdxl": "(amateur:1.2), flat lighting, harsh flash, oversaturated, (noise:1.1)",
+              "midjourney": "--no amateur photography, flat lighting, oversaturation",
+              "dalle3": "Professional cinematic lighting only. No amateur snapshot quality, harsh flash, or oversaturation."
+            }
+          },
+          {
+            "name": "anatomy_protection",
+            "id": "Proteksi Anatomi",
+            "description": "Mencegah distorsi anatomi yang sering terjadi pada AI — jari, tangan, proporsi.",
+            "tokens": ["extra fingers", "missing fingers", "six fingers", "fused fingers", "deformed hands", "extra limbs", "missing limbs", "distorted anatomy", "wrong proportions", "elongated neck", "floating limbs"],
+            "platform_syntax": {
+              "sdxl": "(extra fingers:1.5), (deformed hands:1.4), extra limbs, distorted anatomy, (wrong proportions:1.2)",
+              "midjourney": "--no extra fingers, deformed hands, anatomy errors",
+              "dalle3": "Correct human anatomy with normal number of fingers (5 per hand). No distorted limbs or proportions."
+            }
+          },
+          {
+            "name": "face_protection",
+            "id": "Proteksi Wajah",
+            "description": "Mencegah distorsi wajah dan uncanny valley — khusus untuk gambar yang berfokus pada wajah.",
+            "tokens": ["deformed face", "asymmetric face", "crossed eyes", "extra eyes", "missing eye", "deformed nose", "deformed lips", "unnatural skin", "plastic skin", "doll-like face", "mannequin"],
+            "platform_syntax": {
+              "sdxl": "(deformed face:1.4), asymmetric face, (crossed eyes:1.3), unnatural skin, plastic skin",
+              "midjourney": "--no deformed face, uncanny valley, plastic skin, doll-like",
+              "dalle3": "Natural human facial features. No distorted, asymmetric, or uncanny valley faces."
+            }
+          },
+          {
+            "name": "style_protection",
+            "id": "Proteksi Gaya",
+            "description": "Mencegah platform menginterpolasi ke gaya yang tidak diinginkan.",
+            "tokens": ["cartoon", "anime style", "illustration", "flat art", "vector art", "painting style", "3D render style", "CG render"],
+            "use_case": "Untuk hasil photorealistic — mencegah AI 'stylize' ke arah ilustrasi atau anime",
+            "platform_syntax": {
+              "sdxl": "cartoon, anime, illustration, flat art, (painting:1.2)",
+              "midjourney": "--no cartoon, anime, illustration, painterly style",
+              "dalle3": "Photorealistic photography style only. Not cartoon, anime, illustration, or painting."
+            }
+          },
+          {
+            "name": "video_motion_quality",
+            "id": "Kualitas Motion Video",
+            "description": "Khusus video — mencegah artefak motion yang umum di AI video.",
+            "tokens": ["jittery motion", "flickering", "unstable motion", "morphing face", "face drift", "inconsistent character", "sudden jump", "temporal inconsistency", "stuttering"],
+            "platform_syntax": {
+              "runway": "jittery motion, flickering, unstable, face drift",
+              "kling": "inconsistent character, face morphing, stuttering motion",
+              "pika": "flickering, jitter, unstable"
+            }
+          },
+          {
+            "name": "outdoor_scene_clean",
+            "id": "Scene Outdoor Bersih",
+            "description": "Untuk outdoor scene — mencegah elemen interior atau studio yang tidak diminta.",
+            "tokens": ["indoor lighting", "studio backdrop", "white wall", "studio environment", "artificial background", "fake backdrop"],
+            "platform_syntax": {
+              "sdxl": "indoor lighting, studio backdrop, artificial background",
+              "midjourney": "--no studio, indoor lighting, fake backdrop"
+            }
+          },
+          {
+            "name": "period_accuracy",
+            "id": "Akurasi Era",
+            "description": "Untuk setting historical atau fantasi — mencegah elemen modern yang merusak immersion.",
+            "tokens": ["modern clothing", "contemporary fashion", "modern technology", "smartphones", "cars", "modern buildings", "anachronistic elements"],
+            "platform_syntax": {
+              "sdxl": "modern clothing, contemporary fashion, smartphones, cars, modern technology",
+              "dalle3": "No modern clothing, contemporary fashion, smartphones, or anachronistic elements. Keep authentic to the period."
+            }
+          }
+        ]
+      },
+
+      "assembly_instruction": {
+        "_note": "Cara menggabungkan negative prompt dari technical_constraints (permanen) dan output_config (situasional) menjadi satu negative prompt string.",
+        "method": "Gabungkan keduanya dengan separator yang sama dengan positive prompt — biasanya koma.",
+        "order": "technical_constraints.negative_prompts DULU, lalu output_config.negative_prompt. Permanen sebelum situasional.",
+        "deduplication": "Hapus duplikasi jika token yang sama muncul di keduanya — tidak ada efek negatif dari duplikasi tapi memboroskan token.",
+        "example_assembly": {
+          "technical_constraints_tokens": "wrong race, age drift, extra limbs, worst quality, low quality",
+          "output_config_tokens": "cluttered background, text, people in background",
+          "final_negative_prompt": "wrong race, age drift, extra limbs, worst quality, low quality, cluttered background, text, people in background"
+        }
+      }
+    },
+
+    "parameter_append": {
+      "_note": "String parameter platform-specific yang di-append SETELAH body prompt. Ini terpisah dari prompt narasi — parameter teknis yang mengontrol behavior platform.",
+
+      "midjourney": {
+        "_note": "Parameter MidJourney v6 — semua dimulai dengan '--', di-append setelah prompt.",
+        "parameters": {
+          "version": {
+            "_note": "Model version.",
+            "options": [
+              { "param": "--v 6", "description": "MidJourney v6 — model terbaru, paling baik untuk realistic" },
+              { "param": "--v 6.1", "description": "MidJourney v6.1 jika tersedia" },
+              { "param": "--niji 6", "description": "Niji 6 — model anime MidJourney, lebih baik untuk anime style" }
+            ]
+          },
+          "style": {
+            "_note": "Style mode — mengontrol seberapa banyak interpretasi artistik AI.",
+            "options": [
+              { "param": "--style raw", "description": "Mode paling literal — mengikuti prompt ketat, tidak banyak interpretasi. Terbaik untuk karakter konsisten." },
+              { "param": "--style cute", "description": "Lebih kawaii dan soft" },
+              { "param": "--style expressive", "description": "Lebih artistik dan ekspresif" },
+              { "param": "--style scenic", "description": "Lebih fokus pada environment dan scene" }
+            ]
+          },
+          "stylize": {
+            "_note": "Level stylization — seberapa 'artistic' output. 0=sangat literal, 1000=sangat artistic.",
+            "options": [
+              { "param": "--s 0", "description": "Paling literal — hampir tidak ada stylization. Terbaik untuk karakter consistency." },
+              { "param": "--s 50", "description": "Stylisasi sangat minimal" },
+              { "param": "--s 100", "description": "Default MidJourney — balance antara literal dan artistic" },
+              { "param": "--s 250", "description": "Sedikit lebih artistic" },
+              { "param": "--s 500", "description": "Cukup artistic" },
+              { "param": "--s 750", "description": "Sangat artistic — banyak interpretasi" },
+              { "param": "--s 1000", "description": "Maksimal artistic — bisa sangat jauh dari prompt" }
+            ]
+          },
+          "character_reference": {
+            "_note": "System referensi karakter MidJourney -- mengunci wajah dari image URL.",
+            "options": [
+              { "param": "--cref [URL]", "description": "Character reference — URL gambar referensi wajah. Sangat penting untuk konsistensi karakter." },
+              { "param": "--cw 100", "description": "Character weight 100 — kunci wajah DAN outfit/style dari referensi" },
+              { "param": "--cw 75", "description": "Character weight 75 — kunci wajah, outfit bisa sedikit berbeda" },
+              { "param": "--cw 50", "description": "Character weight 50 — hanya wajah dikunci, outfit bebas" },
+              { "param": "--cw 0", "description": "Character weight 0 — hanya style, bukan wajah spesifik" }
+            ]
+          },
+          "style_reference": {
+            "_note": "Style reference dari image URL.",
+            "options": [
+              { "param": "--sref [URL]", "description": "Style reference — ambil estetika visual dari image URL" },
+              { "param": "--sw 100", "description": "Style weight maksimal" },
+              { "param": "--sw 50", "description": "Style weight medium — balance dengan prompt" }
+            ]
+          },
+          "quality": {
+            "options": [
+              { "param": "--q 1", "description": "Quality 1 — standard (paling umum)" },
+              { "param": "--q 2", "description": "Quality 2 — detail lebih tinggi, lebih lambat" },
+              { "param": "--q .5", "description": "Quality 0.5 — draft cepat" }
+            ]
+          },
+          "chaos": {
+            "options": [
+              { "param": "--chaos 0", "description": "Tidak ada chaos — hasil paling predictable dan konsisten" },
+              { "param": "--chaos 10", "description": "Chaos sangat ringan" },
+              { "param": "--chaos 25", "description": "Chaos ringan — sedikit variety" },
+              { "param": "--chaos 50", "description": "Chaos medium — lebih varied" },
+              { "param": "--chaos 100", "description": "Chaos maksimal — sangat varied" }
+            ]
+          },
+          "seed": {
+            "options": [
+              { "param": "--seed [integer]", "description": "Seed untuk reproducibility — sama seed = hasil sama" },
+              { "param": "--seed 0", "description": "Seed acak (default)" }
+            ]
+          },
+          "weird": {
+            "options": [
+              { "param": "--weird 0", "description": "Normal (default)" },
+              { "param": "--weird 250", "description": "Sedikit unusual" },
+              { "param": "--weird 1000", "description": "Sangat unusual — eksperimental" }
+            ]
+          }
+        },
+        "ready_combinations": [
+          { "name": "portrait_consistency", "string": "--v 6 --style raw --ar 2:3 --s 0 --q 2 --cw 100 --cref [URL]", "use": "Portrait dengan karakter lock maksimal" },
+          { "name": "cinematic_landscape", "string": "--v 6 --ar 21:9 --s 250 --q 2", "use": "Landscape sinematik ultra widescreen" },
+          { "name": "anime_character", "string": "--niji 6 --ar 9:16 --s 300 --q 2", "use": "Karakter anime vertikal" },
+          { "name": "quick_draft", "string": "--v 6 --q .5 --chaos 10", "use": "Draft cepat untuk iterasi" },
+          { "name": "environment_showcase", "string": "--v 6 --ar 16:9 --s 400 --q 2", "use": "Showcase environment landscape" },
+          { "name": "social_portrait", "string": "--v 6 --style raw --ar 4:5 --s 100 --q 2", "use": "Portrait untuk Instagram feed" }
+        ]
+      },
+
+      "stable_diffusion_xl": {
+        "_note": "Parameter untuk SDXL — lebih kompleks dari MidJourney karena lebih banyak kontrol.",
+        "parameters": {
+          "steps": {
+            "options": [
+              { "value": 15, "description": "Draft cepat — hasil kasar", "use": "Iterasi awal" },
+              { "value": 20, "description": "Standard — kualitas layak", "use": "Kebanyakan generate" },
+              { "value": 25, "description": "Good — kualitas baik", "use": "Final output standar" },
+              { "value": 30, "description": "High — kualitas tinggi", "use": "Portrait dan karakter detail" },
+              { "value": 40, "description": "Very high — diminishing returns mulai", "use": "Showcase" },
+              { "value": 50, "description": "Maximum recommended — di atas ini hampir tidak ada improvement", "use": "Absolute best" }
+            ]
+          },
+          "cfg_scale": {
+            "_note": "Classifier Free Guidance — seberapa ketat mengikuti prompt.",
+            "options": [
+              { "value": 4, "description": "Sangat bebas — AI banyak improvisasi" },
+              { "value": 6, "description": "Longgar — creative freedom besar" },
+              { "value": 7, "description": "Sweet spot bawah — baik untuk kebanyakan konten" },
+              { "value": 7.5, "description": "Sweet spot tengah — paling banyak direkomendasikan" },
+              { "value": 8, "description": "Sweet spot atas — mengikuti prompt cukup ketat" },
+              { "value": 9, "description": "Ketat — sangat literal, bisa mulai artifact" },
+              { "value": 11, "description": "Sangat ketat — hanya untuk kasus khusus" }
+            ]
+          },
+          "sampler": {
+            "options": [
+              { "name": "DPM++ 2M Karras", "description": "Terbaik untuk portrait dan character — sharp, consistent", "steps_optimal": "20–30" },
+              { "name": "DPM++ SDE Karras", "description": "Lebih painterly dan soft — bagus untuk atmospheric", "steps_optimal": "20–30" },
+              { "name": "DPM++ 3M SDE Karras", "description": "Versi terbaru — efisien", "steps_optimal": "15–25" },
+              { "name": "Euler a", "description": "Creative, varied — bagus untuk eksplorasi", "steps_optimal": "20–25" },
+              { "name": "Euler", "description": "Consistent dan bersih", "steps_optimal": "20–30" },
+              { "name": "DDIM", "description": "Deterministik — bagus untuk inpainting", "steps_optimal": "20–50" },
+              { "name": "LCM", "description": "Ultra cepat — 4–8 steps", "steps_optimal": "4–8" }
+            ]
+          },
+          "hires_fix": {
+            "options": [
+              { "enabled": false, "description": "Tanpa hires fix — output di resolusi native" },
+              { "enabled": true, "scale": 1.5, "denoising": 0.35, "description": "Hires fix 1.5x — lebih detail, waktu 2x" },
+              { "enabled": true, "scale": 2.0, "denoising": 0.4, "description": "Hires fix 2x — sangat detail, waktu 4x" }
+            ]
+          }
+        },
+        "ready_combinations": [
+          { "name": "portrait_quality", "params": { "steps": 25, "cfg": 7.5, "sampler": "DPM++ 2M Karras", "hires": "1.5x / denoising 0.35" }, "use": "Portrait karakter berkualitas tinggi" },
+          { "name": "quick_draft", "params": { "steps": 15, "cfg": 7, "sampler": "LCM" }, "use": "Iterasi cepat" },
+          { "name": "maximum_detail", "params": { "steps": 35, "cfg": 8, "sampler": "DPM++ 2M Karras", "hires": "2x / denoising 0.4" }, "use": "Output terbaik absolut" },
+          { "name": "atmospheric_painterly", "params": { "steps": 25, "cfg": 7, "sampler": "DPM++ SDE Karras" }, "use": "Dark fantasy, painterly, atmospheric" }
+        ]
+      },
+
+      "dalle3": {
+        "_note": "Parameter DALL-E 3 via API — sedikit parameter tapi impactful.",
+        "parameters": {
+          "quality": {
+            "options": [
+              { "value": "standard", "description": "Standar — lebih cepat, lebih murah. Cukup untuk kebanyakan kebutuhan." },
+              { "value": "hd", "description": "HD — lebih detail, sedikit lebih mahal. Untuk output final dan showcase." }
+            ]
+          },
+          "style": {
+            "options": [
+              { "value": "natural", "description": "Natural — lebih realistis, lebih foto-like, lebih literal mengikuti prompt. DIREKOMENDASIKAN untuk karakter." },
+              { "value": "vivid", "description": "Vivid — lebih dramatis dan saturasi tinggi, lebih 'AI look'. Bagus untuk konten artistic." }
+            ]
+          },
+          "size": {
+            "options": [
+              { "value": "1024x1024", "ar": "1:1", "description": "Square — untuk sosial media dan NFT" },
+              { "value": "1792x1024", "ar": "16:9", "description": "Landscape — untuk widescreen dan YouTube" },
+              { "value": "1024x1792", "ar": "9:16", "description": "Portrait vertikal — untuk mobile dan Stories" }
+            ]
+          }
+        },
+        "character_lock_suffix": {
+          "_note": "Tambahkan kalimat ini di akhir prompt untuk membantu DALL-E 3 menjaga konsistensi karakter.",
+          "options": [
+            "I NEED to maintain the exact appearance described. Do not alter ethnicity, age, facial structure, or hair.",
+            "Maintain exact character appearance. The person's race, age, and features are critical and must not change.",
+            "Preserve all physical characteristics exactly as described. No artistic interpretation of face or body."
+          ]
+        },
+        "ready_combinations": [
+          { "name": "portrait_natural", "params": "quality=hd, style=natural, size=1024x1792", "use": "Portrait vertikal realistis" },
+          { "name": "scene_vivid", "params": "quality=hd, style=vivid, size=1792x1024", "use": "Scene widescreen dramatis" },
+          { "name": "square_social", "params": "quality=standard, style=natural, size=1024x1024", "use": "Social media square, hemat budget" }
+        ]
+      },
+
+      "runway_gen3": {
+        "_note": "Runway Gen-3 Alpha — video AI. Parameter lewat UI atau API.",
+        "parameters": {
+          "duration": {
+            "options": [
+              { "value": 4, "unit": "detik", "description": "4 detik — paling konsisten, hemat credit" },
+              { "value": 5, "unit": "detik", "description": "5 detik — standard sweet spot" },
+              { "value": 8, "unit": "detik", "description": "8 detik — panjang, bisa ada sedikit drift" },
+              { "value": 10, "unit": "detik", "description": "10 detik maksimal — konsistensi karakter perlu perhatian" }
+            ]
+          },
+          "fps": {
+            "options": [
+              { "value": 24, "description": "24fps — cinematic standard. DIREKOMENDASIKAN untuk semua konten narrative." },
+              { "value": 30, "description": "30fps — lebih smooth tapi kurang cinematic" }
+            ]
+          },
+          "motion_amount": {
+            "options": [
+              { "value": "low", "description": "Gerakan minimal — untuk ambient dan portrait subtle" },
+              { "value": "medium", "description": "Gerakan sedang — default yang baik" },
+              { "value": "high", "description": "Gerakan kuat — untuk action dan dynamic scene" }
+            ]
+          },
+          "camera_motion": {
+            "options": [
+              "Static camera",
+              "Slow dolly in",
+              "Slow dolly out",
+              "Pan left",
+              "Pan right",
+              "Tilt up",
+              "Tilt down",
+              "Orbit left",
+              "Orbit right",
+              "Crane up",
+              "Handheld"
+            ]
+          }
+        },
+        "ready_combinations": [
+          { "name": "ambient_portrait", "params": "duration=5, fps=24, motion=low, camera=static", "use": "Portrait ambient subtle" },
+          { "name": "hero_reveal", "params": "duration=6, fps=24, motion=medium, camera=slow dolly in", "use": "Reveal karakter sinematik" },
+          { "name": "dynamic_action", "params": "duration=8, fps=24, motion=high, camera=handheld", "use": "Action scene energetik" },
+          { "name": "epic_orbit", "params": "duration=8, fps=24, motion=medium, camera=orbit left", "use": "Orbit epik mengelilingi karakter" }
+        ]
+      },
+
+      "kling": {
+        "_note": "Kling AI — kuat untuk face consistency karakter.",
+        "parameters": {
+          "mode": {
+            "options": [
+              { "value": "standard", "description": "5 detik — lebih cepat dan murah" },
+              { "value": "pro", "description": "Hingga 10 detik — kualitas lebih tinggi, wajib untuk karakter penting" }
+            ]
+          },
+          "duration": {
+            "options": [
+              { "value": 5, "unit": "detik", "description": "Standard mode" },
+              { "value": 10, "unit": "detik", "description": "Pro mode maksimal" }
+            ]
+          },
+          "face_reference": {
+            "_note": "SELALU aktifkan face reference untuk karakter yang harus konsisten.",
+            "options": [
+              { "value": "image_reference", "weight": 1.0, "description": "Reference weight 1.0 — maksimal mengikuti referensi" },
+              { "value": "image_reference", "weight": 0.85, "description": "Reference weight 0.85 — recommended, balance konsistensi dan freedom" },
+              { "value": "image_reference", "weight": 0.7, "description": "Reference weight 0.7 — lebih bebas, karakter bisa sedikit berbeda" }
+            ]
+          }
+        },
+        "ready_combinations": [
+          { "name": "character_consistent", "params": "mode=pro, duration=10, face_ref=0.85", "use": "Video karakter dengan konsistensi wajah tinggi" },
+          { "name": "ambient_loop", "params": "mode=standard, duration=5, face_ref=1.0", "use": "Ambient loop, karakter idle" },
+          { "name": "action_sequence", "params": "mode=pro, duration=10, face_ref=0.7", "use": "Action dinamis — wajah sedikit lebih bebas untuk ekspresi" }
+        ]
+      },
+
+      "pika": {
+        "_note": "Pika Labs — fokus pada motion control via parameter sederhana.",
+        "parameters": {
+          "motion": {
+            "_note": "Level motion — 0 hampir static, 4 maksimal.",
+            "options": [
+              { "param": "--motion 0", "description": "Hampir tidak ada gerakan — seperti gambar yang bernapas" },
+              { "param": "--motion 1", "description": "Gerakan sangat minimal — ambient subtle" },
+              { "param": "--motion 2", "description": "Gerakan ringan — default yang baik untuk kebanyakan konten" },
+              { "param": "--motion 3", "description": "Gerakan sedang-kuat" },
+              { "param": "--motion 4", "description": "Gerakan maksimal — action penuh" }
+            ]
+          },
+          "aspect_ratio": {
+            "options": [
+              { "param": "--ar 16:9", "description": "Landscape standar" },
+              { "param": "--ar 9:16", "description": "Portrait vertikal — TikTok, Reels" },
+              { "param": "--ar 1:1", "description": "Square — sosial media universal" },
+              { "param": "--ar 4:5", "description": "Portrait — Instagram feed optimal" }
+            ]
+          },
+          "camera": {
+            "options": [
+              { "param": "--zoom in", "description": "Slow zoom in" },
+              { "param": "--zoom out", "description": "Slow zoom out" },
+              { "param": "--pan left", "description": "Pan ke kiri" },
+              { "param": "--pan right", "description": "Pan ke kanan" }
+            ]
+          },
+          "fps": {
+            "options": [
+              { "param": "--fps 24", "description": "Cinematic" },
+              { "param": "--fps 30", "description": "Smooth" }
+            ]
+          }
+        },
+        "ready_combinations": [
+          { "name": "social_portrait_vertical", "params": "--motion 1 --ar 9:16 --fps 24", "use": "Portrait vertikal untuk sosmed" },
+          { "name": "social_square_ambient", "params": "--motion 2 --ar 1:1 --fps 24", "use": "Square ambient loop" },
+          { "name": "landscape_dynamic", "params": "--motion 3 --ar 16:9 --fps 24", "use": "Landscape widescreen dinamis" },
+          { "name": "static_scene", "params": "--motion 0 --ar 16:9 --fps 24", "use": "Scene hampir diam" }
+        ]
+      },
+
+      "sora": {
+        "_note": "OpenAI Sora — mendukung instruksi panjang dan naratif. Tidak perlu syntax khusus seperti MidJourney.",
+        "parameters": {
+          "resolution": {
+            "options": [
+              { "value": "480p", "description": "Preview — cepat dan hemat" },
+              { "value": "720p", "description": "Standard — good quality" },
+              { "value": "1080p", "description": "High quality — showcase" }
+            ]
+          },
+          "duration": {
+            "options": [
+              { "value": "5s", "description": "5 detik" },
+              { "value": "10s", "description": "10 detik" },
+              { "value": "15s", "description": "15 detik" },
+              { "value": "20s", "description": "20 detik" }
+            ]
+          },
+          "aspect_ratio": {
+            "options": [
+              { "value": "16:9", "description": "Landscape" },
+              { "value": "9:16", "description": "Vertical" },
+              { "value": "1:1", "description": "Square" }
+            ]
+          }
+        },
+        "prompt_style_note": "Sora merespons paling baik pada deskripsi naratif natural — bukan tag cloud. Tulis seperti mendeskripsikan scene ke director: 'The camera slowly dolls in on...' bukan 'dolly in, slow, cinematic'.",
+        "ready_combinations": [
+          { "name": "cinematic_portrait", "params": "resolution=1080p, duration=10s, ar=9:16", "use": "Portrait sinematik vertikal" },
+          { "name": "landscape_scene", "params": "resolution=1080p, duration=15s, ar=16:9", "use": "Scene environment lebar" }
+        ]
+      }
+    },
+
+    "assembly_templates": {
+      "_note": "Template prompt yang sudah dirakit — menunjukkan bagaimana semua komponen output_config digabungkan menjadi string prompt final yang siap paste ke platform.",
+
+      "options": [
+        {
+          "name": "SDXL_Character_Portrait",
+          "id": "SDXL Portrait Karakter",
+          "platform": "stable_diffusion_xl",
+          "generator_type": "image",
+          "template_structure": {
+            "positive_prompt_order": ["identity_anchor", "subjects", "lighting", "composition", "atmosphere", "scene_core", "technical_quality_tokens"],
+            "separator": ", ",
+            "emphasis_syntax": "weight_suffix untuk identity dan subjects",
+            "length_target": "~300 karakter / 75 token"
+          },
+          "positive_prompt_example": "(young East Asian woman:1.3), (dark almond eyes:1.2), (straight black hair:1.2), 20s, slender, standing, slight smile, determination, golden hour lighting, warm light from left, soft shadows, medium shot MS, rule of thirds, atmospheric haze, urban rooftop, masterpiece, best quality, 8K, ultra detailed, sharp focus",
+          "negative_prompt_example": "(wrong race:1.5), (extra fingers:1.4), deformed hands, worst quality, low quality, blurry, text, watermark, multiple people",
+          "parameters": "steps: 25, cfg: 7.5, sampler: DPM++ 2M Karras, hires: 1.5x / denoising: 0.35",
+          "notes": "Token kritis di depan, technical quality tokens di belakang karena CLIP sering truncate bagian akhir"
+        },
+        {
+          "name": "MidJourney_Cinematic",
+          "id": "MidJourney Sinematik",
+          "platform": "midjourney",
+          "generator_type": "image",
+          "template_structure": {
+            "positive_prompt_order": ["identity_anchor", "subjects", "scene_core", "lighting", "atmosphere", "composition", "style_tokens"],
+            "separator": ", ",
+            "emphasis_syntax": "none — MidJourney tidak pakai parentheses",
+            "length_target": "~800 karakter"
+          },
+          "positive_prompt_example": "young East Asian woman, dark straight hair past shoulders, 20s, wearing dark fantasy armor, golden hour, warm dramatic light from left, cinematic, deep shadow, rooftop city at dusk, medium shot, rule of thirds, atmospheric haze, photorealistic, film photography, cinematic quality",
+          "parameter_append_example": "--v 6 --style raw --ar 2:3 --s 100 --q 2 --cref [reference_url] --cw 100",
+          "notes": "Tidak ada negative syntax — gunakan --no di akhir jika perlu. Style raw untuk konsistensi karakter."
+        },
+        {
+          "name": "DALLE3_Natural_Language",
+          "id": "DALL-E 3 Natural Language",
+          "platform": "dalle3",
+          "generator_type": "image",
+          "template_structure": {
+            "positive_prompt_order": ["scene_description_natural", "character_description", "lighting_description", "mood_description"],
+            "separator": ". ",
+            "emphasis_syntax": "natural_repetition untuk fitur kritis",
+            "length_target": "~800–1200 karakter"
+          },
+          "positive_prompt_example": "A cinematic photograph of a young East Asian woman in her early 20s, with dark straight black hair and almond-shaped dark brown eyes. She is standing on a rooftop at golden hour, wearing dark fantasy armor with intricate details. The warm golden light falls from her left side, creating soft dramatic shadows. The composition follows the rule of thirds with atmospheric urban haze in the background. The mood is determined and confident. I NEED to maintain the exact Asian appearance described. Do not alter ethnicity, age, or facial features.",
+          "api_params": "quality=hd, style=natural, size=1024x1792",
+          "notes": "Kalimat larangan di akhir sangat membantu menjaga konsistensi ras di DALL-E 3"
+        },
+        {
+          "name": "Kling_Character_Video",
+          "id": "Kling Video Karakter",
+          "platform": "kling",
+          "generator_type": "video",
+          "template_structure": {
+            "positive_prompt_order": ["character_brief", "action_and_motion", "camera_movement", "scene_mood"],
+            "separator": ", ",
+            "emphasis_syntax": "none",
+            "length_target": "~250 karakter"
+          },
+          "positive_prompt_example": "Young East Asian woman in dark armor, standing on rooftop at golden hour, gentle wind moves her hair, static camera, cinematic, atmospheric",
+          "parameter_config": "mode=pro, duration=10, face_reference=ON, reference_weight=0.85",
+          "notes": "Prompt pendek dan fokus. Detail karakter ditangani oleh face_reference — prompt hanya perlu action dan scene."
+        },
+        {
+          "name": "Runway_Cinematic_Video",
+          "id": "Runway Video Sinematik",
+          "platform": "runway_gen3",
+          "generator_type": "video",
+          "template_structure": {
+            "positive_prompt_order": ["camera_movement_description", "subject_and_action", "lighting_mood", "scene"],
+            "separator": ". ",
+            "emphasis_syntax": "none — natural language",
+            "length_target": "~300 karakter"
+          },
+          "positive_prompt_example": "Slow dolly in toward a young woman standing on a rooftop. She stands still as golden hour light falls on her from the left. Her hair moves slightly in the wind. Cinematic, atmospheric haze in the background.",
+          "parameter_config": "fps=24, duration=6, motion_amount=medium",
+          "notes": "Runway merespons baik pada deskripsi pergerakan kamera yang explicit. Mulai dengan kamera movement."
+        }
+      ]
+    }
+  }
+}

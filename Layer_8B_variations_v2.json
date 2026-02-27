@@ -1,0 +1,748 @@
+{
+  "_readme": "Library variations v2 — ekspansi dari v1 dengan fokus pada: (1) dependency map antar field, (2) forbidden combinations per genre, (3) variation templates khusus video, (4) production profiles untuk use case nyata, (5) QA framework terintegrasi. Gunakan bersama variations_v1.json — v2 adalah referensi lanjutan, bukan pengganti.",
+  "_version": "2.0",
+  "_use_alongside": "variations_v1.json — v1 berisi foundations (types, probability, basic presets). v2 berisi advanced patterns.",
+
+  "variations": {
+
+    "field_dependency_map": {
+      "_note": "Peta ketergantungan antar field — jika field A berubah, field mana yang harus ikut berubah agar output tetap kohesif. Gunakan ini untuk merancang conditional rules yang benar.",
+
+      "primary_chains": {
+        "_note": "Chain perubahan yang paling sering dibutuhkan dalam produksi.",
+        "chains": [
+          {
+            "name": "time_of_day_chain",
+            "trigger": "scene_core.time_of_day",
+            "must_follow": [
+              { "field": "lighting.preset", "relationship": "direct_match", "note": "Golden hour → golden_hour preset. Midnight → moonlight atau neon. Dawn → sunrise_atmospheric." },
+              { "field": "lighting.key_light.color.temperature", "relationship": "derived", "note": "Siang = 5500K daylight. Golden hour = 2700K warm. Blue hour = 7000K cool. Midnight = 3200K tungsten jika ada lampu." },
+              { "field": "atmosphere.visual_style.color_palette", "relationship": "suggested", "note": "Golden hour → warm_golden. Midnight → neon_dark atau monochrome_blue. Dawn → pastel_dream." },
+              { "field": "scene_core.lighting_condition", "relationship": "derived", "note": "Night time → low_light atau artificial_light. Noon → harsh_direct. Overcast bisa kapan saja." }
+            ],
+            "rule_order": ["scene_core.time_of_day", "lighting.preset", "lighting.key_light.color.temperature", "atmosphere.visual_style.color_palette"]
+          },
+          {
+            "name": "weather_chain",
+            "trigger": "scene_core.weather",
+            "must_follow": [
+              { "field": "environment.weather_climate.precipitation", "relationship": "direct_match", "note": "Rain → light_rain atau heavy_rain. Snow → snowfall. Clear → none." },
+              { "field": "lighting.key_light.quality", "relationship": "derived", "note": "Overcast → very_soft diffused. Clear → hard_direct. Rain → soft_diffused." },
+              { "field": "atmosphere.visual_style.color_palette", "relationship": "suggested", "note": "Rain → desaturated_muted atau monochrome_blue. Storm → blood_black. Clear → warm_golden atau natural." },
+              { "field": "motion.environment_motion.wind_effect", "relationship": "derived", "note": "Storm → gale_force. Light rain → steady_breeze. Clear → light_breeze atau none." }
+            ],
+            "rule_order": ["scene_core.weather", "environment.weather_climate.precipitation", "lighting.key_light.quality", "atmosphere.visual_style.color_palette", "motion.environment_motion.wind_effect"]
+          },
+          {
+            "name": "outfit_chain",
+            "trigger": "subjects.primary_subject.dressing_room.active_outfit",
+            "must_follow": [
+              { "field": "subjects.primary_subject.pose.base_pose", "relationship": "suggested", "note": "Battle outfit → combat stance. Formal → standing composed. Casual → relaxed. Festival → playful." },
+              { "field": "subjects.primary_subject.pose.energy_level", "relationship": "derived", "note": "Battle → high atau explosive. Formal → controlled. Casual → low atau idle." },
+              { "field": "motion.subject_motion.cloth_physics", "relationship": "derived", "note": "Heavy armor → minimal. Long dress formal → gentle_sway. Battle cape → dramatic_flow." }
+            ],
+            "rule_order": ["active_outfit", "pose.base_pose", "pose.energy_level", "cloth_physics"]
+          },
+          {
+            "name": "emotion_chain",
+            "trigger": "subjects.primary_subject.expression_emotion.primary_emotion",
+            "must_follow": [
+              { "field": "subjects.primary_subject.expression_emotion.micro_expressions", "relationship": "derived", "note": "Grief → tears forming, quivering lip. Anger → jaw clenched, flared nostrils. Joy → crinkled eyes, raised cheeks." },
+              { "field": "subjects.primary_subject.pose.energy_level", "relationship": "suggested", "note": "Fear → tense atau collapsed. Determination → controlled high. Joy → open elevated." },
+              { "field": "atmosphere.emotional_tone", "relationship": "should_mirror", "note": "Emosi karakter harus resonan dengan mood scene — grief + melancholic, joy + hopeful." },
+              { "field": "lighting.key_light.color.temperature", "relationship": "suggested", "note": "Warm light amplifies joy/hope. Cool light amplifies grief/dread." }
+            ],
+            "rule_order": ["primary_emotion", "micro_expressions", "energy_level", "atmosphere.emotional_tone", "lighting.key_light.color.temperature"]
+          },
+          {
+            "name": "shot_type_chain",
+            "trigger": "composition.camera.shot_type",
+            "must_follow": [
+              { "field": "composition.camera.lens.focal_length", "relationship": "derived", "note": "ECU/CU → 85–135mm. MS → 50mm. FS/WS → 24–35mm. EWS → 16–24mm." },
+              { "field": "composition.camera.lens.aperture", "relationship": "suggested", "note": "CU portrait → f/1.4–f/2.8 wide open. WS landscape → f/8–f/11 deep focus." },
+              { "field": "composition.framing.head_room", "relationship": "derived", "note": "CU → tight head room. WS → generous head room atau frame dalam environment." },
+              { "field": "composition.spatial_layers.foreground_element", "relationship": "optional", "note": "WS/EWS sering butuh foreground element untuk depth. CU tidak perlu." }
+            ],
+            "rule_order": ["shot_type", "focal_length", "aperture", "head_room"]
+          }
+        ]
+      },
+
+      "conflict_pairs": {
+        "_note": "Kombinasi field yang akan menghasilkan output inkohesif jika digunakan bersamaan — avoid these.",
+        "pairs": [
+          { "field_a": "scene_core.time_of_day = midnight", "field_b": "lighting.preset = harsh_noon", "conflict": "Waktu malam tapi pencahayaan siang hari — kontradiksi fisika." },
+          { "field_a": "scene_core.weather = heavy_storm", "field_b": "atmosphere.emotional_tone = serene", "conflict": "Badai besar tapi mood tenang — visual dan atmosfer bertentangan." },
+          { "field_a": "atmosphere.visual_style.art_movement = photorealism", "field_b": "atmosphere.visual_style.art_movement = anime_modern", "conflict": "Tidak bisa dua gaya utama sekaligus — pilih satu." },
+          { "field_a": "subjects.primary_subject.pose.base_pose = lying_down", "field_b": "motion.camera_movement.type = orbit", "conflict": "Orbit shot pada karakter berbaring menghasilkan angle aneh." },
+          { "field_a": "composition.camera.shot_type = ECU", "field_b": "environment.location.primary = vast_open_landscape", "conflict": "Extreme close-up pada wajah tidak menampilkan landscape sama sekali — waste of environment detail." },
+          { "field_a": "scene_core.era = medieval_fantasy", "field_b": "environment.technology.level = cyberpunk_high_tech", "conflict": "Era dan teknologi bertentangan kecuali ini memang diesel/steampunk hybrid yang disengaja." },
+          { "field_a": "atmosphere.spatial_quality.openness = suffocating", "field_b": "composition.camera.shot_type = EWS", "conflict": "EWS secara visual menampilkan ruang luas — bertentangan dengan feel suffocating." },
+          { "field_a": "motion.motion_intensity = explosive", "field_b": "subjects.primary_subject.expression_emotion.primary_emotion = serenity", "conflict": "Gerakan ekstrem tapi ekspresi damai — tidak natural." },
+          { "field_a": "lighting.preset = studio_three_point", "field_b": "scene_core.setting_type = outdoor_wilderness", "conflict": "Studio lighting di lokasi outdoor wilderness — tidak believable." },
+          { "field_a": "technical.post_processing.color_grading = noir_monochrome", "field_b": "atmosphere.visual_style.color_palette = neon_cyberpunk", "conflict": "Monochrome dan neon colorful — saling membatalkan." }
+        ]
+      }
+    },
+
+    "genre_variation_profiles": {
+      "_note": "Profile variasi yang dioptimalkan per genre — kombinasi randomizable_elements + rules yang sudah disesuaikan dengan kebutuhan estetik genre tersebut.",
+
+      "options": [
+        {
+          "name": "dark_fantasy_profile",
+          "id": "Profil Dark Fantasy",
+          "description": "Variasi untuk konten dark fantasy — segalanya condong ke gelap, mystis, dan dramatic.",
+          "randomizable_elements": [
+            "scene_core.time_of_day",
+            "scene_core.weather",
+            "environment.location.primary",
+            "lighting.preset",
+            "lighting.volumetric_effects.medium_type",
+            "atmosphere.emotional_tone",
+            "atmosphere.visual_style.color_palette",
+            "atmosphere.spatial_quality.openness",
+            "subjects.primary_subject.dressing_room.active_outfit",
+            "subjects.primary_subject.pose.base_pose",
+            "subjects.primary_subject.expression_emotion.primary_emotion"
+          ],
+          "forced_values": {
+            "scene_core.time_of_day": ["midnight", "blue_hour", "dawn", "dusk"],
+            "lighting.preset": ["moonlight", "dramatic_chiaroscuro", "candlelight", "torchlight", "fog_diffused"],
+            "atmosphere.visual_style.color_palette": ["neon_dark", "blood_black", "monochrome_blue", "purple_gold", "desaturated_muted"],
+            "atmosphere.emotional_tone": ["dread", "melancholic", "mysterious", "tense", "lonely", "haunting"]
+          },
+          "forbidden_values": {
+            "lighting.preset": ["harsh_noon", "studio_three_point", "golden_hour"],
+            "atmosphere.visual_style.color_palette": ["pastel_dream", "pink_magenta"],
+            "atmosphere.emotional_tone": ["joyful", "playful", "whimsical"]
+          },
+          "recommended_rules": ["Lighting_Mood_Rotator"],
+          "style_anchor": "photorealistic_cinematic atau dark_fantasy_painterly"
+        },
+        {
+          "name": "cyberpunk_profile",
+          "id": "Profil Cyberpunk",
+          "description": "Variasi untuk konten cyberpunk — neon, rain, urban decay, teknologi tinggi.",
+          "randomizable_elements": [
+            "scene_core.weather",
+            "scene_core.time_of_day",
+            "environment.location.specific_place",
+            "lighting.preset",
+            "lighting.rim_light.color.hue",
+            "atmosphere.visual_style.color_palette",
+            "atmosphere.visual_style.contrast_mood",
+            "technical.post_processing.color_grading",
+            "subjects.primary_subject.dressing_room.active_outfit",
+            "subjects.primary_subject.expression_emotion.primary_emotion"
+          ],
+          "forced_values": {
+            "scene_core.time_of_day": ["midnight", "blue_hour"],
+            "scene_core.weather": ["rain", "light_rain", "foggy"],
+            "lighting.preset": ["neon_cyberpunk", "street_sodium", "dramatic_chiaroscuro"],
+            "atmosphere.visual_style.color_palette": ["neon_dark", "teal_orange", "purple_gold", "pink_magenta"],
+            "technical.post_processing.color_grading": ["neon_cyberpunk", "teal_orange", "desaturated_cold"]
+          },
+          "forbidden_values": {
+            "scene_core.time_of_day": ["harsh_noon", "golden_hour"],
+            "atmosphere.visual_style.color_palette": ["pastel_dream", "earth_tones", "warm_golden"],
+            "environment.location.primary": ["natural_forest", "open_countryside"]
+          },
+          "recommended_rules": ["Lighting_Mood_Rotator"],
+          "style_anchor": "photorealistic_cinematic"
+        },
+        {
+          "name": "slice_of_life_profile",
+          "id": "Profil Slice of Life",
+          "description": "Variasi untuk konten kehidupan sehari-hari — natural, hangat, relatable.",
+          "randomizable_elements": [
+            "scene_core.time_of_day",
+            "scene_core.weather",
+            "scene_core.season",
+            "environment.location.primary",
+            "environment.location.specific_place",
+            "lighting.preset",
+            "atmosphere.visual_style.color_palette",
+            "atmosphere.emotional_tone",
+            "subjects.primary_subject.dressing_room.active_outfit",
+            "subjects.primary_subject.pose.base_pose",
+            "subjects.primary_subject.pose.action_verb",
+            "subjects.primary_subject.expression_emotion.primary_emotion"
+          ],
+          "forced_values": {
+            "scene_core.time_of_day": ["golden_hour", "morning_soft", "afternoon_diffused", "blue_hour"],
+            "lighting.preset": ["golden_hour", "morning_window_light", "overcast_soft", "magic_ethereal"],
+            "atmosphere.visual_style.color_palette": ["warm_golden", "pastel_dream", "earth_tones", "natural_neutral"],
+            "atmosphere.emotional_tone": ["nostalgic", "serene", "hopeful", "tender", "content"]
+          },
+          "forbidden_values": {
+            "lighting.preset": ["dramatic_chiaroscuro", "neon_cyberpunk", "storm_dramatic"],
+            "atmosphere.visual_style.color_palette": ["blood_black", "neon_dark"],
+            "atmosphere.emotional_tone": ["dread", "terror", "rage"]
+          },
+          "recommended_rules": ["Four_Seasons_Series", "Emotion_Arc_Sequential"],
+          "style_anchor": "photorealistic_cinematic atau ghibli_inspired"
+        },
+        {
+          "name": "epic_fantasy_profile",
+          "id": "Profil Epic Fantasy",
+          "description": "Variasi untuk konten high fantasy epik — megah, heroik, dan sinematik.",
+          "randomizable_elements": [
+            "scene_core.time_of_day",
+            "scene_core.weather",
+            "environment.location.primary",
+            "environment.architecture.style",
+            "composition.camera.shot_type",
+            "composition.camera.angle",
+            "lighting.preset",
+            "atmosphere.emotional_tone",
+            "atmosphere.visual_style.color_palette",
+            "atmosphere.spatial_quality.openness",
+            "subjects.primary_subject.dressing_room.active_outfit",
+            "subjects.primary_subject.pose.base_pose",
+            "subjects.primary_subject.expression_emotion.primary_emotion"
+          ],
+          "forced_values": {
+            "composition.camera.angle": ["low_angle", "eye_level"],
+            "atmosphere.spatial_quality.openness": ["open", "vast", "infinite"],
+            "lighting.preset": ["golden_hour", "dramatic_chiaroscuro", "epic_backlighting", "sunrise_atmospheric"],
+            "atmosphere.emotional_tone": ["determined", "epic", "wonder", "hopeful", "tense"]
+          },
+          "forbidden_values": {
+            "composition.camera.shot_type": ["ECU"],
+            "atmosphere.spatial_quality.openness": ["suffocating", "claustrophobic"],
+            "atmosphere.emotional_tone": ["mundane", "bored"]
+          },
+          "recommended_rules": ["Cinematic_Shot_Variety"],
+          "style_anchor": "high_fantasy_illustrative atau dark_fantasy_painterly"
+        },
+        {
+          "name": "horror_profile",
+          "id": "Profil Horror",
+          "description": "Variasi untuk konten horror — tension, dread, dan psychological discomfort.",
+          "randomizable_elements": [
+            "scene_core.time_of_day",
+            "environment.location.primary",
+            "environment.architecture.condition",
+            "lighting.preset",
+            "lighting.shadows.style",
+            "atmosphere.emotional_tone",
+            "atmosphere.visual_style.color_palette",
+            "atmosphere.spatial_quality.openness",
+            "atmosphere.spatial_quality.intimacy",
+            "subjects.primary_subject.expression_emotion.primary_emotion",
+            "technical.post_processing.grain_noise"
+          ],
+          "forced_values": {
+            "scene_core.time_of_day": ["midnight", "blue_hour", "dawn_gray"],
+            "lighting.shadows.style": ["hard_deep", "dramatic_chiaroscuro", "minimal_fill"],
+            "atmosphere.visual_style.color_palette": ["desaturated_muted", "monochrome_blue", "blood_black"],
+            "atmosphere.emotional_tone": ["dread", "tense", "paranoid", "haunting", "dread"],
+            "atmosphere.spatial_quality.openness": ["suffocating", "claustrophobic", "intimate_enclosed"],
+            "technical.post_processing.grain_noise": ["medium_grain", "heavy_grain"]
+          },
+          "forbidden_values": {
+            "scene_core.time_of_day": ["golden_hour", "harsh_noon"],
+            "atmosphere.emotional_tone": ["joyful", "serene", "content"],
+            "atmosphere.visual_style.color_palette": ["pastel_dream", "warm_golden", "pink_magenta"]
+          },
+          "special_rules": [
+            "Selalu tambahkan volumetric_effects (fog atau mist) untuk atmosphere",
+            "Lighting fill sebaiknya minimal — biarkan shadow dalam",
+            "Grain tinggi menambah unease"
+          ]
+        },
+        {
+          "name": "romance_profile",
+          "id": "Profil Romance",
+          "description": "Variasi untuk konten romance — intimacy, warmth, dan emotional connection.",
+          "randomizable_elements": [
+            "scene_core.time_of_day",
+            "scene_core.season",
+            "environment.location.primary",
+            "lighting.preset",
+            "lighting.key_light.color.temperature",
+            "atmosphere.visual_style.color_palette",
+            "atmosphere.spatial_quality.intimacy",
+            "atmosphere.emotional_tone",
+            "subjects.primary_subject.dressing_room.active_outfit",
+            "subjects.primary_subject.expression_emotion.primary_emotion",
+            "technical.post_processing.color_grading",
+            "technical.post_processing.grain_noise"
+          ],
+          "forced_values": {
+            "scene_core.time_of_day": ["golden_hour", "blue_hour", "magic_hour"],
+            "atmosphere.visual_style.color_palette": ["warm_golden", "pastel_dream", "pink_magenta", "sunset_gradient"],
+            "atmosphere.spatial_quality.intimacy": ["engaged", "intimate", "voyeuristic"],
+            "atmosphere.emotional_tone": ["tender", "longing", "hopeful", "content", "vulnerable"],
+            "lighting.key_light.color.temperature": ["2700K_warm_amber", "3200K_warm_tungsten"]
+          },
+          "forbidden_values": {
+            "atmosphere.emotional_tone": ["rage", "terror", "dread"],
+            "lighting.preset": ["harsh_noon", "storm_dramatic"],
+            "atmosphere.spatial_quality.openness": ["suffocating"]
+          },
+          "recommended_rules": ["Emotion_Arc_Sequential"],
+          "style_anchor": "photorealistic_cinematic"
+        }
+      ]
+    },
+
+    "video_variation_presets": {
+      "_note": "Preset variasi khusus untuk generate video — mempertimbangkan motion consistency, face lock, dan temporal coherence.",
+
+      "options": [
+        {
+          "name": "Character_Idle_Loop_Series",
+          "id": "Seri Loop Idle Karakter",
+          "description": "Seri video ambient loop dengan kondisi berbeda — karakter idle dalam mood dan waktu berbeda. Untuk wallpaper atau sosmed.",
+          "generator_type": "video",
+          "platform_recommended": ["kling", "pika", "runway"],
+          "randomizable_elements": [
+            "scene_core.time_of_day",
+            "scene_core.weather",
+            "scene_core.season",
+            "lighting.preset",
+            "atmosphere.visual_style.color_palette",
+            "motion.environment_motion.elements",
+            "motion.environment_motion.wind_effect"
+          ],
+          "fixed_elements": {
+            "subjects.primary_subject.expression_emotion.primary_emotion": "serenity",
+            "motion.subject_motion.primary_motion": "idle_breathing",
+            "motion.motion_intensity": "still",
+            "temporal_sequence.loop": true
+          },
+          "rules": [
+            {
+              "rule_id": "V01_time",
+              "target_element": "scene_core.time_of_day",
+              "variation_type": "sequential",
+              "options": ["golden_hour", "blue_hour", "midnight", "dawn"],
+              "probability": 1.0
+            },
+            {
+              "rule_id": "V02_lighting",
+              "target_element": "lighting.preset",
+              "variation_type": "conditional",
+              "conditions": [
+                { "if": "time_of_day == 'golden_hour'", "then": "golden_hour" },
+                { "if": "time_of_day == 'blue_hour'", "then": "blue_hour" },
+                { "if": "time_of_day == 'midnight'", "then": "moonlight" },
+                { "if": "time_of_day == 'dawn'", "then": "sunrise_atmospheric" }
+              ],
+              "probability": 1.0
+            },
+            {
+              "rule_id": "V03_wind",
+              "target_element": "motion.environment_motion.wind_effect",
+              "variation_type": "weighted_random",
+              "options": [
+                { "value": "very_light_breeze", "weight": 0.4 },
+                { "value": "light_breeze", "weight": 0.4 },
+                { "value": "dead_calm", "weight": 0.2 }
+              ],
+              "probability": 1.0
+            }
+          ],
+          "batch_config": {
+            "count": 4,
+            "naming_pattern": "{char}_idle_{time_of_day}_loop_{n}",
+            "fps": 24,
+            "duration_sec": 5,
+            "loop": true
+          }
+        },
+        {
+          "name": "Dynamic_Action_Shots",
+          "id": "Shot Aksi Dinamis",
+          "description": "Seri video action dengan shot dan gerakan berbeda — untuk battle, parkour, atau power showcase.",
+          "generator_type": "video",
+          "platform_recommended": ["runway", "kling"],
+          "randomizable_elements": [
+            "composition.camera.shot_type",
+            "composition.camera.angle",
+            "motion.camera_movement.type",
+            "motion.subject_motion.primary_motion",
+            "motion.subject_motion.speed",
+            "motion.motion_intensity",
+            "lighting.preset"
+          ],
+          "fixed_elements": {
+            "subjects.primary_subject.dressing_room.active_outfit": "outfit_battle",
+            "subjects.primary_subject.expression_emotion.primary_emotion": "determination",
+            "temporal_sequence.loop": false
+          },
+          "rules": [
+            {
+              "rule_id": "V01_shot",
+              "target_element": "composition.camera.shot_type",
+              "variation_type": "sequential",
+              "options": ["WS", "MS", "MCU", "CU"],
+              "probability": 1.0
+            },
+            {
+              "rule_id": "V02_camera_move",
+              "target_element": "motion.camera_movement.type",
+              "variation_type": "random_pick",
+              "options": ["dolly", "orbit", "handheld_follow", "static"],
+              "probability": 0.8
+            },
+            {
+              "rule_id": "V03_motion_intensity",
+              "target_element": "motion.motion_intensity",
+              "variation_type": "sequential",
+              "options": ["moderate", "active", "intense", "explosive"],
+              "probability": 1.0,
+              "depends_on": "V01_shot"
+            },
+            {
+              "rule_id": "V04_speed",
+              "target_element": "motion.subject_motion.speed",
+              "variation_type": "conditional",
+              "conditions": [
+                { "if": "motion_intensity == 'moderate'", "then": "real_time" },
+                { "if": "motion_intensity == 'active'", "then": "real_time" },
+                { "if": "motion_intensity == 'intense'", "then": "real_time" },
+                { "if": "motion_intensity == 'explosive'", "then": "slow_motion" }
+              ],
+              "probability": 0.9
+            }
+          ],
+          "batch_config": {
+            "count": 4,
+            "naming_pattern": "{char}_action_{shot}_{n}",
+            "fps": 24,
+            "duration_sec": 6
+          }
+        },
+        {
+          "name": "Portrait_Reveal_Series",
+          "id": "Seri Reveal Portrait",
+          "description": "Seri video reveal shot tunggal dengan camera movement berbeda — untuk intro karakter.",
+          "generator_type": "video",
+          "platform_recommended": ["runway", "kling", "hailuo"],
+          "randomizable_elements": [
+            "motion.camera_movement.type",
+            "motion.camera_movement.direction",
+            "motion.camera_movement.speed",
+            "lighting.preset",
+            "atmosphere.visual_style.color_palette"
+          ],
+          "fixed_elements": {
+            "composition.camera.shot_type": "MS",
+            "subjects.primary_subject.pose.base_pose": "standing_composed",
+            "motion.subject_motion.primary_motion": "idle_subtle_sway",
+            "temporal_sequence.loop": false
+          },
+          "rules": [
+            {
+              "rule_id": "V01_camera_type",
+              "target_element": "motion.camera_movement.type",
+              "variation_type": "sequential",
+              "options": ["dolly", "orbit", "static", "crane_jib"],
+              "probability": 1.0
+            },
+            {
+              "rule_id": "V02_direction",
+              "target_element": "motion.camera_movement.direction",
+              "variation_type": "conditional",
+              "conditions": [
+                { "if": "camera_type == 'dolly'", "then": "forward" },
+                { "if": "camera_type == 'orbit'", "then": "clockwise" },
+                { "if": "camera_type == 'static'", "then": null },
+                { "if": "camera_type == 'crane_jib'", "then": "rising_forward" }
+              ],
+              "probability": 1.0
+            },
+            {
+              "rule_id": "V03_lighting",
+              "target_element": "lighting.preset",
+              "variation_type": "random_pick",
+              "options": ["golden_hour", "dramatic_chiaroscuro", "magic_ethereal", "studio_rim_dark"],
+              "probability": 1.0
+            }
+          ],
+          "batch_config": {
+            "count": 4,
+            "naming_pattern": "{char}_reveal_{n}",
+            "fps": 24,
+            "duration_sec": 6
+          }
+        }
+      ]
+    },
+
+    "production_profiles": {
+      "_note": "Profile produksi end-to-end untuk use case nyata — menggabungkan semua sub-system variations menjadi satu konfigurasi siap eksekusi.",
+
+      "options": [
+        {
+          "name": "Character_Launch_Pack",
+          "id": "Pack Launch Karakter Baru",
+          "description": "Set generate komprehensif untuk memperkenalkan karakter baru — portrait, outfit showcase, dan ambient video. Total 18 output.",
+          "phases": [
+            {
+              "phase": 1,
+              "label": "Portrait Variety",
+              "description": "6 portrait berbeda — menunjukkan ekspresi dan mood range karakter",
+              "generator_type": "image",
+              "preset_set": "portrait_series",
+              "count": 6,
+              "naming_pattern": "{char}_launch_portrait_{n}",
+              "seed_strategy": "incremental dari seed terbaik"
+            },
+            {
+              "phase": 2,
+              "label": "Outfit Showcase",
+              "description": "Semua outfit karakter dalam satu pose formal",
+              "generator_type": "image",
+              "preset_set": "outfit_showcase",
+              "count": "jumlah outfit di outfit_library",
+              "naming_pattern": "{char}_launch_{outfit}",
+              "seed_strategy": "fixed seed — sama untuk semua outfit"
+            },
+            {
+              "phase": 3,
+              "label": "Ambient Hero Video",
+              "description": "Satu video idle loop berkualitas tinggi untuk social media",
+              "generator_type": "video",
+              "preset": "Character_Idle_Loop_Series",
+              "count": 1,
+              "naming_pattern": "{char}_launch_hero_video",
+              "platform": "kling"
+            }
+          ],
+          "total_output": "6 portrait + N outfit + 1 video",
+          "timeline": "Phase 1 dan 2 bisa paralel. Phase 3 setelah phase 1 approved."
+        },
+        {
+          "name": "Social_Media_Content_Week",
+          "id": "Konten Sosmed Seminggu",
+          "description": "7 konten untuk satu minggu posting — satu per hari, berbeda mood dan format.",
+          "generator_type": "image",
+          "strategy": "sequential_rules",
+          "rules_applied": "Lighting_Mood_Rotator",
+          "count": 7,
+          "aspect_ratio_rotation": ["9:16", "1:1", "9:16", "9:16", "1:1", "9:16", "9:16"],
+          "naming_pattern": "{char}_week_{date}_{n}",
+          "posting_schedule": "Satu per hari — match timing dengan peak engagement platform target",
+          "variety_target": "Tiap post harus berbeda dalam setidaknya 2 dimensi: waktu/cuaca/mood/palette"
+        },
+        {
+          "name": "Story_Arc_Visual_Novel",
+          "id": "Arc Cerita Visual Novel",
+          "description": "Generate set gambar untuk satu arc cerita — setup, rising action, climax, resolution.",
+          "generator_type": "image",
+          "strategy": "sequential_rules",
+          "phases": [
+            { "beat": "setup", "shot_type": "WS", "emotion": "neutral", "lighting": "morning_soft", "count": 2 },
+            { "beat": "rising_action", "shot_type": "MS", "emotion": "determination", "lighting": "golden_hour", "count": 3 },
+            { "beat": "climax", "shot_type": "CU", "emotion": "intense_fear_or_anger", "lighting": "dramatic_chiaroscuro", "count": 2 },
+            { "beat": "resolution", "shot_type": "FS", "emotion": "relief_or_grief", "lighting": "blue_hour", "count": 2 }
+          ],
+          "total_count": 9,
+          "naming_pattern": "{char}_arc_{beat}_{n}",
+          "consistency_note": "Gunakan seed yang sama untuk wajah — hanya expression yang berubah via rules"
+        },
+        {
+          "name": "Platform_Comparison_Test",
+          "id": "Test Perbandingan Platform",
+          "description": "Generate output identik di multiple platform — untuk memilih platform terbaik untuk karakter ini.",
+          "strategy": "fixed_seed_all_platforms",
+          "fixed_seed": "gunakan seed terbaik dari seed_archive",
+          "fixed_prompt": "gunakan template tanpa variation rules — semua field fixed",
+          "platforms": ["midjourney", "sdxl", "dalle3", "kling"],
+          "count_per_platform": 3,
+          "total_count": 12,
+          "naming_pattern": "{platform}_{char}_comparison_{n}",
+          "evaluation_criteria": [
+            "face_accuracy_to_reference",
+            "race_consistency",
+            "lighting_quality",
+            "detail_sharpness",
+            "overall_aesthetic"
+          ]
+        }
+      ]
+    },
+
+    "qa_framework": {
+      "_note": "Framework Quality Assurance terintegrasi dalam batch — definisi kriteria accept/reject dan scoring per output.",
+
+      "acceptance_criteria": {
+        "_note": "Kondisi minimum yang harus terpenuhi agar output diterima ke approved/.",
+        "mandatory": [
+          {
+            "criterion": "face_visible",
+            "description": "Wajah karakter harus terlihat dan tidak terpotong (kecuali memang shot non-portrait)",
+            "auto_check": "Jika shot_type adalah CU/MCU/MS tapi wajah tidak terlihat → reject"
+          },
+          {
+            "criterion": "race_consistent",
+            "description": "Ras karakter harus konsisten dengan identity_anchor — tidak boleh drift ke ras lain",
+            "auto_check": "Verifikasi visual terhadap reference_images"
+          },
+          {
+            "criterion": "no_extra_limbs",
+            "description": "Tidak ada extra limb, jari tambahan, atau distorsi anatomi parah",
+            "auto_check": "AI anatomy detection jika tersedia"
+          },
+          {
+            "criterion": "no_text_artifacts",
+            "description": "Tidak ada garbled text atau gibberish text dalam gambar kecuali memang ada signage",
+            "auto_check": "OCR check pada area text"
+          },
+          {
+            "criterion": "composition_intentional",
+            "description": "Subjek tidak terpotong secara tidak sengaja — sesuai dengan shot_type yang diminta",
+            "auto_check": "Verifikasi bahwa subjek ada dalam frame sesuai shot_type"
+          }
+        ],
+        "preferred": [
+          { "criterion": "lighting_cohesive", "description": "Arah dan kualitas cahaya konsisten dengan time_of_day dan lighting.preset" },
+          { "criterion": "atmosphere_matching", "description": "Mood visual sesuai dengan emotional_tone yang didefinisikan" },
+          { "criterion": "outfit_complete", "description": "Seluruh outfit terlihat — tidak ada bagian yang terpotong secara aneh" },
+          { "criterion": "no_identity_drift", "description": "Wajah identik atau sangat mirip dengan reference_images" }
+        ]
+      },
+
+      "quality_scoring": {
+        "_note": "Rubrik penilaian 1–10 per dimensi. Total skor / jumlah dimensi = overall score.",
+        "dimensions": [
+          {
+            "dimension": "face_accuracy",
+            "weight": 3.0,
+            "description": "Seberapa akurat wajah terhadap identity_anchor dan reference_images",
+            "score_guide": {
+              "9_10": "Identik dengan reference — semua fitur match",
+              "7_8": "Sangat mirip — minor variation yang acceptable",
+              "5_6": "Mirip tapi ada perbedaan yang terasa",
+              "3_4": "Sama ras dan hair color tapi wajah berbeda",
+              "1_2": "Karakter yang berbeda sama sekali"
+            }
+          },
+          {
+            "dimension": "technical_quality",
+            "weight": 2.0,
+            "description": "Kualitas teknis — sharpness, anatomy, no artifacts",
+            "score_guide": {
+              "9_10": "Sempurna — tidak ada cacat teknis",
+              "7_8": "Sangat baik — cacat minor tidak mengganggu",
+              "5_6": "Acceptable — ada cacat tapi masih usable",
+              "3_4": "Ada masalah teknis yang mengganggu",
+              "1_2": "Cacat berat — tidak usable"
+            }
+          },
+          {
+            "dimension": "atmosphere_match",
+            "weight": 1.5,
+            "description": "Seberapa sesuai suasana dengan yang didefinisikan di atmosphere dan lighting",
+            "score_guide": {
+              "9_10": "Atmosphere persis sesuai spec",
+              "7_8": "Atmosphere sangat dekat spec",
+              "5_6": "Atmosphere cukup sesuai",
+              "3_4": "Atmosphere sedikit berbeda dari intended",
+              "1_2": "Atmosphere sama sekali berbeda"
+            }
+          },
+          {
+            "dimension": "composition_quality",
+            "weight": 1.0,
+            "description": "Kualitas komposisi — framing, balance, intentionality",
+            "score_guide": {
+              "9_10": "Komposisi excellent — sesuai spec dan secara artistik kuat",
+              "7_8": "Komposisi baik",
+              "5_6": "Komposisi acceptable",
+              "3_4": "Komposisi lemah",
+              "1_2": "Komposisi poor — perlu re-generate"
+            }
+          },
+          {
+            "dimension": "outfit_accuracy",
+            "weight": 1.5,
+            "description": "Akurasi outfit terhadap definisi di dressing_room",
+            "score_guide": {
+              "9_10": "Outfit sesuai 100% dengan definisi",
+              "7_8": "Outfit sangat mirip — minor variation",
+              "5_6": "Outfit ada tapi ada perbedaan",
+              "3_4": "Outfit sangat berbeda dari definisi",
+              "1_2": "Outfit salah sama sekali"
+            }
+          }
+        ],
+        "scoring_formula": "weighted_average = sum(score * weight) / sum(weights)",
+        "approval_thresholds": {
+          "auto_approve": "overall >= 8.5 DAN face_accuracy >= 8",
+          "manual_review": "overall 6.5–8.4 ATAU face_accuracy 6–7.9",
+          "auto_reject": "overall < 6.5 ATAU face_accuracy < 6 ATAU mandatory_criterion_failed"
+        }
+      },
+
+      "batch_report_template": {
+        "_note": "Template log untuk setiap batch run — untuk tracking dan improvement.",
+        "fields": [
+          "batch_id",
+          "date_time",
+          "template_version",
+          "platform",
+          "total_generated",
+          "auto_approved",
+          "manual_review",
+          "auto_rejected",
+          "approval_rate_percent",
+          "average_face_accuracy_score",
+          "average_overall_score",
+          "best_seed",
+          "worst_seed",
+          "notes",
+          "rule_preset_used",
+          "next_iteration_changes"
+        ]
+      }
+    },
+
+    "seed_system": {
+      "_note": "Extended seed system — di atas apa yang ada di v1, dengan focus pada multi-platform seed management.",
+
+      "cross_platform_seed_notes": {
+        "_note": "Seed berperilaku berbeda di setiap platform — tidak transferable antar platform.",
+        "platform_behaviors": [
+          { "platform": "stable_diffusion_xl", "seed_type": "integer 0–2^32", "deterministic": true, "notes": "Seed paling deterministik — hasil identik jika semua parameter sama" },
+          { "platform": "midjourney", "seed_type": "integer via --seed parameter", "deterministic": "partial", "notes": "Sama seed tapi bisa ada slight variation antar generate. Gunakan --s 0 untuk lebih konsisten." },
+          { "platform": "dalle3", "seed_type": "tidak supported", "deterministic": false, "notes": "Tidak ada seed control — setiap generate berbeda meski prompt sama" },
+          { "platform": "runway", "seed_type": "integer via parameter", "deterministic": "partial", "notes": "Motion sedikit berbeda meski seed sama" },
+          { "platform": "kling", "seed_type": "integer via parameter", "deterministic": "partial", "notes": "Face consistency lebih penting dari seed di Kling" },
+          { "platform": "pika", "seed_type": "integer via --seed", "deterministic": true, "notes": "Deterministik untuk gambar, motion sedikit berbeda" }
+        ]
+      },
+
+      "seed_inheritance": {
+        "_note": "Cara menggunakan seed dari satu generate sebagai basis untuk generate berikutnya.",
+        "strategies": [
+          {
+            "name": "seed_plus_one",
+            "description": "Seed = base + n untuk setiap generate dalam batch",
+            "formula": "seed_n = base_seed + (n - 1)",
+            "example": "base=1000: generate 1→1000, 2→1001, 3→1002",
+            "best_for": "Batch terstruktur dengan controlled variety"
+          },
+          {
+            "name": "seed_times_prime",
+            "description": "Kalikan seed dengan bilangan prima — distribusi lebih acak",
+            "formula": "seed_n = (base_seed * prime_n) % max_seed",
+            "example": "base=100, primes=[7,11,13,17]: seeds=[700,1100,1300,1700]",
+            "best_for": "Variety yang tampak lebih acak tapi masih reproducible"
+          },
+          {
+            "name": "curated_jump",
+            "description": "Seed loncat dengan jarak besar yang sudah diketahui menghasilkan variety",
+            "formula": "seed_n = base + (n * 1000)",
+            "example": "base=5000: 5000, 6000, 7000, 8000",
+            "best_for": "Mengeksplor range seed yang luas tapi teratur"
+          }
+        ]
+      }
+    }
+  }
+}

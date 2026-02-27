@@ -1,0 +1,1104 @@
+{
+  "_readme": "Library dedicated untuk field variations (Layer 8B). Sistem kontrol variasi dan batch generation — menentukan elemen mana yang boleh berubah, bagaimana perubahannya terjadi, bagaimana randomisasi dikontrol, dan konfigurasi batch output. Weight 0.0 — tidak masuk prompt, tapi mengontrol bagaimana prompt dibuat antar generate.",
+  "_version": "1.0",
+  "_structure": "variations → randomizable_elements | variation_rules | seed_system | batch_config",
+  "_design_philosophy": {
+    "locked_zone": "Layer 0–1 (identity_anchor, technical_constraints, subjects.physical_attributes) TIDAK PERNAH masuk randomizable_elements. Ini adalah DNA karakter yang tidak bisa ditembus.",
+    "variable_zone": "Layer 2–7 adalah zona yang bisa divariasi — scene, environment, komposisi, lighting, atmosphere, technical (kecuali style_consistency karakter).",
+    "granularity": "Semakin spesifik path yang di-randomize, semakin controlled variasi. Contoh: 'lighting.preset' lebih coarse dari 'lighting.key_light.color.temperature' yang lebih fine-grained.",
+    "dependency_awareness": "Beberapa field saling bergantung — time_of_day mempengaruhi lighting yang masuk akal. Gunakan conditional rules untuk menjaga kohesi."
+  },
+
+  "variations": {
+
+    "randomizable_elements": {
+      "_note": "Array field path yang BOLEH divariasi antar generate dalam satu batch. Semua path menggunakan dot notation dari root schema. Field di luar list ini dianggap fixed.",
+
+      "_absolute_never_randomize": {
+        "_critical": "List berikut TIDAK BOLEH pernah dimasukkan ke randomizable_elements dalam kondisi apapun.",
+        "locked_paths": [
+          "identity_anchor",
+          "identity_anchor.name",
+          "identity_anchor.lock_method",
+          "identity_anchor.reference_images",
+          "identity_anchor.race_matrix",
+          "identity_anchor.face_dna",
+          "identity_anchor.body_dna",
+          "identity_anchor.age_profile",
+          "technical_constraints",
+          "technical_constraints.negative_prompts",
+          "technical_constraints.identity_locks",
+          "technical_constraints.rendering.style_consistency",
+          "subjects.primary_subject.physical_attributes.race",
+          "subjects.primary_subject.physical_attributes.skin_tone",
+          "subjects.primary_subject.physical_attributes.eye_color",
+          "subjects.primary_subject.physical_attributes.hair.color",
+          "subjects.primary_subject.physical_attributes.hair.texture",
+          "subjects.primary_subject.physical_attributes.body_type",
+          "subjects.primary_subject.physical_attributes.height",
+          "subjects.primary_subject.physical_attributes.distinctive_marks"
+        ]
+      },
+
+      "by_layer": {
+        "_note": "Semua path yang tersedia per layer — pilih yang relevan untuk use case.",
+
+        "layer_2a_scene_core": {
+          "_label": "Scene Core — aman divariasi penuh",
+          "paths": [
+            { "path": "scene_core.time_of_day", "impact": "tinggi", "note": "Mengubah seluruh mood cahaya — selalu pair dengan lighting.preset via conditional rule" },
+            { "path": "scene_core.lighting_condition", "impact": "tinggi", "note": "Kondisi cahaya alami — overcast, clear, cloudy" },
+            { "path": "scene_core.weather", "impact": "sedang", "note": "Cuaca — rain, clear, foggy, storm" },
+            { "path": "scene_core.season", "impact": "sedang", "note": "Musim — spring, summer, autumn, winter" },
+            { "path": "scene_core.mood", "impact": "sedang", "note": "Mood naratif scene" },
+            { "path": "scene_core.setting_type", "impact": "tinggi", "note": "Indoor vs outdoor — mengubah konteks spatial signifikan" },
+            { "path": "scene_core.narrative_beat", "impact": "rendah", "note": "Momen naratif — opening, climax, aftermath" },
+            { "path": "scene_core.era", "impact": "tinggi", "note": "Era setting — hati-hati jika kostum tidak ikut berubah" }
+          ]
+        },
+
+        "layer_2b_environment": {
+          "_label": "Environment — variasi lokasi dan detail tempat",
+          "paths": [
+            { "path": "environment.location.primary", "impact": "sangat tinggi", "note": "Lokasi utama — perubahan besar, pastikan konsisten dengan scene_core" },
+            { "path": "environment.location.specific_place", "impact": "tinggi", "note": "Tempat spesifik dalam lokasi — lebih fine-grained dari primary" },
+            { "path": "environment.architecture.style", "impact": "sedang", "note": "Gaya arsitektur — cocok untuk seri 'karakter di berbagai kota'" },
+            { "path": "environment.architecture.condition", "impact": "rendah", "note": "Kondisi bangunan — pristine vs decaying" },
+            { "path": "environment.natural_elements.vegetation", "impact": "rendah", "note": "Jenis vegetasi — forest, grassland, desert" },
+            { "path": "environment.weather_climate.precipitation", "impact": "sedang", "note": "Curah hujan — none, light_rain, heavy_rain" },
+            { "path": "environment.props_objects", "impact": "rendah", "note": "Objek kecil di scene — detail latar" },
+            { "path": "environment.technology.level", "impact": "tinggi", "note": "Level teknologi — medieval, modern, futuristic" }
+          ]
+        },
+
+        "layer_3_composition": {
+          "_label": "Komposisi — variasi framing dan kamera",
+          "paths": [
+            { "path": "composition.camera.shot_type", "impact": "tinggi", "note": "Jenis shot — ECU, CU, MS, FS, WS. Mengubah feel sangat signifikan" },
+            { "path": "composition.camera.angle", "impact": "sedang", "note": "Sudut kamera — eye level, low angle, high angle" },
+            { "path": "composition.camera.lens.focal_length", "impact": "sedang", "note": "Focal length — perspective effect berbeda" },
+            { "path": "composition.camera.lens.aperture", "impact": "rendah", "note": "Aperture — depth of field" },
+            { "path": "composition.framing.subject_placement", "impact": "rendah", "note": "Rule of thirds placement" },
+            { "path": "composition.framing.symmetry", "impact": "rendah", "note": "Simetri atau asimetri komposisi" },
+            { "path": "composition.geometry.compositional_rule", "impact": "rendah", "note": "Rule of thirds, golden ratio, dll" },
+            { "path": "composition.geometry.dominant_lines", "impact": "rendah", "note": "Leading lines — diagonal, vertical, horizontal" }
+          ]
+        },
+
+        "layer_5_lighting": {
+          "_label": "Lighting — variasi cahaya dan suasana visual",
+          "paths": [
+            { "path": "lighting.preset", "impact": "sangat tinggi", "note": "Preset lighting — perubahan paling dramatic. Pair dengan time_of_day." },
+            { "path": "lighting.key_light.position", "impact": "sedang", "note": "Posisi cahaya utama — depan, samping, belakang" },
+            { "path": "lighting.key_light.intensity", "impact": "rendah", "note": "Intensitas cahaya utama" },
+            { "path": "lighting.key_light.quality", "impact": "sedang", "note": "Hard vs soft light" },
+            { "path": "lighting.key_light.color.temperature", "impact": "sedang", "note": "Warm vs cool — mood sangat terpengaruh" },
+            { "path": "lighting.key_light.color.hue", "impact": "sedang", "note": "Warna spesifik cahaya" },
+            { "path": "lighting.fill_light.intensity", "impact": "rendah", "note": "Seberapa gelap shadow area" },
+            { "path": "lighting.rim_light.color.hue", "impact": "rendah", "note": "Warna rim light — aksen warna karakter" },
+            { "path": "lighting.ambient_light.color", "impact": "sedang", "note": "Warna cahaya ambient keseluruhan" },
+            { "path": "lighting.shadows.style", "impact": "rendah", "note": "Karakter bayangan — hard, soft, diffused" },
+            { "path": "lighting.volumetric_effects.medium_type", "impact": "sedang", "note": "Fog, mist, haze, smoke — atmospheric depth" }
+          ]
+        },
+
+        "layer_6_atmosphere": {
+          "_label": "Atmosphere — variasi mood dan estetika",
+          "paths": [
+            { "path": "atmosphere.emotional_tone", "impact": "tinggi", "note": "Array mood — bisa jadi array berbeda per generate" },
+            { "path": "atmosphere.narrative_implication", "impact": "rendah", "note": "Cerita yang tersirat — fine-grained storytelling variation" },
+            { "path": "atmosphere.visual_style.color_palette", "impact": "tinggi", "note": "Palet warna — perubahan visual yang langsung terasa" },
+            { "path": "atmosphere.visual_style.contrast_mood", "impact": "sedang", "note": "High contrast vs low contrast" },
+            { "path": "atmosphere.visual_style.texture_emphasis", "impact": "rendah", "note": "Smooth vs gritty vs painterly" },
+            { "path": "atmosphere.visual_style.art_movement", "impact": "sangat tinggi", "note": "Gaya seni — hati-hati, bisa konflik dengan style_consistency karakter" },
+            { "path": "atmosphere.temporal_quality.time_feeling", "impact": "rendah", "note": "Rushed vs leisurely — rasa waktu" },
+            { "path": "atmosphere.temporal_quality.urgency", "impact": "rendah", "note": "Level urgensi" },
+            { "path": "atmosphere.spatial_quality.openness", "impact": "sedang", "note": "Claustrophobic vs open vs vast" },
+            { "path": "atmosphere.spatial_quality.intimacy", "impact": "sedang", "note": "Jarak emosional ke subjek" }
+          ]
+        },
+
+        "layer_subjects_variable": {
+          "_label": "Subjects — hanya field yang AMAN divariasi (non-identity)",
+          "_warning": "Jangan randomize physical_attributes — hanya pose, ekspresi, dan outfit.",
+          "paths": [
+            { "path": "subjects.primary_subject.dressing_room.active_outfit", "impact": "tinggi", "note": "Outfit yang aktif — aman dan sering divariasi" },
+            { "path": "subjects.primary_subject.pose.base_pose", "impact": "sedang", "note": "Pose dasar — standing, sitting, crouching" },
+            { "path": "subjects.primary_subject.pose.action_verb", "impact": "sedang", "note": "Aksi — examining, running, gesturing" },
+            { "path": "subjects.primary_subject.pose.line_of_sight", "impact": "sedang", "note": "Arah pandang — at_camera, away, down" },
+            { "path": "subjects.primary_subject.pose.energy_level", "impact": "sedang", "note": "Intensitas gerakan — static ke explosive" },
+            { "path": "subjects.primary_subject.expression_emotion.primary_emotion", "impact": "tinggi", "note": "Emosi utama — determination, grief, wonder" },
+            { "path": "subjects.primary_subject.expression_emotion.secondary_emotion", "impact": "rendah", "note": "Emosi latar — undercurrent yang lebih halus" },
+            { "path": "subjects.primary_subject.expression_emotion.intensity", "impact": "sedang", "note": "Seberapa kuat emosi — subtle ke intense" },
+            { "path": "subjects.primary_subject.expression_emotion.micro_expressions", "impact": "rendah", "note": "Detail wajah — tight jaw, furrowed brow" }
+          ]
+        },
+
+        "layer_4a_motion_video_only": {
+          "_label": "Motion — hanya untuk video generate",
+          "paths": [
+            { "path": "motion.camera_movement.type", "impact": "tinggi", "note": "Jenis gerakan kamera — static, pan, dolly, orbit" },
+            { "path": "motion.camera_movement.speed", "impact": "sedang", "note": "Kecepatan gerakan kamera" },
+            { "path": "motion.camera_movement.easing", "impact": "rendah", "note": "Karakter akselerasi" },
+            { "path": "motion.subject_motion.primary_motion", "impact": "tinggi", "note": "Gerakan subjek — idle, walking, running" },
+            { "path": "motion.subject_motion.speed", "impact": "sedang", "note": "Kecepatan gerakan subjek — slow motion vs real time" },
+            { "path": "motion.environment_motion.elements", "impact": "rendah", "note": "Elemen environment yang bergerak" },
+            { "path": "motion.environment_motion.wind_effect", "impact": "rendah", "note": "Intensitas angin" },
+            { "path": "motion.motion_intensity", "impact": "tinggi", "note": "Level intensitas keseluruhan — still ke explosive" }
+          ]
+        },
+
+        "layer_7_technical_variable": {
+          "_label": "Technical — hanya field yang aman divariasi",
+          "_warning": "Jangan randomize render_engine atau style_consistency — bisa mengubah estetika karakter.",
+          "paths": [
+            { "path": "technical.post_processing.color_grading", "impact": "tinggi", "note": "Color grading — perubahan visual signifikan" },
+            { "path": "technical.post_processing.grain_noise", "impact": "rendah", "note": "Level grain — clean ke heavy" },
+            { "path": "technical.post_processing.sharpening", "impact": "rendah", "note": "Ketajaman — soft ke crispy" },
+            { "path": "technical.camera_tech.iso", "impact": "rendah", "note": "ISO virtual — noise level" },
+            { "path": "technical.camera_tech.look_profile", "impact": "sedang", "note": "Color science — raw, log, film emulation" },
+            { "path": "technical.render_specs.aspect_ratio", "impact": "tinggi", "note": "Rasio aspek — portrait vs landscape vs square" }
+          ]
+        }
+      },
+
+      "preset_sets": {
+        "_note": "Preset kumpulan randomizable_elements untuk use case umum — salin langsung ke template.",
+        "options": [
+          {
+            "name": "ultra_safe_minimal",
+            "id": "Minimal Ultra Aman",
+            "description": "Hanya 3 elemen paling aman — lighting dan ekspresi. Tidak ada risiko karakter drift.",
+            "elements": [
+              "lighting.preset",
+              "subjects.primary_subject.expression_emotion.primary_emotion",
+              "subjects.primary_subject.pose.line_of_sight"
+            ],
+            "generates_variety_in": "Mood dan ekspresi saja",
+            "use_case": "Testing karakter baru, verifikasi identity lock, first batch"
+          },
+          {
+            "name": "portrait_series",
+            "id": "Seri Portrait",
+            "description": "Variasi portrait — pose, ekspresi, lighting berubah. Scene tetap.",
+            "elements": [
+              "lighting.preset",
+              "lighting.key_light.color.temperature",
+              "atmosphere.visual_style.color_palette",
+              "subjects.primary_subject.pose.base_pose",
+              "subjects.primary_subject.pose.line_of_sight",
+              "subjects.primary_subject.expression_emotion.primary_emotion",
+              "subjects.primary_subject.expression_emotion.intensity",
+              "technical.post_processing.color_grading"
+            ],
+            "generates_variety_in": "Mood portrait — ekspresi, lighting, grading",
+            "use_case": "Mood board karakter, referensi ekspresi, portfolio showcase"
+          },
+          {
+            "name": "outfit_showcase",
+            "id": "Showcase Outfit",
+            "description": "Ganti outfit saja — semua elemen lain fixed. Untuk mempresentasikan wardrobe karakter.",
+            "elements": [
+              "subjects.primary_subject.dressing_room.active_outfit",
+              "subjects.primary_subject.pose.base_pose",
+              "subjects.primary_subject.pose.action_verb"
+            ],
+            "generates_variety_in": "Outfit dan pose ringan",
+            "use_case": "Fashion showcase, wardrobe reveal series, outfit reference"
+          },
+          {
+            "name": "scene_world_variety",
+            "id": "Variasi Scene dan Dunia",
+            "description": "Karakter yang sama di berbagai lokasi dan waktu — world exploration series.",
+            "elements": [
+              "scene_core.time_of_day",
+              "scene_core.weather",
+              "scene_core.season",
+              "environment.location.primary",
+              "environment.location.specific_place",
+              "lighting.preset",
+              "atmosphere.visual_style.color_palette",
+              "atmosphere.emotional_tone",
+              "atmosphere.spatial_quality.openness"
+            ],
+            "generates_variety_in": "Lokasi, waktu, cuaca, mood",
+            "use_case": "World-building showcase, travel series, seasonal content"
+          },
+          {
+            "name": "cinematic_technical",
+            "id": "Teknis Sinematik",
+            "description": "Variasi sinematik — komposisi, lighting, dan post-processing berubah. Konten dan karakter fixed.",
+            "elements": [
+              "composition.camera.shot_type",
+              "composition.camera.angle",
+              "composition.camera.lens.focal_length",
+              "composition.framing.subject_placement",
+              "lighting.preset",
+              "lighting.key_light.quality",
+              "lighting.key_light.color.temperature",
+              "atmosphere.visual_style.contrast_mood",
+              "technical.post_processing.color_grading",
+              "technical.post_processing.grain_noise"
+            ],
+            "generates_variety_in": "Framing, cahaya, grading — variasi sinematik",
+            "use_case": "Cinematography reference, grading comparison, director's cut series"
+          },
+          {
+            "name": "emotion_arc",
+            "id": "Arc Emosi",
+            "description": "Karakter yang sama melewati arc emosional — dari satu state ke state lain.",
+            "elements": [
+              "subjects.primary_subject.expression_emotion.primary_emotion",
+              "subjects.primary_subject.expression_emotion.secondary_emotion",
+              "subjects.primary_subject.expression_emotion.intensity",
+              "subjects.primary_subject.expression_emotion.micro_expressions",
+              "subjects.primary_subject.pose.energy_level",
+              "atmosphere.emotional_tone",
+              "lighting.key_light.color.temperature",
+              "atmosphere.visual_style.color_palette"
+            ],
+            "generates_variety_in": "Emosi dan mood — perjalanan emosional karakter",
+            "use_case": "Story arc visual, emotional character study, narrative sequence"
+          },
+          {
+            "name": "full_creative_freedom",
+            "id": "Kebebasan Kreatif Penuh",
+            "description": "Semua layer non-identity boleh berubah — maximum variety. Untuk exploration.",
+            "elements": [
+              "scene_core.time_of_day", "scene_core.weather", "scene_core.season", "scene_core.mood",
+              "environment.location.primary", "environment.location.specific_place", "environment.architecture.style",
+              "composition.camera.shot_type", "composition.camera.angle", "composition.camera.lens.focal_length",
+              "composition.framing.subject_placement", "composition.geometry.compositional_rule",
+              "lighting.preset", "lighting.key_light.position", "lighting.key_light.color.temperature",
+              "lighting.key_light.quality", "lighting.rim_light.color.hue", "lighting.volumetric_effects.medium_type",
+              "atmosphere.emotional_tone", "atmosphere.visual_style.color_palette", "atmosphere.visual_style.contrast_mood",
+              "atmosphere.spatial_quality.openness", "atmosphere.spatial_quality.intimacy",
+              "subjects.primary_subject.dressing_room.active_outfit",
+              "subjects.primary_subject.pose.base_pose", "subjects.primary_subject.pose.action_verb",
+              "subjects.primary_subject.pose.line_of_sight", "subjects.primary_subject.pose.energy_level",
+              "subjects.primary_subject.expression_emotion.primary_emotion",
+              "subjects.primary_subject.expression_emotion.intensity",
+              "technical.post_processing.color_grading", "technical.render_specs.aspect_ratio"
+            ],
+            "generates_variety_in": "Segalanya kecuali identitas karakter",
+            "use_case": "Initial exploration, finding best combination, ideation phase"
+          }
+        ]
+      }
+    },
+
+    "variation_rules": {
+      "_note": "Array of rule objects — tiap rule mendefinisikan bagaimana SATU elemen berubah. Rules dieksekusi secara berurutan, tapi hasil tiap rule bisa mempengaruhi rule berikutnya via conditional.",
+
+      "variation_type": {
+        "_note": "Enum tipe perubahan — menentukan mekanisme randomisasi elemen.",
+        "options": [
+          {
+            "en": "random_pick",
+            "id": "pilih acak",
+            "description": "Pilih satu nilai secara acak dari array options — equal probability untuk semua opsi.",
+            "when_to_use": "Saat semua opsi sama-sama diinginkan tanpa preferensi",
+            "syntax": {
+              "target_element": "lighting.preset",
+              "variation_type": "random_pick",
+              "options": ["golden_hour", "blue_hour", "dramatic_chiaroscuro", "moonlight"],
+              "probability": 1.0
+            }
+          },
+          {
+            "en": "weighted_random",
+            "id": "acak berbobot",
+            "description": "Pilih acak tapi dengan probabilitas berbeda per opsi — opsi lebih sering = weight lebih tinggi. Total weight tidak harus 1.0.",
+            "when_to_use": "Saat ada opsi yang lebih diinginkan tapi masih ingin variety",
+            "syntax": {
+              "target_element": "scene_core.time_of_day",
+              "variation_type": "weighted_random",
+              "options": [
+                { "value": "golden_hour", "weight": 0.40 },
+                { "value": "blue_hour", "weight": 0.25 },
+                { "value": "midnight", "weight": 0.20 },
+                { "value": "harsh_noon", "weight": 0.10 },
+                { "value": "dawn", "weight": 0.05 }
+              ],
+              "probability": 1.0
+            }
+          },
+          {
+            "en": "sequential",
+            "id": "berurutan",
+            "description": "Gilir nilai dari array secara berurutan — generate ke-1 pakai index 0, generate ke-2 pakai index 1, dst. Kembali ke awal setelah habis.",
+            "when_to_use": "Untuk seri yang terstruktur — outfit showcase, time-of-day series",
+            "syntax": {
+              "target_element": "subjects.primary_subject.dressing_room.active_outfit",
+              "variation_type": "sequential",
+              "options": ["outfit_casual", "outfit_battle", "outfit_formal", "outfit_festival"],
+              "probability": 1.0
+            }
+          },
+          {
+            "en": "range",
+            "id": "rentang numerik",
+            "description": "Pilih nilai dalam rentang min–max dengan step tertentu. Untuk field numerik.",
+            "when_to_use": "CFG scale, ISO, probabilitas — nilai numerik kontinu",
+            "syntax": {
+              "target_element": "technical.render_specs.sampling.cfg_scale",
+              "variation_type": "range",
+              "min": 6.5,
+              "max": 8.5,
+              "step": 0.5,
+              "probability": 1.0
+            }
+          },
+          {
+            "en": "toggle",
+            "id": "toggle",
+            "description": "Bergantian antara dua nilai — biasanya true/false atau dua state yang berlawanan.",
+            "when_to_use": "Field boolean atau field dengan dua state yang saling eksklusif",
+            "syntax": {
+              "target_element": "lighting.volumetric_effects.density",
+              "variation_type": "toggle",
+              "options": ["none", "moderate"],
+              "probability": 0.4
+            }
+          },
+          {
+            "en": "conditional",
+            "id": "kondisional",
+            "description": "Nilai berubah berdasarkan kondisi field lain — jika X maka Y, jika tidak maka Z. Menjaga kohesi antar field.",
+            "when_to_use": "Selalu gunakan untuk field yang bergantung satu sama lain — time_of_day + lighting.preset adalah pasangan klasik",
+            "syntax": {
+              "target_element": "lighting.preset",
+              "variation_type": "conditional",
+              "conditions": [
+                { "if": "scene_core.time_of_day == 'golden_hour'", "then": "golden_hour" },
+                { "if": "scene_core.time_of_day == 'blue_hour'", "then": "blue_hour" },
+                { "if": "scene_core.time_of_day == 'midnight'", "then": "moonlight" },
+                { "if": "scene_core.time_of_day == 'dawn'", "then": "sunrise_atmospheric" },
+                { "if": "scene_core.weather == 'storm'", "then": "storm_dramatic" }
+              ],
+              "fallback": "random_pick",
+              "fallback_options": ["dramatic_chiaroscuro", "fog_diffused"],
+              "probability": 1.0
+            }
+          },
+          {
+            "en": "array_composition",
+            "id": "komposisi array",
+            "description": "Untuk field yang nilainya adalah array — pilih berapa elemen dan dari mana. Berguna untuk emotional_tone yang bisa kombinasi beberapa mood.",
+            "when_to_use": "atmosphere.emotional_tone (bisa 1–3 mood sekaligus), environment.props_objects",
+            "syntax": {
+              "target_element": "atmosphere.emotional_tone",
+              "variation_type": "array_composition",
+              "pick_count": { "min": 1, "max": 3 },
+              "pool": ["melancholic", "hopeful", "mysterious", "tense", "serene", "wonder", "lonely", "determined"],
+              "forbidden_combinations": [
+                ["serene", "tense"],
+                ["hopeful", "dread"],
+                ["joyful", "melancholic"]
+              ],
+              "probability": 1.0
+            }
+          }
+        ]
+      },
+
+      "probability": {
+        "_note": "Float 0.0–1.0 — probabilitas field ini berubah dalam SETIAP generate individual. Bukan probabilitas keseluruhan batch.",
+        "options": [
+          { "value": 1.0, "label": "always", "description": "Selalu berubah setiap generate — guaranteed variety untuk field ini" },
+          { "value": 0.9, "label": "almost_always", "description": "90% berubah — sesekali sama untuk continuity" },
+          { "value": 0.7, "label": "often", "description": "70% berubah — balance antara variety dan consistency" },
+          { "value": 0.5, "label": "half", "description": "50/50 — sering digunakan untuk secondary elements" },
+          { "value": 0.3, "label": "sometimes", "description": "30% berubah — mostly konsisten tapi ada surprise" },
+          { "value": 0.1, "label": "rarely", "description": "10% berubah — hampir selalu sama, hanya occasional twist" },
+          { "value": 0.0, "label": "never", "description": "Tidak pernah berubah — sama efeknya dengan tidak dimasukkan ke randomizable_elements" }
+        ],
+        "_probability_design_tips": [
+          "Field primer (lighting.preset, time_of_day): probability 1.0 — selalu berubah",
+          "Field sekunder (intensity, micro_expressions): probability 0.5–0.7",
+          "Field aksesori (grain, sharpening): probability 0.2–0.4",
+          "Field kondisional: probability mengikuti parent field-nya"
+        ]
+      },
+
+      "constraints": {
+        "_note": "Object yang membatasi perubahan — proteksi tambahan di atas randomizable_elements list.",
+        "options": [
+          {
+            "en": "locked_by_identity",
+            "id": "dikunci identitas",
+            "description": "Field ini tidak boleh berubah jika bertentangan dengan identity_anchor.",
+            "syntax": { "constraints": { "locked_by_identity": true } },
+            "use_case": "Field yang terkait identitas tapi masih diizinkan range kecil"
+          },
+          {
+            "en": "must_remain_consistent_with",
+            "id": "harus konsisten dengan",
+            "description": "Field ini harus konsisten dengan field lain — tidak boleh konflik.",
+            "syntax": { "constraints": { "must_remain_consistent_with": ["scene_core.time_of_day", "lighting.preset"] } },
+            "use_case": "Menjaga kohesi antar field yang saling terkait"
+          },
+          {
+            "en": "exclude_values",
+            "id": "kecualikan nilai",
+            "description": "Nilai-nilai tertentu tidak boleh dipilih — blacklist spesifik.",
+            "syntax": { "constraints": { "exclude_values": ["anime", "cartoon", "pixar_style"] } },
+            "use_case": "Melarang gaya visual tertentu yang tidak cocok karakter"
+          },
+          {
+            "en": "require_from_library",
+            "id": "wajib dari library",
+            "description": "Hanya boleh memilih dari library yang sudah terdefinisi — tidak boleh nilai bebas.",
+            "syntax": { "constraints": { "require_from_library": "subjects.primary_subject.dressing_room.outfit_library" } },
+            "use_case": "Outfit — hanya dari outfit_library yang sudah di-approve, tidak boleh random"
+          },
+          {
+            "en": "max_delta_from_base",
+            "id": "perubahan maksimal dari base",
+            "description": "Nilai tidak boleh berubah lebih dari X unit dari nilai base template.",
+            "syntax": { "constraints": { "max_delta_from_base": 2, "field": "lighting.key_light.intensity" } },
+            "use_case": "Intensitas cahaya hanya boleh naik-turun 2 step dari setting awal"
+          }
+        ]
+      },
+
+      "complete_rule_presets": {
+        "_note": "Set rule lengkap yang siap dipakai — salin ke template dan modifikasi.",
+        "options": [
+          {
+            "name": "Lighting_Mood_Rotator",
+            "id": "Rotasi Lighting dan Mood",
+            "description": "Setiap generate mendapat lighting dan mood yang berbeda. Time-of-day dan lighting dilink via conditional.",
+            "rules": [
+              {
+                "rule_id": "R01_time_of_day",
+                "target_element": "scene_core.time_of_day",
+                "variation_type": "weighted_random",
+                "options": [
+                  { "value": "golden_hour", "weight": 0.30 },
+                  { "value": "blue_hour", "weight": 0.25 },
+                  { "value": "midnight", "weight": 0.20 },
+                  { "value": "dawn", "weight": 0.15 },
+                  { "value": "harsh_noon", "weight": 0.10 }
+                ],
+                "probability": 1.0
+              },
+              {
+                "rule_id": "R02_lighting_preset",
+                "target_element": "lighting.preset",
+                "variation_type": "conditional",
+                "conditions": [
+                  { "if": "scene_core.time_of_day == 'golden_hour'", "then": "golden_hour" },
+                  { "if": "scene_core.time_of_day == 'blue_hour'", "then": "blue_hour" },
+                  { "if": "scene_core.time_of_day == 'midnight'", "then": "moonlight" },
+                  { "if": "scene_core.time_of_day == 'dawn'", "then": "sunrise_atmospheric" },
+                  { "if": "scene_core.time_of_day == 'harsh_noon'", "then": "harsh_noon" }
+                ],
+                "probability": 1.0,
+                "depends_on": "R01_time_of_day"
+              },
+              {
+                "rule_id": "R03_color_palette",
+                "target_element": "atmosphere.visual_style.color_palette",
+                "variation_type": "conditional",
+                "conditions": [
+                  { "if": "lighting.preset == 'golden_hour'", "then": "warm_golden" },
+                  { "if": "lighting.preset == 'moonlight'", "then": "monochrome_blue" },
+                  { "if": "lighting.preset == 'blue_hour'", "then": "teal_orange" }
+                ],
+                "fallback": "random_pick",
+                "fallback_options": ["earth_tones", "desaturated_muted", "purple_gold"],
+                "probability": 0.8,
+                "depends_on": "R02_lighting_preset"
+              },
+              {
+                "rule_id": "R04_emotional_tone",
+                "target_element": "atmosphere.emotional_tone",
+                "variation_type": "array_composition",
+                "pick_count": { "min": 1, "max": 2 },
+                "pool": ["melancholic", "hopeful", "mysterious", "serene", "tense", "wonder", "nostalgic"],
+                "forbidden_combinations": [["serene", "tense"], ["hopeful", "dread"]],
+                "probability": 0.9
+              },
+              {
+                "rule_id": "R05_color_grading",
+                "target_element": "technical.post_processing.color_grading",
+                "variation_type": "random_pick",
+                "options": ["teal_orange", "warm_golden", "desaturated_cold", "vintage_faded", "natural_neutral"],
+                "probability": 0.6
+              }
+            ]
+          },
+          {
+            "name": "Outfit_Sequential_Showcase",
+            "id": "Showcase Outfit Berurutan",
+            "description": "Ganti outfit secara berurutan. Lighting dan background sedikit menyesuaikan per outfit.",
+            "rules": [
+              {
+                "rule_id": "R01_outfit",
+                "target_element": "subjects.primary_subject.dressing_room.active_outfit",
+                "variation_type": "sequential",
+                "options": ["outfit_casual", "outfit_battle", "outfit_formal", "outfit_festival"],
+                "probability": 1.0,
+                "constraints": { "require_from_library": "subjects.primary_subject.dressing_room.outfit_library" }
+              },
+              {
+                "rule_id": "R02_pose",
+                "target_element": "subjects.primary_subject.pose.base_pose",
+                "variation_type": "conditional",
+                "conditions": [
+                  { "if": "active_outfit == 'outfit_battle'", "then": "combat_stance" },
+                  { "if": "active_outfit == 'outfit_formal'", "then": "standing_composed" },
+                  { "if": "active_outfit == 'outfit_casual'", "then": "relaxed_standing" },
+                  { "if": "active_outfit == 'outfit_festival'", "then": "playful_pose" }
+                ],
+                "probability": 0.8,
+                "depends_on": "R01_outfit"
+              },
+              {
+                "rule_id": "R03_lighting_match",
+                "target_element": "lighting.preset",
+                "variation_type": "conditional",
+                "conditions": [
+                  { "if": "active_outfit == 'outfit_battle'", "then": "dramatic_chiaroscuro" },
+                  { "if": "active_outfit == 'outfit_formal'", "then": "studio_three_point" },
+                  { "if": "active_outfit == 'outfit_festival'", "then": "magic_ethereal" }
+                ],
+                "fallback": "golden_hour",
+                "probability": 0.7,
+                "depends_on": "R01_outfit"
+              }
+            ]
+          },
+          {
+            "name": "Four_Seasons_Series",
+            "id": "Seri Empat Musim",
+            "description": "Karakter yang sama di empat musim berbeda — sequential seasons dengan semua elemen terkait berubah sesuai.",
+            "rules": [
+              {
+                "rule_id": "R01_season",
+                "target_element": "scene_core.season",
+                "variation_type": "sequential",
+                "options": ["spring", "summer", "autumn", "winter"],
+                "probability": 1.0
+              },
+              {
+                "rule_id": "R02_time_season",
+                "target_element": "scene_core.time_of_day",
+                "variation_type": "conditional",
+                "conditions": [
+                  { "if": "season == 'spring'", "then": "golden_hour" },
+                  { "if": "season == 'summer'", "then": "harsh_noon" },
+                  { "if": "season == 'autumn'", "then": "golden_hour" },
+                  { "if": "season == 'winter'", "then": "blue_hour" }
+                ],
+                "probability": 1.0,
+                "depends_on": "R01_season"
+              },
+              {
+                "rule_id": "R03_palette_season",
+                "target_element": "atmosphere.visual_style.color_palette",
+                "variation_type": "conditional",
+                "conditions": [
+                  { "if": "season == 'spring'", "then": "pastel_dream" },
+                  { "if": "season == 'summer'", "then": "warm_golden" },
+                  { "if": "season == 'autumn'", "then": "earth_tones" },
+                  { "if": "season == 'winter'", "then": "arctic_white_blue" }
+                ],
+                "probability": 1.0,
+                "depends_on": "R01_season"
+              },
+              {
+                "rule_id": "R04_lighting_season",
+                "target_element": "lighting.preset",
+                "variation_type": "conditional",
+                "conditions": [
+                  { "if": "season == 'spring'", "then": "magic_ethereal" },
+                  { "if": "season == 'summer'", "then": "golden_hour" },
+                  { "if": "season == 'autumn'", "then": "golden_hour" },
+                  { "if": "season == 'winter'", "then": "blue_hour" }
+                ],
+                "probability": 1.0,
+                "depends_on": "R01_season"
+              },
+              {
+                "rule_id": "R05_mood_season",
+                "target_element": "atmosphere.emotional_tone",
+                "variation_type": "conditional",
+                "conditions": [
+                  { "if": "season == 'spring'", "then": ["hopeful", "wonder"] },
+                  { "if": "season == 'summer'", "then": ["joyful", "liberating"] },
+                  { "if": "season == 'autumn'", "then": ["melancholic", "nostalgic"] },
+                  { "if": "season == 'winter'", "then": ["lonely", "serene"] }
+                ],
+                "probability": 1.0,
+                "depends_on": "R01_season"
+              }
+            ]
+          },
+          {
+            "name": "Emotion_Arc_Sequential",
+            "id": "Arc Emosi Berurutan",
+            "description": "Perjalanan emosional karakter — dari satu state ke state lain secara berurutan.",
+            "rules": [
+              {
+                "rule_id": "R01_emotion",
+                "target_element": "subjects.primary_subject.expression_emotion.primary_emotion",
+                "variation_type": "sequential",
+                "options": ["grief", "confusion", "determination", "hope", "relief", "joy"],
+                "probability": 1.0
+              },
+              {
+                "rule_id": "R02_intensity",
+                "target_element": "subjects.primary_subject.expression_emotion.intensity",
+                "variation_type": "sequential",
+                "options": ["intense", "moderate", "subtle", "moderate", "intense", "intense"],
+                "probability": 1.0,
+                "depends_on": "R01_emotion"
+              },
+              {
+                "rule_id": "R03_lighting_emotion",
+                "target_element": "lighting.key_light.color.temperature",
+                "variation_type": "conditional",
+                "conditions": [
+                  { "if": "primary_emotion == 'grief'", "then": "4000K_neutral_cool" },
+                  { "if": "primary_emotion == 'determination'", "then": "5500K_daylight" },
+                  { "if": "primary_emotion == 'joy'", "then": "2700K_warm_amber" },
+                  { "if": "primary_emotion == 'relief'", "then": "3200K_warm_tungsten" }
+                ],
+                "fallback": "4500K_neutral",
+                "probability": 0.8,
+                "depends_on": "R01_emotion"
+              },
+              {
+                "rule_id": "R04_mood_match",
+                "target_element": "atmosphere.emotional_tone",
+                "variation_type": "conditional",
+                "conditions": [
+                  { "if": "primary_emotion == 'grief'", "then": ["melancholic", "lonely"] },
+                  { "if": "primary_emotion == 'determination'", "then": ["determined", "tense"] },
+                  { "if": "primary_emotion == 'joy'", "then": ["joyful", "hopeful"] }
+                ],
+                "fallback": "random_pick",
+                "fallback_options": ["mysterious", "serene"],
+                "probability": 0.9,
+                "depends_on": "R01_emotion"
+              }
+            ]
+          },
+          {
+            "name": "Cinematic_Shot_Variety",
+            "id": "Variasi Shot Sinematik",
+            "description": "Karakter dan lighting fixed, hanya komposisi dan grading yang berubah. Untuk cinematography study.",
+            "rules": [
+              {
+                "rule_id": "R01_shot_type",
+                "target_element": "composition.camera.shot_type",
+                "variation_type": "sequential",
+                "options": ["ECU", "CU", "MCU", "MS", "FS", "WS"],
+                "probability": 1.0
+              },
+              {
+                "rule_id": "R02_angle",
+                "target_element": "composition.camera.angle",
+                "variation_type": "random_pick",
+                "options": ["eye_level", "low_angle", "high_angle", "dutch_angle"],
+                "probability": 0.6
+              },
+              {
+                "rule_id": "R03_focal_length",
+                "target_element": "composition.camera.lens.focal_length",
+                "variation_type": "conditional",
+                "conditions": [
+                  { "if": "shot_type == 'ECU'", "then": "100mm_macro" },
+                  { "if": "shot_type == 'CU'", "then": "85mm_portrait" },
+                  { "if": "shot_type == 'MS'", "then": "50mm_standard" },
+                  { "if": "shot_type == 'WS'", "then": "24mm_wide" }
+                ],
+                "fallback": "50mm_standard",
+                "probability": 0.8,
+                "depends_on": "R01_shot_type"
+              },
+              {
+                "rule_id": "R04_grading",
+                "target_element": "technical.post_processing.color_grading",
+                "variation_type": "random_pick",
+                "options": ["teal_orange", "warm_golden", "desaturated_cold", "noir_monochrome", "vintage_faded"],
+                "probability": 0.7
+              }
+            ]
+          }
+        ]
+      }
+    },
+
+    "seed_system": {
+      "_note": "Kontrol reproducibility generate. Seed yang sama + prompt sama = hasil identik di platform yang mendukung deterministik.",
+
+      "base_seed": {
+        "_note": "Angka seed dasar. null = random setiap generate. Integer spesifik = reproducible.",
+        "options": [
+          { "value": null, "label": "random", "description": "Fully random — tidak reproducible. Gunakan saat exploration phase." },
+          { "value": 42, "label": "classic", "description": "Seed klasik — popular, neutral distribution." },
+          { "value": 1337, "label": "leet", "description": "Seed populer di komunitas AI art." },
+          { "value": 12345, "label": "sequential", "description": "Seed sequential yang mudah diingat." }
+        ],
+        "seed_strategy_by_phase": {
+          "phase_1_exploration": {
+            "seed": null,
+            "deterministic": false,
+            "description": "Eksplorasi bebas — cari kombinasi yang menarik",
+            "count": "8–16 generates"
+          },
+          "phase_2_refinement": {
+            "seed": "catat seed dari hasil terbaik di fase 1",
+            "deterministic": true,
+            "description": "Perbaiki prompt dan settings sambil seed fixed",
+            "count": "4–8 generates per iteration"
+          },
+          "phase_3_production": {
+            "seed": "base_seed + increment per generate",
+            "deterministic": true,
+            "description": "Produksi massal dengan variety terkontrol",
+            "count": "sesuai kebutuhan",
+            "increment_example": "base=1000, batch=[1000,1001,1002,...]"
+          }
+        },
+        "batch_seed_patterns": {
+          "fixed_seed": {
+            "description": "Semua generate dalam batch pakai seed sama — hasil identik jika rules sama",
+            "use_case": "Verifikasi konsistensi, A/B test rules"
+          },
+          "incremental": {
+            "description": "base_seed + n untuk setiap generate — 1000, 1001, 1002, dst",
+            "use_case": "Variety terkontrol dalam batch"
+          },
+          "random_per_generate": {
+            "description": "Seed acak berbeda untuk setiap generate dalam batch",
+            "use_case": "Maximum variety, exploration batch"
+          }
+        }
+      },
+
+      "deterministic": {
+        "_note": "Mode deterministik — seed sama selalu hasilkan output identik.",
+        "options": [
+          {
+            "value": true,
+            "label": "deterministik aktif",
+            "description": "Seed sama = hasil sama. Reproducible sempurna. Untuk production dan QA.",
+            "platform_support": {
+              "sdxl": "✅ Full support",
+              "midjourney": "✅ --seed parameter",
+              "dalle3": "❌ Tidak mendukung seed",
+              "runway": "⚠️ Partial — seed mempengaruhi tapi tidak absolut",
+              "kling": "⚠️ Partial support",
+              "pika": "✅ --seed parameter"
+            }
+          },
+          {
+            "value": false,
+            "label": "deterministik nonaktif",
+            "description": "Seed sebagai starting point tapi hasil bisa sedikit beda — floating point variance. Lebih natural variety.",
+            "use_case": "Exploration, menemukan look terbaik dalam range seed"
+          }
+        ]
+      },
+
+      "seed_archive": {
+        "_note": "Arsip seed-seed terbaik untuk regenerasi — dokumentasi per karakter per use case.",
+        "_format": "Array of: { seed, label, platform, quality_rating, notes, template_state }",
+        "_example_entries": [
+          {
+            "seed": 42156,
+            "label": "wajah_terbaik_portrait",
+            "platform": "sdxl",
+            "quality_rating": 9,
+            "notes": "Akurasi wajah tertinggi yang pernah di-generate. Proporsi mata dan hidung paling konsisten dengan reference.",
+            "template_state": "v2.1, outfit_casual, golden_hour, MS"
+          },
+          {
+            "seed": 88304,
+            "label": "ekspresi_melankolis_sempurna",
+            "platform": "midjourney",
+            "quality_rating": 10,
+            "notes": "Ekspresi melankolis paling natural. Micro-expressions sangat subtle dan believable.",
+            "template_state": "v2.0, blue_hour, CU, teal_orange grading"
+          },
+          {
+            "seed": 12776,
+            "label": "battle_pose_dinamis",
+            "platform": "sdxl",
+            "quality_rating": 8,
+            "notes": "Pose battle terbaik — dynamic tapi anatomy tetap benar. Rambut physics natural.",
+            "template_state": "v2.1, outfit_battle, dramatic_chiaroscuro, FS"
+          },
+          {
+            "seed": 55501,
+            "label": "video_idle_terbaik",
+            "platform": "kling",
+            "quality_rating": 9,
+            "notes": "Video idle ambient loop paling smooth. Face consistency 100%, hair physics natural.",
+            "template_state": "v3.0, outfit_casual, golden_hour, MS, motion_intensity=still"
+          }
+        ]
+      },
+
+      "seed_lock_rules": {
+        "_note": "Rules untuk kapan seed di-lock vs dibiarkan random.",
+        "options": [
+          {
+            "en": "lock_for_series",
+            "id": "lock untuk seri",
+            "description": "Gunakan seed yang sama untuk semua generate dalam satu seri — konsistensi visual terjaga.",
+            "example": "Seri empat musim — seed sama di semua 4 generate agar hanya musim yang berbeda"
+          },
+          {
+            "en": "lock_for_character_consistency",
+            "id": "lock untuk konsistensi karakter",
+            "description": "Lock seed untuk menjaga wajah yang konsisten antar generate di platform tanpa native face lock.",
+            "example": "SDXL tanpa IP-Adapter — seed yang sama membantu menjaga struktur wajah"
+          },
+          {
+            "en": "increment_for_variety",
+            "id": "increment untuk variety",
+            "description": "Naikkan seed 1 per generate untuk variety terkontrol dalam batch besar.",
+            "example": "Batch 100 generate: seed 1000 → 1001 → ... → 1099"
+          },
+          {
+            "en": "random_for_exploration",
+            "id": "random untuk eksplorasi",
+            "description": "Seed random saat pertama kali develop karakter atau scene baru.",
+            "example": "Fase ideasi awal — biarkan AI menginterpretasi secara bebas dulu"
+          }
+        ]
+      }
+    },
+
+    "batch_config": {
+      "_note": "Konfigurasi generate massal — jumlah, penamaan, lokasi output, dan strategi eksekusi.",
+
+      "count": {
+        "_note": "Jumlah generate dalam satu batch run.",
+        "options": [
+          { "value": 1, "label": "single", "description": "Satu generate — untuk testing perubahan spesifik", "cost": "1x" },
+          { "value": 2, "label": "pair", "description": "Dua generate — A/B comparison", "cost": "2x" },
+          { "value": 4, "label": "quad", "description": "2×2 grid — exploration awal yang efisien", "cost": "4x" },
+          { "value": 8, "label": "octet", "description": "Range variety yang baik tanpa overload", "cost": "8x" },
+          { "value": 16, "label": "sixteen", "description": "Batch serius — untuk outfit showcase 4 outfit × 4 lighting", "cost": "16x" },
+          { "value": 24, "label": "twenty_four", "description": "Batch seri lengkap — misalnya 6 emosi × 4 lighting", "cost": "24x" },
+          { "value": 32, "label": "thirty_two", "description": "Production batch — cocok untuk grid search 4×8", "cost": "32x" },
+          { "value": 50, "label": "fifty", "description": "Large batch — mass production atau data collection awal", "cost": "50x" },
+          { "value": 100, "label": "hundred", "description": "Full production run — untuk koleksi atau training data", "cost": "100x" }
+        ],
+        "count_by_strategy": {
+          "grid_search_examples": [
+            { "var_a": "4 lighting presets", "var_b": "3 outfits", "total": 12 },
+            { "var_a": "6 shot_types", "var_b": "4 emotions", "total": 24 },
+            { "var_a": "4 seasons", "var_b": "3 outfits", "var_c": "2 times", "total": 24 },
+            { "var_a": "5 color_palettes", "var_b": "4 poses", "total": 20 }
+          ]
+        }
+      },
+
+      "naming_pattern": {
+        "_note": "Template nama file output. Placeholder dalam {curly_braces} diisi otomatis saat generate.",
+        "available_placeholders": {
+          "{char}": "Nama karakter pendek dari identity_anchor.name",
+          "{character}": "Nama karakter penuh",
+          "{template_id}": "ID template dari metadata",
+          "{n}": "Nomor urut zero-padded (001, 002, ...)",
+          "{n_total}": "Nomor urut dari total (001_of_016)",
+          "{seed}": "Seed yang digunakan",
+          "{date}": "Tanggal generate YYYYMMDD",
+          "{time}": "Waktu generate HHMMSS",
+          "{platform}": "Platform yang digunakan (mj, sdxl, dalle3, kling)",
+          "{outfit}": "Nama outfit aktif saat generate",
+          "{shot}": "Shot type (CU, MS, WS, dst)",
+          "{time_of_day}": "Waktu dalam scene (golden_hour, midnight, dst)",
+          "{season}": "Musim (spring, summer, autumn, winter)",
+          "{emotion}": "Emosi primer karakter saat generate",
+          "{version}": "Versi template (v1, v2, dst)",
+          "{status}": "Status output (draft, review, approved)"
+        },
+        "pattern_examples": [
+          {
+            "pattern": "{char}_{n}",
+            "example_result": "EIRA_001.png",
+            "best_for": "Batch simple, tidak perlu info tambahan"
+          },
+          {
+            "pattern": "{char}_{outfit}_{shot}_{n}",
+            "example_result": "EIRA_battle_MS_001.png",
+            "best_for": "Outfit showcase dengan shot berbeda"
+          },
+          {
+            "pattern": "{char}_{time_of_day}_{emotion}_{seed}",
+            "example_result": "EIRA_golden_hour_determination_42156.png",
+            "best_for": "Mood series yang butuh traceback ke settings"
+          },
+          {
+            "pattern": "{date}_{char}_{version}_{n}",
+            "example_result": "20250615_EIRA_v2_001.png",
+            "best_for": "Production workflow dengan date tracking"
+          },
+          {
+            "pattern": "{platform}_{char}_{template_id}_{seed}_{n}",
+            "example_result": "sdxl_EIRA_EIRA_FOREST_v2_42156_001.png",
+            "best_for": "Multi-platform batch dengan full traceability"
+          },
+          {
+            "pattern": "{char}_{season}_{n_total}",
+            "example_result": "EIRA_autumn_003_of_016.png",
+            "best_for": "Seri dengan total yang diketahui"
+          }
+        ]
+      },
+
+      "output_directory": {
+        "_note": "[STRING_BEBAS] — Path folder output. Bisa menggunakan placeholder yang sama dengan naming_pattern.",
+        "structure_options": [
+          {
+            "pattern": "./output/{character}/",
+            "description": "Flat per karakter — simple",
+            "best_for": "Koleksi kecil, satu karakter"
+          },
+          {
+            "pattern": "./output/{character}/{date}/",
+            "description": "Per karakter per tanggal — track produksi harian",
+            "best_for": "Daily workflow, multiple batch per hari"
+          },
+          {
+            "pattern": "./output/{character}/{version}/",
+            "description": "Per karakter per versi template",
+            "best_for": "Development iteratif — track improvement per versi"
+          },
+          {
+            "pattern": "./output/{character}/{outfit}/",
+            "description": "Per karakter per outfit",
+            "best_for": "Outfit collection yang terorganisir"
+          },
+          {
+            "pattern": "./output/{platform}/{character}/",
+            "description": "Per platform per karakter",
+            "best_for": "Multi-platform comparison"
+          },
+          {
+            "pattern": "./output/review_queue/",
+            "description": "Satu folder review untuk semua generate baru",
+            "best_for": "QA workflow — semua ke review dulu sebelum di-sort"
+          }
+        ],
+        "recommended_full_structure": {
+          "_description": "Struktur folder produksi yang disarankan untuk koleksi besar",
+          "structure": {
+            "project/": {
+              "characters/": {
+                "CHARACTER_NAME/": {
+                  "templates/": "File JSON template semua versi",
+                  "reference_images/": "Gambar referensi karakter",
+                  "lora/": "Model LoRA jika ada",
+                  "outputs/": {
+                    "approved/": "Output final yang disetujui",
+                    "review/": "Menunggu review",
+                    "rejected/": "Tidak dipakai tapi disimpan untuk referensi",
+                    "archive/": "Lama tapi mungkin berguna"
+                  },
+                  "seed_archive.json": "Catatan seed-seed terbaik",
+                  "batch_log.json": "Log semua batch run"
+                }
+              },
+              "scenes/": "Template scene yang tidak terikat karakter spesifik",
+              "exports/": "Output final yang siap dipublikasi"
+            }
+          }
+        }
+      },
+
+      "batch_strategy": {
+        "_note": "Strategi bagaimana urutan generate dieksekusi dalam batch.",
+        "options": [
+          {
+            "en": "random_all",
+            "id": "acak semua",
+            "description": "Semua randomizable_elements berubah secara acak di setiap generate — maximum variety, minimum control.",
+            "predictability": "rendah",
+            "variety": "tinggi",
+            "use_case": "Exploration phase, ideation, menemukan kombinasi menarik yang tidak direncanakan",
+            "example": "Batch 16 — setiap dari 16 generate hasilkan kombinasi unik dan tidak terduga"
+          },
+          {
+            "en": "sequential_rules",
+            "id": "ikuti rules berurutan",
+            "description": "Eksekusi variation_rules secara berurutan — setiap generate ikuti rule berikutnya.",
+            "predictability": "tinggi",
+            "variety": "terkontrol",
+            "use_case": "Seri terstruktur — time-of-day series, outfit showcase, emotion arc",
+            "example": "Batch 4 seasons — generate 1=spring, 2=summer, 3=autumn, 4=winter"
+          },
+          {
+            "en": "grid_search",
+            "id": "grid search",
+            "description": "Generate semua kombinasi dari dua atau lebih variable — N×M total generates.",
+            "predictability": "sangat tinggi",
+            "variety": "systematic",
+            "use_case": "Systematic exploration — menemukan kombinasi optimal secara exhaustive",
+            "example": "4 outfits × 4 lighting presets = 16 generates yang cover semua kombinasi",
+            "grid_config_example": {
+              "axis_a": { "field": "subjects.primary_subject.dressing_room.active_outfit", "values": ["casual", "battle", "formal", "festival"] },
+              "axis_b": { "field": "lighting.preset", "values": ["golden_hour", "dramatic_chiaroscuro", "blue_hour", "neon_cyberpunk"] },
+              "total": 16
+            }
+          },
+          {
+            "en": "one_variable_isolation",
+            "id": "isolasi satu variabel",
+            "description": "Hanya satu field yang berubah per sub-batch — semua field lain fixed. Untuk memahami pengaruh satu parameter.",
+            "predictability": "sangat tinggi",
+            "variety": "targeted",
+            "use_case": "Testing, debugging, understanding platform behavior",
+            "example": "Sub-batch A: hanya lighting berubah. Sub-batch B: hanya angle berubah. Membandingkan impact masing-masing."
+          },
+          {
+            "en": "weighted_exploration",
+            "id": "eksplorasi berbobot",
+            "description": "Campuran — elemen primer selalu berubah, elemen sekunder berubah dengan probabilitas rendah.",
+            "predictability": "sedang",
+            "variety": "sedang",
+            "use_case": "Balance antara variety dan control — most realistic production approach",
+            "example": "lighting.preset: probability 1.0. grain_noise: probability 0.3. color_grading: probability 0.5."
+          }
+        ]
+      },
+
+      "quality_control": {
+        "_note": "Sistem QA terintegrasi dalam batch — filter dan flagging otomatis. Field tambahan.",
+        "options": [
+          {
+            "en": "auto_reject_criteria",
+            "id": "kriteria auto-reject",
+            "description": "Definisi kondisi yang langsung menolak output — untuk pipeline otomatis.",
+            "common_criteria": [
+              "face_not_visible",
+              "anatomy_error_detected",
+              "wrong_character_detected",
+              "watermark_detected",
+              "extreme_blur"
+            ]
+          },
+          {
+            "en": "review_flags",
+            "id": "flag untuk review",
+            "description": "Kondisi yang memflag output untuk review manual sebelum approve.",
+            "common_flags": [
+              "identity_drift_suspected",
+              "unusual_composition",
+              "color_out_of_range",
+              "duplicate_with_previous"
+            ]
+          }
+        ]
+      }
+    }
+  }
+}
