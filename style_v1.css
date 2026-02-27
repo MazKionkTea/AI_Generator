@@ -319,6 +319,64 @@ textarea.output.json { min-height: 150px; }
 .w-bar.red { background: var(--red); }
 .w-bar.dim { background: var(--text-dim); }
 
+/* Panel layer map: default tersembunyi, transisi opacity saat toggle */
+#panelLayerMap {
+  display: none;
+  opacity: 0;
+  transition: opacity .2s ease;
+}
+/* Kontainer ikon yang tampil saat sidebar diciutkan */
+.collapsed-icons {
+  display: none; /* hidden by default, tampil saat collapsed */
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 4px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  flex: 1;
+}
+#sidebar.collapsed .collapsed-icons { display: flex; }
+#sidebar.collapsed .menu-tree { display: none; }
+
+/* Setiap ikon menu saat sidebar diciutkan */
+.ci-btn {
+  width: 34px; height: 34px;
+  display: grid; place-items: center;
+  border-radius: var(--radius-sm);
+  background: none;
+  border: 1px solid transparent;
+  font-size: 14px; cursor: pointer;
+  transition: .12s ease; flex-shrink: 0;
+  color: var(--text-dim);
+  position: relative; /* untuk tooltip */
+}
+.ci-btn:hover {
+  background: rgba(255,255,255,.07);
+  border-color: var(--border);
+  color: var(--text);
+  transform: none; /* override button hover default */
+  filter: none;
+}
+/* Tooltip label saat hover ikon collapsed */
+.ci-btn::after {
+  content: attr(data-label);
+  position: absolute;
+  left: calc(100% + 8px);
+  top: 50%; transform: translateY(-50%);
+  background: #1e2733;
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-size: 10.5px; font-weight: 600;
+  padding: 3px 7px;
+  border-radius: 4px;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0; transition: opacity .15s;
+  z-index: 100;
+}
+.ci-btn:hover::after { opacity: 1; }
+
 /* ===== RESPONSIVE ===== */
 @media (max-width: 860px) {
   #sidebar { position: absolute; z-index: 20; height: 100%; box-shadow: var(--shadow); }
