@@ -1,4 +1,3 @@
-<script>
 /**
  * Prompt Generator V4 — UI Controller
  * ======================================
@@ -214,4 +213,3 @@
   }
 
 })();
-</script>
