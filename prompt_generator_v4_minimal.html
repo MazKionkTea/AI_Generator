@@ -5,14 +5,401 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Prompt Generator V4 — 14 Layer System</title>
 
-<link rel="stylesheet" href="style_v1.css">
-<script src="prompt-generator_v1.js"></script>
+<style>
+/* ===== CSS VARIABLES ===== */
+:root {
+  --bg0: #0b0f14;
+  --bg1: #11161d;
+  --bg2: #151b23;
+  --bg3: #0a0f15;
+  --accent: #9fef00;
+  --accent-soft: rgba(159,239,0,.15);
+  --accent-dim: rgba(159,239,0,.07);
+  --red: #ff6b6b;
+  --red-soft: rgba(255,107,107,.15);
+  --gold: #ffc107;
+  --gold-soft: rgba(255,193,7,.15);
+  --blue: #5bc0eb;
+  --blue-soft: rgba(91,192,235,.12);
+  --text: #d7dce3;
+  --text-dim: #9aa4b2;
+  --border: rgba(255,255,255,.07);
+  --border-accent: rgba(159,239,0,.25);
+  --radius: 10px;
+  --radius-sm: 6px;
+  --shadow: 0 6px 20px rgba(0,0,0,.5);
+  --sidebar-w: 290px;
+}
+
+/* ===== RESET ===== */
+*, *::before, *::after {
+  box-sizing: border-box; margin: 0; padding: 0;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  font-size: 12.5px; color: var(--text);
+}
+
+body {
+  background: linear-gradient(160deg, var(--bg0) 0%, #090d12 100%);
+  display: flex; height: 100vh; overflow: hidden;
+}
+
+/* ===== SCROLLBAR ===== */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(159,239,0,.35); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+/* ===== BUTTON ===== */
+button {
+  background: linear-gradient(160deg, var(--accent), #7acc00);
+  color: #060e00; border: none; padding: 5px 11px;
+  border-radius: var(--radius-sm); cursor: pointer;
+  font-weight: 700; font-size: 11.5px; letter-spacing: .2px;
+  transition: .15s ease; white-space: nowrap;
+}
+button:hover { filter: brightness(1.08); transform: translateY(-1px); }
+button:active { transform: translateY(0); }
+button.ghost {
+  background: none; color: var(--accent);
+  border: 1px solid var(--border-accent);
+}
+button.ghost:hover { background: var(--accent-dim); }
+button.danger {
+  background: linear-gradient(160deg, var(--red), #cc4444);
+  color: #fff;
+}
+button.full { width: 100%; margin-top: 5px; }
+
+/* ===== SIDEBAR ===== */
+#sidebar {
+  width: var(--sidebar-w);
+  background: linear-gradient(180deg, #0f141c, var(--bg1));
+  border-right: 1px solid var(--border);
+  display: flex; flex-direction: column;
+  transition: width .25s ease; flex-shrink: 0;
+  overflow: hidden;
+}
+#sidebar.collapsed { width: 46px; }
+
+.sidebar-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 11px 12px; border-bottom: 1px solid var(--border);
+  background: rgba(0,0,0,.2); flex-shrink: 0;
+}
+.sidebar-head h2 {
+  color: var(--accent); font-size: 13px; font-weight: 700;
+  letter-spacing: .3px; white-space: nowrap; overflow: hidden;
+}
+#sidebar.collapsed .sidebar-head h2 { display: none; }
+
+#toggleBtn {
+  background: none; color: var(--accent);
+  width: 28px; height: 28px; border-radius: 6px;
+  display: grid; place-items: center; font-size: 14px; flex-shrink: 0;
+}
+#toggleBtn:hover { background: rgba(255,255,255,.06); transform: none; }
+
+/* ===== MENU TREE ===== */
+.menu-tree {
+  flex: 1; overflow-y: auto; overflow-x: hidden;
+  padding: 8px 6px 16px;
+}
+#sidebar.collapsed .menu-tree { display: none; }
+
+/* Section group */
+.layer-section {
+  margin-bottom: 4px;
+}
+.layer-section > details > summary {
+  display: flex; align-items: center; gap: 6px;
+  padding: 7px 9px; border-radius: var(--radius-sm);
+  cursor: pointer; list-style: none;
+  font-weight: 600; font-size: 12px; color: var(--text);
+  background: rgba(255,255,255,.03);
+  border: 1px solid var(--border);
+  transition: .12s ease; user-select: none;
+}
+.layer-section > details > summary:hover { background: rgba(255,255,255,.06); }
+.layer-section > details[open] > summary {
+  background: var(--accent-dim); border-color: var(--border-accent); color: var(--accent);
+}
+.layer-section > details > summary::marker { display: none; }
+.layer-section > details > summary .arr {
+  font-size: 10px; opacity: .6; margin-left: auto;
+  transition: transform .15s ease; flex-shrink: 0;
+}
+.layer-section > details[open] > summary .arr { transform: rotate(90deg); }
+
+.section-body { padding: 6px 0 4px; }
+
+/* Sub-group (optgroup) */
+.sub-group {
+  margin: 3px 0 3px 2px;
+  border-left: 2px solid var(--border);
+}
+.sub-group > details > summary {
+  list-style: none; cursor: pointer;
+  display: flex; align-items: center; gap: 5px;
+  padding: 4px 8px; border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  font-size: 11.5px; font-weight: 600; color: var(--text-dim);
+  transition: .12s ease; user-select: none;
+}
+.sub-group > details > summary:hover { color: var(--text); background: rgba(255,255,255,.04); }
+.sub-group > details[open] > summary { color: var(--accent); }
+.sub-group > details > summary::marker { display: none; }
+.sub-group > details > summary .arr2 { font-size: 9px; opacity: .5; margin-left: auto; transition: transform .15s; }
+.sub-group > details[open] > summary .arr2 { transform: rotate(90deg); }
+
+.sub-body { padding: 4px 8px 6px 10px; display: flex; flex-direction: column; gap: 4px; }
+
+/* ===== FORM ELEMENTS ===== */
+label {
+  display: block; font-size: 10.5px; color: var(--text-dim);
+  margin-bottom: 2px; margin-top: 6px; font-weight: 500;
+}
+label:first-child { margin-top: 2px; }
+
+select, input[type=text], input[type=number], textarea {
+  width: 100%; background: var(--bg3);
+  border: 1px solid var(--border); border-radius: var(--radius-sm);
+  padding: 5px 7px; color: var(--text); outline: none;
+  transition: border-color .15s, box-shadow .15s;
+  appearance: none; -webkit-appearance: none;
+}
+select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%239aa4b2'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 7px center; padding-right: 22px; }
+select:focus, input:focus, textarea:focus {
+  border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-soft);
+}
+textarea { resize: vertical; line-height: 1.5; }
+select[multiple] { background-image: none; padding-right: 7px; height: auto; }
+input[type=range] {
+  width: 100%; height: 4px; background: var(--bg3);
+  border-radius: 2px; border: none; padding: 0;
+  -webkit-appearance: none; appearance: none; cursor: pointer;
+}
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 13px; height: 13px;
+  background: var(--accent); border-radius: 50%; cursor: pointer;
+}
+input[type=checkbox] {
+  width: 13px; height: 13px; margin: 0;
+  accent-color: var(--accent); cursor: pointer;
+}
+
+/* Lock row */
+.lock-row {
+  display: flex; align-items: center; gap: 6px;
+  padding: 3px 6px; border-radius: 4px;
+  background: rgba(255,107,107,.05);
+  border: 1px solid transparent; margin-top: 3px;
+}
+.lock-row:has(input:checked) { border-color: rgba(255,107,107,.3); }
+.lock-row label { margin: 0; font-size: 10.5px; color: var(--red); font-weight: 600; cursor: pointer; }
+
+/* Slider row */
+.slider-row { display: flex; flex-direction: column; gap: 3px; }
+.slider-header { display: flex; justify-content: space-between; align-items: center; }
+.slider-header label { margin: 0; }
+.slider-val { font-size: 11px; font-weight: 700; color: var(--accent); }
+.slider-val.dim { color: var(--text-dim); }
+
+/* Info box */
+.info { font-size: 10.5px; color: var(--text-dim); padding: 4px 8px;
+  background: var(--accent-dim); border-left: 2px solid var(--accent);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0; line-height: 1.5; margin: 4px 0; }
+.info.warn { background: var(--red-soft); border-color: var(--red); color: #ffaaaa; }
+.info.blue { background: var(--blue-soft); border-color: var(--blue); color: #aaddf5; }
+
+/* Badge */
+.badge {
+  display: inline-flex; align-items: center;
+  padding: 1px 5px; border-radius: 3px; font-size: 9.5px; font-weight: 700;
+  letter-spacing: .3px; margin-left: 4px; flex-shrink: 0;
+}
+.badge.lock { background: var(--red-soft); color: var(--red); }
+.badge.vid  { background: var(--blue-soft); color: var(--blue); }
+.badge.adm  { background: rgba(255,255,255,.08); color: var(--text-dim); }
+.badge.imp  { background: var(--gold-soft); color: var(--gold); }
+.badge.ok   { background: var(--accent-dim); color: var(--accent); }
+
+/* Divider */
+.divider {
+  border: none; border-top: 1px solid var(--border);
+  margin: 6px 0;
+}
+
+/* Row flex */
+.row { display: flex; gap: 6px; }
+.row > * { flex: 1; }
+
+/* ===== MAIN ===== */
+main {
+  flex: 1; display: flex; flex-direction: column;
+  overflow: hidden; min-width: 0;
+}
+
+/* Topbar */
+.topbar {
+  height: 44px; background: linear-gradient(180deg, #0f141c, var(--bg1));
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 8px; padding: 0 12px;
+  flex-shrink: 0;
+}
+.topbar-title { color: var(--accent); font-weight: 700; font-size: 13px; }
+.topbar-sub { color: var(--text-dim); font-size: 10.5px; }
+.topbar-sep { width: 1px; height: 20px; background: var(--border); }
+.topbar-right { margin-left: auto; display: flex; gap: 6px; align-items: center; }
+
+/* Content */
+.content {
+  flex: 1; overflow-y: auto; overflow-x: hidden;
+  padding: 12px; display: flex; flex-direction: column; gap: 10px;
+}
+
+/* Panel */
+.panel {
+  background: linear-gradient(160deg, #121820, var(--bg2));
+  border: 1px solid var(--border); border-radius: var(--radius);
+  box-shadow: var(--shadow); display: flex; flex-direction: column;
+}
+.panel-header {
+  padding: 8px 12px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 6px;
+  font-weight: 600; font-size: 12px; color: var(--text-dim);
+  flex-shrink: 0;
+}
+.panel-header .ph-icon { font-size: 14px; }
+.panel-body { flex: 1; padding: 10px 12px; }
+.panel-footer {
+  padding: 7px 10px; border-top: 1px solid var(--border);
+  display: flex; gap: 6px; align-items: center; flex-wrap: wrap;
+}
+
+textarea.output {
+  width: 100%; background: var(--bg3); border: none;
+  resize: none; padding: 10px; line-height: 1.6;
+  font-family: 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
+  font-size: 11.5px; border-radius: var(--radius-sm); min-height: 100px;
+}
+textarea.output:focus { outline: 1px solid var(--border-accent); }
+textarea.output.neg { min-height: 70px; }
+textarea.output.json { min-height: 150px; }
+
+/* Layer map */
+.layer-map {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+}
+.lm-card {
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 8px 10px;
+  display: flex; flex-direction: column; gap: 3px;
+}
+.lm-card.active { border-color: var(--border-accent); background: var(--accent-dim); }
+.lm-card.lock-card { border-color: rgba(255,107,107,.3); background: var(--red-soft); }
+.lm-card.vid-card { border-color: rgba(91,192,235,.25); background: var(--blue-soft); }
+.lm-title { font-size: 10px; font-weight: 700; color: var(--accent); }
+.lm-title.red { color: var(--red); }
+.lm-title.blue { color: var(--blue); }
+.lm-title.dim { color: var(--text-dim); }
+.lm-label { font-size: 10.5px; color: var(--text); font-weight: 600; }
+.lm-desc { font-size: 9.5px; color: var(--text-dim); line-height: 1.4; }
+
+/* Platform params display */
+.platform-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 6px; }
+.plat-card {
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 7px 9px;
+}
+.plat-name { font-size: 10px; font-weight: 700; color: var(--accent); margin-bottom: 3px; }
+.plat-params { font-size: 10.5px; color: var(--text-dim); font-family: monospace; word-break: break-all; }
+
+/* Weight grid in output config */
+.weight-grid { display: flex; flex-direction: column; gap: 6px; }
+.w-item { display: flex; flex-direction: column; gap: 3px; }
+.w-header { display: flex; justify-content: space-between; align-items: center; }
+.w-label { font-size: 11px; color: var(--text); font-weight: 500; }
+.w-val { font-size: 11px; font-weight: 700; color: var(--accent); }
+.w-val.locked { color: var(--red); }
+.w-val.zero { color: var(--text-dim); }
+.w-bar-bg { height: 4px; background: var(--bg0); border-radius: 2px; overflow: hidden; }
+.w-bar { height: 100%; border-radius: 2px; background: var(--accent); }
+.w-bar.red { background: var(--red); }
+.w-bar.dim { background: var(--text-dim); }
+
+/* Panel layer map: default tersembunyi, transisi opacity saat toggle */
+#panelLayerMap {
+  display: none;
+  opacity: 0;
+  transition: opacity .2s ease;
+}
+/* Kontainer ikon yang tampil saat sidebar diciutkan */
+.collapsed-icons {
+  display: none; /* hidden by default, tampil saat collapsed */
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 4px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  flex: 1;
+}
+#sidebar.collapsed .collapsed-icons { display: flex; }
+#sidebar.collapsed .menu-tree { display: none; }
+
+/* Setiap ikon menu saat sidebar diciutkan */
+.ci-btn {
+  width: 34px; height: 34px;
+  display: grid; place-items: center;
+  border-radius: var(--radius-sm);
+  background: none;
+  border: 1px solid transparent;
+  font-size: 14px; cursor: pointer;
+  transition: .12s ease; flex-shrink: 0;
+  color: var(--text-dim);
+  position: relative; /* untuk tooltip */
+}
+.ci-btn:hover {
+  background: rgba(255,255,255,.07);
+  border-color: var(--border);
+  color: var(--text);
+  transform: none; /* override button hover default */
+  filter: none;
+}
+/* Tooltip label saat hover ikon collapsed */
+.ci-btn::after {
+  content: attr(data-label);
+  position: absolute;
+  left: calc(100% + 8px);
+  top: 50%; transform: translateY(-50%);
+  background: #1e2733;
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-size: 10.5px; font-weight: 600;
+  padding: 3px 7px;
+  border-radius: 4px;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0; transition: opacity .15s;
+  z-index: 100;
+}
+.ci-btn:hover::after { opacity: 1; }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 860px) {
+  #sidebar { position: absolute; z-index: 20; height: 100%; box-shadow: var(--shadow); }
+  .layer-map { grid-template-columns: repeat(2, 1fr); }
+  .platform-grid { grid-template-columns: 1fr; }
+}
+</style>
 
 </head>
 <body>
 
+  <!-- ini adalah prompt_generator_v4.html template versi minimal untuk menghemat context window limitation -->
+
 <!-- ============================
-     SIDEBAR
+     SIDEBAR 
 ============================= -->
 <aside id="sidebar">
 
@@ -22,11 +409,31 @@
     <button id="toggleBtn" title="Toggle sidebar">☰</button>
   </div>
 
-  <!-- Scrollable menu tree -->
+  <!-- Ikon navigasi saat sidebar diciutkan (collapsed mode) -->
+  <!-- Setiap .ci-btn mewakili satu section layer di menu-tree -->
+  <nav class="collapsed-icons" id="collapsedIcons">
+    <button class="ci-btn" data-target="sec-template" data-label="Template">📌</button>
+    <button class="ci-btn" data-target="sec-l0"       data-label="L0 Subjects">👤</button>
+    <button class="ci-btn" data-target="sec-l1a"      data-label="L1A Identity">🔐</button>
+    <button class="ci-btn" data-target="sec-l1b"      data-label="L1B Constraints">🚫</button>
+    <button class="ci-btn" data-target="sec-l2a"      data-label="L2A Scene Core">🎬</button>
+    <button class="ci-btn" data-target="sec-l2b"      data-label="L2B Environment">🌍</button>
+    <button class="ci-btn" data-target="sec-l3"       data-label="L3 Composition">📷</button>
+    <button class="ci-btn" data-target="sec-l4a"      data-label="L4A Motion">🎥</button>
+    <button class="ci-btn" data-target="sec-l4b"      data-label="L4B Temporal">⏱</button>
+    <button class="ci-btn" data-target="sec-l5"       data-label="L5 Lighting">💡</button>
+    <button class="ci-btn" data-target="sec-l6"       data-label="L6 Atmosphere">🎨</button>
+    <button class="ci-btn" data-target="sec-l7"       data-label="L7 Technical">⚙️</button>
+    <button class="ci-btn" data-target="sec-l8c"      data-label="L8C Output">📤</button>
+    <button class="ci-btn" data-target="sec-l8b"      data-label="L8B Variations">🔄</button>
+    <button class="ci-btn" data-target="sec-l8a"      data-label="L8A Metadata">📝</button>
+  </nav>
+
+  <!-- Scrollable menu tree (tampil saat sidebar expanded) -->
   <nav class="menu-tree">
 
     <!-- ============ TEMPLATE MANAGEMENT ============ -->
-    <div class="layer-section">
+    <div class="layer-section" id="sec-template">
       <details>
         <summary>
           📌 Template Management
@@ -59,7 +466,7 @@
     </div>
 
     <!-- ============ LAYER 0 — SUBJECTS ============ -->
-    <div class="layer-section">
+    <div class="layer-section" id="sec-l0">
       <details>
         <summary>
           👤 L0 Subjects — Character Design
@@ -76,59 +483,26 @@
                 <label>Subject Type</label>
                 <select>
                   <option>human</option>
-                  <option>humanoid_fantasy</option>
-                  <option>android_cyborg</option>
-                  <option>creature_monster</option>
-                  <option>spirit_ethereal</option>
-                  <option>object_personified</option>
-                  <option>vehicle</option>
+                  <!-- lebih banyak pilihan/option di file original -->
                 </select>
 
                 <label>Archetype / Role</label>
                 <select>
                   <option value="">-- pilih --</option>
                   <option>warrior</option>
-                  <option>assassin</option>
-                  <option>mage_wizard</option>
-                  <option>healer_cleric</option>
-                  <option>archer_ranger</option>
-                  <option>rogue_thief</option>
-                  <option>noble_royalty</option>
-                  <option>scholar_sage</option>
-                  <option>merchant_trader</option>
-                  <option>outlaw_rebel</option>
-                  <option>detective_investigator</option>
-                  <option>idol_performer</option>
-                  <option>survivor</option>
-                  <option>deity_divine</option>
-                  <option>child_prodigy</option>
+                  <!-- lebih banyak pilihan/option di file original -->
                 </select>
 
                 <label>Species</label>
                 <select>
                   <option>human</option>
-                  <option>high_elf</option>
-                  <option>dark_elf</option>
-                  <option>wood_elf</option>
-                  <option>half_elf</option>
-                  <option>dwarf</option>
-                  <option>demon_half_demon</option>
-                  <option>angel_fallen</option>
-                  <option>beastkin_wolf</option>
-                  <option>beastkin_cat</option>
-                  <option>android_robot</option>
-                  <option>vampire</option>
-                  <option>werewolf_partial</option>
+                  <!-- lebih banyak pilihan/option di file original -->
                 </select>
 
                 <label>Gender Presentation</label>
                 <select>
                   <option>feminine</option>
-                  <option>masculine</option>
-                  <option>androgynous</option>
-                  <option>feminine_leaning</option>
-                  <option>masculine_leaning</option>
-                  <option>non_conforming</option>
+                  <!-- lebih banyak pilihan/option di file original -->
                 </select>
               </div>
             </details>
@@ -630,7 +1004,7 @@
     </div>
 
     <!-- ============ LAYER 1A — IDENTITY ANCHOR ============ -->
-    <div class="layer-section">
+    <div class="layer-section" id="sec-l1a">
       <details>
         <summary>
           🔐 L1A Identity Anchor <span class="badge lock">PERMANEN</span>
@@ -667,15 +1041,7 @@
                 <select>
                   <option value="">-- pilih --</option>
                   <option>East Asian (Chinese / Japanese / Korean)</option>
-                  <option>Southeast Asian (Indonesian / Filipino / Thai)</option>
-                  <option>South Asian (Indian / Pakistani / Sri Lankan)</option>
-                  <option>Middle Eastern (Arab / Persian / Turkish)</option>
-                  <option>East African (Ethiopian / Somali / Kenyan)</option>
-                  <option>West African (Nigerian / Ghanaian / Senegalese)</option>
-                  <option>Northern European (Scandinavian / German / British)</option>
-                  <option>Southern European (Italian / Spanish / Greek)</option>
-                  <option>Latin American (Mexican / Colombian / Brazilian)</option>
-                  <option>Pacific Islander (Hawaiian / Maori / Samoan)</option>
+                  <!-- lebih banyak pilihan/option di file original -->
                 </select>
                 <div class="lock-row">
                   <input type="checkbox" id="lockRace" checked>
@@ -685,15 +1051,8 @@
                 <label>Ras Fantasi (Overlay)</label>
                 <select>
                   <option value="">-- none / human --</option>
-                  <option>High Elf</option>
-                  <option>Dark Elf</option>
                   <option>Wood Elf</option>
-                  <option>Half-Elf</option>
-                  <option>Dwarf</option>
-                  <option>Human Fantasy</option>
-                  <option>Demon Hybrid</option>
-                  <option>Angel / Seraph</option>
-                  <option>Vampire Noble</option>
+                  <!-- lebih banyak pilihan/option di file original -->
                 </select>
 
                 <label>Skull Logic — Locks Out</label>
@@ -703,12 +1062,7 @@
                 <select>
                   <option value="">-- pilih --</option>
                   <option>porcelain_to_fair_only</option>
-                  <option>fair_to_light_beige</option>
-                  <option>light_beige_to_warm_tan</option>
-                  <option>tan_to_warm_brown</option>
-                  <option>warm_brown_to_deep_brown</option>
-                  <option>deep_brown_to_ebony</option>
-                  <option>ashen_grey_only (Dark Elf / Fantasy)</option>
+                  <!-- lebih banyak pilihan/option di file original -->
                 </select>
               </div>
             </details>
@@ -723,15 +1077,7 @@
                 <select>
                   <option value="">-- pilih --</option>
                   <option>10-12 years old ⚠️ MINOR</option>
-                  <option>13-15 years old ⚠️ MINOR</option>
-                  <option>16-17 years old ⚠️ MINOR</option>
-                  <option>18-20 years old</option>
-                  <option>20-25 years old</option>
-                  <option>25-30 years old</option>
-                  <option>30-40 years old</option>
-                  <option>40-55 years old</option>
-                  <option>55-70 years old</option>
-                  <option>ageless immortal appearance</option>
+                  <!-- lebih banyak pilihan/option di file original -->
                 </select>
                 <div class="lock-row">
                   <input type="checkbox" id="lockAge" checked>
@@ -741,21 +1087,13 @@
                 <label>Maturity Level</label>
                 <select>
                   <option>juvenile</option>
-                  <option>juvenile_to_young_adult</option>
-                  <option>young_adult</option>
-                  <option>adult</option>
-                  <option>mature_adult</option>
-                  <option>elder</option>
-                  <option>adult_ageless</option>
+                  <!-- lebih banyak pilihan/option di file original -->
                 </select>
 
                 <label>Skin Condition (age-based)</label>
                 <select>
                   <option>smooth_porcelain_non_porous (juvenile)</option>
-                  <option>smooth_natural (young adult)</option>
-                  <option>natural_textured (adult)</option>
-                  <option>textured_with_lines (mature)</option>
-                  <option>aged_prominently_wrinkled (elder)</option>
+                  <!-- lebih banyak pilihan/option di file original -->
                 </select>
               </div>
             </details>
@@ -770,46 +1108,21 @@
                 <select>
                   <option value="">-- pilih --</option>
                   <option>oval</option>
-                  <option>soft_oval (lembut, narrow jaw)</option>
-                  <option>round</option>
-                  <option>heart</option>
-                  <option>square</option>
-                  <option>diamond</option>
-                  <option>oblong_long (Elven)</option>
-                  <option>sharp_v (angular, villain)</option>
-                  <option>chubby_round</option>
+                  <!-- lebih banyak pilihan/option di file original -->
                 </select>
 
                 <label>Eye Shape</label>
                 <select>
                   <option value="">-- pilih --</option>
                   <option>almond (upward tilt — East Asian)</option>
-                  <option>monolid (no fold — East Asian)</option>
-                  <option>double_lid (lipatan kelopak jelas)</option>
-                  <option>hooded (kelopak menutupi)</option>
-                  <option>round (besar dan bundar)</option>
-                  <option>upturned (sudut naik — cat-like)</option>
-                  <option>downturned (sudut turun — melancholic)</option>
-                  <option>deep_set (jauh ke dalam)</option>
-                  <option>elven_elongated (lebih panjang dari manusia)</option>
+                  <!-- lebih banyak pilihan/option di file original -->
                 </select>
 
                 <label>Eye Color</label>
                 <select>
                   <option value="">-- pilih --</option>
                   <option>dark_brown_black (hitam/cokelat pekat)</option>
-                  <option>warm_brown (cokelat hangat)</option>
-                  <option>hazel (campuran)</option>
-                  <option>green</option>
-                  <option>blue</option>
-                  <option>grey</option>
-                  <option>amber_golden</option>
-                  <option>red_crimson (vampir/demon)</option>
-                  <option>purple_violet (fantasi)</option>
-                  <option>silver_white (divine/undead)</option>
-                  <option>glowing_any_color</option>
-                  <option>heterochromia (dua warna)</option>
-                  <option>slit_pupil (vertikal — beastkin)</option>
+                  <!-- lebih banyak pilihan/option di file original -->
                 </select>
                 <div class="lock-row">
                   <input type="checkbox" id="lockEyes" checked>
@@ -820,56 +1133,35 @@
                 <select>
                   <option value="">-- pilih --</option>
                   <option>small_button (kecil, flat — East Asian)</option>
-                  <option>straight_refined</option>
-                  <option>straight_with_bump (Mediterranean)</option>
-                  <option>wide_flat (African / SEA)</option>
-                  <option>aquiline_hawk (paruh elang)</option>
-                  <option>turned_up_cute (pesek)</option>
-                  <option>strong_broad</option>
+                  <!-- lebih banyak pilihan/option di file original -->
                 </select>
 
                 <label>Lip Shape</label>
                 <select>
                   <option value="">-- pilih --</option>
                   <option>thin_natural</option>
-                  <option>medium_balanced</option>
-                  <option>full_plump</option>
-                  <option>cupid_bow</option>
-                  <option>wide_expressive</option>
-                  <option>pouty_soft</option>
+                  <!-- lebih banyak pilihan/option di file original -->
                 </select>
 
                 <label>Jaw Line</label>
                 <select>
                   <option value="">-- pilih --</option>
                   <option>soft_rounded</option>
-                  <option>defined_medium</option>
-                  <option>sharp_angular</option>
-                  <option>square_strong</option>
-                  <option>pointed_delicate (Elven)</option>
+                  <!-- lebih banyak pilihan/option di file original -->
                 </select>
 
                 <label>Cheek Structure</label>
                 <select>
                   <option value="">-- pilih --</option>
                   <option>high_prominent (East Asian / Slavic)</option>
-                  <option>soft_medium</option>
-                  <option>flat_subtle</option>
-                  <option>chubby_full</option>
-                  <option>gaunt_hollow</option>
+                  <!-- lebih banyak pilihan/option di file original -->
                 </select>
 
                 <label>Skin Undertone</label>
                 <select>
                   <option value="">-- pilih --</option>
                   <option>warm_peachy (East Asian / N. European)</option>
-                  <option>warm_golden_yellow (East / SEA / Latin)</option>
-                  <option>neutral_beige</option>
-                  <option>cool_pink (N. European lighter)</option>
-                  <option>olive_warm (Mediterranean / Middle East)</option>
-                  <option>warm_brown_golden (South Asian / SEA)</option>
-                  <option>cool_deep_brown (African)</option>
-                  <option>ashen_cool_grey (Dark Elf / Fantasy)</option>
+                  <!-- lebih banyak pilihan/option di file original -->
                 </select>
               </div>
             </details>
@@ -884,11 +1176,7 @@
                 <select>
                   <option value="">-- pilih --</option>
                   <option>petite (di bawah 160cm)</option>
-                  <option>below_average (160–165cm fem)</option>
-                  <option>average (165–170cm fem)</option>
-                  <option>above_average (170–178cm fem)</option>
-                  <option>tall (178–185cm fem)</option>
-                  <option>very_tall (185cm+ fem)</option>
+                  <!-- lebih banyak pilihan/option di file original -->
                 </select>
                 <div class="lock-row">
                   <input type="checkbox" id="lockHeight" checked>
@@ -899,12 +1187,7 @@
                 <select>
                   <option value="">-- pilih --</option>
                   <option>ectomorph_lean (ramping natural)</option>
-                  <option>slim_delicate (fragile elegance)</option>
-                  <option>mesomorph_athletic (atletis)</option>
-                  <option>endomorph_solid (solid, besar rangka)</option>
-                  <option>muscular_powerful (berotot kuat)</option>
-                  <option>curvy_hourglass (lekukan penuh)</option>
-                  <option>stocky_compact (dwarf / kekar pendek)</option>
+                  <!-- lebih banyak pilihan/option di file original -->
                 </select>
                 <div class="lock-row">
                   <input type="checkbox" id="lockFrame" checked>
@@ -914,23 +1197,19 @@
                 <label>Shoulder Width</label>
                 <select>
                   <option>narrow (sempit, lebih kecil dari pinggul)</option>
-                  <option>medium (seimbang)</option>
-                  <option>broad (lebar, atletis)</option>
+                  <!-- lebih banyak pilihan/option di file original -->
                 </select>
 
                 <label>Waist Definition</label>
                 <select>
                   <option>undefined_straight</option>
-                  <option>subtle</option>
-                  <option>defined_natural</option>
-                  <option>hourglass_prominent</option>
+                  <!-- lebih banyak pilihan/option di file original -->
                 </select>
 
                 <label>Limb Proportion</label>
                 <select>
                   <option>short_limbed</option>
-                  <option>average_proportion</option>
-                  <option>long_limbed (model / elf)</option>
+                  <!-- lebih banyak pilihan/option di file original -->
                 </select>
               </div>
             </details>
@@ -999,7 +1278,7 @@
     </div>
 
     <!-- ============ LAYER 1B — TECHNICAL CONSTRAINTS ============ -->
-    <div class="layer-section">
+    <div class="layer-section" id="sec-l1b">
       <details>
         <summary>
           🚫 L1B Technical Constraints <span class="badge lock">NEG DNA</span>
@@ -1048,7 +1327,7 @@
     </div>
 
     <!-- ============ LAYER 2A — SCENE CORE ============ -->
-    <div class="layer-section">
+    <div class="layer-section" id="sec-l2a">
       <details>
         <summary>
           🎬 L2A Scene Core
@@ -1062,23 +1341,13 @@
                 <label>Primary Focus</label>
                 <select>
                   <option>character</option>
-                  <option>landscape</option>
-                  <option>action</option>
-                  <option>object</option>
-                  <option>atmosphere</option>
+                  <!-- lebih banyak pilihan/option di file original -->
                 </select>
                 <label>Narrative Moment</label>
                 <select>
                   <option value="">-- pilih --</option>
                   <option>calm_before_storm</option>
-                  <option>rising_tension</option>
-                  <option>climax_peak_action</option>
-                  <option>resolution</option>
-                  <option>aftermath</option>
-                  <option>peaceful_idle</option>
-                  <option>moment_of_realization</option>
-                  <option>reunion</option>
-                  <option>farewell</option>
+                  <!-- lebih banyak pilihan/option di file original -->
                 </select>
               </div>
             </details>
@@ -1092,52 +1361,27 @@
                 <select>
                   <option value="">-- pilih --</option>
                   <option>ancient / prehistoric</option>
-                  <option>medieval</option>
-                  <option>renaissance</option>
-                  <option>victorian / steampunk</option>
-                  <option>early 1900s</option>
-                  <option>1950s–60s</option>
-                  <option>1980s–90s</option>
-                  <option>present day</option>
-                  <option>near future (2030s–2050s)</option>
-                  <option>far future (2100+)</option>
-                  <option>high fantasy (timeless)</option>
-                  <option>post-apocalyptic</option>
+                  <!-- lebih banyak pilihan/option di file original -->
                 </select>
 
                 <label>Time of Day</label>
                 <select>
                   <option value="">-- pilih --</option>
                   <option>dawn_pre_sunrise</option>
-                  <option>golden_hour_morning</option>
-                  <option>morning_soft</option>
-                  <option>noon_harsh_midday</option>
-                  <option>afternoon_warm</option>
-                  <option>golden_hour_sunset</option>
-                  <option>blue_hour_dusk</option>
-                  <option>night_early</option>
-                  <option>midnight</option>
-                  <option>late_night_3am</option>
-                  <option>magic_hour (transisi siang-malam)</option>
+                  <!-- lebih banyak pilihan/option di file original -->
                 </select>
 
                 <label>Season</label>
                 <select>
                   <option value="">-- pilih --</option>
                   <option>spring</option>
-                  <option>summer</option>
-                  <option>autumn_fall</option>
-                  <option>winter</option>
-                  <option>late_autumn_dying</option>
-                  <option>early_spring_blooming</option>
+                  <!-- lebih banyak pilihan/option di file original -->
                 </select>
 
                 <label>Time Flow</label>
                 <select>
                   <option>real_time</option>
-                  <option>frozen_moment</option>
-                  <option>slow_motion</option>
-                  <option>time_lapse</option>
+                  <!-- lebih banyak pilihan/option di file original -->
                 </select>
               </div>
             </details>
@@ -1151,34 +1395,19 @@
                 <select>
                   <option value="">-- pilih --</option>
                   <option>urban_city</option>
-                  <option>suburban</option>
-                  <option>rural_countryside</option>
-                  <option>wilderness_forest</option>
-                  <option>desert</option>
-                  <option>mountain</option>
-                  <option>beach_coastal</option>
-                  <option>underwater</option>
-                  <option>cave_underground</option>
-                  <option>interior_indoor</option>
-                  <option>rooftop</option>
-                  <option>void_space</option>
+                  <!-- lebih banyak pilihan/option di file original -->
                 </select>
                 <label>Specific Place</label>
                 <input type="text" placeholder="e.g., abandoned metro station, grand library">
                 <label>Scale</label>
                 <select>
                   <option>intimate_small</option>
-                  <option>personal</option>
-                  <option>expansive_large</option>
-                  <option>monumental_epic</option>
+                  <!-- lebih banyak pilihan/option di file original -->
                 </select>
                 <label>Spatial Quality</label>
                 <select>
                   <option>open_vast</option>
-                  <option>enclosed_intimate</option>
-                  <option>claustrophobic_tight</option>
-                  <option>vertical_towering</option>
-                  <option>labyrinthine</option>
+                  <!-- lebih banyak pilihan/option di file original -->
                 </select>
               </div>
             </details>
@@ -1188,7 +1417,7 @@
     </div>
 
     <!-- ============ LAYER 2B — ENVIRONMENT ============ -->
-    <div class="layer-section">
+    <div class="layer-section" id="sec-l2b">
       <details>
         <summary>
           🌍 L2B Environment
@@ -1203,26 +1432,14 @@
                 <select>
                   <option value="">-- pilih --</option>
                   <option>urban_city_street</option>
-                  <option>interior_room</option>
-                  <option>forest_jungle</option>
-                  <option>desert</option>
-                  <option>mountains</option>
-                  <option>beach_coast</option>
-                  <option>cave_underground</option>
-                  <option>ruins_abandoned</option>
-                  <option>futuristic_sci_fi</option>
-                  <option>fantasy_realm</option>
-                  <option>underwater</option>
+                  <!-- lebih banyak pilihan/option di file original -->
                 </select>
                 <label>Geographic / Cultural Context</label>
                 <input type="text" placeholder="e.g., Neo Tokyo, European countryside, ancient ruins">
                 <label>Maintenance State</label>
                 <select>
                   <option>pristine_new</option>
-                  <option>well_maintained</option>
-                  <option>lived_in_worn</option>
-                  <option>decaying_but_functional</option>
-                  <option>ruined_abandoned</option>
+                  <!-- lebih banyak pilihan/option di file original -->
                 </select>
                 <label>Structural Features</label>
                 <input type="text" placeholder="e.g., exposed_pipes, neon_signs, ancient_columns">
@@ -1237,40 +1454,22 @@
                 <label>Precipitation</label>
                 <select>
                   <option>none_clear</option>
-                  <option>light_drizzle</option>
-                  <option>moderate_rain</option>
-                  <option>heavy_rain_storm</option>
-                  <option>snow_light</option>
-                  <option>blizzard_heavy</option>
-                  <option>fog_mist</option>
-                  <option>ash_falling (post-apocalyptic)</option>
+                  <!-- lebih banyak pilihan/option di file original -->
                 </select>
                 <label>Wind Effect</label>
                 <select>
                   <option>calm_still</option>
-                  <option>light_breeze</option>
-                  <option>moderate_wind</option>
-                  <option>strong_gale</option>
+                  <!-- lebih banyak pilihan/option di file original -->
                 </select>
                 <label>Visibility</label>
                 <select>
                   <option>crystal_clear</option>
-                  <option>clear</option>
-                  <option>hazy</option>
-                  <option>foggy_low_visibility</option>
-                  <option>near_zero</option>
+                  <!-- lebih banyak pilihan/option di file original -->
                 </select>
                 <label>Sky Condition</label>
                 <select>
                   <option>clear_sunny</option>
-                  <option>partly_cloudy</option>
-                  <option>overcast_grey</option>
-                  <option>dramatic_clouds</option>
-                  <option>stormy_dark</option>
-                  <option>city_glow_night</option>
-                  <option>starry_night</option>
-                  <option>aurora</option>
-                  <option>eclipse</option>
+                  <!-- lebih banyak pilihan/option di file original -->
                 </select>
               </div>
             </details>
@@ -1285,8 +1484,7 @@
                 <label>Prop Importance</label>
                 <select>
                   <option>hero_prop (fokus utama)</option>
-                  <option>supporting_prop</option>
-                  <option>background_detail</option>
+                  <!-- lebih banyak pilihan/option di file original -->
                 </select>
                 <button class="full ghost">+ Add Another Prop</button>
               </div>
@@ -1297,7 +1495,7 @@
     </div>
 
     <!-- ============ LAYER 3 — COMPOSITION ============ -->
-    <div class="layer-section">
+    <div class="layer-section" id="sec-l3">
       <details>
         <summary>
           📷 L3 Composition <span class="badge imp">IMPORTANT</span>
@@ -1312,58 +1510,32 @@
                 <select>
                   <option value="">-- pilih --</option>
                   <option>extreme_close_up ECU (wajah saja)</option>
-                  <option>close_up CU</option>
-                  <option>medium_close_up MCU</option>
-                  <option>medium_shot MS</option>
-                  <option>medium_full_shot MFS</option>
-                  <option>full_shot FS (full body)</option>
-                  <option>wide_shot WS</option>
-                  <option>extreme_wide_shot EWS</option>
+                  <!-- lebih banyak pilihan/option di file original -->
                 </select>
 
                 <label>Camera Angle</label>
                 <select>
                   <option>eye_level</option>
-                  <option>slightly_low_angle</option>
-                  <option>low_angle (hero, imposing)</option>
-                  <option>extreme_low_worms_eye</option>
-                  <option>slightly_high_angle</option>
-                  <option>high_angle</option>
-                  <option>extreme_high_birds_eye</option>
-                  <option>overhead_top_down</option>
-                  <option>dutch_angle_tilted</option>
+                  <!-- lebih banyak pilihan/option di file original -->
                 </select>
 
                 <label>Focal Length</label>
                 <select>
                   <option value="">-- pilih --</option>
                   <option>14mm (ultra wide — distorsi)</option>
-                  <option>24mm (wide)</option>
-                  <option>35mm (standard wide)</option>
-                  <option>50mm (normal)</option>
-                  <option>85mm (portrait — ideal)</option>
-                  <option>135mm (telephoto)</option>
-                  <option>200mm+ (super telephoto)</option>
+                  <!-- lebih banyak pilihan/option di file original -->
                 </select>
 
                 <label>Aperture / Depth of Field</label>
                 <select>
                   <option>f/1.4 (ultra shallow — bokeh kuat)</option>
-                  <option>f/2.8 (shallow — bokeh natural)</option>
-                  <option>f/5.6 (moderate)</option>
-                  <option>f/8 (balanced)</option>
-                  <option>f/11 (deep)</option>
-                  <option>f/16+ (semua fokus)</option>
+                  <!-- lebih banyak pilihan/option di file original -->
                 </select>
 
                 <label>Camera Stability</label>
                 <select>
                   <option>static_locked</option>
-                  <option>handheld_slight_shake</option>
-                  <option>gimbal_smooth</option>
-                  <option>crane_jib</option>
-                  <option>dolly_track</option>
-                  <option>steadicam</option>
+                  <!-- lebih banyak pilihan/option di file original -->
                 </select>
               </div>
             </details>
@@ -1376,34 +1548,26 @@
                 <label>Subject Placement</label>
                 <select>
                   <option>center</option>
-                  <option>rule_of_thirds_left</option>
-                  <option>rule_of_thirds_right</option>
-                  <option>golden_ratio</option>
-                  <option>off_center_dynamic</option>
+                  <!-- lebih banyak pilihan/option di file original -->
                 </select>
 
                 <label>Symmetry</label>
                 <select>
-                  <option>asymmetric (lebih dinamis)</option>
                   <option>symmetric_centered</option>
-                  <option>radial_symmetry</option>
+                  <!-- lebih banyak pilihan/option di file original -->
                 </select>
 
                 <label>Leading Lines</label>
                 <select>
                   <option>none</option>
                   <option>diagonal_left_to_right</option>
-                  <option>converging_to_subject</option>
-                  <option>horizontal_stabilizing</option>
-                  <option>curved_flowing</option>
+                  <!-- lebih banyak pilihan/option di file original -->
                 </select>
 
                 <label>Depth / Layers</label>
                 <select>
                   <option>flat_no_depth</option>
-                  <option>foreground_subject_background</option>
-                  <option>deep_three_layers</option>
-                  <option>extreme_depth_miniature</option>
+                  <!-- lebih banyak pilihan/option di file original -->
                 </select>
 
                 <label>Foreground Element</label>
@@ -1413,8 +1577,7 @@
                 <select>
                   <option>none</option>
                   <option>yes (doorway / window / arch)</option>
-                  <option>yes (trees / branches)</option>
-                  <option>yes (tunnel / corridor)</option>
+                  <!-- lebih banyak pilihan/option di file original -->
                 </select>
               </div>
             </details>
@@ -1423,8 +1586,122 @@
       </details>
     </div>
 
+    <!-- ============ LAYER 4A — MOTION (VIDEO) ============ -->
+    <div class="layer-section" id="sec-l4a">
+      <details>
+        <summary>
+          🎥 L4A Motion <span class="badge vid">VIDEO ONLY</span>
+          <span class="arr">▸</span>
+        </summary>
+        <div class="section-body">
+          <div class="info blue">⚙️ Aktif hanya jika Generator Type = "video" atau "both".</div>
+
+          <div class="sub-group">
+            <details>
+              <summary>Camera Movement <span class="arr2">▸</span></summary>
+              <div class="sub-body">
+                <label>Movement Type</label>
+                <select>
+                  <option>static_locked</option>
+                  <!-- lebih banyak pilihan/option di file original -->
+                </select>
+                <label>Direction</label>
+                <select>
+                  <option>left</option>
+                  <!-- lebih banyak pilihan/option di file original -->
+                </select>
+                <label>Speed</label>
+                <select>
+                  <option>very_slow</option>
+                  <!-- lebih banyak pilihan/option di file original -->
+                </select>
+                <label>Easing</label>
+                <select>
+                  <option>smooth_ease_in_out</option>
+                  <!-- lebih banyak pilihan/option di file original -->
+                </select>
+              </div>
+            </details>
+          </div>
+
+          <div class="sub-group">
+            <details>
+              <summary>Subject Motion <span class="arr2">▸</span></summary>
+              <div class="sub-body">
+                <label>Primary Motion</label>
+                <select>
+                  <option>idle_breathing (ambient)</option>
+                  <!-- lebih banyak pilihan/option di file original -->
+                </select>
+                <label>Motion Intensity</label>
+                <select>
+                  <option>static (tidak bergerak)</option>
+                  <!-- lebih banyak pilihan/option di file original -->
+                </select>
+                <label>Cloth Physics</label>
+                <select>
+                  <option>none</option>
+                  <!-- lebih banyak pilihan/option di file original -->
+                </select>
+                <label>Hair Physics</label>
+                <select>
+                  <option>none</option>
+                  <!-- lebih banyak pilihan/option di file original -->
+                </select>
+                <label>Particle Effects (optional)</label>
+                <input type="text" placeholder="e.g., floating_petals, sparks, snow_particles">
+              </div>
+            </details>
+          </div>
+        </div>
+      </details>
+    </div>
+
+    <!-- ============ LAYER 4B — TEMPORAL SEQUENCE (VIDEO) ============ -->
+    <div class="layer-section" id="sec-l4b">
+      <details>
+        <summary>
+          ⏱ L4B Temporal Sequence <span class="badge vid">VIDEO ONLY</span>
+          <span class="arr">▸</span>
+        </summary>
+        <div class="section-body">
+          <div class="sub-body">
+            <label>Total Duration (seconds)</label>
+            <input type="number" value="5" min="1" max="60" step="0.5">
+
+            <label>FPS</label>
+            <select>
+              <option>24 (cinematic — recommended)</option>
+              <!-- lebih banyak pilihan/option di file original -->
+            </select>
+
+            <label>Loop</label>
+            <select>
+              <option>false</option>
+              <option>true (seamless loop)</option>
+            </select>
+
+            <label>Transition Type</label>
+            <select>
+              <option>none (cut hard)</option>
+              <!-- lebih banyak pilihan/option di file original -->
+            </select>
+
+            <label>Key Action at Start</label>
+            <input type="text" placeholder="e.g., character_stands_still">
+
+            <label>Key Action at End</label>
+            <input type="text" placeholder="e.g., character_turns_and_walks_away">
+
+            <label>Peak Moment (midpoint)</label>
+            <input type="text" placeholder="e.g., expression_change, spell_released">
+          </div>
+        </div>
+      </details>
+    </div>
+
     <!-- ============ LAYER 5 — LIGHTING ============ -->
-    <div class="layer-section">
+    <div class="layer-section" id="sec-l5">
       <details>
         <summary>
           💡 L5 Lighting <span class="badge imp">CRITICAL</span>
@@ -1436,17 +1713,7 @@
             <select>
               <option value="">-- Custom --</option>
               <option>natural_daylight</option>
-              <option>golden_hour_warm</option>
-              <option>blue_hour_cool</option>
-              <option>magic_hour</option>
-              <option>studio_3point</option>
-              <option>rembrandt_lighting</option>
-              <option>chiaroscuro_dramatic</option>
-              <option>cyberpunk_neon</option>
-              <option>horror_low_key</option>
-              <option>soft_diffused</option>
-              <option>moonlight</option>
-              <option>candlelight_warm</option>
+              <!-- lebih banyak pilihan/option di file original -->
             </select>
           </div>
 
@@ -1457,45 +1724,25 @@
                 <label>Source Type</label>
                 <select>
                   <option>sun_daylight</option>
-                  <option>window_light</option>
-                  <option>softbox_diffused</option>
-                  <option>spotlight_hard</option>
-                  <option>neon_sign</option>
-                  <option>fire_flame</option>
-                  <option>candle</option>
-                  <option>moonlight</option>
-                  <option>screen_monitor_glow</option>
-                  <option>magical_supernatural</option>
-                  <option>bioluminescent</option>
+                  <!-- lebih banyak pilihan/option di file original -->
                 </select>
 
                 <label>Position</label>
                 <select>
                   <option>front_flat</option>
-                  <option>45deg_left_standard</option>
-                  <option>45deg_right</option>
-                  <option>side_90deg_left</option>
-                  <option>side_90deg_right</option>
-                  <option>back_rim_silhouette</option>
-                  <option>top_overhead</option>
-                  <option>bottom_underlighting</option>
+                  <!-- lebih banyak pilihan/option di file original -->
                 </select>
 
                 <label>Quality</label>
                 <select>
                   <option>hard (shadow tajam)</option>
-                  <option>soft (shadow halus)</option>
-                  <option>diffused (sangat halus)</option>
+                  <!-- lebih banyak pilihan/option di file original -->
                 </select>
 
                 <label>Color Temperature</label>
                 <select>
                   <option>very_warm_2700K (candlelight)</option>
-                  <option>warm_3200K (tungsten)</option>
-                  <option>warm_3500K (golden hour)</option>
-                  <option>neutral_5500K (daylight)</option>
-                  <option>cool_6500K (overcast)</option>
-                  <option>very_cool_8000K+ (blue hour)</option>
+                  <!-- lebih banyak pilihan/option di file original -->
                 </select>
 
                 <div class="slider-row">
@@ -1517,9 +1764,7 @@
                 <select>
                   <option value="">-- none --</option>
                   <option>ambient_environmental</option>
-                  <option>reflector</option>
-                  <option>soft_diffused</option>
-                  <option>bounce_light</option>
+                  <!-- lebih banyak pilihan/option di file original -->
                 </select>
                 <div class="slider-row">
                   <div class="slider-header">
@@ -1555,10 +1800,7 @@
                 <label>Shadow Style</label>
                 <select>
                   <option>realistic_natural</option>
-                  <option>hard_deep</option>
-                  <option>soft_gentle</option>
-                  <option>stylized_artistic</option>
-                  <option>no_shadows</option>
+                  <!-- lebih banyak pilihan/option di file original -->
                 </select>
 
                 <div class="lock-row" style="background:none;border:none;padding:0">
@@ -1589,7 +1831,7 @@
     </div>
 
     <!-- ============ LAYER 6 — ATMOSPHERE ============ -->
-    <div class="layer-section">
+    <div class="layer-section" id="sec-l6">
       <details>
         <summary>
           🎨 L6 Atmosphere
@@ -1604,33 +1846,14 @@
                 <select>
                   <option value="">-- pilih --</option>
                   <option>tense_anxious</option>
-                  <option>peaceful_serene</option>
-                  <option>mysterious_enigmatic</option>
-                  <option>hopeful_optimistic</option>
-                  <option>ominous_foreboding</option>
-                  <option>melancholic_sad</option>
-                  <option>joyful_uplifting</option>
-                  <option>dramatic_intense</option>
-                  <option>romantic_intimate</option>
-                  <option>eerie_unsettling</option>
-                  <option>epic_grand</option>
-                  <option>whimsical_playful</option>
-                  <option>nostalgic_wistful</option>
-                  <option>dread_horror</option>
-                  <option>wonder_magical</option>
+                  <!-- lebih banyak pilihan/option di file original -->
                 </select>
 
                 <label>Secondary Tone</label>
                 <select>
                   <option value="">-- none --</option>
                   <option>tense_anxious</option>
-                  <option>peaceful_serene</option>
-                  <option>mysterious_enigmatic</option>
-                  <option>hopeful_optimistic</option>
-                  <option>melancholic_sad</option>
-                  <option>romantic_intimate</option>
-                  <option>eerie_unsettling</option>
-                  <option>nostalgic_wistful</option>
+                  <!-- lebih banyak pilihan/option di file original -->
                 </select>
               </div>
             </details>
@@ -1644,19 +1867,7 @@
                 <select>
                   <option value="">-- pilih --</option>
                   <option>photorealism</option>
-                  <option>cinematic_photography</option>
-                  <option>impressionism</option>
-                  <option>expressionism</option>
-                  <option>surrealism</option>
-                  <option>cyberpunk_tech_noir</option>
-                  <option>steampunk</option>
-                  <option>solarpunk</option>
-                  <option>dark_fantasy</option>
-                  <option>gothic_dark</option>
-                  <option>anime_manga_adjacent</option>
-                  <option>minimalist_clean</option>
-                  <option>painterly_oil</option>
-                  <option>watercolor_soft</option>
+                  <!-- lebih banyak pilihan/option di file original -->
                 </select>
 
                 <label>Film / Director Reference</label>
@@ -1666,15 +1877,7 @@
                 <select>
                   <option value="">-- pilih --</option>
                   <option>warm_golden (amber, orange, cream)</option>
-                  <option>cool_blue (steel blue, slate, deep navy)</option>
-                  <option>neon_dark (neon on black)</option>
-                  <option>teal_orange_cinematic</option>
-                  <option>pastel_dream (soft pinks, lavender)</option>
-                  <option>monochrome_blue (desaturated + blue tint)</option>
-                  <option>earth_tones (brown, rust, green)</option>
-                  <option>blood_black (crimson + dark)</option>
-                  <option>purple_gold (violet + gold)</option>
-                  <option>pink_magenta (neon pink)</option>
+                  <!-- lebih banyak pilihan/option di file original -->
                 </select>
 
                 <label>Custom Color Notes</label>
@@ -1683,9 +1886,7 @@
                 <label>Contrast</label>
                 <select>
                   <option>low_soft_dreamy</option>
-                  <option>balanced_natural</option>
-                  <option>high_dramatic</option>
-                  <option>selective_color_noir</option>
+                  <!-- lebih banyak pilihan/option di file original -->
                 </select>
               </div>
             </details>
@@ -1698,188 +1899,22 @@
                 <label>Texture Emphasis</label>
                 <select>
                   <option>smooth_clean</option>
-                  <option>gritty_textured</option>
-                  <option>wet_reflective</option>
-                  <option>rough_weathered</option>
-                  <option>painterly_artistic</option>
+                  <!-- lebih banyak pilihan/option di file original -->
                 </select>
                 <label>Film Grain</label>
                 <select>
                   <option>none_clean</option>
-                  <option>very_subtle</option>
-                  <option>light_grain_35mm</option>
-                  <option>medium_grain</option>
-                  <option>heavy_grain_artistic</option>
+                  <!-- lebih banyak pilihan/option di file original -->
                 </select>
               </div>
             </details>
-          </div>
-        </div>
-      </details>
-    </div>
-
-    <!-- ============ LAYER 4A — MOTION (VIDEO) ============ -->
-    <div class="layer-section">
-      <details>
-        <summary>
-          🎥 L4A Motion <span class="badge vid">VIDEO ONLY</span>
-          <span class="arr">▸</span>
-        </summary>
-        <div class="section-body">
-          <div class="info blue">⚙️ Aktif hanya jika Generator Type = "video" atau "both".</div>
-
-          <div class="sub-group">
-            <details>
-              <summary>Camera Movement <span class="arr2">▸</span></summary>
-              <div class="sub-body">
-                <label>Movement Type</label>
-                <select>
-                  <option>static_locked</option>
-                  <option>pan_horizontal</option>
-                  <option>tilt_vertical</option>
-                  <option>zoom_in</option>
-                  <option>zoom_out</option>
-                  <option>dolly_in_forward</option>
-                  <option>dolly_out_backward</option>
-                  <option>orbit_arc_left</option>
-                  <option>orbit_arc_right</option>
-                  <option>crane_up</option>
-                  <option>crane_down</option>
-                  <option>handheld_follow</option>
-                  <option>combo_dolly_pan</option>
-                </select>
-                <label>Direction</label>
-                <select>
-                  <option>left</option>
-                  <option>right</option>
-                  <option>up</option>
-                  <option>down</option>
-                  <option>forward</option>
-                  <option>backward</option>
-                </select>
-                <label>Speed</label>
-                <select>
-                  <option>very_slow</option>
-                  <option>slow</option>
-                  <option>normal</option>
-                  <option>fast</option>
-                  <option>sudden_snap</option>
-                </select>
-                <label>Easing</label>
-                <select>
-                  <option>smooth_ease_in_out</option>
-                  <option>linear</option>
-                  <option>ease_in</option>
-                  <option>ease_out</option>
-                </select>
-              </div>
-            </details>
-          </div>
-
-          <div class="sub-group">
-            <details>
-              <summary>Subject Motion <span class="arr2">▸</span></summary>
-              <div class="sub-body">
-                <label>Primary Motion</label>
-                <select>
-                  <option>idle_breathing (ambient)</option>
-                  <option>idle_subtle_sway</option>
-                  <option>walking</option>
-                  <option>running</option>
-                  <option>turning_to_look</option>
-                  <option>sitting_down</option>
-                  <option>standing_up</option>
-                  <option>fighting</option>
-                  <option>falling</option>
-                  <option>dancing</option>
-                  <option>flying</option>
-                  <option>casting_spell</option>
-                </select>
-                <label>Motion Intensity</label>
-                <select>
-                  <option>static (tidak bergerak)</option>
-                  <option>very_subtle</option>
-                  <option>moderate</option>
-                  <option>active</option>
-                  <option>intense</option>
-                  <option>explosive</option>
-                </select>
-                <label>Cloth Physics</label>
-                <select>
-                  <option>none</option>
-                  <option>very_subtle</option>
-                  <option>light_flutter</option>
-                  <option>gentle_sway</option>
-                  <option>dramatic_flow</option>
-                  <option>floating_weightless</option>
-                </select>
-                <label>Hair Physics</label>
-                <select>
-                  <option>none</option>
-                  <option>subtle_movement</option>
-                  <option>light_sway</option>
-                  <option>dynamic_flow</option>
-                  <option>windswept_dramatic</option>
-                </select>
-                <label>Particle Effects (optional)</label>
-                <input type="text" placeholder="e.g., floating_petals, sparks, snow_particles">
-              </div>
-            </details>
-          </div>
-        </div>
-      </details>
-    </div>
-
-    <!-- ============ LAYER 4B — TEMPORAL SEQUENCE (VIDEO) ============ -->
-    <div class="layer-section">
-      <details>
-        <summary>
-          ⏱ L4B Temporal Sequence <span class="badge vid">VIDEO ONLY</span>
-          <span class="arr">▸</span>
-        </summary>
-        <div class="section-body">
-          <div class="sub-body">
-            <label>Total Duration (seconds)</label>
-            <input type="number" value="5" min="1" max="60" step="0.5">
-
-            <label>FPS</label>
-            <select>
-              <option>24 (cinematic — recommended)</option>
-              <option>30 (smooth)</option>
-              <option>60 (hyper smooth)</option>
-              <option>120 (slow-mo source)</option>
-            </select>
-
-            <label>Loop</label>
-            <select>
-              <option>false</option>
-              <option>true (seamless loop)</option>
-            </select>
-
-            <label>Transition Type</label>
-            <select>
-              <option>none (cut hard)</option>
-              <option>dissolve_fade</option>
-              <option>fade_to_black</option>
-              <option>match_cut</option>
-              <option>smash_cut</option>
-            </select>
-
-            <label>Key Action at Start</label>
-            <input type="text" placeholder="e.g., character_stands_still">
-
-            <label>Key Action at End</label>
-            <input type="text" placeholder="e.g., character_turns_and_walks_away">
-
-            <label>Peak Moment (midpoint)</label>
-            <input type="text" placeholder="e.g., expression_change, spell_released">
           </div>
         </div>
       </details>
     </div>
 
     <!-- ============ LAYER 7 — TECHNICAL ============ -->
-    <div class="layer-section">
+    <div class="layer-section" id="sec-l7">
       <details>
         <summary>
           ⚙️ L7 Technical
@@ -1893,33 +1928,19 @@
                 <label>Aspect Ratio</label>
                 <select>
                   <option>9:16 (vertikal mobile — TikTok / Reels)</option>
-                  <option>2:3 (portrait — foto)</option>
-                  <option>4:5 (Instagram feed)</option>
-                  <option>1:1 (square)</option>
-                  <option>3:2 (foto landscape)</option>
-                  <option>16:9 (widescreen)</option>
-                  <option>21:9 (cinematic ultra wide)</option>
+                  <!-- lebih banyak pilihan/option di file original -->
                 </select>
 
                 <label>Resolution</label>
                 <select>
                   <option>512x512 (SD legacy)</option>
-                  <option>1024x1024 (standard)</option>
-                  <option>1024x1536 (portrait HD)</option>
-                  <option>1536x1024 (landscape HD)</option>
-                  <option>1280x720 (720p)</option>
-                  <option>1920x1080 (1080p)</option>
-                  <option>2560x1440 (2K)</option>
-                  <option>3840x2160 (4K)</option>
+                  <!-- lebih banyak pilihan/option di file original -->
                 </select>
 
                 <label>Quality / Detail Level</label>
                 <select>
                   <option>draft (cepat, iterasi)</option>
-                  <option>good</option>
-                  <option>high</option>
-                  <option>ultra</option>
-                  <option>cinematic_master</option>
+                  <!-- lebih banyak pilihan/option di file original -->
                 </select>
               </div>
             </details>
@@ -1932,31 +1953,20 @@
                 <label>ISO</label>
                 <select>
                   <option>100 (bright, noise-free)</option>
-                  <option>400 (balanced)</option>
-                  <option>800</option>
-                  <option>1600 (low light)</option>
-                  <option>3200 (grainy — dramatic)</option>
-                  <option>6400+ (extreme grain)</option>
+                  <!-- lebih banyak pilihan/option di file original -->
                 </select>
 
                 <label>Shutter Speed</label>
                 <select>
                   <option>1/30 (motion blur)</option>
-                  <option>1/60 (standard)</option>
-                  <option>1/125</option>
-                  <option>1/250 (freeze motion)</option>
-                  <option>1/500 (fast action)</option>
-                  <option>1/1000+ (ultra fast)</option>
+                  <!-- lebih banyak pilihan/option di file original -->
                 </select>
 
                 <label>Render Engine</label>
                 <select>
                   <option value="">-- choose --</option>
                   <option>Unreal Engine 5</option>
-                  <option>Octane Render</option>
-                  <option>Cycles (Blender)</option>
-                  <option>Arnold</option>
-                  <option>V-Ray</option>
+                  <!-- lebih banyak pilihan/option di file original -->
                 </select>
               </div>
             </details>
@@ -1969,29 +1979,19 @@
                 <label>Color Grading</label>
                 <select>
                   <option>none_natural</option>
-                  <option>teal_orange_cinematic</option>
-                  <option>desaturated_bleach_bypass</option>
-                  <option>warm_nostalgic</option>
-                  <option>cool_blue_tint</option>
-                  <option>high_saturation_vibrant</option>
-                  <option>monochrome_bw</option>
+                  <!-- lebih banyak pilihan/option di file original -->
                 </select>
 
                 <label>Lens Effects</label>
                 <select multiple size="4">
                   <option>vignette</option>
-                  <option>chromatic_aberration</option>
-                  <option>lens_flare</option>
-                  <option>anamorphic_flare</option>
-                  <option>lens_distortion</option>
-                  <option>lens_dirt_dust</option>
+                  <!-- lebih banyak pilihan/option di file original -->
                 </select>
 
                 <label>Sharpening</label>
                 <select>
                   <option>none_soft</option>
-                  <option>natural</option>
-                  <option>enhanced_crisp</option>
+                  <!-- lebih banyak pilihan/option di file original -->
                 </select>
               </div>
             </details>
@@ -2004,22 +2004,17 @@
                 <label>Codec</label>
                 <select>
                   <option>h264 (kompatibel universal)</option>
-                  <option>h265 (efisien, kualitas tinggi)</option>
-                  <option>prores (editing grade)</option>
-                  <option>av1</option>
+                  <!-- lebih banyak pilihan/option di file original -->
                 </select>
                 <label>Delivery Format</label>
                 <select>
                   <option>mp4</option>
-                  <option>mov</option>
-                  <option>webm</option>
-                  <option>gif (loop)</option>
+                  <!-- lebih banyak pilihan/option di file original -->
                 </select>
                 <label>Stabilization</label>
                 <select>
                   <option>none</option>
-                  <option>subtle</option>
-                  <option>strong</option>
+                  <!-- lebih banyak pilihan/option di file original -->
                 </select>
               </div>
             </details>
@@ -2029,7 +2024,7 @@
     </div>
 
     <!-- ============ LAYER 8C — OUTPUT CONFIG ============ -->
-    <div class="layer-section">
+    <div class="layer-section" id="sec-l8c">
       <details>
         <summary>
           📤 L8C Output Config <span class="badge imp">CRITICAL</span>
@@ -2267,7 +2262,7 @@
     </div>
 
     <!-- ============ LAYER 8B — VARIATIONS ============ -->
-    <div class="layer-section">
+    <div class="layer-section" id="sec-l8b">
       <details>
         <summary>
           🔄 L8B Variations <span class="badge adm">INTERNAL</span>
@@ -2321,7 +2316,7 @@
     </div>
 
     <!-- ============ LAYER 8A — METADATA (ADMIN) ============ -->
-    <div class="layer-section">
+    <div class="layer-section" id="sec-l8a">
       <details>
         <summary>
           📝 L8A Metadata <span class="badge adm">ADMIN</span>
@@ -2379,7 +2374,8 @@
 
   <!-- Topbar -->
   <header class="topbar">
-    <button id="toggleBtnMain" title="Toggle sidebar" style="background:none;color:var(--accent);width:30px;height:30px;border-radius:6px;display:grid;place-items:center;font-size:14px;">☰</button>
+    <!-- Tombol toggle Layer Map (bukan toggle aside — aside punya tombolnya sendiri di dalam sidebar) -->
+    <button id="toggleBtnMain" title="Toggle Layer Map" style="background:none;color:var(--accent);width:30px;height:30px;border-radius:6px;display:grid;place-items:center;font-size:14px;">🗺</button>
     <span class="topbar-title">Prompt Generator V4</span>
     <span class="topbar-sub">14-Layer System</span>
     <div class="topbar-sep"></div>
@@ -2395,7 +2391,8 @@
   <section class="content">
 
     <!-- Layer Map Overview -->
-    <div class="panel">
+    <!-- id="panelLayerMap" digunakan oleh script untuk toggle tampilan panel ini -->
+    <div class="panel" id="panelLayerMap">
       <div class="panel-header">
         <span class="ph-icon">🗺</span> Layer Architecture — 14 Layer System
         <span class="badge ok" style="margin-left:auto">Visual Preview Only</span>
