@@ -1,0 +1,734 @@
+{
+  "_readme": "Library untuk field identity_anchor (Layer 1A — Character Lock). Fungsi: mengunci identitas karakter secara permanen setelah desain di Layer 0 disetujui. Identity_anchor adalah 'paspor digital' karakter — dibaca AI di setiap generate untuk memastikan ras, usia, proporsi, dan struktur wajah tidak pernah berubah. PERMANEN: tidak boleh dimodifikasi setelah karakter pertama kali di-generate dan hasilnya disetujui.",
+  "_version": "1.0",
+  "_critical_rule": "Layer 1A adalah satu-satunya layer yang benar-benar tidak boleh diubah. Semua layer lain (scene, lighting, pose, outfit) boleh berubah bebas. identity_anchor adalah konstanta — karakter bisa ada di 1000 generate berbeda, tapi wajah dan rasnya selalu sama.",
+  "_two_scenarios": {
+    "new_character": "Karakter baru (dari nol) → Isi dari desain Layer 0 → Generate pertama → Setujui → Simpan output sebagai reference_images → Lock.",
+    "existing_character": "Karakter sudah ada (dari gambar) → Ekstrak atribut dari gambar → Isi reference_images langsung → Lock tanpa perlu generate awal."
+  },
+  "_structure": "identity_anchor → name | lock_method | reference_images | age_profile | race_matrix | face_dna | body_dna | locked_features",
+
+  "identity_anchor": {
+
+    "name": {
+      "_note": "Nama unik karakter — digunakan sebagai identifier di seluruh sistem, penamaan file, dan batch config. Gunakan format yang konsisten: FirstName_Surname atau codename.",
+      "_format": "String — PascalCase atau underscore_separated",
+      "_naming_examples": {
+        "fantasy": ["Eira_Shadowleaf", "Kira_Ashveil", "Luna_Moonsong", "Seraph_Dawnblade", "Nyx_Voidwalker", "Zara_Crimsonborn"],
+        "sci_fi": ["Nova_7", "ECHO_Unit_3", "Lyra_Nexus", "Volt_Raze", "Cipher_X"],
+        "realistic": ["Mira_Solano", "Suki_Tanaka", "Juno_Park", "Maya_Okonkwo"],
+        "codename_only": ["ARIA", "GHOST", "VEIL", "EMBER", "FROST"]
+      }
+    },
+
+    "lock_method": {
+      "_note": "Mekanisme utama yang digunakan AI untuk mengunci identitas karakter. Pilih satu — bisa dikombinasikan dalam implementasi tapi satu harus jadi primary.",
+      "options": [
+        {
+          "en": "image_reference_primary",
+          "id": "referensi gambar utama",
+          "strength": 5,
+          "description": "Gambar referensi sebagai anchor utama, teks deskripsi sebagai pendukung. Metode terkuat untuk semua platform yang mendukung image input.",
+          "how_it_works": "AI membaca gambar referensi sebagai ground truth visual. Teks prompt memperkuat fitur spesifik yang butuh perhatian ekstra.",
+          "requirements": "Minimal 1 gambar referensi — idealnya 4 angle (front, left, right, back).",
+          "best_for": "Semua use case serius — karakter IP, produksi jangka panjang, seri.",
+          "platform_support": {
+            "midjourney": "✅ --iw parameter + URL di awal prompt",
+            "stable_diffusion_xl": "✅ IP-Adapter + ControlNet FaceID",
+            "dalle3": "✅ Upload gambar + instruksi teks",
+            "kling": "✅ Reference image field + face_consistency",
+            "runway": "✅ First frame upload",
+            "pika": "✅ Starting frame upload",
+            "sora": "✅ Image-to-video reference"
+          }
+        },
+        {
+          "en": "lora_model",
+          "id": "model LoRA",
+          "strength": 5,
+          "description": "Model LoRA atau fine-tuned checkpoint yang ditraining khusus untuk karakter ini. Terkuat untuk Stable Diffusion.",
+          "how_it_works": "Model berisi 'ingatan' tentang karakter — setiap generate secara otomatis mengarah ke tampilan karakter tanpa perlu image reference setiap kali.",
+          "requirements": "Training 15–50 gambar karakter dari berbagai angle dan ekspresi. Training time 30–120 menit tergantung hardware.",
+          "best_for": "SD/SDXL workflow intensif — batch besar, karakter utama, produksi profesional.",
+          "platform_support": {
+            "stable_diffusion_xl": "✅ Primary use case",
+            "midjourney": "❌ Tidak didukung",
+            "dalle3": "❌ Tidak didukung",
+            "kling": "❌ Tidak didukung",
+            "comfyui": "✅ Full support"
+          },
+          "lora_config": {
+            "training_images_recommended": "20–40 gambar, berbagai angle dan ekspresi",
+            "trigger_word_format": "nama_karakter_lowercase, contoh: eira_shadowleaf",
+            "recommended_weight_in_prompt": "0.7–0.9",
+            "combine_with": "IP-Adapter untuk konsistensi ekstra"
+          }
+        },
+        {
+          "en": "image_reference_secondary",
+          "id": "referensi gambar sekunder",
+          "strength": 3,
+          "description": "Teks deskripsi sebagai anchor utama, gambar referensi sebagai konfirmasi visual. Digunakan saat gambar referensi ada tapi kualitasnya tidak ideal.",
+          "how_it_works": "Prompt teks mendeskripsikan karakter secara detail. Gambar digunakan dengan weight rendah untuk visual confirmation.",
+          "requirements": "Teks deskripsi yang sangat spesifik di face_dna dan race_matrix.",
+          "best_for": "Situasi di mana gambar referensi tidak ideal — blurry, partial, atau resolusi rendah.",
+          "platform_support": "Semua platform — tapi efektivitas lebih rendah dari primary"
+        },
+        {
+          "en": "prompt_only",
+          "id": "prompt saja",
+          "strength": 2,
+          "description": "Hanya deskripsi teks — tidak ada gambar referensi. Metode paling lemah, AI bisa drift setelah beberapa generate.",
+          "how_it_works": "Prompt teks yang sangat detail dan spesifik menjadi satu-satunya anchor. Emphasis syntax (parentheses di SDXL) digunakan untuk elemen kritis.",
+          "requirements": "Deskripsi face_dna dan race_matrix yang sangat lengkap dan spesifik.",
+          "best_for": "Prototyping awal sebelum gambar referensi tersedia. Bukan untuk produksi serius.",
+          "drift_mitigation": [
+            "Gunakan seed yang sama di setiap generate",
+            "Ulangi fitur kritis 2–3x dengan variasi kata",
+            "Aktifkan semua emphasis syntax yang tersedia di platform"
+          ]
+        },
+        {
+          "en": "ip_adapter_controlnet",
+          "id": "IP-Adapter + ControlNet",
+          "strength": 5,
+          "description": "Kombinasi IP-Adapter (style/identity transfer) dan ControlNet (pose/structure control) — khusus Stable Diffusion. Memberikan kontrol maksimal atas identity DAN pose.",
+          "how_it_works": "IP-Adapter mengekstrak identity embedding dari gambar referensi. ControlNet mengontrol pose dan komposisi dari gambar kontrol terpisah.",
+          "requirements": "SD/SDXL dengan IP-Adapter model (ip-adapter-faceid-plusv2 recommended) dan ControlNet.",
+          "best_for": "SDXL workflow di mana pose perlu dikontrol ketat — figure drawing, exact angle.",
+          "config": {
+            "ip_adapter_scale": "0.7–0.9 untuk identity lock kuat. Kurang dari 0.6 bisa drift.",
+            "controlnet_weight": "0.6–0.85 tergantung seberapa ketat pose dikontrol",
+            "recommended_model": "ip-adapter-faceid-plusv2_sdxl.bin"
+          }
+        }
+      ]
+    },
+
+    "reference_images": {
+      "_note": "Gambar referensi aktual karakter sebagai visual anchor. Semakin banyak angle, semakin konsisten hasil generate.",
+      "_priority_philosophy": "1 gambar cukup untuk mulai. 4 angle memberi konsistensi tinggi. 8+ gambar + LoRA memberi konsistensi produksi.",
+
+      "angles": {
+        "_note": "Gambar per sudut pandang — setiap angle menangkap informasi berbeda tentang karakter.",
+        "recommended_set": {
+          "front": {
+            "description": "Full frontal — wajah, proporsi, kostum depan, accessories.",
+            "priority": 1,
+            "tips": "Pencahayaan merata, tidak ada shadow yang menutupi fitur. Ekspresi netral atau slight smile. Full body atau medium shot.",
+            "best_for": "Anchor utama — digunakan di semua platform sebagai primary reference"
+          },
+          "three_quarter_left": {
+            "description": "3/4 dari kiri — angle paling flattering, menampilkan kedalaman wajah.",
+            "priority": 2,
+            "tips": "Angle 45 derajat ke kiri dari karakter. Menampilkan nose bridge depth, cheekbone structure.",
+            "best_for": "MidJourney multi-image, portrait generate yang butuh depth"
+          },
+          "three_quarter_right": {
+            "description": "3/4 dari kanan — mirror dari kiri, penting untuk wajah asimetris.",
+            "priority": 2,
+            "tips": "Angle 45 derajat ke kanan. Pastikan berbeda dari kiri untuk karakter asimetris.",
+            "best_for": "Lengkapi three_quarter_left — bersama memberikan 3D understanding ke AI"
+          },
+          "side_profile": {
+            "description": "Profil samping penuh — hidung, dagu, dan kedalaman wajah dari 90 derajat.",
+            "priority": 3,
+            "tips": "90 derajat penuh. Menampilkan nose bridge shape, jaw depth, skull structure.",
+            "best_for": "Side-shot generate, ControlNet reference untuk pose miring"
+          },
+          "back": {
+            "description": "Tampak belakang — rambut dari belakang, punggung, shoulder width.",
+            "priority": 3,
+            "tips": "Penting untuk karakter dengan rambut panjang atau detail punggung unik.",
+            "best_for": "Generate dari belakang, walking away shot"
+          },
+          "face_closeup": {
+            "description": "Close-up wajah saja — detail mata, hidung, bibir dalam resolusi tinggi.",
+            "priority": 2,
+            "tips": "Crop ketat pada wajah. Resolusi setinggi mungkin. Pencahayaan yang reveal semua detail.",
+            "best_for": "FaceID ControlNet source, wajah kecil dalam wide shot, ekspresi detail"
+          }
+        },
+        "minimum_viable": {
+          "description": "Set minimum untuk mulai produksi — 1 gambar tapi dengan kualitas terbaik.",
+          "images": ["front — full body atau medium shot, pencahayaan merata, ekspresi netral"],
+          "consistency_level": "medium — bisa drift setelah banyak generate"
+        },
+        "standard_set": {
+          "description": "Set standar untuk karakter seri — 3 angle.",
+          "images": ["front", "three_quarter_left", "three_quarter_right"],
+          "consistency_level": "high — konsisten untuk kebanyakan use case"
+        },
+        "production_set": {
+          "description": "Set produksi penuh — 4+ angle untuk konsistensi maksimal.",
+          "images": ["front", "three_quarter_left", "three_quarter_right", "side_profile", "face_closeup"],
+          "consistency_level": "very_high — suitable untuk IP dan karakter utama"
+        }
+      },
+
+      "image_quality_requirements": {
+        "_note": "Spesifikasi kualitas gambar referensi untuk hasil terbaik.",
+        "resolution": {
+          "minimum": "512x512 pixels",
+          "recommended": "1024x1024 pixels atau lebih",
+          "ideal": "Same resolution as target output — jika generate 1024x1536, reference juga sebaiknya 1024x1536"
+        },
+        "lighting_requirements": [
+          "Pencahayaan merata — hindari shadow keras yang menyembunyikan fitur wajah",
+          "Hindari overexposure yang menghilangkan detail kulit",
+          "Warna kulit harus akurat — tidak di-filter atau diedit berlebihan",
+          "Untuk reference utama: studio lighting atau outdoor overcast ideal"
+        ],
+        "content_requirements": [
+          "Wajah harus terlihat jelas dan tidak terpotong",
+          "Tidak ada hal yang menutupi fitur kunci (kacamata gelap, mask, dll) — kecuali itu bagian dari identity",
+          "Ekspresi: netral atau subtle smile untuk reference utama",
+          "Pakaian: gunakan pakaian yang tidak mengalihkan perhatian dari wajah"
+        ],
+        "format_requirements": {
+          "preferred": ["PNG (lossless)", "WebP high quality"],
+          "acceptable": ["JPEG quality 90+"],
+          "avoid": ["JPEG quality di bawah 80 — kompresi artefak mempengaruhi identity extraction"]
+        }
+      },
+
+      "platform_usage": {
+        "_note": "Cara menggunakan reference_images per platform — setiap platform punya mekanisme berbeda.",
+        "options": [
+          {
+            "platform": "midjourney",
+            "method": "Multi-image URL di awal prompt sebelum teks deskripsi",
+            "max_images_supported": 5,
+            "parameter": "--iw [nilai]",
+            "iw_guide": {
+              "0.5": "Referensi berpengaruh lemah — AI masih banyak interpretasi",
+              "1.0": "Balance antara referensi dan prompt",
+              "1.5": "Referensi lebih dominan — DIREKOMENDASIKAN untuk karakter",
+              "2.0": "Referensi sangat dominan — hampir copy-paste look"
+            },
+            "format_example": "[FRONT_URL] [LEFT_URL] [RIGHT_URL] [prompt teks] --iw 1.5 --ar 2:3 --v 6 --style raw",
+            "tips": [
+              "Letakkan front view sebagai URL pertama — mendapat bobot lebih",
+              "Gunakan URL langsung, bukan file lokal",
+              "Style raw mengurangi MidJourney menginterpretasi ulang tampilan",
+              "Untuk konsistensi maksimal: --cref [URL] --cw 100 sebagai tambahan"
+            ]
+          },
+          {
+            "platform": "stable_diffusion_xl",
+            "method": "IP-Adapter untuk identity transfer + ControlNet FaceID untuk face lock",
+            "ip_adapter": {
+              "recommended_model": "ip-adapter-faceid-plusv2_sdxl.bin",
+              "scale_range": "0.7–1.0",
+              "recommended_scale": 0.85,
+              "source_image": "front view atau face_closeup",
+              "note": "Scale 0.85 memberikan konsistensi tinggi tanpa mengorbankan terlalu banyak kreativitas pose"
+            },
+            "controlnet": {
+              "type": "FaceID atau InstantID",
+              "weight": "0.7–0.9",
+              "source": "face_closeup — crop ketat pada wajah",
+              "note": "Gunakan side view sebagai source saat generate angle profil"
+            },
+            "lora_addition": {
+              "recommended": true,
+              "training_trigger": "nama_karakter, contoh: eira_shadowleaf",
+              "weight_in_prompt": "0.7–0.85",
+              "note": "LoRA + IP-Adapter = konsistensi tertinggi yang bisa dicapai di SDXL"
+            }
+          },
+          {
+            "platform": "dalle3",
+            "method": "Upload gambar via API atau UI, sertakan instruksi teks eksplisit",
+            "upload_as": "Base64 atau URL untuk API, drag-drop untuk UI",
+            "instruction_template": "Maintain the EXACT appearance of the reference image. Do not alter ethnicity, facial structure, age, or distinctive features. The character must look identical to the reference.",
+            "limitation": "DALL-E 3 tidak memiliki native identity lock — instruksi teks lebih berperan dari gambar",
+            "tips": [
+              "Sertakan instruksi larangan di akhir prompt: 'I NEED to maintain...'",
+              "Ulangi elemen ras dan usia 2x dalam prompt",
+              "style=natural lebih konsisten dari style=vivid untuk character lock"
+            ]
+          },
+          {
+            "platform": "kling",
+            "method": "Upload ke field 'Reference Image' di UI, aktifkan face_consistency",
+            "face_consistency": true,
+            "reference_weight": {
+              "0.7": "Lebih bebas — ekspresi dan motion lebih dynamic",
+              "0.85": "Recommended — balance konsistensi dan kebebasan motion",
+              "1.0": "Maksimal lock — wajah sangat konsisten, tapi kadang kaku"
+            },
+            "tips": [
+              "Gunakan front view sebagai reference utama",
+              "Untuk mode Pro: bisa upload multiple reference images",
+              "Face consistency lebih penting dari prompt length di Kling"
+            ]
+          },
+          {
+            "platform": "runway_gen3",
+            "method": "Upload sebagai first frame (image-to-video) atau reference image",
+            "first_frame_method": {
+              "description": "Gunakan gambar karakter yang sudah approved sebagai starting frame video",
+              "advantage": "Frame pertama PERSIS seperti gambar — konsistensi sangat tinggi di awal",
+              "limitation": "Karakter bisa drift di frame akhir video panjang"
+            },
+            "tips": [
+              "Pilih gambar dengan pose yang mendekati apa yang akan dilakukan dalam video",
+              "Resolusi first frame sebaiknya sama dengan target output resolution",
+              "Untuk loop: akhir video harus mendekati first frame"
+            ]
+          },
+          {
+            "platform": "pika",
+            "method": "Upload sebagai starting frame di UI",
+            "tips": [
+              "Pika menggunakan first frame sebagai visual anchor",
+              "Gunakan --motion 1-2 untuk menjaga konsistensi wajah lebih baik",
+              "Motion tinggi (3-4) meningkatkan risiko drift wajah"
+            ]
+          },
+          {
+            "platform": "hailuo_minimax",
+            "method": "Subject reference upload di UI",
+            "tips": [
+              "Hailuo punya subject reference yang cukup kuat",
+              "Upload front view sebagai primary reference",
+              "Durasi fixed 6 detik — konsistensi lebih terjaga karena pendek"
+            ]
+          }
+        ]
+      },
+
+      "outfit_variants": {
+        "_note": "Reference image per outfit dari outfit_library — membantu AI memahami penampilan karakter dalam setiap kostum.",
+        "_structure": "Object dengan key = outfit set_name, value = array file path",
+        "_example": {
+          "casual_everyday": ["char_casual_front.png", "char_casual_side.png"],
+          "battle_ready": ["char_battle_front.png", "char_battle_action.png"],
+          "formal_elegant": ["char_formal_front.png"],
+          "mage_robe": ["char_mage_full.png"]
+        },
+        "_tip": "Minimal 1 gambar per outfit — lebih banyak = lebih konsisten saat generate outfit tersebut"
+      }
+    },
+
+    "age_profile": {
+      "_note": "Profil usia yang dikunci — memastikan karakter tidak terlihat lebih tua atau lebih muda dari yang didefinisikan.",
+
+      "target": {
+        "_note": "Range usia target — selalu gunakan range (bukan angka tunggal) untuk memberi AI sedikit fleksibilitas.",
+        "_format": "[min]-[max] years old",
+        "options": [
+          { "range": "10-12 years old", "maturity_level": "juvenile", "safety_flag": "MINOR — aktifkan semua safety locks" },
+          { "range": "13-15 years old", "maturity_level": "juvenile", "safety_flag": "MINOR — aktifkan teen_lock_strict" },
+          { "range": "16-17 years old", "maturity_level": "juvenile_to_young_adult", "safety_flag": "MINOR — aktifkan minor_age_locks" },
+          { "range": "18-20 years old", "maturity_level": "young_adult", "safety_flag": "none" },
+          { "range": "20-25 years old", "maturity_level": "young_adult", "safety_flag": "none" },
+          { "range": "25-30 years old", "maturity_level": "adult", "safety_flag": "none" },
+          { "range": "30-40 years old", "maturity_level": "adult", "safety_flag": "none" },
+          { "range": "40-55 years old", "maturity_level": "mature_adult", "safety_flag": "none" },
+          { "range": "55-70 years old", "maturity_level": "elder", "safety_flag": "none" },
+          { "range": "ageless immortal appearance", "maturity_level": "adult_ageless", "safety_flag": "none", "note": "Untuk karakter supernatural yang tidak bisa ditentukan usianya" }
+        ]
+      },
+
+      "logic": {
+        "_note": "Apa yang secara aktif diblokir oleh age lock ini.",
+        "options": [
+          {
+            "for_age": "juvenile (10-17)",
+            "locks_out": ["aging_signs", "mature_anatomy", "adult_facial_structure", "pronounced_secondary_sexual_characteristics"],
+            "locks_in": ["youthful_face_proportions", "smooth_skin", "juvenile_or_early_teen_features"]
+          },
+          {
+            "for_age": "young_adult (18-25)",
+            "locks_out": ["aging_signs", "wrinkles", "age_spots", "mature_sagging"],
+            "locks_in": ["smooth_skin", "fresh_young_adult_features", "no_pronounced_aging"]
+          },
+          {
+            "for_age": "adult (26-40)",
+            "locks_out": ["juvenile_roundness", "pronounced_wrinkles", "elderly_features"],
+            "locks_in": ["mature_adult_features", "subtle_character_lines_acceptable", "fully_developed"]
+          },
+          {
+            "for_age": "mature_adult (40-60)",
+            "locks_out": ["juvenile_features", "extremely_aged"],
+            "locks_in": ["fine_lines", "distinguished_look", "experienced_face"]
+          },
+          {
+            "for_age": "elder (60+)",
+            "locks_out": ["juvenile_features", "young_adult_features"],
+            "locks_in": ["pronounced_wrinkles", "grey_or_white_hair", "elder_wisdom_in_face"]
+          }
+        ]
+      },
+
+      "skin_condition_by_age": {
+        "juvenile": "smooth_porcelain_non_porous — no visible pores, absolute smoothness",
+        "young_adult": "smooth_natural — minimal pores visible, fresh and hydrated",
+        "adult": "natural_textured — pores visible, slight character lines acceptable",
+        "mature_adult": "textured_with_lines — fine lines prominent, character-rich face",
+        "elder": "aged_prominently_wrinkled — deep lines, age spots acceptable"
+      }
+    },
+
+    "race_matrix": {
+      "_note": "Matriks ras — mendefinisikan SECARA PRESISI bagaimana wajah karakter harus terlihat. Ini adalah kunci paling penting untuk mencegah race drift.",
+      "_why_critical": "AI generatif cenderung 'default' ke wajah Eropa jika tidak dikunci dengan kuat. Race matrix memastikan setiap generate menghasilkan ras yang sama.",
+
+      "fantasy": {
+        "_note": "Ras dalam dunia fiksi — label yang dikenali AI dari training data fantasi.",
+        "options": [
+          { "en": "High Elf", "id": "High Elf", "skull_base": "elongated oval, high cheekbones, sharp features" },
+          { "en": "Dark Elf", "id": "Dark Elf", "skull_base": "angular, sharp jaw, high cheekbones — dark skin mandatory" },
+          { "en": "Wood Elf", "id": "Wood Elf", "skull_base": "softer oval than high elf, earth-toned" },
+          { "en": "Half-Elf", "id": "Setengah Elf", "skull_base": "blend of human and elf — slightly pointed ears, softer than full elf" },
+          { "en": "Dwarf", "id": "Kurcaci", "skull_base": "wide and square, very short stature, broad" },
+          { "en": "Human Fantasy", "id": "Manusia Fantasi", "skull_base": "follows realistic_base exactly" },
+          { "en": "Demon Hybrid", "id": "Hibrid Demon", "skull_base": "follows realistic_base + demon modifiers (horns, tail, tinted skin)" },
+          { "en": "Angel Seraph", "id": "Malaikat/Seraph", "skull_base": "idealized human proportions + wings + ethereal glow" },
+          { "en": "Vampire Noble", "id": "Vampir Bangsawan", "skull_base": "follows realistic_base + pale skin, sharp features, fangs" }
+        ]
+      },
+
+      "realistic_base": {
+        "_note": "Referensi etnis dunia nyata — memberi AI konteks konkret tentang struktur wajah yang dimaksud. WAJIB diisi untuk mencegah race drift.",
+        "options": [
+          {
+            "en": "East Asian",
+            "id": "Asia Timur",
+            "includes": ["Chinese", "Japanese", "Korean", "Taiwanese", "Mongolian"],
+            "facial_markers": "Monolid or double-lid almond eyes, flat nose bridge, high cheekbones, soft jaw, yellowish or pinkish undertone",
+            "prompt_reinforcement": "East Asian facial features, Asian eyes, East Asian appearance, monolid or almond eyes",
+            "common_drift_toward": "European — aktifkan skull_logic kuat"
+          },
+          {
+            "en": "Southeast Asian",
+            "id": "Asia Tenggara",
+            "includes": ["Indonesian", "Filipino", "Thai", "Vietnamese", "Malaysian", "Singaporean"],
+            "facial_markers": "Broader nose, warm brown to golden skin, dark eyes, softer features than East Asian",
+            "prompt_reinforcement": "Southeast Asian features, warm brown complexion, broad soft nose, dark eyes",
+            "common_drift_toward": "East Asian or South Asian — specify region explicitly"
+          },
+          {
+            "en": "South Asian",
+            "id": "Asia Selatan",
+            "includes": ["Indian", "Pakistani", "Bangladeshi", "Sri Lankan", "Nepali"],
+            "facial_markers": "Deep-set dark eyes, defined nose bridge, olive to deep brown skin, dark hair, expressive features",
+            "prompt_reinforcement": "South Asian features, Indian facial features, deep-set dark eyes, olive to brown complexion"
+          },
+          {
+            "en": "Middle Eastern",
+            "id": "Timur Tengah",
+            "includes": ["Arab", "Persian/Iranian", "Turkish", "Israeli", "Lebanese"],
+            "facial_markers": "Strong nose bridge, deep-set eyes, defined jaw, olive to tan skin, dark eyes",
+            "prompt_reinforcement": "Middle Eastern features, strong nose, olive complexion, deep dark eyes"
+          },
+          {
+            "en": "East African",
+            "id": "Afrika Timur",
+            "includes": ["Ethiopian", "Somali", "Kenyan", "Eritrean"],
+            "facial_markers": "Narrow angular features, high cheekbones, deep brown to black skin, strong jaw",
+            "prompt_reinforcement": "East African features, angular face, high cheekbones, deep brown skin"
+          },
+          {
+            "en": "West African",
+            "id": "Afrika Barat",
+            "includes": ["Nigerian", "Ghanaian", "Senegalese", "Malian"],
+            "facial_markers": "Broader nose, full lips, deep brown to very dark skin, high forehead",
+            "prompt_reinforcement": "West African features, full lips, broad nose, very dark skin"
+          },
+          {
+            "en": "Northern European",
+            "id": "Eropa Utara",
+            "includes": ["Scandinavian", "German", "Dutch", "British", "Russian"],
+            "facial_markers": "Fair skin, light eyes (blue/grey/green), varied nose, thinner lips common",
+            "prompt_reinforcement": "Northern European features, fair complexion, light eyes"
+          },
+          {
+            "en": "Southern European",
+            "id": "Eropa Selatan",
+            "includes": ["Italian", "Spanish", "Greek", "Portuguese"],
+            "facial_markers": "Olive skin, darker hair and eyes than Northern, defined features",
+            "prompt_reinforcement": "Southern European features, olive complexion, dark hair, defined nose"
+          },
+          {
+            "en": "Latin American",
+            "id": "Amerika Latin",
+            "includes": ["Mexican", "Colombian", "Brazilian", "Peruvian", "Argentine"],
+            "facial_markers": "Highly varied — mix of Indigenous, European, African heritage. Tan to medium brown skin common.",
+            "prompt_reinforcement": "Latin American features, mixed heritage appearance, warm tan complexion"
+          },
+          {
+            "en": "Indigenous Pacific Islander",
+            "id": "Pribumi Pasifik",
+            "includes": ["Hawaiian", "Maori", "Samoan", "Fijian", "Aboriginal Australian"],
+            "facial_markers": "Broader features, warm brown to dark skin, strong build",
+            "prompt_reinforcement": "Pacific Islander features, warm brown skin, broad features"
+          }
+        ]
+      },
+
+      "skull_logic": {
+        "_note": "Logika tengkorak — mendefinisikan SECARA EKSPLISIT struktur wajah mana yang dikunci dan mana yang dilarang. Ini adalah backstop terakhir melawan race drift.",
+        "_how_to_use": "Isi 'locks_in' dengan struktur yang HARUS ada. Isi 'locks_out' dengan struktur yang TIDAK BOLEH muncul.",
+        "locks_in_examples": {
+          "East Asian": ["East_Asian_facial_structure", "almond_or_monolid_eyes", "soft_nose_bridge", "high_cheekbones", "smooth_yellowish_or_pinkish_skin"],
+          "Dark Elf": ["dark_ashen_skin", "sharp_angular_facial_structure", "pointed_ears", "white_or_silver_hair"],
+          "Southeast Asian": ["Southeast_Asian_facial_structure", "warm_brown_complexion", "broad_soft_nose", "dark_brown_eyes"],
+          "South Asian": ["South_Asian_facial_structure", "deep_set_dark_eyes", "strong_defined_nose_bridge", "olive_to_brown_skin"]
+        },
+        "locks_out_examples": {
+          "East Asian karakter": ["European_facial_structure", "round_deep_set_eyes", "caucasian_features", "blue_or_green_eyes"],
+          "Dark Elf": ["fair_skin", "human_ear_shape", "brown_hair", "round_soft_features"],
+          "Southeast Asian": ["East_Asian_monolid_only", "European_features", "very_pale_skin"],
+          "South Asian": ["East_Asian_features", "European_features", "very_pale_skin"]
+        },
+        "prompt_injection_templates": {
+          "_note": "Kalimat langsung yang bisa dimasukkan ke prompt untuk memperkuat skull_logic.",
+          "East Asian": "strictly East Asian facial features, East Asian ethnicity maintained, no European facial bone structure",
+          "Southeast Asian": "strictly Southeast Asian appearance, warm brown skin tone maintained, Southeast Asian ethnicity",
+          "South Asian": "South Asian facial features throughout, Indian or South Asian ethnicity, olive to brown complexion locked",
+          "Dark Elf": "dark elf with ashen skin, not human, dark skin strictly maintained, pointed ears required",
+          "African": "African facial features, deep melanin-rich skin, African ethnicity maintained throughout"
+        }
+      },
+
+      "skin_tone_range": {
+        "_note": "Rentang warna kulit yang diizinkan — variasi minimal akibat pencahayaan berbeda, tapi tidak boleh keluar dari range ini.",
+        "_principle": "Pencahayaan berbeda akan membuat kulit tampak sedikit lebih terang atau gelap — itu wajar. Yang tidak wajar adalah kulit tiba-tiba berubah warna atau ras.",
+        "options": [
+          { "range": "porcelain_to_fair_only", "for_race": "Northern European, Light Elf, Vampire", "description": "Sangat terang — tidak boleh lebih gelap dari fair" },
+          { "range": "fair_to_light_beige", "for_race": "East Asian lighter, Southern European lighter", "description": "Terang hingga beige ringan" },
+          { "range": "light_beige_to_warm_tan", "for_race": "East Asian, Southeast Asian lighter, Middle Eastern lighter", "description": "Beige hangat hingga tan ringan" },
+          { "range": "tan_to_warm_brown", "for_race": "Southeast Asian, Latin American, Mediterranean", "description": "Tan hingga cokelat hangat" },
+          { "range": "warm_brown_to_deep_brown", "for_race": "South Asian, African lighter", "description": "Cokelat hangat hingga cokelat dalam" },
+          { "range": "deep_brown_to_ebony", "for_race": "Sub-Saharan African, darker South Asian", "description": "Sangat gelap — kaya melanin" },
+          { "range": "ashen_grey_only", "for_race": "Dark Elf, Shadow creature", "description": "Abu-abu gelap — fantasi murni" },
+          { "range": "any_within_olive_to_tan", "for_race": "Mixed heritage characters", "description": "Range lebih luas untuk mixed race" }
+        ]
+      }
+    },
+
+    "face_dna": {
+      "_note": "DNA wajah yang dikunci — setiap field di sini adalah fitur yang harus SELALU konsisten di setiap generate. Referensi ke pilihan di subjects_v1.json.",
+
+      "face_shape": {
+        "_ref": "Lihat subjects_v1.json → physical_attributes.face.face_shape untuk pilihan lengkap",
+        "_lock_note": "Gunakan deskripsi yang sangat spesifik — bukan hanya 'oval' tapi 'soft oval with slightly narrow jaw'",
+        "_examples": [
+          "soft oval with slightly narrow jaw",
+          "heart-shaped with prominent cheekbones and pointed chin",
+          "round with chubby cheeks and soft jaw",
+          "sharp angular V-shape with defined jaw",
+          "elongated oval typical of elves"
+        ]
+      },
+
+      "eye_shape": {
+        "_ref": "Lihat subjects_v1.json → physical_attributes.face.eyes.eye_shape",
+        "_lock_note": "Spesifik ke sub-tipe — bukan hanya 'almond' tapi 'narrow almond with slight upward tilt at outer corner'",
+        "_examples": [
+          "narrow almond eyes with slight upward tilt — East Asian",
+          "monolid almond eyes, clean upper lid, no fold",
+          "large round eyes with defined double lid",
+          "hooded almond eyes, heavy upper lid",
+          "elongated almond eyes wider than human — elven"
+        ]
+      },
+
+      "eye_color": {
+        "_ref": "Lihat subjects_v1.json → physical_attributes.face.eyes.eye_color",
+        "_lock_note": "Deskripsikan dengan sangat spesifik — undertone, intensity, dan kondisi dalam cahaya",
+        "_examples": [
+          "dark obsidian brown, almost black — no lighter flecks",
+          "warm dark brown with honey undertones in direct light",
+          "deep forest green with amber ring near pupil",
+          "pale ice blue with grey outer ring",
+          "heterochromia: left eye dark brown, right eye silver-grey"
+        ]
+      },
+
+      "nose_shape": {
+        "_ref": "Lihat subjects_v1.json → physical_attributes.face.nose_shape",
+        "_examples": [
+          "small button nose, flat bridge, slightly upturned tip — East Asian",
+          "straight refined nose with minimal bridge definition",
+          "broad flat nose with wide nostrils — natural African",
+          "straight nose with subtle bump at bridge — Mediterranean"
+        ]
+      },
+
+      "lip_shape": {
+        "_ref": "Lihat subjects_v1.json → physical_attributes.face.lip_shape",
+        "_examples": [
+          "medium balanced lips with subtle cupid bow",
+          "full plump lips, both upper and lower prominent",
+          "thin refined upper lip, slightly fuller lower",
+          "wide expressive lips with natural medium fullness"
+        ]
+      },
+
+      "jaw_line": {
+        "_ref": "Lihat subjects_v1.json → physical_attributes.face.jaw_line",
+        "_examples": [
+          "soft rounded jaw, no angular definition",
+          "defined medium jaw with visible but gentle angle",
+          "sharp angular jaw with prominent corner angles",
+          "pointed delicate jaw typical of elf features"
+        ]
+      },
+
+      "cheek_structure": {
+        "_ref": "Lihat subjects_v1.json → physical_attributes.face.cheek_structure",
+        "_examples": [
+          "high prominent cheekbones typical of East Asian",
+          "soft medium cheekbones, not dominant",
+          "full chubby cheeks, youthful appearance",
+          "high sharp cheekbones with slight hollow beneath"
+        ]
+      },
+
+      "skin_undertone": {
+        "_note": "Undertone warna kulit — stabil di semua kondisi pencahayaan berbeda.",
+        "options": [
+          { "en": "warm_peachy", "id": "peachy hangat", "description": "Pink-oranye muda — common untuk East Asian dan Northern European", "hex_range": "warm pinkish" },
+          { "en": "warm_golden_yellow", "id": "kuning-emas hangat", "description": "Kuning golden — common untuk East Asian, Southeast Asian, Latin", "hex_range": "warm yellow" },
+          { "en": "neutral_beige", "id": "beige netral", "description": "Tidak warm tidak cool — versatile", "hex_range": "neutral beige" },
+          { "en": "cool_pink", "id": "pink dingin", "description": "Pink dengan blue undertone — Northern European lighter", "hex_range": "cool pink" },
+          { "en": "olive_warm", "id": "olive hangat", "description": "Kehijauan warm — Mediterranean, Middle Eastern, Latin", "hex_range": "olive green-brown" },
+          { "en": "warm_brown_golden", "id": "cokelat-emas hangat", "description": "Cokelat dengan golden undertone — South Asian, Southeast Asian darker", "hex_range": "warm brown" },
+          { "en": "cool_deep_brown", "id": "cokelat dalam dingin", "description": "Cokelat gelap dengan blue-red undertone — African descent", "hex_range": "deep cool brown" },
+          { "en": "ashen_cool_grey", "id": "abu-abu dingin", "description": "Non-realistis — dark elf, undead, shadow creature", "hex_range": "grey" }
+        ]
+      },
+
+      "additional_face_notes": {
+        "_note": "Detail tambahan yang tidak masuk field standar — spesifik per karakter.",
+        "_examples": [
+          "slight asymmetry in smile — left corner higher than right",
+          "faint natural freckles across nose bridge",
+          "jawline scar from old battle wound — 3cm horizontal on left jaw",
+          "natural dark circles under eyes giving permanent tired look",
+          "slightly gap between front teeth when smiling",
+          "birthmark on right cheek near jaw"
+        ]
+      }
+    },
+
+    "body_dna": {
+      "_note": "DNA proporsi tubuh yang dikunci — memastikan karakter tidak berubah tinggi, frame, atau proporsi antar generate.",
+
+      "height_category": {
+        "options": [
+          { "en": "petite", "id": "mungil", "description": "Di bawah 160cm — compact dan small-framed", "prompt_keyword": "petite small frame, short stature" },
+          { "en": "below_average", "id": "di bawah rata-rata", "description": "160–165cm feminin, 165–172cm maskulin", "prompt_keyword": "slightly below average height" },
+          { "en": "average", "id": "rata-rata", "description": "165–170cm feminin, 172–178cm maskulin", "prompt_keyword": "average height, typical proportions" },
+          { "en": "above_average", "id": "di atas rata-rata", "description": "170–178cm feminin, 178–185cm maskulin", "prompt_keyword": "tall, above average height" },
+          { "en": "tall", "id": "tinggi", "description": "178–185cm feminin, 185–195cm maskulin", "prompt_keyword": "tall stature, long-limbed" },
+          { "en": "very_tall", "id": "sangat tinggi", "description": "Di atas 185cm feminin, di atas 195cm maskulin", "prompt_keyword": "very tall, imposing height" }
+        ]
+      },
+
+      "frame_type": {
+        "options": [
+          { "en": "ectomorph_lean", "id": "ectomorph/ramping", "description": "Rangka kecil, naturally slim, sedikit otot visible", "prompt_keyword": "lean slender frame, ectomorph build, thin" },
+          { "en": "slim_delicate", "id": "ramping delicate", "description": "Sangat ramping dan halus — fragile elegance, sering untuk elf", "prompt_keyword": "slim delicate build, fragile elegant frame" },
+          { "en": "mesomorph_athletic", "id": "mesomorph/atletis", "description": "Medium frame, otot terdefinisi, athletic natural", "prompt_keyword": "athletic build, mesomorph, toned" },
+          { "en": "endomorph_solid", "id": "endomorph/solid", "description": "Rangka besar, solid, mudah menambah massa", "prompt_keyword": "solid sturdy build, broad frame" },
+          { "en": "muscular_powerful", "id": "berotot/powerful", "description": "Otot sangat terdefinisi — warrior atau athlete berat", "prompt_keyword": "muscular powerful build, well-defined muscles" },
+          { "en": "curvy_hourglass", "id": "lekukan/hourglass", "description": "Lekukan pronounced dengan waist definition yang jelas", "prompt_keyword": "hourglass figure, curvy proportions, defined waist" },
+          { "en": "stocky_compact", "id": "kekar/kompak", "description": "Pendek dan solid — dwarf atau karakter kekar", "prompt_keyword": "stocky compact build, short and broad" }
+        ]
+      },
+
+      "shoulder_width": {
+        "options": [
+          { "en": "narrow", "id": "sempit", "description": "Bahu lebih sempit dari pinggul — feminin atau ectomorph", "prompt_keyword": "narrow shoulders" },
+          { "en": "medium", "id": "sedang", "description": "Bahu seimbang dengan pinggul", "prompt_keyword": "balanced shoulder width" },
+          { "en": "broad", "id": "lebar", "description": "Bahu lebih lebar dari pinggul — atletis atau maskulin", "prompt_keyword": "broad shoulders, wide shoulder span" }
+        ]
+      },
+
+      "waist_definition": {
+        "options": [
+          { "en": "undefined_straight", "id": "tidak terdefinisi/lurus", "description": "Tidak ada transisi antara dada dan pinggul — straight silhouette", "prompt_keyword": "straight silhouette, undefined waist" },
+          { "en": "subtle", "id": "subtle", "description": "Sedikit ada transisi tapi sangat ringan", "prompt_keyword": "subtle waist definition" },
+          { "en": "defined_natural", "id": "natural terdefinisi", "description": "Pinggang jelas terlihat — natural dan athletic", "prompt_keyword": "defined natural waist" },
+          { "en": "hourglass_prominent", "id": "hourglass/prominent", "description": "Pinggang sangat jelas, rasio besar antara chest/hip dan waist", "prompt_keyword": "prominent hourglass waist, dramatic waist-to-hip ratio" }
+        ]
+      },
+
+      "limb_proportion": {
+        "options": [
+          { "en": "short_limbed", "id": "anggota pendek", "description": "Lengan dan kaki relatif pendek terhadap torso", "prompt_keyword": "shorter limbs, compact proportions" },
+          { "en": "average_proportion", "id": "proporsi rata-rata", "description": "Proporsi normal dan seimbang", "prompt_keyword": "average proportions, balanced limbs" },
+          { "en": "long_limbed", "id": "anggota panjang", "description": "Lengan dan kaki panjang — model, elf, atau karakter tinggi", "prompt_keyword": "long limbs, elongated proportions, long legs and arms" }
+        ]
+      }
+    },
+
+    "locked_features": {
+      "_note": "Array eksplisit dari semua fitur yang dikunci — ini adalah daftar final yang digunakan oleh sistem prompt assembly untuk memastikan tidak ada yang terlewat.",
+      "_format": "Array of strings — path ke field yang dikunci",
+
+      "always_locked": [
+        "identity_anchor.name",
+        "identity_anchor.race_matrix.realistic_base",
+        "identity_anchor.race_matrix.skull_logic.locks_in",
+        "identity_anchor.face_dna.eye_shape",
+        "identity_anchor.face_dna.eye_color",
+        "identity_anchor.face_dna.face_shape",
+        "identity_anchor.face_dna.skin_undertone",
+        "identity_anchor.age_profile.target",
+        "identity_anchor.age_profile.maturity_level",
+        "identity_anchor.body_dna.height_category",
+        "identity_anchor.body_dna.frame_type",
+        "subjects.primary_subject.physical_attributes.species",
+        "subjects.primary_subject.physical_attributes.hair.color",
+        "subjects.primary_subject.physical_attributes.distinctive_features"
+      ],
+
+      "conditionally_locked": [
+        { "field": "identity_anchor.race_matrix.fantasy", "condition": "Jika species adalah humanoid_fantasy" },
+        { "field": "subjects.physical_attributes.species.pointed_ears", "condition": "Jika species adalah any elf variant" },
+        { "field": "subjects.physical_attributes.species.tail_and_horns", "condition": "Jika species adalah demon atau beastkin" }
+      ],
+
+      "never_locked": {
+        "_note": "Field-field ini justru TIDAK BOLEH dikunci — harus bisa berubah di setiap generate.",
+        "list": [
+          "subjects.primary_subject.dressing_room.active_outfit",
+          "subjects.primary_subject.pose_action",
+          "subjects.primary_subject.expression_emotion",
+          "scene_core",
+          "environment",
+          "lighting",
+          "atmosphere",
+          "composition",
+          "motion",
+          "temporal_sequence"
+        ]
+      }
+    },
+
+    "prompt_injection_string": {
+      "_note": "String prompt yang langsung di-inject ke setiap generate untuk memperkuat identity lock — dirakit dari semua field di atas. Ini adalah output dari identity_anchor yang masuk ke prompt.",
+      "_how_to_build": "Rakit dari: [species/race] + [age] + [gender] + [face_key_features] + [hair] + [distinctive]",
+      "_examples_by_character_type": {
+        "East_Asian_young_adult_female": "young East Asian woman, 20-22 years old, monolid almond eyes, dark obsidian eyes, small button nose, soft oval face, high cheekbones, jet black hair, smooth porcelain skin, East Asian facial features maintained",
+        "Dark_Elf_female": "dark elf woman, young adult, ashen grey-dark skin, pointed ears, sharp angular face, white silver hair, glowing purple eyes, dark elf facial features strictly maintained",
+        "South_Asian_adult_male": "South Asian man, 30-35 years old, deep set dark brown eyes, defined nose bridge, strong jaw, olive-warm complexion, dark brown-black hair, South Asian facial features throughout",
+        "West_African_young_woman": "young West African woman, 20-25 years old, rich deep brown skin, full lips, broad nose, expressive dark eyes, high forehead, West African facial features maintained",
+        "Half_Elf_androgynous": "half-elf androgynous figure, slightly pointed ears, blend of human and elven features, almond eyes, refined features, ambiguous gender presentation"
+      },
+
+      "emphasis_by_platform": {
+        "sdxl": "(young East Asian woman:1.3), (monolid almond eyes:1.2), (jet black hair:1.2), (East Asian facial features:1.4)",
+        "midjourney": "young East Asian woman, East Asian facial features, monolid eyes, jet black hair — no European features",
+        "dalle3": "A young East Asian woman with monolid almond eyes and jet black hair. I NEED to maintain strictly East Asian facial features throughout. Do not alter ethnicity.",
+        "kling": "Young East Asian woman, East Asian features, jet black hair, consistent face throughout video"
+      }
+    }
+  }
+}

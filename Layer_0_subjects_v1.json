@@ -1,0 +1,852 @@
+{
+  "_readme": "Library pilihan untuk field subjects (Layer 0 — Character Design). Fungsi: merancang karakter dari nol — anatomi, proporsi, wajah, kostum, ekspresi. Hasil layer ini dikunci permanen di Layer 1 (identity_anchor). PERINGATAN: Setelah karakter di-approve dan dikunci, field physical_attributes dan identity_anchor tidak boleh diubah antar-generate.",
+  "_version": "1.0",
+  "_structure": "subjects → primary_subject | secondary_subjects | background_entities | crowd_elements | relationships",
+  "_layer_note": "Layer 0 adalah tahap desain bebas. Layer 1 (identity_anchor) adalah hasil lock dari Layer 0. Keduanya bekerja bersama: Layer 0 = blueprint, Layer 1 = paspor permanen.",
+
+  "subjects": {
+
+    "subject_type": {
+      "_note": "Kategori dasar entitas — menentukan pipeline render dan jenis atribut yang relevan.",
+      "options": [
+        { "en": "human", "id": "manusia", "description": "Karakter humanoid realistis — anatomi manusia normal.", "use_case": "Karakter utama cerita, NPC realistis, karakter kontemporer" },
+        { "en": "humanoid_fantasy", "id": "humanoid fantasi", "description": "Bentuk dasar manusia dengan modifikasi non-manusia — telinga elf, tanduk, ekor, sayap.", "use_case": "Elf, setengah-demon, angel, beast-kin, fae" },
+        { "en": "android_cyborg", "id": "android/cyborg", "description": "Karakter sebagian atau sepenuhnya mekanik — campuran biologis dan sintetis.", "use_case": "Sci-fi robot, cyborg, android, mecha pilot" },
+        { "en": "creature_monster", "id": "makhluk/monster", "description": "Non-humanoid atau sangat jauh dari anatomi manusia.", "use_case": "Dragon, slime, beast, eldritch creature" },
+        { "en": "spirit_ethereal", "id": "roh/ethereal", "description": "Entitas tidak berbentuk fisik penuh — semi-transparan, menyatu dengan environment.", "use_case": "Ghost, wisp, deity manifestation, nature spirit" },
+        { "en": "object_personified", "id": "objek dipersonifikasi", "description": "Benda mati yang memiliki ekspresi atau karakter.", "use_case": "Living weapon, sentient armor, magical item" },
+        { "en": "vehicle", "id": "kendaraan", "description": "Kendaraan sebagai subject scene.", "use_case": "Mech, spaceship, dragon mount" }
+      ]
+    },
+
+    "archetype": {
+      "_note": "Role atau persona karakter dalam narasi — mempengaruhi semua keputusan desain kostum, pose, dan ekspresi.",
+      "options": [
+        { "en": "warrior", "id": "pejuang", "description": "Spesialis pertarungan fisik — kuat, scarred, confident.", "typical_look": "Armor berat/menengah, senjata melee, postur combat-ready" },
+        { "en": "assassin", "id": "assassin", "description": "Pembunuh bayaran — lincah, tersembunyi, presisi.", "typical_look": "Pakaian gelap fitted, senjata tersembunyi, postur rendah" },
+        { "en": "mage_wizard", "id": "penyihir", "description": "Pengguna sihir — intelektual, misterius, atau eksentrik.", "typical_look": "Robe, staff, buku, gesture tangan aktif" },
+        { "en": "healer_cleric", "id": "penyembuh", "description": "Support role — penuh kasih, tenang, atau lelah berkorban.", "typical_look": "Robe bersih atau bercak darah, simbol suci, tangan terbuka" },
+        { "en": "archer_ranger", "id": "pemanah/ranger", "description": "Jarak jauh, koneksi alam — sabar dan waspada.", "typical_look": "Pakaian ringan, busur, quiver, mata tajam ke kejauhan" },
+        { "en": "rogue_thief", "id": "pencuri", "description": "Opportunis — charm, kecepatan, tidak bisa dipercaya.", "typical_look": "Pakaian ringan longgar, hood, gesture licik" },
+        { "en": "noble_royalty", "id": "bangsawan/royalti", "description": "Status sosial tinggi — anggun, penuh ekspektasi, berat beban.", "typical_look": "Pakaian mewah, crown atau badge rank, postur formal" },
+        { "en": "scholar_sage", "id": "cendekiawan", "description": "Pengetahuan di atas segalanya — observant, penuh catatan.", "typical_look": "Jubah akademis, kacamata, buku, tangan menunjuk atau mencatat" },
+        { "en": "merchant_trader", "id": "pedagang", "description": "Pragmatis, orientasi profit, tahu cara bicara.", "typical_look": "Pakaian fungsional tapi berkualitas, tas besar, gesture tangan terbuka" },
+        { "en": "outlaw_rebel", "id": "pemberontak", "description": "Di luar sistem — bangga, bekas luka perjuangan, tidak conform.", "typical_look": "Pakaian patchwork atau modifikasi, tanda perlawanan, postur defiant" },
+        { "en": "detective_investigator", "id": "detektif", "description": "Analitis, observant, selalu ada yang dipikirkan.", "typical_look": "Coat atau vest fungsional, notepad, mata yang mencari-cari" },
+        { "en": "idol_performer", "id": "idol/performer", "description": "Hidup untuk perhatian dan seni — ekspresif dan flashy.", "typical_look": "Kostum stage, makeup bold, pose performative" },
+        { "en": "survivor", "id": "penyintas", "description": "Sudah melewati banyak — resource-ful, waspada, trauma terlihat.", "typical_look": "Pakaian patchwork aus, bekas luka, mata yang telah melihat banyak" },
+        { "en": "deity_divine", "id": "dewa/dewi", "description": "Keberadaan di atas manusia — agung, jauh, atau unexpectedly intimate.", "typical_look": "Robe divine, efek cahaya, proporsi sempurna berlebihan" },
+        { "en": "child_prodigy", "id": "anak ajaib", "description": "Muda tapi kemampuan melampaui usia — curious dan underestimated.", "typical_look": "Pakaian agak besar, ekspresi besar, mata penuh keingintahuan" }
+      ]
+    },
+
+    "physical_attributes": {
+
+      "species": {
+        "_note": "Spesies fisik — mempengaruhi ciri khas telinga, mata, kulit, dan proporsi yang bisa di-lock.",
+        "options": [
+          { "en": "human", "id": "manusia", "physical_markers": "Telinga bulat, proporsi normal, tidak ada fitur non-manusia", "lock_note": "Tidak ada fitur fantasi yang perlu di-lock" },
+          { "en": "high_elf", "id": "high elf", "physical_markers": "Telinga lancip panjang, fitur wajah halus dan simetris, mata lebih besar, tinggi", "lock_note": "Lock: pointed ears, elven facial symmetry, eye size larger than human" },
+          { "en": "dark_elf", "id": "dark elf", "physical_markers": "Telinga lancip, kulit gelap (abu-abu atau navy), rambut putih atau perak, mata bercahaya", "lock_note": "Lock: dark ashen skin, pointed ears, glowing eyes, white hair" },
+          { "en": "wood_elf", "id": "wood elf", "physical_markers": "Telinga lancip lebih pendek, kulit tan atau cokelat alami, koneksi alam", "lock_note": "Lock: shorter pointed ears, earth-toned skin" },
+          { "en": "half_elf", "id": "setengah elf", "physical_markers": "Telinga sedikit lancip, fitur campuran manusia dan elf", "lock_note": "Lock: slightly pointed ears, mixed heritage facial features" },
+          { "en": "dwarf", "id": "kurcaci", "physical_markers": "Tubuh sangat pendek dan kekar, jenggot lebat, tangan besar", "lock_note": "Lock: very short stature, stocky build, prominent beard" },
+          { "en": "demon_half_demon", "id": "demon/setengah demon", "physical_markers": "Tanduk, ekor, mata bercahaya merah/kuning, taring, kulit tinted", "lock_note": "Lock: horns, tail, glowing eyes, fangs — vary by demon type" },
+          { "en": "angel_fallen", "id": "angel/fallen angel", "physical_markers": "Sayap (putih atau hitam/abu), aura cahaya atau gelap, fitur sempurna", "lock_note": "Lock: wings, ethereal glow or dark aura, idealized proportions" },
+          { "en": "beastkin_wolf", "id": "beastkin serigala", "physical_markers": "Telinga serigala di kepala, ekor, kadang cakar, fang", "lock_note": "Lock: wolf ears, tail, fang visible" },
+          { "en": "beastkin_cat", "id": "beastkin kucing", "physical_markers": "Telinga kucing, ekor, pupil vertikal", "lock_note": "Lock: cat ears, tail, slit pupils" },
+          { "en": "android_robot", "id": "android/robot", "physical_markers": "Panel mekanik visible, joint sintetis, mata LED atau holographic", "lock_note": "Lock: mechanical panels, synthetic joints, LED eyes" },
+          { "en": "vampire", "id": "vampir", "physical_markers": "Kulit sangat pucat, taring, mata merah atau tajam", "lock_note": "Lock: pale skin, fangs, sharp predatory eyes" },
+          { "en": "werewolf_partial", "id": "werewolf parsial", "physical_markers": "Kombinasi manusia dan serigala — kuku, rambut tubuh, fitur wajah shifted", "lock_note": "Lock: claws, partial fur, shifted facial features" }
+        ]
+      },
+
+      "age": {
+        "_note": "Usia karakter — KRITIS karena menentukan maturity level wajah dan anatomi. Selalu gunakan range, bukan angka tunggal.",
+        "_safety_note": "Untuk karakter dengan age_profile yang melibatkan minor (di bawah 18), aktifkan semua safety lock di technical_constraints.",
+        "options": [
+          { "en": "child_10_12", "id": "anak 10–12 tahun", "maturity_level": "juvenile", "physical_note": "Proporsi kepala lebih besar relatif tubuh, fitur wajah bulat dan belum defined", "lock_note": "Aktifkan: child_anatomy_locks, no_mature_content" },
+          { "en": "teen_13_15", "id": "remaja awal 13–15 tahun", "maturity_level": "juvenile", "physical_note": "Mulai transisi, masih juvenile-dominant", "lock_note": "Aktifkan: teen_lock_strict" },
+          { "en": "teen_16_17", "id": "remaja akhir 16–17 tahun", "maturity_level": "juvenile_to_young_adult", "physical_note": "Transisi kuat ke young adult, fitur lebih defined tapi masih muda", "lock_note": "Aktifkan: minor_age_locks" },
+          { "en": "young_adult_18_20", "id": "dewasa muda 18–20 tahun", "maturity_level": "young_adult", "physical_note": "Baru dewasa — kulit mulus, fitur fresh, belum ada tanda penuaan", "lock_note": "Lock: no aging signs, smooth skin, fresh face" },
+          { "en": "adult_21_25", "id": "dewasa 21–25 tahun", "maturity_level": "adult", "physical_note": "Dewasa penuh — fitur mature tapi masih sangat muda", "lock_note": "Lock: mature adult features, no significant aging" },
+          { "en": "adult_26_35", "id": "dewasa 26–35 tahun", "maturity_level": "adult", "physical_note": "Mid adult — sedikit karakter di wajah mulai terlihat", "lock_note": "Lock: mid-adult, subtle character lines acceptable" },
+          { "en": "middle_aged_36_50", "id": "paruh baya 36–50 tahun", "maturity_level": "mature_adult", "physical_note": "Karakter kuat di wajah — fine lines, sedikit kerutan, pengalaman terlihat", "lock_note": "Lock: middle-aged, fine lines, distinguished look" },
+          { "en": "elder_50_plus", "id": "tua 50+ tahun", "maturity_level": "elder", "physical_note": "Kerutan jelas, rambut memutih, wisdom terlihat di wajah", "lock_note": "Lock: elderly features, white or grey hair, pronounced wrinkles" },
+          { "en": "ageless_immortal", "id": "abadi/immortal", "physical_note": "Tampak dewasa tapi tidak bisa ditentukan usianya — karakter dewa atau vampir kuno", "lock_note": "Lock: ageless appearance, no specific age indicators" }
+        ]
+      },
+
+      "gender_presentation": {
+        "_note": "Presentasi gender secara visual — bukan identitas gender, tapi bagaimana AI merender penampilan.",
+        "options": [
+          { "en": "feminine", "id": "feminin", "description": "Fitur wajah dan proporsi tubuh yang secara konvensi dibaca sebagai perempuan." },
+          { "en": "masculine", "id": "maskulin", "description": "Fitur wajah dan proporsi tubuh yang secara konvensi dibaca sebagai laki-laki." },
+          { "en": "androgynous", "id": "androgini", "description": "Campuran fitur feminin dan maskulin — ambigu secara visual, tidak bisa langsung dibaca." },
+          { "en": "feminine_leaning", "id": "cenderung feminin", "description": "Mayoritas feminin tapi ada elemen maskulin yang subtle." },
+          { "en": "masculine_leaning", "id": "cenderung maskulin", "description": "Mayoritas maskulin tapi ada elemen feminin yang subtle." },
+          { "en": "non_conforming", "id": "non-konformis", "description": "Secara aktif melawan ekspektasi gender visual — desain yang disengaja untuk mengaburkan." }
+        ]
+      },
+
+      "stature": {
+        "height": {
+          "_note": "Tinggi badan — deskripsi relatif lebih berguna dari angka absolut untuk AI.",
+          "options": [
+            { "en": "very_short", "id": "sangat pendek", "description": "Di bawah 150cm — petite, compact, sering terlihat muda." },
+            { "en": "short", "id": "pendek", "description": "150–160cm — lebih pendek dari rata-rata." },
+            { "en": "average", "id": "rata-rata", "description": "160–170cm untuk feminin, 170–180cm untuk maskulin." },
+            { "en": "tall", "id": "tinggi", "description": "170–180cm feminin, 180–190cm maskulin — menonjol dalam kerumunan." },
+            { "en": "very_tall", "id": "sangat tinggi", "description": "Di atas 185cm feminin, di atas 195cm maskulin — imposing presence." },
+            { "en": "towering_non_human", "id": "menjulang (non-human)", "description": "Di atas 210cm — hanya masuk akal untuk makhluk fantasi atau mech." }
+          ]
+        },
+        "frame": {
+          "_note": "Besar rangka tulang — dasar proporsi tubuh.",
+          "options": [
+            { "en": "ectomorph_lean", "id": "ectomorph/kurus", "description": "Rangka kecil, otot tipis, metabolisme tinggi — terlihat ramping bahkan tanpa diet." },
+            { "en": "mesomorph_athletic", "id": "mesomorph/atletis", "description": "Rangka sedang, otot mudah terbentuk — proporsi atletis natural." },
+            { "en": "endomorph_solid", "id": "endomorph/solid", "description": "Rangka besar, mudah menambah massa — solid dan grounded." },
+            { "en": "slim_delicate", "id": "ramping delicate", "description": "Sangat ramping dan halus — fragile elegance, sering untuk elf atau spirit." },
+            { "en": "petite_compact", "id": "mungil kompak", "description": "Kecil tapi proporsional — tidak ada elemen yang terlihat 'kecil' secara individual." },
+            { "en": "powerful_built", "id": "bertenaga", "description": "Otot jelas, shoulder lebar, stance yang mengisi ruang." },
+            { "en": "voluptuous_curved", "id": "lekukan penuh", "description": "Lekukan tubuh yang pronounced — soft tapi jelas terdefinisi." }
+          ]
+        }
+      },
+
+      "face": {
+        "face_shape": {
+          "_note": "Kontur wajah keseluruhan — ini adalah salah satu fitur paling penting untuk di-lock.",
+          "options": [
+            { "en": "oval", "id": "oval", "description": "Sedikit lebih panjang dari lebar, rahang sedikit lebih sempit dari dahi — paling versatile dan 'universal beautiful'." },
+            { "en": "soft_oval", "id": "oval lembut", "description": "Oval tapi dengan sudut yang lebih round — feminine dan approachable." },
+            { "en": "round", "id": "bulat", "description": "Lebar hampir sama dengan panjang, rahang soft — terlihat lebih muda dan cute." },
+            { "en": "heart", "id": "hati", "description": "Dahi lebar, pipi prominent, rahang runcing — delicate dan expressive." },
+            { "en": "square", "id": "persegi", "description": "Dahi, pipi, dan rahang hampir sama lebar — strong dan determined." },
+            { "en": "diamond", "id": "diamond", "description": "Dahi sempit, tulang pipi lebar, dagu runcing — angular dan striking." },
+            { "en": "oblong_long", "id": "panjang", "description": "Lebih panjang dari lebar, semua fitur vertical — regal, sering untuk elf." },
+            { "en": "sharp_v", "id": "V tajam", "description": "Dagu sangat runcing dan defined — very angular, sering untuk dark elf atau villain." },
+            { "en": "chubby_round", "id": "bulat chubby", "description": "Pipi penuh, semua garis wajah soft — sangat approachable, sering untuk karakter muda." }
+          ]
+        },
+
+        "eyes": {
+          "eye_shape": {
+            "_note": "Bentuk mata — sangat spesifik per etnis dan spesies. Sangat penting untuk race lock.",
+            "options": [
+              { "en": "almond", "id": "almond", "description": "Ujung luar sedikit naik — paling umum untuk East Asian, Middle Eastern, dan banyak etnis lain." },
+              { "en": "monolid", "id": "monolid", "description": "Kelopak atas tanpa lipatan — khas East Asian, terlihat clean dan modern." },
+              { "en": "double_lid", "id": "double lid", "description": "Ada lipatan kelopak atas yang jelas — lebih 'rounded' appearance." },
+              { "en": "hooded", "id": "hooded", "description": "Kelopak atas menutupi sebagian iris — mysterious, sering terlihat half-closed." },
+              { "en": "round", "id": "bulat", "description": "Mata besar dan bundar — open, innocent, expressive. Sering untuk karakter anime-adjacent." },
+              { "en": "upturned", "id": "naik", "description": "Sudut luar mata naik — cat-like, confident, sedikit mischievous." },
+              { "en": "downturned", "id": "turun", "description": "Sudut luar mata turun — melancholic, gentle, approachable." },
+              { "en": "deep_set", "id": "dalam", "description": "Mata lebih jauh ke dalam tengkorak — dramatic shadow, intense gaze." },
+              { "en": "elven_elongated", "id": "elf memanjang", "description": "Mata almond yang lebih panjang dari biasa — spesifik untuk elf, otherworldly." }
+            ]
+          },
+          "eye_color": {
+            "_note": "Warna iris — untuk karakter realistis ikuti palet alami, untuk fantasi bebas.",
+            "options": [
+              { "en": "dark_brown_black", "id": "cokelat tua/hitam", "description": "Paling umum secara global — East Asian, South Asian, African, Middle Eastern.", "realism_note": "Sangat umum dan realistis" },
+              { "en": "warm_brown", "id": "cokelat hangat", "description": "Cokelat medium dengan tint golden atau amber — common untuk banyak etnis." },
+              { "en": "hazel", "id": "hazel", "description": "Campuran cokelat dan hijau yang berubah tergantung cahaya." },
+              { "en": "green", "id": "hijau", "description": "Hijau murni — rare di kehidupan nyata, lebih sering pada karakter Celtic atau Eropa Utara." },
+              { "en": "blue", "id": "biru", "description": "Biru — umum untuk Eropa Utara dan Timur, rare di Asia dan Afrika." },
+              { "en": "grey", "id": "abu-abu", "description": "Abu-abu cool atau warm — rare, sering terlihat mysterious." },
+              { "en": "amber_golden", "id": "amber/emas", "description": "Kuning-oranye seperti madu — sangat rare di manusia, sering untuk karakter dengan elemen supernatural." },
+              { "en": "red_crimson", "id": "merah/crimson", "description": "Merah — non-realistis untuk manusia, sering untuk vampir, demon, atau albino fantasi." },
+              { "en": "purple_violet", "id": "ungu/violet", "description": "Ungu — fantasi murni, sering untuk karakter magical atau royalti tinggi." },
+              { "en": "silver_white", "id": "perak/putih", "description": "Perak atau putih — non-realistis, sering untuk karakter divine, undead, atau elf kuno." },
+              { "en": "glowing_any_color", "id": "bercahaya", "description": "Mata yang memancarkan cahaya sendiri — untuk mage, android, demon, atau karakter dengan power aktif." },
+              { "en": "heterochromia", "id": "heterochromia", "description": "Dua warna berbeda — kiri dan kanan berbeda. Bisa natural atau magical." },
+              { "en": "slit_pupil", "id": "pupil vertikal", "description": "Pupil vertikal seperti kucing atau reptil — untuk beastkin, demon, atau transformed character." }
+            ]
+          }
+        },
+
+        "nose_shape": {
+          "_note": "Bentuk hidung — penanda etnis yang kuat, penting untuk race consistency.",
+          "options": [
+            { "en": "small_button", "id": "kecil/button", "description": "Hidung kecil dengan ujung round — common untuk East Asian, feminine, sering 'kawaii'." },
+            { "en": "straight_refined", "id": "lurus/refined", "description": "Batang hidung lurus, proporsional — versatile untuk banyak karakter." },
+            { "en": "straight_with_bump", "id": "lurus dengan tonjolan", "description": "Ada bump kecil di batang — karakter Eropa atau Middle Eastern, 'Roman nose'." },
+            { "en": "wide_flat", "id": "lebar/flat", "description": "Lubang hidung lebar, batang flat — common untuk African, Southeast Asian, Pacific Islander." },
+            { "en": "aquiline_hawk", "id": "aquiline/hawk", "description": "Melengkung ke bawah seperti paruh elang — striking, sering untuk karakter Middle Eastern atau villain." },
+            { "en": "turned_up_cute", "id": "pesek/cute", "description": "Ujung hidung sedikit naik — playful, cute, sering untuk karakter muda atau anime." },
+            { "en": "strong_broad", "id": "kuat/lebar", "description": "Hidung besar dan tegas — adds gravitas dan presence." }
+          ]
+        },
+
+        "lip_shape": {
+          "_note": "Bentuk bibir — penanda karakter dan etnis.",
+          "options": [
+            { "en": "thin_natural", "id": "tipis/natural", "description": "Bibir tipis dan natural — sering untuk Eropa Utara, memberikan look serious atau refined." },
+            { "en": "medium_balanced", "id": "sedang/seimbang", "description": "Tidak terlalu tebal, tidak terlalu tipis — paling versatile." },
+            { "en": "full_plump", "id": "penuh/plump", "description": "Bibir tebal — sering untuk African, Mediterranean, atau karakter dengan high charisma." },
+            { "en": "cupid_bow", "id": "cupid bow", "description": "Bibir atas membentuk lekukan seperti busur — delicate dan expressive, sering untuk feminine karakter." },
+            { "en": "wide_expressive", "id": "lebar/ekspresif", "description": "Lebar secara horizontal — wajah yang sangat expressive, sering untuk comedian atau energetic karakter." },
+            { "en": "pouty_soft", "id": "pout/lembut", "description": "Bibir bawah lebih menonjol — sultry atau contemplative look." }
+          ]
+        },
+
+        "jaw_line": {
+          "options": [
+            { "en": "soft_rounded", "id": "lembut/bulat", "description": "Rahang tidak terlihat tegas — feminine, muda, approachable." },
+            { "en": "defined_medium", "id": "defined/sedang", "description": "Rahang terlihat tapi tidak dominan — balanced." },
+            { "en": "sharp_angular", "id": "tajam/angular", "description": "Sudut rahang sangat jelas — strong, mature, determined." },
+            { "en": "square_strong", "id": "persegi/kuat", "description": "Rahang hampir horizontal — very strong, dominant presence." },
+            { "en": "pointed_delicate", "id": "runcing/delicate", "description": "Dagu runcing, rahang soft — elf-like, delicate." }
+          ]
+        },
+
+        "cheek_structure": {
+          "options": [
+            { "en": "high_prominent", "id": "tinggi/prominent", "description": "Tulang pipi tinggi yang jelas — striking, model-like, East Asian atau Slavic." },
+            { "en": "soft_medium", "id": "lembut/sedang", "description": "Tulang pipi ada tapi tidak dominan — natural dan balanced." },
+            { "en": "flat_subtle", "id": "flat/subtle", "description": "Tulang pipi hampir tidak terlihat — wajah lebih flat dan uniform." },
+            { "en": "chubby_full", "id": "chubby/penuh", "description": "Pipi penuh yang berisi — cute, muda, approachable." },
+            { "en": "gaunt_hollow", "id": "cekung/gaunt", "description": "Pipi cekung — exhausted, starving, atau aging. Bisa dramatic untuk villain." }
+          ]
+        }
+      },
+
+      "skin": {
+        "color": {
+          "_note": "Warna kulit — deskripsi yang spesifik sangat penting untuk race consistency lock.",
+          "options": [
+            { "en": "porcelain_white", "id": "porselen/putih", "description": "Sangat putih, hampir tidak ada pigmen. Vampire, albino fantasi, atau elf dari utara.", "realistic_ethnicity": "Eropa Utara ekstrem, albino" },
+            { "en": "fair_light", "id": "cerah/light", "description": "Kulit terang dengan kemerahan subtle.", "realistic_ethnicity": "Eropa Utara, East Asian (lighter)" },
+            { "en": "light_neutral", "id": "terang/neutral", "description": "Kulit terang tanpa overtone yang kuat.", "realistic_ethnicity": "East Asian, Middle Eastern lighter" },
+            { "en": "light_warm_beige", "id": "beige hangat", "description": "Terang dengan tint kekuningan atau peachy.", "realistic_ethnicity": "East Asian, Southeast Asian lighter" },
+            { "en": "medium_tan", "id": "medium/tan", "description": "Tan medium — terpapar matahari cukup.", "realistic_ethnicity": "Latin, Southeast Asian, Mediterranean" },
+            { "en": "olive_warm", "id": "olive/hangat", "description": "Olive dengan undertone hijau-kecoklatan.", "realistic_ethnicity": "Mediterranean, Middle Eastern, Latin" },
+            { "en": "warm_brown", "id": "cokelat hangat", "description": "Cokelat medium dengan undertone warm.", "realistic_ethnicity": "South Asian, Southeast Asian, African lighter" },
+            { "en": "deep_brown", "id": "cokelat dalam", "description": "Cokelat tua yang kaya.", "realistic_ethnicity": "African, South Asian darker" },
+            { "en": "very_dark_ebony", "id": "sangat gelap/ebony", "description": "Sangat gelap, kaya melanin — beautiful blue-black undertone.", "realistic_ethnicity": "Sub-Saharan African" },
+            { "en": "dark_ashen_grey", "id": "abu-abu gelap", "description": "Non-realistis — untuk dark elf, undead, atau makhluk shadow.", "realistic_ethnicity": "Fantasy only" },
+            { "en": "pale_blue_tint", "id": "biru pucat", "description": "Kulit dengan tint biru — frost elf, ice creature, atau undead tertentu.", "realistic_ethnicity": "Fantasy only" },
+            { "en": "golden_metallic", "id": "emas/metalik", "description": "Kulit dengan sheen metalik — divine being, golden god.", "realistic_ethnicity": "Fantasy only" }
+          ]
+        },
+        "texture": {
+          "options": [
+            { "en": "smooth_porcelain", "id": "mulus/porselen", "description": "Sangat mulus tanpa pori yang terlihat — karakter muda atau supernatural." },
+            { "en": "smooth_natural", "id": "mulus/natural", "description": "Mulus tapi dengan tekstur kulit alami yang subtle." },
+            { "en": "slightly_textured", "id": "sedikit bertekstur", "description": "Pori dan tekstur kulit terlihat natural — realistis untuk dewasa muda." },
+            { "en": "weathered_rugged", "id": "kasar/weathered", "description": "Kulit yang sudah banyak terpapar cuaca — pejuang, petani, survivor." },
+            { "en": "scarred", "id": "penuh bekas luka", "description": "Banyak bekas luka dari pertempuran atau pengalaman hidup keras." },
+            { "en": "aged_with_lines", "id": "berkerut/aged", "description": "Fine lines dan kerutan sesuai usia." },
+            { "en": "synthetic_perfect", "id": "sintetis/sempurna", "description": "Terlalu sempurna — untuk android atau karakter supernatural yang tidak terlihat fully human." }
+          ]
+        },
+        "condition": {
+          "options": [
+            { "en": "healthy_glowing", "id": "sehat/bercahaya", "description": "Kulit sehat dengan natural glow — terhidrasi dan well-rested." },
+            { "en": "pale_from_illness", "id": "pucat/sakit", "description": "Lebih pucat dari normal karena sakit atau kurang tidur." },
+            { "en": "flushed_warm", "id": "merah/warm", "description": "Kemerahan di pipi — baru berolahraga, malu, atau demam." },
+            { "en": "sun_kissed", "id": "sun-kissed", "description": "Tan dari sering di luar — outdoor lifestyle, freckles mungkin ada." },
+            { "en": "battle_worn", "id": "bekas pertempuran", "description": "Bruise, luka kecil, debu — baru selesai bertempur." },
+            { "en": "magically_enhanced", "id": "ditingkatkan secara magis", "description": "Kulit yang berpendar, memiliki pola rune, atau efek visual supernatural." }
+          ]
+        }
+      },
+
+      "hair": {
+        "color": {
+          "_note": "Warna rambut — salah satu elemen paling kuat untuk identifikasi karakter. LOCK dengan kuat.",
+          "options": [
+            { "en": "jet_black", "id": "hitam pekat", "description": "Hitam sangat pekat — blue sheen dalam cahaya. Sangat umum di Asia.", "lock_term": "jet black hair, blue-black sheen" },
+            { "en": "dark_brown_black", "id": "hitam-cokelat tua", "description": "Hitam tapi dengan brown undertone di cahaya." },
+            { "en": "dark_brown", "id": "cokelat tua", "description": "Cokelat gelap — sangat umum secara global." },
+            { "en": "medium_brown", "id": "cokelat sedang", "description": "Cokelat yang tidak terlalu gelap atau terang." },
+            { "en": "warm_auburn", "id": "auburn/cokelat kemerahan", "description": "Cokelat dengan strong red undertone." },
+            { "en": "chestnut", "id": "chestnut", "description": "Cokelat hangat dengan golden undertone." },
+            { "en": "golden_blonde", "id": "pirang/golden", "description": "Kuning keemasan — umum Eropa Utara." },
+            { "en": "platinum_blonde", "id": "pirang platinum", "description": "Sangat terang, hampir putih — striking dan rare secara natural." },
+            { "en": "strawberry_blonde", "id": "pirang kemerahan", "description": "Campuran pirang dan merah." },
+            { "en": "bright_red", "id": "merah terang", "description": "Merah natural — Irish/Scottish heritage, atau dye fantasi." },
+            { "en": "grey_silver", "id": "abu-abu/perak", "description": "Natural pada usia tua, atau premature grey. Untuk dark elf: signature look." },
+            { "en": "pure_white", "id": "putih murni", "description": "Sangat putih — albino, elder mage, dark elf, atau karakter supernatural." },
+            { "en": "fantasy_purple", "id": "ungu (fantasi)", "description": "Ungu — tidak natural pada manusia, untuk karakter fantasi atau dyed." },
+            { "en": "fantasy_blue", "id": "biru (fantasi)", "description": "Biru terang atau gelap — karakter supernatural, dyed, atau dari dunia berbeda." },
+            { "en": "fantasy_pink", "id": "pink (fantasi)", "description": "Pink — idol, magical girl, atau karakter whimsical." },
+            { "en": "fantasy_green", "id": "hijau (fantasi)", "description": "Hijau — nature spirit, wood elf ekstrem, atau dyed." },
+            { "en": "multicolor_streaks", "id": "multicolor/streak", "description": "Dua warna atau lebih — streak, ombre, atau pattern." }
+          ]
+        },
+        "style": {
+          "_note": "Gaya rambut — menyempurnakan silhouette karakter.",
+          "options": [
+            { "en": "straight_sleek", "id": "lurus/sleek", "description": "Lurus dan rapi — clean, modern, controlled." },
+            { "en": "straight_loose", "id": "lurus/longgar", "description": "Lurus tapi sedikit movement, tidak terlalu pressed." },
+            { "en": "wavy_natural", "id": "bergelombang/natural", "description": "Gelombang natural ringan — soft dan approachable." },
+            { "en": "wavy_tousled", "id": "bergelombang/acak", "description": "Bergelombang tapi lebih messy — carefree atau just-woke-up." },
+            { "en": "curly_defined", "id": "keriting/defined", "description": "Keriting yang jelas dan terdefinisi." },
+            { "en": "curly_wild", "id": "keriting/liar", "description": "Keriting yang besar dan voluminous — free dan expressive." },
+            { "en": "coily_natural", "id": "coily/natural", "description": "Keriting sangat ketat — natural African hair texture." },
+            { "en": "braided_single", "id": "kepang tunggal", "description": "Satu kepang — sederhana dan clean." },
+            { "en": "braided_double", "id": "dua kepang", "description": "Dua kepang — sweet atau traditional." },
+            { "en": "twin_tails", "id": "twin tails", "description": "Dua ekor kuda di kiri-kanan — playful, sering untuk karakter muda." },
+            { "en": "high_ponytail", "id": "ekor kuda tinggi", "description": "Diikat tinggi di kepala — energetic, action-ready." },
+            { "en": "low_ponytail", "id": "ekor kuda rendah", "description": "Diikat rendah di tengkuk — mature, calm." },
+            { "en": "half_up_half_down", "id": "setengah atas/bawah", "description": "Setengah diikat, setengah terurai — feminine dan practical." },
+            { "en": "messy_bun", "id": "sanggul acak", "description": "Sanggul yang sengaja messy — casual dan modern." },
+            { "en": "elegant_updo", "id": "sanggul elegan", "description": "Rambut ditata ke atas dengan rapi — formal dan regal." },
+            { "en": "short_pixie", "id": "pixie cut", "description": "Sangat pendek di sisi dan belakang, lebih panjang di atas — bold dan modern." },
+            { "en": "bob_cut", "id": "bob", "description": "Sebahu atau lebih pendek, rata — clean dan stylish." },
+            { "en": "undercut", "id": "undercut", "description": "Sangat pendek di sisi, panjang di atas — edgy." },
+            { "en": "wild_windswept", "id": "liar/terbawa angin", "description": "Bergerak bebas seolah tertiup angin — dynamic dan dramatic." },
+            { "en": "flowing_long_loose", "id": "panjang terurai", "description": "Panjang dan terurai bebas — majestic atau free-spirited." }
+          ]
+        },
+        "length": {
+          "options": [
+            { "en": "bald_shaved", "id": "botak/dicukur", "description": "Tidak ada rambut atau sangat pendek." },
+            { "en": "very_short", "id": "sangat pendek", "description": "Hampir seperti buzz cut." },
+            { "en": "short_ear_length", "id": "pendek/sebatas telinga", "description": "Menutupi telinga." },
+            { "en": "medium_chin_length", "id": "sedang/sebatas dagu", "description": "Berakhir di sekitar dagu." },
+            { "en": "medium_shoulder_length", "id": "sedang/sebahu", "description": "Berakhir di bahu." },
+            { "en": "long_chest_length", "id": "panjang/sebatas dada", "description": "Turun ke area dada." },
+            { "en": "very_long_waist", "id": "sangat panjang/sebatas pinggang", "description": "Turun ke pinggang." },
+            { "en": "ultra_long_hip", "id": "ultra panjang/sebatas pinggul", "description": "Turun ke pinggul atau lebih — dramatic dan flowing." }
+          ]
+        }
+      },
+
+      "distinctive_features": {
+        "_note": "Ciri khas unik — identifier yang membuat karakter memorable dan mudah dikenali. Array — bisa kombinasi.",
+        "_examples_by_category": {
+          "scars_marks": [
+            "scar_across_left_eye",
+            "scar_on_right_cheek",
+            "burn_scar_on_neck",
+            "battle_scar_on_chin",
+            "claw_mark_scars_on_arm",
+            "ritual_scar_on_forehead"
+          ],
+          "tattoos_markings": [
+            "tribal_tattoo_on_face",
+            "rune_tattoo_on_neck",
+            "floral_tattoo_on_arm",
+            "glowing_rune_markings",
+            "birthmark_on_cheek",
+            "freckles_across_nose",
+            "vitiligo_patches"
+          ],
+          "piercings_jewelry": [
+            "ear_cuffs_multiple",
+            "septum_ring",
+            "eyebrow_piercing",
+            "multiple_ear_piercings",
+            "nose_stud"
+          ],
+          "fantasi_features": [
+            "glowing_eyes_when_using_power",
+            "one_glowing_eye_magic",
+            "small_horns_barely_visible",
+            "pointed_fangs_showing",
+            "faint_scale_pattern_on_skin",
+            "ethereal_glow_around_hair",
+            "flower_growing_in_hair",
+            "crystal_growth_on_shoulder",
+            "vine_pattern_on_skin",
+            "star_map_freckles"
+          ],
+          "cybernetic": [
+            "cybernetic_eye_right",
+            "mechanical_arm_left",
+            "neural_interface_port_temple",
+            "subdermal_circuit_pattern",
+            "retractable_blade_forearm"
+          ],
+          "hair_extras": [
+            "white_streak_in_dark_hair",
+            "two_colored_hair_split",
+            "flowers_woven_in_hair",
+            "feathers_in_hair",
+            "braided_beads"
+          ]
+        }
+      }
+    },
+
+    "dressing_room": {
+      "_note": "Sistem kostum overlay — pakaian di-render di atas anatomi base tanpa mengubah proporsi tubuh. Collision STRICT: pakaian tidak menembus atau mengubah bentuk tubuh di bawahnya.",
+
+      "physics_engine": {
+        "_note": "Aturan interaksi fisika kain-tubuh.",
+        "options": [
+          { "en": "realistic", "id": "realistis", "description": "Fisika kain realistis — jatuh, lipatan, dan interaksi dengan angin sesuai material asli." },
+          { "en": "stylized", "id": "stilisasi", "description": "Fisika sedikit dilebihkan untuk efek visual — sering dipakai anime atau fantasy art." },
+          { "en": "rigid", "id": "kaku", "description": "Armor atau pakaian yang tidak bergerak banyak — metal, plate armor, stiff fabric." },
+          { "en": "flowing_enhanced", "id": "mengalir berlebihan", "description": "Kain yang mengalir lebih dramatis dari realita — capes, long robes, fantasi." }
+        ]
+      },
+
+      "outfit_slots": {
+        "_note": "Slot pakaian yang tersedia — setiap slot independent.",
+        "slots": [
+          {
+            "slot": "upper",
+            "description": "Badan atas — atasan, baju, armor dada, jaket, coat",
+            "_examples_by_style": {
+              "casual_modern": ["fitted white t-shirt", "oversized hoodie", "crop top", "button-up shirt loose"],
+              "fantasy_warrior": ["plate armor chestpiece", "chainmail vest", "leather jerkin", "fur-trimmed pauldrons"],
+              "fantasy_mage": ["ornate robe upper", "silk vest with embroidery", "tattered wizards coat"],
+              "sci_fi": ["tactical vest with panels", "form-fitting bodysuit top", "holographic-trim jacket"],
+              "elegant_formal": ["strapless corset gown top", "tailored blazer", "silk qipao top"],
+              "action_combat": ["tactical shirt with pockets", "bulletproof vest", "compression shirt with armor plates"]
+            }
+          },
+          {
+            "slot": "lower",
+            "description": "Badan bawah — celana, rok, armor bawah, legging",
+            "_examples_by_style": {
+              "casual_modern": ["skinny jeans dark wash", "high-waist shorts", "flowy maxi skirt", "jogger pants"],
+              "fantasy_warrior": ["plate armor greaves", "leather battle shorts", "tattered combat pants", "armored skirt"],
+              "fantasy_mage": ["long robe lower", "flowing silk pants", "tattered skirt with layers"],
+              "sci_fi": ["tactical cargo pants", "bodysuit lower", "armored leggings"],
+              "elegant_formal": ["ball gown skirt", "pencil skirt midi", "wide-leg palazzo pants"],
+              "action_combat": ["reinforced combat pants", "tactical leggings", "cargo shorts"]
+            }
+          },
+          {
+            "slot": "outerwear",
+            "description": "Lapisan luar — mantel, cape, jubah, jaket luar",
+            "_examples": [
+              "long black trench coat",
+              "weathered brown duster coat",
+              "royal cape crimson velvet",
+              "tattered mage robe outer",
+              "fur-lined winter coat",
+              "white lab coat",
+              "biker jacket leather",
+              "cloak with hood dark",
+              "military longcoat brass buttons",
+              "fantasy cape with clasp"
+            ]
+          },
+          {
+            "slot": "footwear",
+            "description": "Alas kaki — sepatu, boots, sandal, telanjang",
+            "_examples": [
+              "barefoot",
+              "worn leather boots knee-high",
+              "combat boots black steel-toed",
+              "elegant heeled boots",
+              "armored sabatons",
+              "simple sandals leather straps",
+              "modern sneakers white",
+              "platform boots chunky",
+              "ankle boots with buckles",
+              "elf-craft soft leather shoes"
+            ]
+          },
+          {
+            "slot": "headwear",
+            "description": "Penutup kepala — helm, topi, tiara, hood",
+            "_examples": [
+              "no headwear",
+              "hood drawn up",
+              "hood down resting on shoulders",
+              "flower crown woven",
+              "crown gold and ruby",
+              "knight helmet visor up",
+              "wide brim adventurer hat",
+              "military beret",
+              "beanie knit grey",
+              "circlet thin silver",
+              "tiara delicate"
+            ]
+          },
+          {
+            "slot": "accessories",
+            "description": "Aksesoris — perhiasan, senjata visible, item held",
+            "_examples_by_type": {
+              "jewelry": ["silver choker", "pendant emerald", "multiple ear cuffs", "armband leather", "ring ornate", "bracelet chain gold"],
+              "weapon_visible": ["sword at hip scabbard", "dagger strapped to thigh", "bow across back", "staff in hand", "gun holster"],
+              "utility": ["satchel leather worn", "pouch belt", "cloak clasp ornate", "bandage wrapping arm", "goggles pushed up forehead"],
+              "magical": ["glowing orb floating", "rune stone held", "amulet glowing chest", "grimoire in hand", "crystal staff"],
+              "modern": ["backpack casual", "headphones around neck", "phone in hand", "coffee cup held"]
+            }
+          },
+          {
+            "slot": "armor_overlay",
+            "description": "Armor yang ditambahkan di atas pakaian base — untuk karakter semi-armored",
+            "_examples": [
+              "shoulder pauldrons only",
+              "forearm bracers",
+              "shin guards",
+              "partial chest plate over cloth",
+              "full plate armor",
+              "leather vambraces",
+              "knee guards tactical"
+            ]
+          }
+        ]
+      },
+
+      "outfit_presets": {
+        "_note": "Outfit lengkap yang sudah terdefinisi sebagai set — gunakan sebagai active_outfit atau simpan di outfit_library.",
+        "options": [
+          {
+            "set_name": "casual_everyday",
+            "id": "Casual Sehari-hari",
+            "description": "Pakaian nyaman untuk kehidupan sehari-hari — tidak ada setting spesifik.",
+            "upper": "oversized soft hoodie",
+            "lower": "high-waist skinny jeans dark wash",
+            "footwear": "simple white sneakers",
+            "outerwear": "none",
+            "accessories": ["small silver earrings", "thin bracelet"]
+          },
+          {
+            "set_name": "battle_ready",
+            "id": "Siap Tempur",
+            "description": "Full combat gear — untuk scene pertempuran atau training.",
+            "upper": "leather jerkin over chainmail undershirt",
+            "lower": "reinforced combat trousers tucked into boots",
+            "footwear": "heavy leather boots knee-high",
+            "outerwear": "tattered combat cloak",
+            "armor_overlay": "shoulder pauldrons, forearm bracers",
+            "accessories": ["sword at hip scabbard", "dagger thigh strap", "utility pouch belt"]
+          },
+          {
+            "set_name": "formal_elegant",
+            "id": "Formal/Elegan",
+            "description": "Pakaian untuk acara formal — banquet, audience royalty, ceremony.",
+            "upper": "fitted corset ornate embroidery",
+            "lower": "flowing gown skirt with train",
+            "footwear": "elegant heeled shoes velvet",
+            "outerwear": "optional shawl silk",
+            "accessories": ["necklace pendant gemstone", "earrings drop pearl", "hair ornament"]
+          },
+          {
+            "set_name": "mage_robe",
+            "id": "Jubah Penyihir",
+            "description": "Pakaian mage klasik — untuk ritual, study, atau travel.",
+            "upper": "ornate robe upper with wide sleeves",
+            "lower": "robe lower layered",
+            "footwear": "soft leather shoes pointed toe",
+            "outerwear": "outer robe with hood",
+            "accessories": ["staff magical", "grimoire at belt", "pendant amulet glowing"]
+          },
+          {
+            "set_name": "streetwear_urban",
+            "id": "Streetwear Urban",
+            "description": "Fashion urban kontemporer — untuk setting kota modern atau cyberpunk.",
+            "upper": "graphic tee cropped",
+            "lower": "cargo pants wide leg",
+            "footwear": "chunky platform boots",
+            "outerwear": "bomber jacket oversized",
+            "accessories": ["chain necklace thick", "ear cuffs multiple", "ring stack", "cap snapback"]
+          },
+          {
+            "set_name": "armor_fantasy_full",
+            "id": "Full Armor Fantasi",
+            "description": "Armor penuh untuk knight atau paladin — imposing dan powerful.",
+            "upper": "full plate chest armor ornate",
+            "lower": "plate armor greaves and tassets",
+            "footwear": "armored sabatons",
+            "headwear": "great helm visor up",
+            "outerwear": "surcoat over armor heraldic",
+            "accessories": ["sword longsword at hip", "shield on back", "gauntlets ornate"]
+          }
+        ]
+      },
+
+      "cloth_physics_options": {
+        "_note": "Untuk video/animasi — bagaimana kain bergerak. Pilih satu per material type.",
+        "options": [
+          { "en": "none", "id": "tidak ada", "description": "Tidak ada physics — kain rigid. Untuk armor berat atau material kaku." },
+          { "en": "very_subtle", "id": "sangat halus", "description": "Hanya micro-movement — hampir tidak terlihat. Untuk pakaian ketat." },
+          { "en": "light_flutter", "id": "flutter ringan", "description": "Sedikit bergerak di tepi kain — natural dan realistic." },
+          { "en": "gentle_sway", "id": "ayun pelan", "description": "Gerakan mengayun lembut — untuk rok medium atau kain ringan." },
+          { "en": "dramatic_flow", "id": "mengalir dramatis", "description": "Kain mengalir sangat ekspresif — untuk cape, robe panjang, atau gaun." },
+          { "en": "floating_weightless", "id": "melayang tanpa bobot", "description": "Kain bergerak seolah tidak ada gravitasi — untuk karakter supernatural atau underwater." }
+        ]
+      }
+    },
+
+    "pose_action": {
+      "_note": "Pose dan aksi saat ini — apa yang dilakukan karakter pada momen generate. Bisa divariasi antar generate tanpa melanggar identity lock.",
+
+      "base_pose": {
+        "_note": "Stance atau posisi fundamental — fondasi dari mana semua modifikasi pose dilakukan.",
+        "options": [
+          { "en": "standing_neutral", "id": "berdiri/netral", "description": "Berdiri tegak, rileks — tidak ada action." },
+          { "en": "standing_composed", "id": "berdiri/composed", "description": "Berdiri dengan postur tegas dan deliberate — confident." },
+          { "en": "standing_relaxed", "id": "berdiri/rileks", "description": "Berdiri santai, sedikit shift berat ke satu kaki." },
+          { "en": "standing_combat", "id": "berdiri/combat stance", "description": "Kaki selebar bahu atau lebih, siap bergerak — combat ready." },
+          { "en": "sitting_formal", "id": "duduk/formal", "description": "Duduk tegak di kursi atau permukaan — formal, composed." },
+          { "en": "sitting_casual", "id": "duduk/kasual", "description": "Duduk santai — di lantai, tepi meja, atau kursi dengan satu kaki naik." },
+          { "en": "sitting_perched", "id": "duduk/bertengger", "description": "Duduk di tepi sesuatu yang tinggi — rooftop edge, balcony rail." },
+          { "en": "crouching", "id": "jongkok", "description": "Posisi rendah dengan lutut ditekuk — stealth, siap loncat, atau beristirahat." },
+          { "en": "kneeling_one_knee", "id": "berlutut satu lutut", "description": "Satu lutut di tanah — tunduk, berdoa, atau merawat sesuatu." },
+          { "en": "lying_down", "id": "berbaring", "description": "Posisi horizontal — tidur, pingsan, atau pose dramatic." },
+          { "en": "mid_walk", "id": "sedang berjalan", "description": "Captured mid-stride — langkah natural." },
+          { "en": "mid_run", "id": "sedang berlari", "description": "Captured berlari — dynamic dan energetic." },
+          { "en": "leaning_against", "id": "bersandar", "description": "Bersandar di tembok, tiang, atau objek — casual, menunggu." },
+          { "en": "floating_hovering", "id": "melayang", "description": "Tidak menyentuh tanah — untuk karakter supernatural atau yang punya kemampuan terbang." },
+          { "en": "action_mid_strike", "id": "mid-strike aksi", "description": "Caught in the middle of an attack — sword swing, punch, spell cast." }
+        ]
+      },
+
+      "action_verb": {
+        "_note": "Apa yang sedang dilakukan karakter — memberikan konteks dan tujuan pada pose.",
+        "_examples_by_category": {
+          "contemplative": ["staring_into_distance", "looking_down_thinking", "examining_object", "reading", "writing", "meditating"],
+          "social": ["speaking_to_someone", "listening_intently", "laughing", "smiling_warmly", "crying", "arguing"],
+          "combat": ["drawing_sword", "mid_sword_swing", "blocking_attack", "aiming_bow", "casting_spell", "dodging"],
+          "movement": ["walking_forward", "running_toward_camera", "running_away", "jumping", "climbing", "falling"],
+          "rest": ["leaning_on_wall", "sitting_and_waiting", "sleeping", "resting_after_battle"],
+          "work": ["crafting_item", "cooking", "fixing_equipment", "writing_notes", "studying_map"],
+          "dramatic": ["reaching_for_something", "turning_to_look", "stepping_forward_determined", "collapsing", "rising_from_fall"]
+        }
+      },
+
+      "action_object": {
+        "_note": "Objek yang berinteraksi dengan karakter dalam aksi — opsional.",
+        "_examples": [
+          "ancient_artifact",
+          "glowing_sword",
+          "spell_book_open",
+          "letter_sealed",
+          "flower_single",
+          "cup_of_tea",
+          "wounded_companion",
+          "broken_weapon",
+          "map_unfurled",
+          "orb_of_light"
+        ]
+      },
+
+      "energy_level": {
+        "_note": "Intensitas gerakan dan energi yang terpancar dari pose.",
+        "options": [
+          { "en": "static", "id": "statik", "description": "Tidak ada gerakan sama sekali — frozen moment." },
+          { "en": "subtle", "id": "subtle", "description": "Sedikit movement — breathing, micro-adjustment." },
+          { "en": "controlled", "id": "terkontrol", "description": "Gerakan deliberate dan precise — martial arts, formal stance." },
+          { "en": "dynamic", "id": "dinamis", "description": "Bergerak aktif tapi bukan dengan kecepatan penuh." },
+          { "en": "high_energy", "id": "energi tinggi", "description": "Gerakan cepat dan kuat." },
+          { "en": "explosive", "id": "eksplosif", "description": "Gerakan maksimal — sprint, full power strike, explosive dash." }
+        ]
+      },
+
+      "balance": {
+        "options": [
+          { "en": "stable", "id": "stabil", "description": "Berpijak kuat — berat merata." },
+          { "en": "shifting", "id": "bergeser", "description": "Sedang memindahkan berat dari satu kaki ke kaki lain." },
+          { "en": "precarious", "id": "goyah", "description": "Di tepi ketidakseimbangan — di ujung, sedang jatuh, atau recovery." },
+          { "en": "mid_motion", "id": "mid-motion", "description": "Ditangkap tepat saat bergerak — tidak statis, tidak jatuh." },
+          { "en": "weightless", "id": "tanpa bobot", "description": "Tidak ada gravitasi — melayang atau terendam air." }
+        ]
+      },
+
+      "line_of_sight": {
+        "_note": "Ke mana mata karakter diarahkan — mempengaruhi koneksi dengan penonton.",
+        "options": [
+          { "en": "at_camera", "id": "ke kamera", "description": "Langsung menatap kamera/penonton — koneksi langsung, powerful." },
+          { "en": "slightly_off_camera", "id": "sedikit menyimpang", "description": "Hampir ke kamera tapi sedikit ke samping — lebih natural dari shot portrait." },
+          { "en": "away_left", "id": "menjauh ke kiri", "description": "Melihat ke kiri frame — thoughtful, menunggu sesuatu." },
+          { "en": "away_right", "id": "menjauh ke kanan", "description": "Melihat ke kanan frame." },
+          { "en": "looking_up", "id": "melihat ke atas", "description": "Menengadah — wonder, prayer, atau melihat sesuatu di atas." },
+          { "en": "looking_down", "id": "melihat ke bawah", "description": "Menunduk — shame, sorrow, fokus pada sesuatu di bawah." },
+          { "en": "distant_unfocused", "id": "jauh/unfocused", "description": "Pandangan kosong ke kejauhan — lost in thought, trauma, atau dissociating." },
+          { "en": "at_subject_companion", "id": "ke subjek lain", "description": "Melihat ke arah karakter atau objek lain dalam scene." },
+          { "en": "scanning_alert", "id": "scanning/waspada", "description": "Mata bergerak cepat, waspada — threat detection, military." }
+        ]
+      }
+    },
+
+    "expression_emotion": {
+      "_note": "Kondisi emosional karakter yang terpancar dari wajah — bisa divariasi antar generate tanpa melanggar identity lock.",
+
+      "primary_emotion": {
+        "_note": "Emosi dominan yang terpancar paling kuat.",
+        "options": [
+          { "en": "neutral_calm", "id": "netral/tenang", "description": "Ekspresi datar atau sedikit calm — untuk reference sheet atau karakter yang sangat controlled." },
+          { "en": "determination", "id": "determinasi", "description": "Tekad kuat — rahang set, mata fokus, tidak akan mundur." },
+          { "en": "joy_happiness", "id": "gembira/bahagia", "description": "Kesenangan genuine — senyum mencapai mata." },
+          { "en": "sadness_grief", "id": "sedih/duka", "description": "Kesedihan mendalam — mata berkaca, bibir bergetar, atau sudah menangis." },
+          { "en": "anger_rage", "id": "marah/murka", "description": "Kemarahan dari sangat subtle sampai penuh — intensitas bervariasi." },
+          { "en": "fear_terror", "id": "takut/teror", "description": "Ketakutan — mata melebar, napas cepat, tubuh siap kabur." },
+          { "en": "wonder_awe", "id": "kagum/awe", "description": "Terpesona oleh sesuatu yang luar biasa — mulut sedikit terbuka, mata lebar." },
+          { "en": "melancholy_wistful", "id": "melankoli/wistful", "description": "Kesedihan ringan bercampur kerinduan — thoughtful dan quiet." },
+          { "en": "confidence", "id": "percaya diri", "description": "Yakin dengan diri sendiri — postur terbuka, senyum tipis atau smirk." },
+          { "en": "pride", "id": "bangga", "description": "Kebanggan — dagu sedikit naik, kepuasan visible." },
+          { "en": "shame_guilt", "id": "malu/bersalah", "description": "Menunduk, tidak bisa menatap langsung, bahu menurun." },
+          { "en": "curiosity", "id": "penasaran", "description": "Ingin tahu — kepala miring, mata squinting sedikit, fokus." },
+          { "en": "suspicion_distrust", "id": "curiga/tidak percaya", "description": "Tidak percaya — mata menyipit, bibir sedikit mencong." },
+          { "en": "exhaustion", "id": "kelelahan", "description": "Sangat lelah — mata setengah tertutup, bahu merosot, postur collapsed." },
+          { "en": "serenity_peace", "id": "tenang/damai", "description": "Kedamaian mendalam — senyum tipis, mata sedikit tertutup, tubuh rileks." },
+          { "en": "loneliness", "id": "kesepian", "description": "Sendiri dan menyadarinya — distant, arms close to body." },
+          { "en": "hope", "id": "harapan", "description": "Optimism di tengah ketidakpastian — sedikit terangkat, mata sedikit berbinar." },
+          { "en": "love_adoration", "id": "cinta/pemujaan", "description": "Afeksi kuat — mata lembut, senyum hangat." },
+          { "en": "stoic_unreadable", "id": "stoik/tidak terbaca", "description": "Sengaja menyembunyikan emosi — perfect poker face." },
+          { "en": "smug_satisfied", "id": "puas/smug", "description": "Merasa menang — smirk tipis, bahu ke belakang." }
+        ]
+      },
+
+      "secondary_emotion": {
+        "_note": "Emosi bawah yang bisa dirasakan di bawah emosi primer — menambah kedalaman dan nuansa.",
+        "_examples": [
+          "underlying_sadness",
+          "lingering_anger",
+          "suppressed_fear",
+          "hidden_hope",
+          "quiet_determination",
+          "unspoken_guilt",
+          "jealousy_hidden",
+          "love_unrequited",
+          "nostalgia_bittersweet",
+          "relief_mixed_with_grief"
+        ]
+      },
+
+      "intensity": {
+        "_note": "Seberapa kuat emosi diekspresikan — dari subtil yang hampir tidak terlihat sampai overwhelming.",
+        "options": [
+          { "en": "repressed", "id": "tertekan", "description": "Hampir tidak ada — karakter aktif menyembunyikan. Hanya ada di mata atau sedikit ketegangan otot." },
+          { "en": "subtle", "id": "subtle", "description": "Sedikit terlihat — perlu diperhatikan. Bisa diabaikan oleh orang yang tidak kenal karakter." },
+          { "en": "moderate", "id": "sedang", "description": "Jelas terlihat tapi tidak berlebihan — ekspresi normal dari emosi tersebut." },
+          { "en": "strong", "id": "kuat", "description": "Tidak bisa diabaikan — dominan dalam penampilan wajah." },
+          { "en": "intense", "id": "intens", "description": "Sangat kuat — mempengaruhi seluruh tubuh, bukan hanya wajah." },
+          { "en": "overwhelming", "id": "overwhelming", "description": "Di luar kendali — emosi penuh yang tidak bisa disembunyikan atau dikontrol." }
+        ]
+      },
+
+      "micro_expressions": {
+        "_note": "Detail wajah kecil yang menambah kredibilitas emosi. Array — bisa kombinasi beberapa.",
+        "_examples_by_emotion_category": {
+          "tension_stress": ["tight_jaw", "clenched_teeth", "furrowed_brow", "tense_forehead", "pursed_lips"],
+          "sadness": ["watery_eyes", "quivering_lip", "downturned_mouth_corners", "red_rimmed_eyes", "tear_on_cheek"],
+          "happiness": ["crinkled_eyes", "raised_cheeks", "visible_dimple", "slight_open_mouth_smile"],
+          "anger": ["flared_nostrils", "clenched_jaw", "narrowed_eyes", "lips_thin_line"],
+          "fear": ["wide_eyes", "parted_lips", "pale_color", "visible_swallow"],
+          "curiosity": ["head_tilt_slight", "squinting_one_eye", "mouth_slightly_open"],
+          "fatigue": ["half_lidded_eyes", "dark_circles", "slack_jaw", "slow_blink"],
+          "confidence": ["chin_slightly_raised", "relaxed_jaw", "direct_gaze", "slight_smirk"]
+        }
+      },
+
+      "eye_state": {
+        "_note": "Kondisi spesifik mata — lebih detail dari eye_shape di physical_attributes.",
+        "options": [
+          { "en": "sharp_focused", "id": "tajam/fokus", "description": "Mata yang sangat fokus pada target — predator, warrior, atau analyst." },
+          { "en": "soft_warm", "id": "lembut/hangat", "description": "Mata yang memancarkan kebaikan dan kehangatan." },
+          { "en": "cold_calculating", "id": "dingin/kalkulatif", "description": "Mata tanpa emosi yang tampak — processing, tidak empati visible." },
+          { "en": "tired_heavy", "id": "lelah/berat", "description": "Kelopak berat — sangat lelah atau habis menangis." },
+          { "en": "bright_alive", "id": "cerah/hidup", "description": "Bercahaya dengan life dan antusiasme." },
+          { "en": "sad_distant", "id": "sedih/jauh", "description": "Tidak sepenuhnya hadir — grief atau trauma." },
+          { "en": "wide_surprised", "id": "lebar/terkejut", "description": "Terbuka penuh — shock atau wonder." },
+          { "en": "squinting_suspicious", "id": "menyipit/curiga", "description": "Sedikit menyempit — scrutiny atau suspicion." },
+          { "en": "glowing_power", "id": "bercahaya/power", "description": "Mata yang memancarkan cahaya — power aktif, magical state." },
+          { "en": "glazed_shock", "id": "kosong/shock", "description": "Stare kosong — shock berat atau dissociasi." }
+        ]
+      }
+    },
+
+    "modifiers": {
+      "_note": "Modifikasi khusus yang mengubah tampilan standar karakter — cybernetics, efek magis, kondisi fisik sementara.",
+
+      "cybernetics": {
+        "_note": "Augmentasi sintetis atau mekanikal pada tubuh biologis.",
+        "_examples": [
+          "cybernetic_right_arm_full",
+          "cybernetic_left_hand_only",
+          "neural_interface_visible_temple",
+          "cybernetic_eye_glowing_blue",
+          "subdermal_plating_visible",
+          "exoskeleton_partial",
+          "data_jack_port_neck"
+        ]
+      },
+
+      "magical_effects": {
+        "_note": "Efek magis yang secara visual terlihat pada atau di sekitar karakter.",
+        "_examples": [
+          "aura_golden_light",
+          "dark_energy_wisps_around_hands",
+          "runes_glowing_on_skin",
+          "shadow_tendrils_extending",
+          "frost_crystals_forming",
+          "flame_aura_flickering",
+          "lightning_crackling_around",
+          "flower_petals_floating_around",
+          "void_fragments_orbiting",
+          "holy_light_descending"
+        ]
+      },
+
+      "physical_conditions": {
+        "_note": "Kondisi fisik sementara yang mempengaruhi penampilan.",
+        "_examples": [
+          "battle_damaged_armor",
+          "wounds_bandaged",
+          "blood_on_clothing",
+          "rain_soaked_thoroughly",
+          "dust_covered",
+          "fire_ash_covered",
+          "underwater_hair_flowing",
+          "extreme_wind_effect",
+          "tears_on_face_fresh"
+        ]
+      }
+    },
+
+    "secondary_subjects": {
+      "_note": "Subject pendukung dalam scene — memiliki semua field yang sama dengan primary_subject tapi lebih ringkas. Gunakan jika ada lebih dari satu karakter penting dalam frame.",
+      "_structure": "Array of objects — setiap object bisa memiliki subject_type, archetype, physical_attributes singkat, pose_action, dan relationship ke primary_subject.",
+      "_example": {
+        "subject_type": "human",
+        "archetype": "warrior",
+        "physical_attributes": { "species": "human", "age": "adult_26_35", "gender_presentation": "masculine", "hair": { "color": "dark_brown", "style": "short_messy", "length": "very_short" } },
+        "pose_action": { "base_pose": "standing_combat", "line_of_sight": "at_camera" },
+        "expression_emotion": { "primary_emotion": "determination", "intensity": "strong" },
+        "relationship_to_primary": "ally_standing_back_to_back"
+      }
+    },
+
+    "background_entities": {
+      "_note": "Entitas yang ada dalam scene tapi bukan fokus — terlihat di background atau periphery. Tidak perlu detail lengkap.",
+      "_examples": [
+        { "type": "crowd_vague", "description": "Kerumunan tak berbentuk di background — terlihat tapi blur" },
+        { "type": "soldier_patrol", "description": "Penjaga atau tentara yang sedang berpatroli di background" },
+        { "type": "civilian_passing", "description": "Orang biasa yang sedang melintas" },
+        { "type": "animal_companion", "description": "Hewan peliharaan atau familiar yang mengikuti karakter" },
+        { "type": "silhouette_only", "description": "Hanya siluet saja — mysterious presence" },
+        { "type": "distant_riders", "description": "Penunggang kuda atau kendaraan di kejauhan" }
+      ]
+    },
+
+    "crowd_elements": {
+      "_note": "Deskripsi massa atau kerumunan sebagai elemen environment — bukan karakter individual.",
+      "density": {
+        "options": [
+          { "en": "sparse_few", "id": "jarang/sedikit", "description": "Beberapa orang tersebar." },
+          { "en": "moderate_crowd", "id": "kerumunan sedang", "description": "Cukup ramai — ada aktivitas tapi tidak padat." },
+          { "en": "dense_crowd", "id": "kerumunan padat", "description": "Sangat ramai — susah bergerak." },
+          { "en": "mob_chaos", "id": "mob/chaos", "description": "Kerumunan yang tidak terkendali — riot, panic, atau celebration." }
+        ]
+      },
+      "type": {
+        "_examples": ["market_crowd", "battle_soldiers", "celebration_festival", "refugee_fleeing", "audience_watching", "protest_marching", "nobility_court"]
+      }
+    },
+
+    "relationships": {
+      "_note": "Dinamika interpersonal antara primary_subject dan secondary_subjects — menentukan bagaimana mereka berinteraksi secara visual.",
+      "_examples": [
+        { "en": "back_to_back_allies", "id": "punggung bertemu — sekutu", "description": "Dua karakter berdiri punggung ke punggung — trust mutual, siap menghadapi ancaman dari segala arah." },
+        { "en": "one_protecting_other", "id": "satu melindungi yang lain", "description": "Satu karakter secara fisik menutupi yang lain — protection, love, sacrifice." },
+        { "en": "confrontational", "id": "konfrontasi", "description": "Saling berhadapan dengan tension — bisa berakhir pertarungan atau negosiasi." },
+        { "en": "intimate_close", "id": "intim/dekat", "description": "Sangat dekat satu sama lain — romantic, familial, atau very old friends." },
+        { "en": "mentor_student", "id": "mentor-murid", "description": "Satu lebih berpengalaman, satu belajar — hierarchy yang jelas." },
+        { "en": "stranger_wary", "id": "asing/waspada", "description": "Baru bertemu — jarak dijaga, postur sedikit defensive." },
+        { "en": "rivalry_tense", "id": "rivalry/tegang", "description": "Saling tidak percaya tapi tidak dalam konfrontasi langsung." }
+      ]
+    }
+  }
+}
