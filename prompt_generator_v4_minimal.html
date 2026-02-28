@@ -5,11 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Prompt Generator V4 — 14 Layer System</title>
 
+<link rel="stylesheet" href="style_v1.css">
+<script src="prompt-generator_v2.js"></script>
+
 </head>
 <body>
-
-  <!-- ini adalah prompt_generator_v4.html template versi minimal untuk menghemat context window limitation -->
-
+  
 <!-- ============================
      SIDEBAR 
 ============================= -->
@@ -90,9 +91,9 @@
           <!-- Primary Subject -->
           <div class="sub-group">
             <details open>
-              <summary>Primary Subject <span class="arr2">▸</span></summary>
+              <summary>Primary Subject/Character <span class="arr2">▸</span></summary>
               <div class="sub-body">
-                <label>Subject Type</label>
+                <label>Subject/Race Type</label>
                 <select>
                   <option>human</option>
                   <!-- lebih banyak pilihan/option di file original -->
@@ -102,18 +103,6 @@
                 <select>
                   <option value="">-- pilih --</option>
                   <option>warrior</option>
-                  <!-- lebih banyak pilihan/option di file original -->
-                </select>
-
-                <label>Species</label>
-                <select>
-                  <option>human</option>
-                  <!-- lebih banyak pilihan/option di file original -->
-                </select>
-
-                <label>Gender Presentation</label>
-                <select>
-                  <option>feminine</option>
                   <!-- lebih banyak pilihan/option di file original -->
                 </select>
               </div>

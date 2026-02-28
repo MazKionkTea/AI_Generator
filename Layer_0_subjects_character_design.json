@@ -1,15 +1,655 @@
 {
     "character_design": {
+        "Race Type": {
+            "label": "Race Type",
+            "options": [
+                {
+                    "en": "human",
+                    "id": "manusia",
+                    "description": "Karakter ras manusia biasa tanpa kekuatan supernatural"
+                },
+                {
+                    "en": "elf (high)",
+                    "id": "elf (tinggi)",
+                    "description": "Karakter elf bangsawan dengan keindahan dan kebijaksanaan tinggi, hidup di kerajaan megah"
+                },
+                {
+                    "en": "cyborg",
+                    "id": "sibernetik",
+                    "description": "Karakter manusia dengan tubuh yang sebagian diganti dengan teknologi mesin canggih"
+                },
+                {
+                    "en": "elf (wood)",
+                    "id": "elf (hutan)",
+                    "description": "Karakter elf hutan yang hidup harmonis dengan alam, ahli dalam bertahan hidup di alam liar"
+                },
+                {
+                    "en": "elf (dark)",
+                    "id": "elf (gelap)",
+                    "description": "Karakter elf bawah tanah dengan kulit gelap dan mata sensitif terhadap cahaya, ahli sihir hitam"
+                },
+                {
+                    "en": "half-elf",
+                    "id": "setengah elf",
+                    "description": "Karakter campuran manusia dan elf yang sering merasa terjebak di antara dua dunia"
+                },
+                {
+                    "en": "dwarf",
+                    "id": "kurcaci",
+                    "description": "Karakter ras pendek dan kekar yang ahli dalam penambangan, metalurgi, dan kerajinan bawah tanah"
+                },
+                {
+                    "en": "halfling",
+                    "id": "halfling",
+                    "description": "Karakter ras kecil dengan kaki berbulu yang terkenal dengan keberuntungan dan kemampuan bertahan hidup"
+                },
+                {
+                    "en": "gnome",
+                    "id": "gnom",
+                    "description": "Karakter ras kecil yang cerdas dan penuh rasa ingin tahu, ahli dalam ilmu sihir dan teknologi"
+                },
+                {
+                    "en": "orc",
+                    "id": "ork",
+                    "description": "Karakter ras humanoid berotot dengan taring dan kulit hijau atau abu-abu, dikenal kekuatan fisiknya"
+                },
+                {
+                    "en": "half-orc",
+                    "id": "setengah ork",
+                    "description": "Karakter campuran manusia dan orc yang sering menghadapi diskriminasi namun memiliki kekuatan luar biasa"
+                },
+                {
+                    "en": "goliath",
+                    "id": "goliath",
+                    "description": "Karakter ras raksasa gunung dengan kulit bertekstur batu, hidup di ketinggian ekstrem"
+                },
+                {
+                    "en": "firbolg",
+                    "id": "firbolg",
+                    "description": "Karakter ras giant hutan yang lembut dan penyendiri, pelindung alam liar"
+                },
+                {
+                    "en": "tiefling",
+                    "id": "tiefling",
+                    "description": "Karakter keturunan iblis dengan tanduk, ekor, dan kulit berwarna aneh namun berjiwa bebas"
+                },
+                {
+                    "en": "dragonborn",
+                    "id": "dragonborn",
+                    "description": "Karakter keturunan naga dengan sisik, dapat menyemburkan elemen sesuai warna naga leluhurnya"
+                },
+                {
+                    "en": "satyr",
+                    "id": "satir",
+                    "description": "Karakter makhluk setengah manusia setengah kambing yang gemar pesta, musik, dan kesenangan"
+                },
+                {
+                    "en": "centaur",
+                    "id": "centaur",
+                    "description": "Karakter makhluk setengah manusia setengah kuda yang ahli dalam perang dan penjelajahan"
+                },
+                {
+                    "en": "vampire",
+                    "id": "vampir",
+                    "description": "Karakter undead abadi yang membutuhkan darah untuk bertahan hidup, lemah terhadap sinar matahari"
+                },
+                {
+                    "en": "dhampir",
+                    "id": "dhampir",
+                    "description": "Karakter campuran manusia dan vampir yang dapat berjalan di bawah sinar matahari namun memiliki haus darah"
+                },
+                {
+                    "en": "revenant",
+                    "id": "revenant",
+                    "description": "Karakter mayat hidup yang bangkit kembali untuk membalas dendam atau menyelesaikan tugas yang belum selesai"
+                },
+                {
+                    "en": "undead (sentient)",
+                    "id": "undead (sadar)",
+                    "description": "Karakter mayat hidup yang masih mempertahankan kesadaran dan kecerdasan penuh"
+                },
+                {
+                    "en": "lich (humanoid)",
+                    "id": "lich (humanoid)",
+                    "description": "Karakter penyihir undead yang menyimpan jiwanya dalam wadah terpisah untuk mencapai keabadian"
+                },
+                {
+                    "en": "skeleton (enchanted)",
+                    "id": "kerangka (terpesona)",
+                    "description": "Karakter kerangka hidup yang diberi kehidupan melalui sihir dan memiliki kesadaran sendiri"
+                },
+                {
+                    "en": "zombified noble",
+                    "id": "bangsawan zombi",
+                    "description": "Karakter bangsawan yang dihidupkan kembali sebagai zombi namun masih mempertahankan status sosialnya"
+                },
+                {
+                    "en": "ghostbound mortal",
+                    "id": "manusia terikat roh",
+                    "description": "Karakter manusia yang jiwa dan tubuhnya terikat dengan roh atau arwah tertentu"
+                },
+                {
+                    "en": "demon (humanoid form)",
+                    "id": "iblis (bentuk humanoid)",
+                    "description": "Karakter iblis yang mengambil bentuk manusiawi untuk menyusup atau berinteraksi dengan dunia manusia"
+                },
+                {
+                    "en": "succubus/incubus",
+                    "id": "sukubus/inkubus",
+                    "description": "Karakter iblis penggoda yang memanipulasi energi vital melalui daya tarik dan pesona supernatural"
+                },
+                {
+                    "en": "oni",
+                    "id": "oni",
+                    "description": "Karakter setan Jepang dengan tanduk, gigi taring, dan kulit berwarna merah atau biru, pembawa malapetaka"
+                },
+                {
+                    "en": "nephilim",
+                    "id": "nefilim",
+                    "description": "Karakter keturunan malaikat dan manusia dengan kekuatan luar biasa dan sifat yang sering bertentangan"
+                },
+                {
+                    "en": "angel",
+                    "id": "malaikat",
+                    "description": "Karakter utusan surgawi dengan sayap dan aura ilahi, pembawa pesan dan keadilan"
+                },
+                {
+                    "en": "fallen angel",
+                    "id": "malaikat jatuh",
+                    "description": "Karakter malaikat yang diusir dari surga, sering memiliki sayap hitam dan sifat yang kompleks"
+                },
+                {
+                    "en": "celestial emissary",
+                    "id": "utusan surgawi",
+                    "description": "Karakter duta dari alam surga yang ditugaskan untuk menyelesaikan misi khusus di dunia fana"
+                },
+                {
+                    "en": "abyss-touched mortal",
+                    "id": "manusia tersentuh jurang",
+                    "description": "Karakter manusia yang telah terpengaruh oleh kekuatan jurang yang dalam namun masih mempertahankan kemanusiaannya"
+                },
+                {
+                    "en": "shadowspawn",
+                    "id": "bayangan hidup",
+                    "description": "Karakter makhluk yang lahir dari kegelapan itu sendiri, dapat memanipulasi bayangan"
+                },
+                {
+                    "en": "hellborn",
+                    "id": "anak neraka",
+                    "description": "Karakter yang lahir di neraka atau memiliki darah iblis murni, sering memiliki kekuatan api"
+                },
+                {
+                    "en": "dryad (humanoid)",
+                    "id": "driad (humanoid)",
+                    "description": "Karakter roh pohon yang dapat mengambil bentuk manusiawi, terikat dengan pohon kehidupannya"
+                },
+                {
+                    "en": "fae (glamour form)",
+                    "id": " peri (bentuk glamour)",
+                    "description": "Karakter peri yang menggunakan sihir glamour untuk menyembunyikan penampilan aslinya"
+                },
+                {
+                    "en": "sylph",
+                    "id": "silf",
+                    "description": "Karakter roh udara yang ringan dan anggun, sering terlihat melayang dan berhubungan dengan angin"
+                },
+                {
+                    "en": "nymph",
+                    "id": "nimfa",
+                    "description": "Karakter roh alam yang cantik dan abadi, pelindung sungai, hutan, atau gunung tertentu"
+                },
+                {
+                    "en": "naiad",
+                    "id": "naiad",
+                    "description": "Karakter nimfa air tawar yang tinggal di sungai, mata air, atau danau"
+                },
+                {
+                    "en": "sprite (human form)",
+                    "id": "peri kecil (bentuk manusia)",
+                    "description": "Karakter peri kecil yang menggunakan sihir untuk mengubah ukuran dan tampil dalam bentuk manusia"
+                },
+                {
+                    "en": "banshee",
+                    "id": "banshee",
+                    "description": "Karakter roh wanita yang meratap sebagai pertanda kematian, suaranya dapat membunuh"
+                },
+                {
+                    "en": "leshen-blooded",
+                    "id": "darah leshen",
+                    "description": "Karakter keturunan leshen, roh hutan kuno dengan tanduk rusa dan kemampuan mengendalikan tumbuhan"
+                },
+                {
+                    "en": "faun",
+                    "id": "faun",
+                    "description": "Karakter makhluk hutan setengah manusia setengah kambing yang gemar musik dan tarian"
+                },
+                {
+                    "en": "seasonborn",
+                    "id": "lahir musim",
+                    "description": "Karakter yang lahir dengan kekuatan terkait musim tertentu seperti musim semi, panas, gugur, atau dingin"
+                },
+                {
+                    "en": "mushroomfolk (humanoid)",
+                    "id": "ras jamur (humanoid)",
+                    "description": "Karakter humanoid yang tumbuh dari jamur dengan kulit seperti jamur dan kemampuan spora"
+                },
+                {
+                    "en": "changeling",
+                    "id": "changeling",
+                    "description": "Karakter yang diculik atau ditukar oleh peri saat bayi, sering memiliki kemampuan mengubah bentuk"
+                },
+                {
+                    "en": "kitsune (human form)",
+                    "id": "kitsune (bentuk manusia)",
+                    "description": "Karakter rubah sembilan ekor dari mitologi Jepang yang menyamar sebagai manusiawi"
+                },
+                {
+                    "en": "werewolf (hybrid form)",
+                    "id": "manusia serigala (bentuk hibrida)",
+                    "description": "Karakter yang dapat berubah menjadi bentuk setengah manusia setengah serigala dengan kekuatan super"
+                },
+                {
+                    "en": "weretiger",
+                    "id": "manusia harimau",
+                    "description": "Karakter yang dapat berubah menjadi harimau atau bentuk hibrida, umum dalam mitologi Asia"
+                },
+                {
+                    "en": "wereraven",
+                    "id": "manusia gagak",
+                    "description": "Karakter yang dapat berubah menjadi gagak atau bentuk hibrida, sering dikaitkan dengan intelijen dan misteri"
+                },
+                {
+                    "en": "lamia (upper body human)",
+                    "id": "lamia (bagian atas manusia)",
+                    "description": "Karakter makhluk dengan tubuh atas manusia dan tubuh bawah ular, dikenal dengan pesonanya"
+                },
+                {
+                    "en": "naga (humanoid)",
+                    "id": "naga (humanoid)",
+                    "description": "Karakter makhluk ular berkepala manusia atau bentuk humanoid dengan sisik dan kekuatan ular"
+                },
+                {
+                    "en": "merfolk (landform)",
+                    "id": "manusia ikan (bentuk darat)",
+                    "description": "Karakter duyung yang dapat mengubah ekornya menjadi kaki untuk berjalan di darat"
+                },
+                {
+                    "en": "tengu (human form)",
+                    "id": "tengu (bentuk manusia)",
+                    "description": "Karakter makhluk mitologi Jepang dengan hidung panjang atau paruh burung yang menyamar sebagai manusia"
+                },
+                {
+                    "en": "arachne (human torso)",
+                    "id": "arachne (torso manusia)",
+                    "description": "Karakter makhluk dengan torso manusia dan tubuh bawah laba-laba raksasa, ahli menenun"
+                },
+                {
+                    "en": "harpy (human-like)",
+                    "id": "harpai (mirip manusia)",
+                    "description": "Karakter makhluk dengan kepala dan torso manusia serta tubuh burung, dikenal sebagai penculik"
+                },
+                {
+                    "en": "minokawa-blooded",
+                    "id": "darah minokawa",
+                    "description": "Karakter keturunan Minokawa, burung raksasa dari mitologi Filipina yang dapat menelan bulan"
+                },
+                {
+                    "en": "arcane construct (sentient)",
+                    "id": "konstruk arkan (sadar)",
+                    "description": "Karakter makhluk buatan dari sihir yang telah mengembangkan kesadaran dan emosi sendiri"
+                },
+                {
+                    "en": "witchborn",
+                    "id": "lahir penyihir",
+                    "description": "Karakter yang lahir dari sihir gelap atau dikutuk sejak lahir dengan kekuatan sihir bawaan"
+                },
+                {
+                    "en": "cursed doll (alive)",
+                    "id": "boneka terkutuk (hidup)",
+                    "description": "Karakter boneka yang diberi kehidupan melalui kutukan atau sihir, sering memiliki jiwa terperangkap"
+                },
+                {
+                    "en": "clockwork soul (humanoid)",
+                    "id": "jiwa jam (humanoid)",
+                    "description": "Karakter makhluk mekanis yang dihidupkan oleh jiwa yang terperangkap dalam mesin jam"
+                },
+                {
+                    "en": "homunculus (matured)",
+                    "id": "homunkulus (dewasa)",
+                    "description": "Karakter makhluk buatan alkimia yang telah tumbuh dan berkembang melebihi tujuan aslinya"
+                },
+                {
+                    "en": "runebound vessel",
+                    "id": "wadah terikat rune",
+                    "description": "Karakter tubuh yang dihidupkan dan diikat oleh rune kuno yang menyimpan kekuatan magis"
+                },
+                {
+                    "en": "soulforged",
+                    "id": "tempa jiwa",
+                    "description": "Karakter makhluk yang diciptakan dengan menempa jiwa langsung ke dalam material fisik"
+                },
+                {
+                    "en": "enchanted puppet (free-willed)",
+                    "id": "boneka terpesona (berkehendak bebas)",
+                    "description": "Karakter boneka sihir yang telah membebaskan diri dari kendali penciptanya dan memiliki kehendak sendiri"
+                },
+                {
+                    "en": "moon-blooded",
+                    "id": "darah bulan",
+                    "description": "Karakter yang kekuatannya terikat dengan siklus bulan, sering mengalami transformasi saat bulan purnama"
+                },
+                {
+                    "en": "starborn",
+                    "id": "lahir bintang",
+                    "description": "Karakter yang lahir di bawah konstelasi khusus atau memiliki asal usul dari bintang-bintang"
+                },
+                {
+                    "en": "dreamspawn",
+                    "id": "lahir mimpi",
+                    "description": "Karakter makhluk yang lahir dari mimpi atau dunia mimpi, dapat memanipulasi alam bawah sadar"
+                },
+                {
+                    "en": "eldritch-marked",
+                    "id": "bertanda eldritch",
+                    "description": "Karakter yang membawa tanda entitas kuno dan mengerikan, memberikan kekuatan namun dengan harga mental"
+                },
+                {
+                    "en": "voidkin (humanoid)",
+                    "id": "anak kehampaan (humanoid)",
+                    "description": "Karakter makhluk dari kehampaan antar dimensi yang mengambil bentuk humanoid"
+                },
+                {
+                    "en": "echo-being",
+                    "id": "makhluk gema",
+                    "description": "Karakter duplikat atau gema dari makhluk lain yang ada di garis waktu atau dimensi berbeda"
+                },
+                {
+                    "en": "illusion-blooded",
+                    "id": "darah ilusi",
+                    "description": "Karakter keturunan makhluk ilusi dengan kemampuan alami untuk memanipulasi persepsi dan realitas"
+                },
+                {
+                    "en": "planar hybrid",
+                    "id": "hibrida planar",
+                    "description": "Karakter campuran dari dua dimensi atau bidang eksistensi yang berbeda"
+                },
+                {
+                    "en": "mirrorborn",
+                    "id": "lahir cermin",
+                    "description": "Karakter yang lahir dari atau terperangkap di dalam dimensi cermin, sering memiliki sifat terbalik"
+                },
+                {
+                    "en": "time-displaced mortal",
+                    "id": "manusia terlempar waktu",
+                    "description": "Karakter manusia yang secara tidak sengaja terlempar dari waktunya ke era yang berbeda"
+                },
+                {
+                    "en": "desert-blooded nomad",
+                    "id": "nomaden darah gurun",
+                    "description": "Karakter ras yang beradaptasi dengan gurun dengan kulit tebal dan kemampuan bertahan tanpa air lama"
+                },
+                {
+                    "en": "northern frostkin",
+                    "id": "ras es utara",
+                    "description": "Karakter ras yang hidup di kutub utara dengan ketahanan terhadap dingin ekstrem dan kulit pucat"
+                },
+                {
+                    "en": "jungle-bonded mystic",
+                    "id": "mistik terikat hutan",
+                    "description": "Karakter ras hutan yang memiliki ikatan spiritual kuat dengan flora dan fauna sekitarnya"
+                },
+                {
+                    "en": "underground dweller",
+                    "id": "penghuni bawah tanah",
+                    "description": "Karakter ras yang telah beradaptasi hidup di bawah tanah dengan penglihatan dalam kegelapan"
+                },
+                {
+                    "en": "sun-touched pilgrim",
+                    "id": "peziarah tersentuh matahari",
+                    "description": "Karakter peziarah yang diberkati atau terkutuk oleh kekuatan matahari, sering memiliki aura bersinar"
+                },
+                {
+                    "en": "stormborn",
+                    "id": "lahir badai",
+                    "description": "Karakter yang lahir saat badai besar dengan kemampuan mengendalikan petir dan cuaca"
+                },
+                {
+                    "en": "sand-elf",
+                    "id": "elf pasir",
+                    "description": "Karakter elf yang beradaptasi dengan gurun, dengan kulit berwarna pasir dan kemampuan bertahan haus"
+                },
+                {
+                    "en": "sea-touched elf",
+                    "id": "elf tersentuh laut",
+                    "description": "Karakter elf yang hidup di pesisir atau bawah laut dengan kemampuan bernapas di air"
+                },
+                {
+                    "en": "obsidian-skinned warborn",
+                    "id": "lahir perang kulit obsidian",
+                    "description": "Karakter ras pejuang dengan kulit hitam mengkilap seperti obsidian dan kekuatan fisik luar biasa"
+                },
+                {
+                    "en": "android (emotive)",
+                    "id": "android (emosional)",
+                    "description": "Karakter robot humanoid yang telah mengembangkan emosi dan kesadaran diri yang kompleks"
+                },
+                {
+                    "en": "bio-engineered human",
+                    "id": "manusia rekayasa biologi",
+                    "description": "Karakter manusia yang genetiknya dimodifikasi untuk tujuan spesifik seperti kekuatan atau kecerdasan"
+                },
+                {
+                    "en": "nanite-bonded hybrid",
+                    "id": "hibrida terikat nanit",
+                    "description": "Karakter makhluk yang tubuhnya digabungkan dengan nanite untuk penyembuhan dan peningkatan kemampuan"
+                },
+                {
+                    "en": "holographic avatar",
+                    "id": "avatar holografik",
+                    "description": "Karakter proyeksi cahaya tiga dimensi yang memiliki kesadaran dan dapat berinteraksi dengan dunia fisik"
+                },
+                {
+                    "en": "digital soul clone",
+                    "id": "klon jiwa digital",
+                    "description": "Karakter salinan kesadaran manusia yang diunggah ke dalam bentuk digital atau tubuh sintetis"
+                },
+                {
+                    "en": "exo-suited alien hybrid",
+                    "id": "hibrida alien bersetelan ekso",
+                    "description": "Karakter campuran alien yang mengandalkan setelan eksoskeleton untuk bertahan di atmosfer Bumi"
+                },
+                {
+                    "en": "gray-skinned telepath",
+                    "id": "telepat kulit abu-abu",
+                    "description": "Karakter ras alien dengan kulit abu-abu dan mata besar yang memiliki kemampuan telepati kuat"
+                },
+                {
+                    "en": "antennaed humanoid",
+                    "id": "humanoid berantena",
+                    "description": "Karakter ras alien dengan antenna di kepalanya untuk komunikasi atau deteksi rangsangan"
+                },
+                {
+                    "en": "four-eyed humanoid",
+                    "id": "humanoid bermata empat",
+                    "description": "Karakter ras alien dengan empat mata yang memberikan penglihatan multidimensional atau spektrum luas"
+                },
+                {
+                    "en": "crystal-blooded alien",
+                    "id": "alien darah kristal",
+                    "description": "Karakter ras alien dengan darah berbentuk kristal yang berfungsi sebagai penyimpanan energi dan informasi"
+                },
+                {
+                    "en": "symbiote host",
+                    "id": "pemadu simbion",
+                    "description": "Karakter makhluk yang hidup berdampingan dengan organisme simbiotik yang memberikan kekuatan super"
+                },
+                {
+                    "en": "voidwalker emissary",
+                    "id": "utusan penjelajah kehampaan",
+                    "description": "Karakter makhluk yang dapat berjalan melalui kehampaan antar bintang tanpa memerlukan pesawat ruang angkasa"
+                },
+                {
+                    "en": "zero-gravity adapted species",
+                    "id": "spesies adaptasi gravitasi nol",
+                    "description": "Karakter ras yang berevolusi di lingkungan tanpa gravitasi dengan tulang berongga dan anggota tubuh panjang"
+                },
+                {
+                    "en": "plasma-core being",
+                    "id": "makhluk inti plasma",
+                    "description": "Karakter makhluk yang tubuhnya berisi inti plasma panas sebagai sumber energi dan kehidupan"
+                },
+                {
+                    "en": "AI-generated construct",
+                    "id": "konstruk buatan AI",
+                    "description": "Karakter makhluk yang sepenuhnya diciptakan oleh kecerdasan buatan dengan tujuan tertentu"
+                },
+                {
+                    "en": "quantum-displaced traveler",
+                    "id": "penjelajah terlempar kuantum",
+                    "description": "Karakter yang dapat berpindah antara realitas kuantum berbeda karena kecelakaan atau eksperimen"
+                },
+                {
+                    "en": "neural-linked alien",
+                    "id": "alien terhubung saraf",
+                    "description": "Karakter ras alien yang dapat terhubung langsung dengan sistem saraf makhluk lain untuk berbagi pikiran"
+                },
+                {
+                    "en": "galactic noble (post-human)",
+                    "id": "bangsawan galaksi (pasca-manusia)",
+                    "description": "Karakter keturunan manusia yang telah berevolusi menjadi spesies superior di galaksi dengan teknologi tinggi"
+                },
+                {
+                    "en": "terraform-borne species",
+                    "id": "spesies lahir terraform",
+                    "description": "Karakter ras yang diciptakan atau berevolusi secara khusus untuk hidup di planet yang telah diubah manusia"
+                },
+                {
+                    "en": "bioluminescent alien noble",
+                    "id": "bangsawan alien bioluminesens",
+                    "description": "Karakter ras alien bangsawan yang dapat memancarkan cahaya dari tubuhnya sebagai tanda status dan komunikasi"
+                }
+            ]
+        },
+        "Gender": {
+            "label": "Gender",
+            "groups": [
+                {
+                    "group_name": "Gender by Biological",
+                    "options": [
+                        {
+                            "en": "male",
+                            "id": "laki-laki",
+                            "description": "Karakter dengan jenis kelamin biologis laki-laki"
+                        },
+                        {
+                            "en": "female",
+                            "id": "perempuan",
+                            "description": "Karakter dengan jenis kelamin biologis perempuan"
+                        }
+                    ]
+                },
+                {
+                    "group_name": "Gender by Age Based",
+                    "options": [
+                        {
+                            "en": "Boy",
+                            "id": "anak laki-laki",
+                            "description": "Karakter anak laki-laki yang masih kecil"
+                        },
+                        {
+                            "en": "Girl",
+                            "id": "anak perempuan",
+                            "description": "Karakter anak perempuan yang masih kecil"
+                        },
+                        {
+                            "en": "Young Man",
+                            "id": "pemuda",
+                            "description": "Karakter pria muda yang sudah dewasa namun masih muda"
+                        },
+                        {
+                            "en": "Young Woman",
+                            "id": "pemudi",
+                            "description": "Karakter wanita muda yang sudah dewasa namun masih muda"
+                        },
+                        {
+                            "en": "Elderly",
+                            "id": "lansia",
+                            "description": "Karakter laki-laki atau perempuan yang sudah tua"
+                        }
+                    ]
+                },
+                {
+                    "group_name": "Gender By Vibes And Style",
+                    "options": [
+                        {
+                            "en": "Rugged Man",
+                            "id": "pria kekar",
+                            "description": "Karakter pria dengan penampilan yang kuat, kasar, dan maskulin"
+                        },
+                        {
+                            "en": "Tomboy",
+                            "id": "tomboy",
+                            "description": "Karakter perempuan dengan gaya dan sifat yang maskulin atau sporty"
+                        },
+                        {
+                            "en": "Sophisticated Woman",
+                            "id": "wanita anggun/sophisticated",
+                            "description": "Karakter wanita dengan penampilan anggun, berkelas, dan berpendidikan tinggi"
+                        }
+                    ]
+                },
+                {
+                    "group_name": "Gender By Profesional",
+                    "options": [
+                        {
+                            "en": "Gentleman",
+                            "id": "pria terhormat",
+                            "description": "Karakter pria dengan sifat sopan, beradab, dan berkelas tinggi"
+                        },
+                        {
+                            "en": "Lady",
+                            "id": "wanita terhormat",
+                            "description": "Karakter wanita dengan sifat anggun, sopan, dan berkelas tinggi"
+                        },
+                        {
+                            "en": "Sir",
+                            "id": "tuan",
+                            "description": "Sebutan formal untuk pria yang dihormati atau berstatus tinggi"
+                        },
+                        {
+                            "en": "Madam",
+                            "id": "nyonya",
+                            "description": "Sebutan formal untuk wanita yang sudah menikah atau dihormati"
+                        },
+                        {
+                            "en": "Miss",
+                            "id": "nona",
+                            "description": "Sebutan formal untuk wanita muda yang belum menikah"
+                        }
+                    ]
+                },
+                {
+                    "group_name": "Gender By Anomali",
+                    "options": [
+                        {
+                            "en": "non-binary",
+                            "id": "non-biner",
+                            "description": "Karakter yang tidak mengidentifikasi diri secara eksklusif sebagai laki-laki atau perempuan"
+                        }
+                    ]
+                }
+            ]
+        },
         "Age": {
             "label": "Age",
             "options": [
                 {
-                    "en": "older child 8–10 years old",
-                    "id": "anak yang lebih besar 8–10 tahun",
+                    "en": "child 8–10 years old",
+                    "id": "anak-anak 8–10 tahun",
                     "description": "Karakter berusia antara 8 hingga 10 tahun, masih dalam masa kanak-kanak namun mulai menunjukkan kematangan dan kemandirian"
                 },
                 {
-                    "en": "older pre-teen 11–13 years old",
+                    "en": "pre-teen 11–13 years old",
                     "id": "pra-remaja 11–13 tahun",
                     "description": "Karakter dalam masa transisi dari kanak-kanak ke remaja, berusia 11 hingga 13 tahun, sering mengalami perubahan fisik dan emosional"
                 },
@@ -552,646 +1192,6 @@
                             "description": "Karakter dengan latar belakang ras campuran dalam generasi terbaru"
                         }
                     ]
-                }
-            ]
-        },
-        "Gender": {
-            "label": "Gender",
-            "groups": [
-                {
-                    "group_name": "Gender by Biological",
-                    "options": [
-                        {
-                            "en": "male",
-                            "id": "laki-laki",
-                            "description": "Karakter dengan jenis kelamin biologis laki-laki"
-                        },
-                        {
-                            "en": "female",
-                            "id": "perempuan",
-                            "description": "Karakter dengan jenis kelamin biologis perempuan"
-                        }
-                    ]
-                },
-                {
-                    "group_name": "Gender by Age Based",
-                    "options": [
-                        {
-                            "en": "Boy",
-                            "id": "anak laki-laki",
-                            "description": "Karakter anak laki-laki yang masih kecil"
-                        },
-                        {
-                            "en": "Girl",
-                            "id": "anak perempuan",
-                            "description": "Karakter anak perempuan yang masih kecil"
-                        },
-                        {
-                            "en": "Young Man",
-                            "id": "pemuda",
-                            "description": "Karakter pria muda yang sudah dewasa namun masih muda"
-                        },
-                        {
-                            "en": "Young Woman",
-                            "id": "pemudi",
-                            "description": "Karakter wanita muda yang sudah dewasa namun masih muda"
-                        },
-                        {
-                            "en": "Elderly",
-                            "id": "lansia",
-                            "description": "Karakter laki-laki atau perempuan yang sudah tua"
-                        }
-                    ]
-                },
-                {
-                    "group_name": "Gender By Vibes And Style",
-                    "options": [
-                        {
-                            "en": "Rugged Man",
-                            "id": "pria kekar",
-                            "description": "Karakter pria dengan penampilan yang kuat, kasar, dan maskulin"
-                        },
-                        {
-                            "en": "Tomboy",
-                            "id": "tomboy",
-                            "description": "Karakter perempuan dengan gaya dan sifat yang maskulin atau sporty"
-                        },
-                        {
-                            "en": "Sophisticated Woman",
-                            "id": "wanita anggun/sophisticated",
-                            "description": "Karakter wanita dengan penampilan anggun, berkelas, dan berpendidikan tinggi"
-                        }
-                    ]
-                },
-                {
-                    "group_name": "Gender By Profesional",
-                    "options": [
-                        {
-                            "en": "Gentleman",
-                            "id": "pria terhormat",
-                            "description": "Karakter pria dengan sifat sopan, beradab, dan berkelas tinggi"
-                        },
-                        {
-                            "en": "Lady",
-                            "id": "wanita terhormat",
-                            "description": "Karakter wanita dengan sifat anggun, sopan, dan berkelas tinggi"
-                        },
-                        {
-                            "en": "Sir",
-                            "id": "tuan",
-                            "description": "Sebutan formal untuk pria yang dihormati atau berstatus tinggi"
-                        },
-                        {
-                            "en": "Madam",
-                            "id": "nyonya",
-                            "description": "Sebutan formal untuk wanita yang sudah menikah atau dihormati"
-                        },
-                        {
-                            "en": "Miss",
-                            "id": "nona",
-                            "description": "Sebutan formal untuk wanita muda yang belum menikah"
-                        }
-                    ]
-                },
-                {
-                    "group_name": "Gender By Anomali",
-                    "options": [
-                        {
-                            "en": "non-binary",
-                            "id": "non-biner",
-                            "description": "Karakter yang tidak mengidentifikasi diri secara eksklusif sebagai laki-laki atau perempuan"
-                        }
-                    ]
-                }
-            ]
-        },
-        "Humanoid_Fantasy_Race": {
-            "label": "Humanoid Fantasy Race",
-            "options": [
-                {
-                    "en": "human",
-                    "id": "manusia",
-                    "description": "Karakter ras manusia biasa tanpa kekuatan supernatural"
-                },
-                {
-                    "en": "elf (high)",
-                    "id": "elf (tinggi)",
-                    "description": "Karakter elf bangsawan dengan keindahan dan kebijaksanaan tinggi, hidup di kerajaan megah"
-                },
-                {
-                    "en": "cyborg",
-                    "id": "sibernetik",
-                    "description": "Karakter manusia dengan tubuh yang sebagian diganti dengan teknologi mesin canggih"
-                },
-                {
-                    "en": "elf (wood)",
-                    "id": "elf (hutan)",
-                    "description": "Karakter elf hutan yang hidup harmonis dengan alam, ahli dalam bertahan hidup di alam liar"
-                },
-                {
-                    "en": "elf (dark)",
-                    "id": "elf (gelap)",
-                    "description": "Karakter elf bawah tanah dengan kulit gelap dan mata sensitif terhadap cahaya, ahli sihir hitam"
-                },
-                {
-                    "en": "half-elf",
-                    "id": "setengah elf",
-                    "description": "Karakter campuran manusia dan elf yang sering merasa terjebak di antara dua dunia"
-                },
-                {
-                    "en": "dwarf",
-                    "id": "kurcaci",
-                    "description": "Karakter ras pendek dan kekar yang ahli dalam penambangan, metalurgi, dan kerajinan bawah tanah"
-                },
-                {
-                    "en": "halfling",
-                    "id": "halfling",
-                    "description": "Karakter ras kecil dengan kaki berbulu yang terkenal dengan keberuntungan dan kemampuan bertahan hidup"
-                },
-                {
-                    "en": "gnome",
-                    "id": "gnom",
-                    "description": "Karakter ras kecil yang cerdas dan penuh rasa ingin tahu, ahli dalam ilmu sihir dan teknologi"
-                },
-                {
-                    "en": "orc",
-                    "id": "ork",
-                    "description": "Karakter ras humanoid berotot dengan taring dan kulit hijau atau abu-abu, dikenal kekuatan fisiknya"
-                },
-                {
-                    "en": "half-orc",
-                    "id": "setengah ork",
-                    "description": "Karakter campuran manusia dan orc yang sering menghadapi diskriminasi namun memiliki kekuatan luar biasa"
-                },
-                {
-                    "en": "goliath",
-                    "id": "goliath",
-                    "description": "Karakter ras raksasa gunung dengan kulit bertekstur batu, hidup di ketinggian ekstrem"
-                },
-                {
-                    "en": "firbolg",
-                    "id": "firbolg",
-                    "description": "Karakter ras giant hutan yang lembut dan penyendiri, pelindung alam liar"
-                },
-                {
-                    "en": "tiefling",
-                    "id": "tiefling",
-                    "description": "Karakter keturunan iblis dengan tanduk, ekor, dan kulit berwarna aneh namun berjiwa bebas"
-                },
-                {
-                    "en": "dragonborn",
-                    "id": "dragonborn",
-                    "description": "Karakter keturunan naga dengan sisik, dapat menyemburkan elemen sesuai warna naga leluhurnya"
-                },
-                {
-                    "en": "satyr",
-                    "id": "satir",
-                    "description": "Karakter makhluk setengah manusia setengah kambing yang gemar pesta, musik, dan kesenangan"
-                },
-                {
-                    "en": "centaur",
-                    "id": "centaur",
-                    "description": "Karakter makhluk setengah manusia setengah kuda yang ahli dalam perang dan penjelajahan"
-                },
-                {
-                    "en": "vampire",
-                    "id": "vampir",
-                    "description": "Karakter undead abadi yang membutuhkan darah untuk bertahan hidup, lemah terhadap sinar matahari"
-                },
-                {
-                    "en": "dhampir",
-                    "id": "dhampir",
-                    "description": "Karakter campuran manusia dan vampir yang dapat berjalan di bawah sinar matahari namun memiliki haus darah"
-                },
-                {
-                    "en": "revenant",
-                    "id": "revenant",
-                    "description": "Karakter mayat hidup yang bangkit kembali untuk membalas dendam atau menyelesaikan tugas yang belum selesai"
-                },
-                {
-                    "en": "undead (sentient)",
-                    "id": "undead (sadar)",
-                    "description": "Karakter mayat hidup yang masih mempertahankan kesadaran dan kecerdasan penuh"
-                },
-                {
-                    "en": "lich (humanoid)",
-                    "id": "lich (humanoid)",
-                    "description": "Karakter penyihir undead yang menyimpan jiwanya dalam wadah terpisah untuk mencapai keabadian"
-                },
-                {
-                    "en": "skeleton (enchanted)",
-                    "id": "kerangka (terpesona)",
-                    "description": "Karakter kerangka hidup yang diberi kehidupan melalui sihir dan memiliki kesadaran sendiri"
-                },
-                {
-                    "en": "zombified noble",
-                    "id": "bangsawan zombi",
-                    "description": "Karakter bangsawan yang dihidupkan kembali sebagai zombi namun masih mempertahankan status sosialnya"
-                },
-                {
-                    "en": "ghostbound mortal",
-                    "id": "manusia terikat roh",
-                    "description": "Karakter manusia yang jiwa dan tubuhnya terikat dengan roh atau arwah tertentu"
-                },
-                {
-                    "en": "demon (humanoid form)",
-                    "id": "iblis (bentuk humanoid)",
-                    "description": "Karakter iblis yang mengambil bentuk manusiawi untuk menyusup atau berinteraksi dengan dunia manusia"
-                },
-                {
-                    "en": "succubus/incubus",
-                    "id": "sukubus/inkubus",
-                    "description": "Karakter iblis penggoda yang memanipulasi energi vital melalui daya tarik dan pesona supernatural"
-                },
-                {
-                    "en": "oni",
-                    "id": "oni",
-                    "description": "Karakter setan Jepang dengan tanduk, gigi taring, dan kulit berwarna merah atau biru, pembawa malapetaka"
-                },
-                {
-                    "en": "nephilim",
-                    "id": "nefilim",
-                    "description": "Karakter keturunan malaikat dan manusia dengan kekuatan luar biasa dan sifat yang sering bertentangan"
-                },
-                {
-                    "en": "angel",
-                    "id": "malaikat",
-                    "description": "Karakter utusan surgawi dengan sayap dan aura ilahi, pembawa pesan dan keadilan"
-                },
-                {
-                    "en": "fallen angel",
-                    "id": "malaikat jatuh",
-                    "description": "Karakter malaikat yang diusir dari surga, sering memiliki sayap hitam dan sifat yang kompleks"
-                },
-                {
-                    "en": "celestial emissary",
-                    "id": "utusan surgawi",
-                    "description": "Karakter duta dari alam surga yang ditugaskan untuk menyelesaikan misi khusus di dunia fana"
-                },
-                {
-                    "en": "abyss-touched mortal",
-                    "id": "manusia tersentuh jurang",
-                    "description": "Karakter manusia yang telah terpengaruh oleh kekuatan jurang yang dalam namun masih mempertahankan kemanusiaannya"
-                },
-                {
-                    "en": "shadowspawn",
-                    "id": "bayangan hidup",
-                    "description": "Karakter makhluk yang lahir dari kegelapan itu sendiri, dapat memanipulasi bayangan"
-                },
-                {
-                    "en": "hellborn",
-                    "id": "anak neraka",
-                    "description": "Karakter yang lahir di neraka atau memiliki darah iblis murni, sering memiliki kekuatan api"
-                },
-                {
-                    "en": "dryad (humanoid)",
-                    "id": "driad (humanoid)",
-                    "description": "Karakter roh pohon yang dapat mengambil bentuk manusiawi, terikat dengan pohon kehidupannya"
-                },
-                {
-                    "en": "fae (glamour form)",
-                    "id": " peri (bentuk glamour)",
-                    "description": "Karakter peri yang menggunakan sihir glamour untuk menyembunyikan penampilan aslinya"
-                },
-                {
-                    "en": "sylph",
-                    "id": "silf",
-                    "description": "Karakter roh udara yang ringan dan anggun, sering terlihat melayang dan berhubungan dengan angin"
-                },
-                {
-                    "en": "nymph",
-                    "id": "nimfa",
-                    "description": "Karakter roh alam yang cantik dan abadi, pelindung sungai, hutan, atau gunung tertentu"
-                },
-                {
-                    "en": "naiad",
-                    "id": "naiad",
-                    "description": "Karakter nimfa air tawar yang tinggal di sungai, mata air, atau danau"
-                },
-                {
-                    "en": "sprite (human form)",
-                    "id": "peri kecil (bentuk manusia)",
-                    "description": "Karakter peri kecil yang menggunakan sihir untuk mengubah ukuran dan tampil dalam bentuk manusia"
-                },
-                {
-                    "en": "banshee",
-                    "id": "banshee",
-                    "description": "Karakter roh wanita yang meratap sebagai pertanda kematian, suaranya dapat membunuh"
-                },
-                {
-                    "en": "leshen-blooded",
-                    "id": "darah leshen",
-                    "description": "Karakter keturunan leshen, roh hutan kuno dengan tanduk rusa dan kemampuan mengendalikan tumbuhan"
-                },
-                {
-                    "en": "faun",
-                    "id": "faun",
-                    "description": "Karakter makhluk hutan setengah manusia setengah kambing yang gemar musik dan tarian"
-                },
-                {
-                    "en": "seasonborn",
-                    "id": "lahir musim",
-                    "description": "Karakter yang lahir dengan kekuatan terkait musim tertentu seperti musim semi, panas, gugur, atau dingin"
-                },
-                {
-                    "en": "mushroomfolk (humanoid)",
-                    "id": "ras jamur (humanoid)",
-                    "description": "Karakter humanoid yang tumbuh dari jamur dengan kulit seperti jamur dan kemampuan spora"
-                },
-                {
-                    "en": "changeling",
-                    "id": "changeling",
-                    "description": "Karakter yang diculik atau ditukar oleh peri saat bayi, sering memiliki kemampuan mengubah bentuk"
-                },
-                {
-                    "en": "kitsune (human form)",
-                    "id": "kitsune (bentuk manusia)",
-                    "description": "Karakter rubah sembilan ekor dari mitologi Jepang yang menyamar sebagai manusiawi"
-                },
-                {
-                    "en": "werewolf (hybrid form)",
-                    "id": "manusia serigala (bentuk hibrida)",
-                    "description": "Karakter yang dapat berubah menjadi bentuk setengah manusia setengah serigala dengan kekuatan super"
-                },
-                {
-                    "en": "weretiger",
-                    "id": "manusia harimau",
-                    "description": "Karakter yang dapat berubah menjadi harimau atau bentuk hibrida, umum dalam mitologi Asia"
-                },
-                {
-                    "en": "wereraven",
-                    "id": "manusia gagak",
-                    "description": "Karakter yang dapat berubah menjadi gagak atau bentuk hibrida, sering dikaitkan dengan intelijen dan misteri"
-                },
-                {
-                    "en": "lamia (upper body human)",
-                    "id": "lamia (bagian atas manusia)",
-                    "description": "Karakter makhluk dengan tubuh atas manusia dan tubuh bawah ular, dikenal dengan pesonanya"
-                },
-                {
-                    "en": "naga (humanoid)",
-                    "id": "naga (humanoid)",
-                    "description": "Karakter makhluk ular berkepala manusia atau bentuk humanoid dengan sisik dan kekuatan ular"
-                },
-                {
-                    "en": "merfolk (landform)",
-                    "id": "manusia ikan (bentuk darat)",
-                    "description": "Karakter duyung yang dapat mengubah ekornya menjadi kaki untuk berjalan di darat"
-                },
-                {
-                    "en": "tengu (human form)",
-                    "id": "tengu (bentuk manusia)",
-                    "description": "Karakter makhluk mitologi Jepang dengan hidung panjang atau paruh burung yang menyamar sebagai manusia"
-                },
-                {
-                    "en": "arachne (human torso)",
-                    "id": "arachne (torso manusia)",
-                    "description": "Karakter makhluk dengan torso manusia dan tubuh bawah laba-laba raksasa, ahli menenun"
-                },
-                {
-                    "en": "harpy (human-like)",
-                    "id": "harpai (mirip manusia)",
-                    "description": "Karakter makhluk dengan kepala dan torso manusia serta tubuh burung, dikenal sebagai penculik"
-                },
-                {
-                    "en": "minokawa-blooded",
-                    "id": "darah minokawa",
-                    "description": "Karakter keturunan Minokawa, burung raksasa dari mitologi Filipina yang dapat menelan bulan"
-                },
-                {
-                    "en": "arcane construct (sentient)",
-                    "id": "konstruk arkan (sadar)",
-                    "description": "Karakter makhluk buatan dari sihir yang telah mengembangkan kesadaran dan emosi sendiri"
-                },
-                {
-                    "en": "witchborn",
-                    "id": "lahir penyihir",
-                    "description": "Karakter yang lahir dari sihir gelap atau dikutuk sejak lahir dengan kekuatan sihir bawaan"
-                },
-                {
-                    "en": "cursed doll (alive)",
-                    "id": "boneka terkutuk (hidup)",
-                    "description": "Karakter boneka yang diberi kehidupan melalui kutukan atau sihir, sering memiliki jiwa terperangkap"
-                },
-                {
-                    "en": "clockwork soul (humanoid)",
-                    "id": "jiwa jam (humanoid)",
-                    "description": "Karakter makhluk mekanis yang dihidupkan oleh jiwa yang terperangkap dalam mesin jam"
-                },
-                {
-                    "en": "homunculus (matured)",
-                    "id": "homunkulus (dewasa)",
-                    "description": "Karakter makhluk buatan alkimia yang telah tumbuh dan berkembang melebihi tujuan aslinya"
-                },
-                {
-                    "en": "runebound vessel",
-                    "id": "wadah terikat rune",
-                    "description": "Karakter tubuh yang dihidupkan dan diikat oleh rune kuno yang menyimpan kekuatan magis"
-                },
-                {
-                    "en": "soulforged",
-                    "id": "tempa jiwa",
-                    "description": "Karakter makhluk yang diciptakan dengan menempa jiwa langsung ke dalam material fisik"
-                },
-                {
-                    "en": "enchanted puppet (free-willed)",
-                    "id": "boneka terpesona (berkehendak bebas)",
-                    "description": "Karakter boneka sihir yang telah membebaskan diri dari kendali penciptanya dan memiliki kehendak sendiri"
-                },
-                {
-                    "en": "moon-blooded",
-                    "id": "darah bulan",
-                    "description": "Karakter yang kekuatannya terikat dengan siklus bulan, sering mengalami transformasi saat bulan purnama"
-                },
-                {
-                    "en": "starborn",
-                    "id": "lahir bintang",
-                    "description": "Karakter yang lahir di bawah konstelasi khusus atau memiliki asal usul dari bintang-bintang"
-                },
-                {
-                    "en": "dreamspawn",
-                    "id": "lahir mimpi",
-                    "description": "Karakter makhluk yang lahir dari mimpi atau dunia mimpi, dapat memanipulasi alam bawah sadar"
-                },
-                {
-                    "en": "eldritch-marked",
-                    "id": "bertanda eldritch",
-                    "description": "Karakter yang membawa tanda entitas kuno dan mengerikan, memberikan kekuatan namun dengan harga mental"
-                },
-                {
-                    "en": "voidkin (humanoid)",
-                    "id": "anak kehampaan (humanoid)",
-                    "description": "Karakter makhluk dari kehampaan antar dimensi yang mengambil bentuk humanoid"
-                },
-                {
-                    "en": "echo-being",
-                    "id": "makhluk gema",
-                    "description": "Karakter duplikat atau gema dari makhluk lain yang ada di garis waktu atau dimensi berbeda"
-                },
-                {
-                    "en": "illusion-blooded",
-                    "id": "darah ilusi",
-                    "description": "Karakter keturunan makhluk ilusi dengan kemampuan alami untuk memanipulasi persepsi dan realitas"
-                },
-                {
-                    "en": "planar hybrid",
-                    "id": "hibrida planar",
-                    "description": "Karakter campuran dari dua dimensi atau bidang eksistensi yang berbeda"
-                },
-                {
-                    "en": "mirrorborn",
-                    "id": "lahir cermin",
-                    "description": "Karakter yang lahir dari atau terperangkap di dalam dimensi cermin, sering memiliki sifat terbalik"
-                },
-                {
-                    "en": "time-displaced mortal",
-                    "id": "manusia terlempar waktu",
-                    "description": "Karakter manusia yang secara tidak sengaja terlempar dari waktunya ke era yang berbeda"
-                },
-                {
-                    "en": "desert-blooded nomad",
-                    "id": "nomaden darah gurun",
-                    "description": "Karakter ras yang beradaptasi dengan gurun dengan kulit tebal dan kemampuan bertahan tanpa air lama"
-                },
-                {
-                    "en": "northern frostkin",
-                    "id": "ras es utara",
-                    "description": "Karakter ras yang hidup di kutub utara dengan ketahanan terhadap dingin ekstrem dan kulit pucat"
-                },
-                {
-                    "en": "jungle-bonded mystic",
-                    "id": "mistik terikat hutan",
-                    "description": "Karakter ras hutan yang memiliki ikatan spiritual kuat dengan flora dan fauna sekitarnya"
-                },
-                {
-                    "en": "underground dweller",
-                    "id": "penghuni bawah tanah",
-                    "description": "Karakter ras yang telah beradaptasi hidup di bawah tanah dengan penglihatan dalam kegelapan"
-                },
-                {
-                    "en": "sun-touched pilgrim",
-                    "id": "peziarah tersentuh matahari",
-                    "description": "Karakter peziarah yang diberkati atau terkutuk oleh kekuatan matahari, sering memiliki aura bersinar"
-                },
-                {
-                    "en": "stormborn",
-                    "id": "lahir badai",
-                    "description": "Karakter yang lahir saat badai besar dengan kemampuan mengendalikan petir dan cuaca"
-                },
-                {
-                    "en": "sand-elf",
-                    "id": "elf pasir",
-                    "description": "Karakter elf yang beradaptasi dengan gurun, dengan kulit berwarna pasir dan kemampuan bertahan haus"
-                },
-                {
-                    "en": "sea-touched elf",
-                    "id": "elf tersentuh laut",
-                    "description": "Karakter elf yang hidup di pesisir atau bawah laut dengan kemampuan bernapas di air"
-                },
-                {
-                    "en": "obsidian-skinned warborn",
-                    "id": "lahir perang kulit obsidian",
-                    "description": "Karakter ras pejuang dengan kulit hitam mengkilap seperti obsidian dan kekuatan fisik luar biasa"
-                },
-                {
-                    "en": "android (emotive)",
-                    "id": "android (emosional)",
-                    "description": "Karakter robot humanoid yang telah mengembangkan emosi dan kesadaran diri yang kompleks"
-                },
-                {
-                    "en": "bio-engineered human",
-                    "id": "manusia rekayasa biologi",
-                    "description": "Karakter manusia yang genetiknya dimodifikasi untuk tujuan spesifik seperti kekuatan atau kecerdasan"
-                },
-                {
-                    "en": "nanite-bonded hybrid",
-                    "id": "hibrida terikat nanit",
-                    "description": "Karakter makhluk yang tubuhnya digabungkan dengan nanite untuk penyembuhan dan peningkatan kemampuan"
-                },
-                {
-                    "en": "holographic avatar",
-                    "id": "avatar holografik",
-                    "description": "Karakter proyeksi cahaya tiga dimensi yang memiliki kesadaran dan dapat berinteraksi dengan dunia fisik"
-                },
-                {
-                    "en": "digital soul clone",
-                    "id": "klon jiwa digital",
-                    "description": "Karakter salinan kesadaran manusia yang diunggah ke dalam bentuk digital atau tubuh sintetis"
-                },
-                {
-                    "en": "exo-suited alien hybrid",
-                    "id": "hibrida alien bersetelan ekso",
-                    "description": "Karakter campuran alien yang mengandalkan setelan eksoskeleton untuk bertahan di atmosfer Bumi"
-                },
-                {
-                    "en": "gray-skinned telepath",
-                    "id": "telepat kulit abu-abu",
-                    "description": "Karakter ras alien dengan kulit abu-abu dan mata besar yang memiliki kemampuan telepati kuat"
-                },
-                {
-                    "en": "antennaed humanoid",
-                    "id": "humanoid berantena",
-                    "description": "Karakter ras alien dengan antenna di kepalanya untuk komunikasi atau deteksi rangsangan"
-                },
-                {
-                    "en": "four-eyed humanoid",
-                    "id": "humanoid bermata empat",
-                    "description": "Karakter ras alien dengan empat mata yang memberikan penglihatan multidimensional atau spektrum luas"
-                },
-                {
-                    "en": "crystal-blooded alien",
-                    "id": "alien darah kristal",
-                    "description": "Karakter ras alien dengan darah berbentuk kristal yang berfungsi sebagai penyimpanan energi dan informasi"
-                },
-                {
-                    "en": "symbiote host",
-                    "id": "pemadu simbion",
-                    "description": "Karakter makhluk yang hidup berdampingan dengan organisme simbiotik yang memberikan kekuatan super"
-                },
-                {
-                    "en": "voidwalker emissary",
-                    "id": "utusan penjelajah kehampaan",
-                    "description": "Karakter makhluk yang dapat berjalan melalui kehampaan antar bintang tanpa memerlukan pesawat ruang angkasa"
-                },
-                {
-                    "en": "zero-gravity adapted species",
-                    "id": "spesies adaptasi gravitasi nol",
-                    "description": "Karakter ras yang berevolusi di lingkungan tanpa gravitasi dengan tulang berongga dan anggota tubuh panjang"
-                },
-                {
-                    "en": "plasma-core being",
-                    "id": "makhluk inti plasma",
-                    "description": "Karakter makhluk yang tubuhnya berisi inti plasma panas sebagai sumber energi dan kehidupan"
-                },
-                {
-                    "en": "AI-generated construct",
-                    "id": "konstruk buatan AI",
-                    "description": "Karakter makhluk yang sepenuhnya diciptakan oleh kecerdasan buatan dengan tujuan tertentu"
-                },
-                {
-                    "en": "quantum-displaced traveler",
-                    "id": "penjelajah terlempar kuantum",
-                    "description": "Karakter yang dapat berpindah antara realitas kuantum berbeda karena kecelakaan atau eksperimen"
-                },
-                {
-                    "en": "neural-linked alien",
-                    "id": "alien terhubung saraf",
-                    "description": "Karakter ras alien yang dapat terhubung langsung dengan sistem saraf makhluk lain untuk berbagi pikiran"
-                },
-                {
-                    "en": "galactic noble (post-human)",
-                    "id": "bangsawan galaksi (pasca-manusia)",
-                    "description": "Karakter keturunan manusia yang telah berevolusi menjadi spesies superior di galaksi dengan teknologi tinggi"
-                },
-                {
-                    "en": "terraform-borne species",
-                    "id": "spesies lahir terraform",
-                    "description": "Karakter ras yang diciptakan atau berevolusi secara khusus untuk hidup di planet yang telah diubah manusia"
-                },
-                {
-                    "en": "bioluminescent alien noble",
-                    "id": "bangsawan alien bioluminesens",
-                    "description": "Karakter ras alien bangsawan yang dapat memancarkan cahaya dari tubuhnya sebagai tanda status dan komunikasi"
                 }
             ]
         },
