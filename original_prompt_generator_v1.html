@@ -161,13 +161,13 @@ main{min-height:100vh;}               /* izinkan stretch bila konten banyak */
 
 <!-- ===== SIDEBAR (FULL MENU) ===== -->
     <aside id="sidebar">
-    <div class="head">
-        <h2>Prompt Generator</h2>
-        <button id="toggleSidebarBtn" title="Collapse/Expand">☰</button>
-    </div>
+        <div class="head">
+            <h2>Prompt Generator</h2>
+            <button id="toggleSidebarBtn" title="Collapse/Expand">☰</button>
+        </div>
     <nav class="menu-tree">
         <!-- 1. CHARACTER DESIGN -->
-        <details open>
+        <details>
         <summary>Character Design</summary>
             <details class="optgroup"><summary>Age</summary>
                 <select id="Age">
@@ -1465,7 +1465,7 @@ main{min-height:100vh;}               /* izinkan stretch bila konten banyak */
         </details>
 
         <!-- 2. POSE & SCENE -->
-        <details open>
+        <details>
         <summary>Pose & Scene</summary>
             <details class="optgroup"><summary>Pose</summary>
                 <select id="Pose">
@@ -2077,7 +2077,7 @@ main{min-height:100vh;}               /* izinkan stretch bila konten banyak */
         </details>
 
         <!-- 3. STYLE -->
-        <details open>
+        <details>
         <summary>Style</summary>
             <details class="optgroup"><summary>Style & Render</summary> <!--Style & Render-->
                 <select id="Realism">
@@ -2267,557 +2267,564 @@ main{min-height:100vh;}               /* izinkan stretch bila konten banyak */
         </details>
 
         <!-- 4. ETHNICITY -->
-        <details open>
-        <details class="optgroup"><summary>Ethnicity</summary>
-            <select id="ethnicitypull">
-            <option value="">None</option>
-            <optgroup label="Asia - Major Ethnic Groups">
-            <option value="A cinematic hyper-detailed portrait of a Han Chinese person with pale smooth skin, almond eyes, and straight dark hair. The portrait glows with natural authenticity and delicate realism.">Han Chinese</option>
-            <option value="A photorealistic rendering of a Japanese person of Yamato ethnicity, porcelain skin, oval facial structure, and refined features. Studio lighting emphasizes natural clarity.">Yamato Japanese</option>
-            <option value="A lifelike portrait of a Korean person of Joseon descent, fair porcelain skin, soft features, and straight dark hair. Crisp high-resolution detail.">Korean (Joseon)</option>
-            <option value="A realistic rendering of a Mongol person with tanned skin, prominent cheekbones, and almond-shaped eyes. Crisp natural light emphasizes rugged beauty.">Mongol</option>
-            <option value="A lifelike portrait of a Tibetan person with sun-warmed skin, strong cheekbones, and jet-black hair. The image radiates mountain-lit realism.">Tibetan</option>
-            <option value="A cinematic rendering of a Uyghur person with olive skin, almond eyes, and thick wavy hair. Lighting highlights cultural richness.">Uyghur</option>
-            <option value="A detailed portrait of a Manchu person with pale skin, oval features, and fine straight hair. Subtle northern light realism.">Manchu</option>
-            <option value="A lifelike rendering of a Hmong person with tan skin, high cheekbones, and dark hair. Mountain lighting emphasizes cultural richness.">Hmong</option>
-            <option value="A cinematic portrait of a Tamil person with deep golden-brown skin, curly black hair, and expressive almond-shaped eyes. Warm cultural lighting.">Tamil</option>
-            <option value="A photorealistic portrait of a Bengali person with medium-brown skin, soft rounded features, and dark hair. Warm cinematic light emphasizes natural vibrance.">Bengali</option>
-            <option value="A lifelike rendering of a Punjabi person with golden-tan skin, strong bone structure, and expressive eyes. Warm light realism.">Punjabi</option>
-            <option value="A cinematic portrait of a Gujarati person with sun-bronzed skin, almond eyes, and traditional facial features. Lighting emphasizes cultural authenticity.">Gujarati</option>
-            <option value="A photorealistic portrait of a Marathi person with medium-brown skin, fine features, and dark hair. Warm light realism.">Marathi</option>
-            <option value="A hyper-detailed rendering of a Sinhalese person with golden-brown skin, oval face, and dark hair. Tropical light realism.">Sinhalese</option>
-            <option value="A cinematic portrait of a Nepali person with medium-tan skin, high cheekbones, and dark hair. Mountain-inspired realism.">Nepali</option>
-            <option value="A photorealistic rendering of a Pashtun person, tan skin, sharp nose, thick dark hair, and striking eyes. The portrait radiates rugged strength.">Pashtun</option>
-            <option value="A cinematic rendering of a Thai person with golden-tan skin, almond eyes, and fine dark hair. Tropical lighting highlights natural beauty.">Thai</option>
-            <option value="A hyper-detailed portrait of a Vietnamese person with smooth tan skin, fine features, and glossy black hair. Subtle soft light realism.">Vietnamese</option>
-            <option value="A lifelike portrait of a Filipino (Tagalog) person with sun-kissed brown skin, expressive dark eyes, and soft features. Coastal lighting realism.">Filipino (Tagalog)</option>
-            <option value="A cinematic portrait of a Malay person with golden-brown skin, rounded features, and dark straight hair. Warm tropical light.">Malay</option>
-            <option value="A photorealistic rendering of a Javanese person with golden-brown skin, fine facial features, and dark flowing hair. Lighting emphasizes island heritage.">Javanese</option>
-            <option value="A lifelike portrait of a Sundanese person with medium-tan skin, delicate features, and expressive dark eyes. Tropical light realism.">Sundanese</option>
-            <option value="A cinematic portrait of a Burmese (Bamar) person with golden-tan skin, round features, and dark straight hair. Warm cultural lighting.">Burmese (Bamar)</option>
-            <option value="A photorealistic rendering of a Khmer (Cambodian) person with tan skin, oval features, and dark glossy hair. Tropical realism.">Khmer (Cambodian)</option>
-            <option value="A cinematic portrait of a Lao person with golden-brown skin, soft features, and dark hair. Warm light realism.">Lao</option>
-            <option value="A hyper-detailed portrait of a Thai-Chinese person blending East Asian and Southeast Asian features with harmonious realism.">Thai-Chinese</option>
-            </optgroup>
-            <optgroup label="Central Asia &amp; Steppe - Major Ethnic Groups">
-            <option value="A photorealistic portrait of a Kazakh person with tanned skin, high cheekbones, almond eyes, and dark straight hair. Steppe sunlight enhances natural strength.">Kazakh</option>
-            <option value="A lifelike rendering of a Kyrgyz person with sun-warmed skin, broad features, and wavy dark hair. Natural mountain light emphasizes cultural heritage.">Kyrgyz</option>
-            <option value="A cinematic portrait of an Uzbek person with olive skin, soft rounded features, and glossy black hair. Subtle patterned lighting hints at Silk Road history.">Uzbek</option>
-            <option value="A hyper-detailed portrait of a Turkmen person with golden-brown skin, strong facial features, and thick wavy black hair. Warm desert light realism.">Turkmen</option>
-            <option value="A realistic portrait of a Tajik person with tan skin, sharp nose, and expressive dark eyes framed by black hair. Mountain light enhances natural definition.">Tajik</option>
-            <option value="A photorealistic rendering of a Bashkir person with pale to tan skin tones, mixed features from Turkic and Slavic ancestry, and dark hair. Clear natural light highlights diversity.">Bashkir</option>
-            <option value="A cinematic rendering of a Tatar person with fair to light olive skin, almond eyes, and dark hair. Subtle cultural lighting reflects Volga heritage.">Tatar</option>
-            <option value="A lifelike portrait of a Sakha (Yakut) person with bronze-tan skin, almond eyes, and straight black hair. Crisp Siberian light emphasizes resilience.">Sakha (Yakut)</option>
-            <option value="A realistic portrait of an Evenki person with warm brown skin, high cheekbones, and dark almond eyes. Snow-lit realism reflects Arctic life.">Evenki</option>
-            <option value="A cinematic portrait of a Chukchi person with sun-darkened skin, rounded features, and straight dark hair. Harsh Arctic light emphasizes rugged endurance.">Chukchi</option>
-            <option value="A hyper-detailed rendering of a Buryat person with tan skin, almond-shaped eyes, and strong cheekbones. Steppe sunlight highlights Mongolic ancestry.">Buryat</option>
-            </optgroup>
-            <optgroup label="Caucasus - Major Ethnic Groups">
-            <option value="A photorealistic portrait of an Armenian person with light to olive skin, sharp facial features, and dark wavy hair. Warm mountain light emphasizes heritage.">Armenian</option>
-            <option value="A cinematic portrait of a Georgian person with fair to tan skin, strong jawline, dark hair, and piercing eyes. Lush vineyard light enhances cultural richness.">Georgian</option>
-            <option value="A hyper-detailed rendering of an Azerbaijani person with light-olive skin, dark expressive eyes, and straight black hair. Subtle Caspian light realism.">Azerbaijani</option>
-            <option value="A lifelike portrait of a Chechen person with fair to tan skin, strong cheekbones, and deep eyes framed by dark hair. Rugged mountain lighting emphasizes strength.">Chechen</option>
-            <option value="A realistic portrait of an Ossetian person with fair to olive skin, European-influenced facial structure, and dark hair. Natural highland light enhances clarity.">Ossetian</option>
-            <option value="A cinematic rendering of a Circassian person with light skin, straight nose, green or hazel eyes, and dark hair. Historical aura of elegance with studio lighting.">Circassian (Adyghe)</option>
-            <option value="A photorealistic portrait of a Dagestani person with diverse mixed Caucasian features, olive to tan skin, and dark hair. Strong cultural lighting realism.">Dagestani</option>
-            <option value="A detailed portrait of an Abkhaz person with olive skin, high cheekbones, and dark expressive eyes. Natural subtropical coastal light realism.">Abkhaz</option>
-            <option value="A cinematic rendering of an Ingush person with fair to olive skin, sharp nose, and defined facial features. Rugged mountain glow emphasizes resilience.">Ingush</option>
-            <option value="A hyper-detailed rendering of a Lezgin person with olive skin, almond eyes, and straight dark hair. Warm cultural lighting enhances authenticity.">Lezgin</option>
-            </optgroup>
-            <optgroup label="Middle East - Ethnic Groups">
-            <option value="A photorealistic portrait of an Arab person with olive-tan skin, dark eyes, and strong brows. Lighting emphasizes authenticity.">Arab</option>
-            <option value="A lifelike portrait of a Levantine Arab person with olive skin, delicate facial structure, and expressive dark eyes. Warm Mediterranean light realism.">Levantine Arab</option>
-            <option value="A cinematic rendering of a Gulf Arab person with golden-olive skin, strong features, and dark hair. Desert-inspired lighting realism.">Gulf Arab</option>
-            <option value="A photorealistic portrait of a Maghrebi Arab person with olive-tan skin, dark hair, and sharp eyes. Lighting emphasizes North African heritage.">Maghrebi Arab</option>
-            <option value="A cinematic rendering of a Persian person with golden-olive skin, flowing dark hair, and expressive eyes. Elegant cultural lighting.">Persian</option>
-            <option value="A photorealistic portrait of an Azeri (Azerbaijani) person with light-olive skin, fine features, and thick dark hair. Studio light realism.">Azeri (Azerbaijani)</option>
-            <option value="A hyper-realistic rendering of a Lur person with olive-tan skin, high cheekbones, and wavy hair. Mountain light realism.">Lur</option>
-            <option value="A cinematic portrait of a Baloch person with medium-tan skin, fine facial structure, and wavy dark hair. Desert lighting emphasizes heritage.">Baloch</option>
-            <option value="A cinematic portrait of a Turkish person with golden-olive skin, dark hair, and sharp eyes. Lighting emphasizes Anatolian heritage.">Turkish</option>
-            <option value="A photorealistic rendering of an Armenian person with fair to olive skin, dark thick hair, and defined features. Studio clarity.">Armenian</option>
-            <option value="A lifelike portrait of an Assyrian person with olive-tan skin, strong brows, and sharp features. Cultural authenticity highlighted.">Assyrian</option>
-            <option value="A cinematic rendering of a Druze person with olive skin, distinct features, and cultural authenticity. Warm cinematic light.">Druze</option>
-            <option value="A hyper-realistic portrait of a Kurdish person with olive skin, sharp features, and wavy hair. Mountain light realism.">Kurdish</option>
-            <option value="A photorealistic rendering of a Yazidi person with olive-tan skin, strong facial features, and dark hair. Lighting emphasizes cultural uniqueness.">Yazidi</option>
-            <option value="A realistic portrait of a Mizrahi Jewish person with olive-tan skin, expressive eyes, and sharp features. Warm Middle Eastern lighting.">Mizrahi Jewish</option>
-            <option value="A photorealistic rendering of a Sephardic Jewish person with olive-tan skin, dark hair, and sharp eyes. Warm Mediterranean lighting.">Sephardic Jewish</option>
-            <option value="A cinematic portrait of a Circassian person with fair skin, light or dark hair, and refined features. Studio light realism.">Circassian</option>
-            <option value="A photorealistic rendering of a Samaritan person with olive skin, strong features, and cultural authenticity. Lighting emphasizes heritage.">Samaritan</option>
-            </optgroup>
-            <optgroup label="Africa - Ethnic Groups">
-            <option value="A photorealistic portrait of a Berber (Amazigh) person with olive-tan skin, dark curly hair, and sharp features. North African sunlight realism.">Berber (Amazigh)</option>
-            <option value="A cinematic rendering of a Nubian person with deep brown skin, high cheekbones, and strong features. Desert light realism.">Nubian</option>
-            <option value="A lifelike portrait of a Coptic Egyptian person with fair-olive skin, dark hair, and sharp Mediterranean features. Studio light clarity.">Coptic Egyptian</option>
-            <option value="A photorealistic portrait of a Yoruba person with deep brown skin, round features, and expressive eyes. Warm African light realism.">Yoruba</option>
-            <option value="A cinematic rendering of an Igbo person with rich dark skin, delicate facial structure, and cultural authenticity. Golden hour lighting.">Igbo</option>
-            <option value="A hyper-realistic portrait of a Hausa person with medium-dark skin, fine features, and sharp eyes. Studio realism.">Hausa</option>
-            <option value="A lifelike rendering of a Fulani person with medium-dark skin, narrow face, and high cheekbones. Sunlit realism.">Fulani</option>
-            <option value="A cinematic portrait of an Akan (Ashanti) person with deep brown skin, broad facial structure, and proud features. Studio light.">Akan (Ashanti)</option>
-            <option value="A photorealistic portrait of an Amhara person with medium-brown skin, fine nose, and curly dark hair. Ethiopian highland light realism.">Amhara</option>
-            <option value="A hyper-realistic rendering of an Oromo person with medium-dark skin, curly hair, and striking facial structure. Cultural authenticity.">Oromo</option>
-            <option value="A lifelike portrait of a Somali person with golden-brown skin, long face, and sharp features. Desert light realism.">Somali</option>
-            <option value="A cinematic rendering of a Tigrayan person with medium-brown skin, curly hair, and fine features. Highland sunlight clarity.">Tigrayan</option>
-            <option value="A photorealistic portrait of a Swahili person with golden-brown skin, mixed features, and cultural authenticity. Coastal sunlight realism.">Swahili</option>
-            <option value="A cinematic portrait of a Congolese person with deep brown skin, broad face, and expressive features. Natural light realism.">Congolese</option>
-            <option value="A hyper-realistic rendering of a Fang person with dark skin, strong features, and cultural authenticity. Forest light realism.">Fang</option>
-            <option value="A lifelike portrait of a Bantu person with rich dark skin, balanced features, and strong presence. Studio light realism.">Bantu</option>
-            <option value="A photorealistic rendering of a Pygmy person with shorter stature, deep brown skin, and fine features. Forest sunlight realism.">Pygmy (Mbenga)</option>
-            <option value="A hyper-realistic portrait of a Zulu person with medium-dark skin, strong jawline, and proud expression. Natural sunlight clarity.">Zulu</option>
-            <option value="A photorealistic rendering of a Xhosa person with dark skin, sharp features, and cultural authenticity. Studio clarity.">Xhosa</option>
-            <option value="A cinematic portrait of a Shona person with medium-dark skin, round features, and expressive eyes. Warm sunlight realism.">Shona</option>
-            <option value="A lifelike rendering of a Tswana person with rich dark skin, fine features, and cultural authenticity. Natural light.">Tswana</option>
-            <option value="A photorealistic portrait of a San (Bushmen) person with lighter brown skin, fine features, and distinct high cheekbones. Desert sunlight realism.">San (Bushmen)</option>
-            </optgroup>
-            <optgroup label="Europe - Ethnic Groups">
-            <option value="A photorealistic portrait of a Germanic person with fair skin, light eyes, and straight blond hair. Soft northern light realism.">Germanic (Northern European)</option>
-            <option value="A cinematic rendering of a Scandinavian person with very fair skin, blond hair, and icy blue eyes. Nordic light realism.">Scandinavian (Nordic)</option>
-            <option value="A hyper-realistic portrait of a Celtic person with pale skin, freckles, and wavy red or brown hair. Misty light realism.">Celtic</option>
-            <option value="A lifelike portrait of a Finnic person with fair skin, light hair, and high cheekbones. Northern sunlight realism.">Finnic (Finn, Estonian)</option>
-            <option value="A photorealistic portrait of a Baltic person with pale skin, light hair, and strong northern European features. Studio light clarity.">Baltic (Latvian, Lithuanian)</option>
-            <option value="A cinematic portrait of a French person with light-olive skin, dark hair, and refined European features. Warm studio realism.">French</option>
-            <option value="A photorealistic rendering of an Iberian person with olive skin, dark eyes, and strong Mediterranean features. Coastal sunlight realism.">Iberian (Spanish, Portuguese)</option>
-            <option value="A lifelike portrait of an Italian person with olive skin, dark hair, and expressive Mediterranean features. Golden hour realism.">Italian</option>
-            <option value="A hyper-realistic portrait of a Russian person with fair skin, light or dark hair, and strong Slavic features. Cold northern light.">Russian (Slavic)</option>
-            <option value="A cinematic rendering of a Ukrainian person with fair skin, light eyes, and distinct Slavic facial structure. Natural sunlight clarity.">Ukrainian</option>
-            <option value="A lifelike portrait of a Polish person with fair skin, round features, and light eyes. Central European studio realism.">Polish</option>
-            <option value="A photorealistic portrait of a Balkan person with olive to fair skin, mixed features, and rugged European structure. Balkan sunlight realism.">Balkan (Serb, Croat, Bosnian)</option>
-            <option value="A cinematic portrait of a Slovak/Czech person with fair skin, balanced features, and light hair. Central European natural realism.">Slavic (Czech, Slovak)</option>
-            <option value="A hyper-realistic portrait of a Hungarian (Magyar) person with fair skin, dark hair, and Central European features. Warm sunlight clarity.">Hungarian (Magyar)</option>
-            <option value="A lifelike portrait of a Greek person with olive skin, dark hair, and strong Mediterranean features. Aegean sunlight realism.">Greek</option>
-            <option value="A photorealistic rendering of an Albanian person with fair-olive skin, dark eyes, and distinct Balkan features. Studio clarity.">Albanian</option>
-            <option value="A cinematic portrait of a Maltese person with olive skin, dark features, and Mediterranean light realism.">Maltese</option>
-            <option value="A lifelike portrait of a Roma person with medium-dark skin, dark eyes, and distinct features. Cultural authenticity.">Roma (Gypsy)</option>
-            <option value="A hyper-realistic rendering of a Basque person with fair-olive skin, dark hair, and unique Western European features. Atlantic sunlight realism.">Basque</option>
-            <option value="A cinematic portrait of an Ashkenazi Jewish person with fair skin, dark hair, and distinct Central/Eastern European features. Warm studio clarity.">Ashkenazi Jewish</option>
-            <option value="A photorealistic rendering of a Sami person with light skin, high cheekbones, and northern Arctic features. Snowlight realism.">Sami (Laplander)</option>
-            </optgroup>
-            <optgroup label="Americas - Ethnic Groups">
-            <option value="A photorealistic portrait of an Anglo-American person with fair skin, light or dark hair, and typical North American features. Studio light realism.">Anglo-American (European descent)</option>
-            <option value="A cinematic rendering of an African-American person with dark brown skin, natural textured hair, and strong African diaspora features. Warm studio clarity.">African-American</option>
-            <option value="A lifelike portrait of a Hispanic/Latino person in the US with medium-olive skin, dark hair, and mixed European-Latin features. Urban realism.">Latino / Hispanic (U.S.)</option>
-            <option value="A hyper-realistic portrait of a French-Canadian Québécois person with fair skin, light eyes, and distinct French-European features. Soft northern light.">French-Canadian (Québécois)</option>
-            <option value="A photorealistic rendering of an English-Canadian person with fair skin, light hair, and British/European features. Studio realism.">Anglo-Canadian</option>
-            <option value="A cinematic portrait of a Mexican-American (Chicano) person with medium-olive skin, dark eyes, and mixed Mestizo features. Golden hour realism.">Mexican-American (Chicano)</option>
-            <option value="A lifelike portrait of a Mestizo person with medium-olive skin, dark hair, and blended Indigenous and European features. Natural daylight realism.">Mestizo (Central/South America)</option>
-            <option value="A photorealistic rendering of a European Latin American (Spanish, Italian, Portuguese descent) with light-olive skin and Mediterranean features. Studio clarity.">European Latin American</option>
-            <option value="A cinematic portrait of an Afro-Latino person with medium-dark skin, curly hair, and African-Latin mixed features. Warm coastal realism.">Afro-Latino (Caribbean &amp; South America)</option>
-            <option value="A hyper-realistic rendering of a Brazilian Pardo person with medium skin, dark hair, and diverse mixed ancestry (European, African, Indigenous). Sunlit realism.">Brazilian Pardo</option>
-            <option value="A lifelike portrait of an Andean Indigenous person with copper-brown skin, high cheekbones, and straight black hair. Highland sunlight clarity.">Andean Indigenous (Quechua, Aymara)</option>
-            <option value="A photorealistic rendering of a Guarani person with bronze-brown skin, straight black hair, and distinct South American Indigenous features. Forest light realism.">Guaraní (Paraguay, Brazil)</option>
-            <option value="A cinematic portrait of a Caribbean Afro-descendant person with dark skin, curly or coiled hair, and vibrant island features. Tropical sunlight realism.">Afro-Caribbean</option>
-            <option value="A lifelike rendering of a Caribbean Mestizo person with medium-olive skin, dark hair, and mixed African, Indigenous, and European features. Coastal realism.">Caribbean Mestizo / Mulatto</option>
-            </optgroup>
-            <optgroup label="Indigenous Americas - Major Ethnic Groups">
-            <option value="A photorealistic portrait of a Navajo (Diné) person with warm brown skin, dark hair, and dignified features. Desert light enhances cultural depth.">Navajo (Diné)</option>
-            <option value="A cinematic rendering of a Lakota Sioux person with tanned skin, strong cheekbones, and dark braids. Plains sunlight highlights heritage.">Lakota Sioux</option>
-            <option value="A detailed portrait of a Cherokee person with light-brown skin, soft features, and straight black hair. Forest light emphasizes natural realism.">Cherokee</option>
-            <option value="A lifelike rendering of an Inuit person with warm tan skin, dark almond eyes, and parka framing. Cold polar light enhances authenticity.">Inuit</option>
-            <option value="A cinematic portrait of a Cree person with medium-brown skin, rounded features, and dark hair. Boreal forest light enhances realism.">Cree</option>
-            <option value="A hyper-detailed rendering of a Maya person with bronze-brown skin, straight black hair, and almond-shaped eyes. Tropical jungle light enhances vibrance.">Maya</option>
-            <option value="A photorealistic portrait of an Aztec (Mexica) person with golden-brown skin, strong facial structure, and piercing dark eyes. Sunlit plateau realism.">Aztec (Mexica)</option>
-            <option value="A cinematic portrait of a Zapotec person with medium-brown skin, oval features, and thick dark hair. Oaxaca’s natural light emphasizes authenticity.">Zapotec</option>
-            <option value="A lifelike rendering of a Quechua person with sun-warmed bronze skin, high cheekbones, and straight black hair. Andean mountain light realism.">Quechua (Inca descent)</option>
-            <option value="A detailed portrait of an Aymara person with golden-brown skin, rounded features, and long dark hair. High-altitude lake light enhances realism.">Aymara</option>
-            <option value="A cinematic rendering of a Mapuche person with olive-tan skin, dark wavy hair, and sharp features. Patagonian light emphasizes resilience.">Mapuche</option>
-            <option value="A hyper-detailed portrait of a Guaraní person with warm brown skin, soft features, and dark hair. Subtropical forest light enhances vibrance.">Guaraní</option>
-            <option value="A lifelike portrait of a Yanomami person with deep bronze skin, expressive eyes, and dark straight hair. Rainforest glow emphasizes cultural presence.">Yanomami</option>
-            </optgroup> 
-            <optgroup label="Oceania &amp; Pacific - Ethnic Groups">
-            <option value="A photorealistic portrait of an Anglo-Australian person with fair skin, light or dark hair, and European-derived features. Bright studio realism.">Anglo-Australian (European descent)</option>
-            <option value="A cinematic rendering of an Aboriginal Australian person with dark brown skin, curly black hair, and distinct Indigenous features. Warm desert sunlight.">Aboriginal Australian</option>
-            <option value="A lifelike portrait of a Torres Strait Islander with medium-dark brown skin, wavy dark hair, and Melanesian-Indigenous features. Tropical light realism.">Torres Strait Islander</option>
-            <option value="A hyper-realistic portrait of a Māori person with bronze-brown skin, wavy or straight black hair, and strong Polynesian features. Green island clarity.">Māori (New Zealand Indigenous)</option>
-            <option value="A photorealistic rendering of a Pākehā New Zealander of European descent with fair skin, light hair, and typical Western features. Studio lighting realism.">Pākehā (European New Zealander)</option>
-            <option value="A cinematic portrait of a Fijian person with dark brown skin, curly black hair, and Melanesian features. Coastal sunlight realism.">Fijian (Melanesian)</option>
-            <option value="A lifelike rendering of a Papua New Guinean Highlander with deep brown skin, curly hair, and rugged Melanesian features. Highland sunlight realism.">Papua New Guinean (Highlands)</option>
-            <option value="A hyper-realistic portrait of a Solomon Islander with medium-dark brown skin, dark curly hair, and Melanesian-Pacific features. Island realism.">Solomon Islander</option>
-            <option value="A cinematic rendering of a Kanak person from New Caledonia with brown skin, dark curly hair, and Melanesian features. Sunlit realism.">Kanak (New Caledonia)</option>
-            <option value="A photorealistic portrait of a Chamorro person from Guam with medium-brown skin, straight dark hair, and Micronesian-Pacific features. Tropical realism.">Chamorro (Guam)</option>
-            <option value="A cinematic rendering of a Marshallese person with bronze-brown skin, dark straight hair, and Micronesian islander features. Coastal sunlight.">Marshallese</option>
-            <option value="A lifelike portrait of a Palauan person with medium-brown skin, dark hair, and Micronesian-Pacific traits. Island light clarity.">Palauan</option>
-            <option value="A hyper-realistic rendering of a Samoan person with bronze-brown skin, wavy dark hair, and Polynesian islander features. Golden hour realism.">Samoan</option>
-            <option value="A photorealistic portrait of a Tongan person with medium-dark skin, thick dark hair, and Polynesian features. Coastal sunlight clarity.">Tongan</option>
-            <option value="A lifelike portrait of a Hawaiian Native person with copper-brown skin, straight or wavy dark hair, and Pacific Polynesian features. Tropical realism.">Native Hawaiian</option>
-            <option value="A cinematic rendering of a Tahitian person with bronze skin, dark wavy hair, and Polynesian features. Island lagoon light realism.">Tahitian (French Polynesia)</option>
-            </optgroup>
-            <optgroup label="Mixed &amp; Diverse">
-            <option value="A hyper-realistic portrait of a mixed-heritage person with blended features, harmonious skin tones, and unique textures. Lighting emphasizes diversity.">Mixed Heritage</option>
-            <option value="A cinematic rendering of a multicultural person whose facial features reflect a blend of multiple ethnic groups. Emphasis on beauty in diversity.">Multicultural</option>
-            </optgroup>
-            </select>
-        </details>
+        <details>
+            <summary>Ethnicity</summary>
+            <details class="optgroup"><summary>Ethnicity Detail</summary>
+                <select id="ethnicitypull">
+                    <option value="">None</option>
+                    
+                    <optgroup label="Asia - Kelompok Etnis Utama">
+                        <option value="A cinematic hyper-detailed portrait of a Han Chinese person with pale smooth skin, almond eyes, and straight dark hair. The portrait glows with natural authenticity and delicate realism." title="Orang Han China dengan kulit pucat halus, mata almond, dan rambut hitam lurus">Tionghoa Han</option>
+                        <option value="A photorealistic rendering of a Japanese person of Yamato ethnicity, porcelain skin, oval facial structure, and refined features. Studio lighting emphasizes natural clarity." title="Orang Jepang etnis Yamato dengan kulit porselen, struktur wajah oval, dan fitur halus">Yamato Jepang</option>
+                        <option value="A lifelike portrait of a Korean person of Joseon descent, fair porcelain skin, soft features, and straight dark hair. Crisp high-resolution detail." title="Orang Korea keturunan Joseon dengan kulit porselen terang, fitur lembut, dan rambut hitam lurus">Korea (Joseon)</option>
+                        <option value="A realistic rendering of a Mongol person with tanned skin, prominent cheekbones, and almond-shaped eyes. Crisp natural light emphasizes rugged beauty." title="Orang Mongolia dengan kulit sawo matang, tulang pipi menonjol, dan mata almond">Mongol</option>
+                        <option value="A lifelike portrait of a Tibetan person with sun-warmed skin, strong cheekbones, and jet-black hair. The image radiates mountain-lit realism." title="Orang Tibet dengan kulit kecoklatan oleh matahari, tulang pipi kuat, dan rambut hitam pekat">Tibet</option>
+                        <option value="A cinematic rendering of a Uyghur person with olive skin, almond eyes, and thick wavy hair. Lighting highlights cultural richness." title="Orang Uyghur dengan kulit zaitun, mata almond, dan rambut tebal bergelombang">Uyghur</option>
+                        <option value="A detailed portrait of a Manchu person with pale skin, oval features, and fine straight hair. Subtle northern light realism." title="Orang Manchu dengan kulit pucat, fitur oval, dan rambut lurus halus">Manchu</option>
+                        <option value="A lifelike rendering of a Hmong person with tan skin, high cheekbones, and dark hair. Mountain lighting emphasizes cultural richness." title="Orang Hmong dengan kulit sawo matang, tulang pipi tinggi, dan rambut hitam">Hmong</option>
+                        <option value="A cinematic portrait of a Tamil person with deep golden-brown skin, curly black hair, and expressive almond-shaped eyes. Warm cultural lighting." title="Orang Tamil dengan kulit coklat keemasan, rambut keriting hitam, dan mata almond ekspresif">Tamil</option>
+                        <option value="A photorealistic portrait of a Bengali person with medium-brown skin, soft rounded features, and dark hair. Warm cinematic light emphasizes natural vibrance." title="Orang Bengali dengan kulit coklat sedang, fitur bulat lembut, dan rambut hitam">Bengali</option>
+                        <option value="A lifelike rendering of a Punjabi person with golden-tan skin, strong bone structure, and expressive eyes. Warm light realism." title="Orang Punjabi dengan kulit sawo matang keemasan, struktur tulang kuat, dan mata ekspresif">Punjabi</option>
+                        <option value="A cinematic portrait of a Gujarati person with sun-bronzed skin, almond eyes, and traditional facial features. Lighting emphasizes cultural authenticity." title="Orang Gujarati dengan kulit kecoklatan matahari, mata almond, dan fitur wajah tradisional">Gujarati</option>
+                        <option value="A photorealistic portrait of a Marathi person with medium-brown skin, fine features, and dark hair. Warm light realism." title="Orang Marathi dengan kulit coklat sedang, fitur halus, dan rambut hitam">Marathi</option>
+                        <option value="A hyper-detailed rendering of a Sinhalese person with golden-brown skin, oval face, and dark hair. Tropical light realism." title="Orang Sinhala dengan kulit coklat keemasan, wajah oval, dan rambut hitam">Sinhala</option>
+                        <option value="A cinematic portrait of a Nepali person with medium-tan skin, high cheekbones, and dark hair. Mountain-inspired realism." title="Orang Nepal dengan kulit sawo matang sedang, tulang pipi tinggi, dan rambut hitam">Nepali</option>
+                        <option value="A photorealistic rendering of a Pashtun person, tan skin, sharp nose, thick dark hair, and striking eyes. The portrait radiates rugged strength." title="Orang Pashtun dengan kulit sawo matang, hidung mancung, rambut hitam tebal, dan mata menonjol">Pashtun</option>
+                        <option value="A cinematic rendering of a Thai person with golden-tan skin, almond eyes, and fine dark hair. Tropical lighting highlights natural beauty." title="Orang Thailand dengan kulit sawo matang keemasan, mata almond, dan rambut hitam halus">Thai</option>
+                        <option value="A hyper-detailed portrait of a Vietnamese person with smooth tan skin, fine features, and glossy black hair. Subtle soft light realism." title="Orang Vietnam dengan kulit sawo matang halus, fitur halus, dan rambut hitam mengkilap">Vietnam</option>
+                        <option value="A lifelike portrait of a Filipino (Tagalog) person with sun-kissed brown skin, expressive dark eyes, and soft features. Coastal lighting realism." title="Orang Filipina (Tagalog) dengan kulit coklat terkena matahari, mata hitam ekspresif, dan fitur lembut">Filipina (Tagalog)</option>
+                        <option value="A cinematic portrait of a Malay person with golden-brown skin, rounded features, and dark straight hair. Warm tropical light." title="Orang Melayu dengan kulit coklat keemasan, fitur bulat, dan rambut hitam lurus">Melayu</option>
+                        <option value="A photorealistic rendering of a Javanese person with golden-brown skin, fine facial features, and dark flowing hair. Lighting emphasizes island heritage." title="Orang Jawa dengan kulit coklat keemasan, fitur wajah halus, dan rambut hitam mengalir">Jawa</option>
+                        <option value="A lifelike portrait of a Sundanese person with medium-tan skin, delicate features, and expressive dark eyes. Tropical light realism." title="Orang Sunda dengan kulit sawo matang sedang, fitur halus, dan mata hitam ekspresif">Sunda</option>
+                        <option value="A cinematic portrait of a Burmese (Bamar) person with golden-tan skin, round features, and dark straight hair. Warm cultural lighting." title="Orang Burma (Bamar) dengan kulit sawo matang keemasan, fitur bulat, dan rambut hitam lurus">Burma (Bamar)</option>
+                        <option value="A photorealistic rendering of a Khmer (Cambodian) person with tan skin, oval features, and dark glossy hair. Tropical realism." title="Orang Khmer (Kamboja) dengan kulit sawo matang, fitur oval, dan rambut hitam mengkilap">Khmer (Kamboja)</option>
+                        <option value="A cinematic portrait of a Lao person with golden-brown skin, soft features, and dark hair. Warm light realism." title="Orang Laos dengan kulit coklat keemasan, fitur lembut, dan rambut hitam">Laos</option>
+                        <option value="A hyper-detailed portrait of a Thai-Chinese person blending East Asian and Southeast Asian features with harmonious realism." title="Orang Thai-Tionghoa dengan perpaduan fitur Asia Timur dan Asia Tenggara">Thai-Tionghoa</option>
+                    </optgroup>
+                    
+                    <optgroup label="Asia Tengah & Steppa - Kelompok Etnis Utama">
+                        <option value="A photorealistic portrait of a Kazakh person with tanned skin, high cheekbones, almond eyes, and dark straight hair. Steppe sunlight enhances natural strength." title="Orang Kazakhstan dengan kulit sawo matang, tulang pipi tinggi, mata almond, dan rambut hitam lurus">Kazakh</option>
+                        <option value="A lifelike rendering of a Kyrgyz person with sun-warmed skin, broad features, and wavy dark hair. Natural mountain light emphasizes cultural heritage." title="Orang Kyrgyz dengan kulit kecoklatan matahari, fitur lebar, dan rambut hitam bergelombang">Kirgiz</option>
+                        <option value="A cinematic portrait of an Uzbek person with olive skin, soft rounded features, and glossy black hair. Subtle patterned lighting hints at Silk Road history." title="Orang Uzbek dengan kulit zaitun, fitur bulat lembut, dan rambut hitam mengkilap">Uzbek</option>
+                        <option value="A hyper-detailed portrait of a Turkmen person with golden-brown skin, strong facial features, and thick wavy black hair. Warm desert light realism." title="Orang Turkmen dengan kulit coklat keemasan, fitur wajah kuat, dan rambut hitam tebal bergelombang">Turkmen</option>
+                        <option value="A realistic portrait of a Tajik person with tan skin, sharp nose, and expressive dark eyes framed by black hair. Mountain light enhances natural definition." title="Orang Tajik dengan kulit sawo matang, hidung mancung, dan mata hitam ekspresif">Tajik</option>
+                        <option value="A photorealistic rendering of a Bashkir person with pale to tan skin tones, mixed features from Turkic and Slavic ancestry, and dark hair. Clear natural light highlights diversity." title="Orang Bashkir dengan warna kulit pucat hingga sawo matang, perpaduan fitur Turkik dan Slavia">Bashkir</option>
+                        <option value="A cinematic rendering of a Tatar person with fair to light olive skin, almond eyes, and dark hair. Subtle cultural lighting reflects Volga heritage." title="Orang Tatar dengan kulit terang hingga zaitun terang, mata almond, dan rambut hitam">Tatar</option>
+                        <option value="A lifelike portrait of a Sakha (Yakut) person with bronze-tan skin, almond eyes, and straight black hair. Crisp Siberian light emphasizes resilience." title="Orang Sakha (Yakut) dengan kulit sawo matang perunggu, mata almond, dan rambut hitam lurus">Sakha (Yakut)</option>
+                        <option value="A realistic portrait of an Evenki person with warm brown skin, high cheekbones, and dark almond eyes. Snow-lit realism reflects Arctic life." title="Orang Evenki dengan kulit coklat hangat, tulang pipi tinggi, dan mata almond hitam">Evenki</option>
+                        <option value="A cinematic portrait of a Chukchi person with sun-darkened skin, rounded features, and straight dark hair. Harsh Arctic light emphasizes rugged endurance." title="Orang Chukchi dengan kulit gelap oleh matahari, fitur bulat, dan rambut hitam lurus">Chukchi</option>
+                        <option value="A hyper-detailed rendering of a Buryat person with tan skin, almond-shaped eyes, and strong cheekbones. Steppe sunlight highlights Mongolic ancestry." title="Orang Buryat dengan kulit sawo matang, mata almond, dan tulang pipi kuat">Buryat</option>
+                    </optgroup>
+                    
+                    <optgroup label="Kaukasus - Kelompok Etnis Utama">
+                        <option value="A photorealistic portrait of an Armenian person with light to olive skin, sharp facial features, and dark wavy hair. Warm mountain light emphasizes heritage." title="Orang Armenia dengan kulit terang hingga zaitun, fitur wajah tajam, dan rambut hitam bergelombang">Armenia</option>
+                        <option value="A cinematic portrait of a Georgian person with fair to tan skin, strong jawline, dark hair, and piercing eyes. Lush vineyard light enhances cultural richness." title="Orang Georgia dengan kulit terang hingga sawo matang, rahang kuat, rambut hitam, dan mata tajam">Georgia</option>
+                        <option value="A hyper-detailed rendering of an Azerbaijani person with light-olive skin, dark expressive eyes, and straight black hair. Subtle Caspian light realism." title="Orang Azerbaijan dengan kulit zaitun terang, mata hitam ekspresif, dan rambut hitam lurus">Azerbaijan</option>
+                        <option value="A lifelike portrait of a Chechen person with fair to tan skin, strong cheekbones, and deep eyes framed by dark hair. Rugged mountain lighting emphasizes strength." title="Orang Chechnya dengan kulit terang hingga sawo matang, tulang pipi kuat, dan mata dalam berbingkai rambut hitam">Chechnya</option>
+                        <option value="A realistic portrait of an Ossetian person with fair to olive skin, European-influenced facial structure, and dark hair. Natural highland light enhances clarity." title="Orang Ossetia dengan kulit terang hingga zaitun, struktur wajah berpengaruh Eropa, dan rambut hitam">Ossetia</option>
+                        <option value="A cinematic rendering of a Circassian person with light skin, straight nose, green or hazel eyes, and dark hair. Historical aura of elegance with studio lighting." title="Orang Circassia (Adyghe) dengan kulit terang, hidung lurus, mata hijau atau hazel, dan rambut hitam">Circassia (Adyghe)</option>
+                        <option value="A photorealistic portrait of a Dagestani person with diverse mixed Caucasian features, olive to tan skin, and dark hair. Strong cultural lighting realism." title="Orang Dagestan dengan fitur Kaukasus campuran yang beragam, kulit zaitun hingga sawo matang, dan rambut hitam">Dagestan</option>
+                        <option value="A detailed portrait of an Abkhaz person with olive skin, high cheekbones, and dark expressive eyes. Natural subtropical coastal light realism." title="Orang Abkhazia dengan kulit zaitun, tulang pipi tinggi, dan mata hitam ekspresif">Abkhazia</option>
+                        <option value="A cinematic rendering of an Ingush person with fair to olive skin, sharp nose, and defined facial features. Rugged mountain glow emphasizes resilience." title="Orang Ingushetia dengan kulit terang hingga zaitun, hidung mancung, dan fitur wajah terdefinisi">Ingushetia</option>
+                        <option value="A hyper-detailed rendering of a Lezgin person with olive skin, almond eyes, and straight dark hair. Warm cultural lighting enhances authenticity." title="Orang Lezgin dengan kulit zaitun, mata almond, dan rambut hitam lurus">Lezgin</option>
+                    </optgroup>
+                    
+                    <optgroup label="Timur Tengah - Kelompok Etnis">
+                        <option value="A photorealistic portrait of an Arab person with olive-tan skin, dark eyes, and strong brows. Lighting emphasizes authenticity." title="Orang Arab dengan kulit zaitun-sawo matang, mata hitam, dan alis tebal">Arab</option>
+                        <option value="A lifelike portrait of a Levantine Arab person with olive skin, delicate facial structure, and expressive dark eyes. Warm Mediterranean light realism." title="Orang Arab Levant dengan kulit zaitun, struktur wajah halus, dan mata hitam ekspresif">Arab Levant</option>
+                        <option value="A cinematic rendering of a Gulf Arab person with golden-olive skin, strong features, and dark hair. Desert-inspired lighting realism." title="Orang Arab Teluk dengan kulit zaitun keemasan, fitur kuat, dan rambut hitam">Arab Teluk</option>
+                        <option value="A photorealistic portrait of a Maghrebi Arab person with olive-tan skin, dark hair, and sharp eyes. Lighting emphasizes North African heritage." title="Orang Arab Maghreb dengan kulit zaitun-sawo matang, rambut hitam, dan mata tajam">Arab Maghreb</option>
+                        <option value="A cinematic rendering of a Persian person with golden-olive skin, flowing dark hair, and expressive eyes. Elegant cultural lighting." title="Orang Persia dengan kulit zaitun keemasan, rambut hitam mengalir, dan mata ekspresif">Persia</option>
+                        <option value="A photorealistic portrait of an Azeri (Azerbaijani) person with light-olive skin, fine features, and thick dark hair. Studio light realism." title="Orang Azeri (Azerbaijan) dengan kulit zaitun terang, fitur halus, dan rambut hitam tebal">Azeri (Azerbaijan)</option>
+                        <option value="A hyper-realistic rendering of a Lur person with olive-tan skin, high cheekbones, and wavy hair. Mountain light realism." title="Orang Lur dengan kulit zaitun-sawo matang, tulang pipi tinggi, dan rambut bergelombang">Lur</option>
+                        <option value="A cinematic portrait of a Baloch person with medium-tan skin, fine facial structure, and wavy dark hair. Desert lighting emphasizes heritage." title="Orang Baloch dengan kulit sawo matang sedang, struktur wajah halus, dan rambut hitam bergelombang">Baloch</option>
+                        <option value="A cinematic portrait of a Turkish person with golden-olive skin, dark hair, and sharp eyes. Lighting emphasizes Anatolian heritage." title="Orang Turki dengan kulit zaitun keemasan, rambut hitam, dan mata tajam">Turki</option>
+                        <option value="A photorealistic rendering of an Armenian person with fair to olive skin, dark thick hair, and defined features. Studio clarity." title="Orang Armenia dengan kulit terang hingga zaitun, rambut hitam tebal, dan fitur terdefinisi">Armenia</option>
+                        <option value="A lifelike portrait of an Assyrian person with olive-tan skin, strong brows, and sharp features. Cultural authenticity highlighted." title="Orang Asyur dengan kulit zaitun-sawo matang, alis tebal, dan fitur tajam">Asyur</option>
+                        <option value="A cinematic rendering of a Druze person with olive skin, distinct features, and cultural authenticity. Warm cinematic light." title="Orang Druze dengan kulit zaitun, fitur khas, dan keaslian budaya">Druze</option>
+                        <option value="A hyper-realistic portrait of a Kurdish person with olive skin, sharp features, and wavy hair. Mountain light realism." title="Orang Kurdi dengan kulit zaitun, fitur tajam, dan rambut bergelombang">Kurdi</option>
+                        <option value="A photorealistic rendering of a Yazidi person with olive-tan skin, strong facial features, and dark hair. Lighting emphasizes cultural uniqueness." title="Orang Yazidi dengan kulit zaitun-sawo matang, fitur wajah kuat, dan rambut hitam">Yazidi</option>
+                        <option value="A realistic portrait of a Mizrahi Jewish person with olive-tan skin, expressive eyes, and sharp features. Warm Middle Eastern lighting." title="Orang Yahudi Mizrahi dengan kulit zaitun-sawo matang, mata ekspresif, dan fitur tajam">Yahudi Mizrahi</option>
+                        <option value="A photorealistic rendering of a Sephardic Jewish person with olive-tan skin, dark hair, and sharp eyes. Warm Mediterranean lighting." title="Orang Yahudi Sefardik dengan kulit zaitun-sawo matang, rambut hitam, dan mata tajam">Yahudi Sefardik</option>
+                        <option value="A cinematic portrait of a Circassian person with fair skin, light or dark hair, and refined features. Studio light realism." title="Orang Circassia dengan kulit terang, rambut terang atau gelap, dan fitur halus">Circassia</option>
+                        <option value="A photorealistic rendering of a Samaritan person with olive skin, strong features, and cultural authenticity. Lighting emphasizes heritage." title="Orang Samaria dengan kulit zaitun, fitur kuat, dan keaslian budaya">Samaria</option>
+                    </optgroup>
+                    
+                    <optgroup label="Afrika - Kelompok Etnis">
+                        <option value="A photorealistic portrait of a Berber (Amazigh) person with olive-tan skin, dark curly hair, and sharp features. North African sunlight realism." title="Orang Berber (Amazigh) dengan kulit zaitun-sawo matang, rambut keriting hitam, dan fitur tajam">Berber (Amazigh)</option>
+                        <option value="A cinematic rendering of a Nubian person with deep brown skin, high cheekbones, and strong features. Desert light realism." title="Orang Nubia dengan kulit coklat dalam, tulang pipi tinggi, dan fitur kuat">Nubia</option>
+                        <option value="A lifelike portrait of a Coptic Egyptian person with fair-olive skin, dark hair, and sharp Mediterranean features. Studio light clarity." title="Orang Koptik Mesir dengan kulit terang-zaitun, rambut hitam, dan fitur Mediterania tajam">Koptik Mesir</option>
+                        <option value="A photorealistic portrait of a Yoruba person with deep brown skin, round features, and expressive eyes. Warm African light realism." title="Orang Yoruba dengan kulit coklat dalam, fitur bulat, dan mata ekspresif">Yoruba</option>
+                        <option value="A cinematic rendering of an Igbo person with rich dark skin, delicate facial structure, and cultural authenticity. Golden hour lighting." title="Orang Igbo dengan kulit gelap kaya, struktur wajah halus, dan keaslian budaya">Igbo</option>
+                        <option value="A hyper-realistic portrait of a Hausa person with medium-dark skin, fine features, and sharp eyes. Studio realism." title="Orang Hausa dengan kulit gelap sedang, fitur halus, dan mata tajam">Hausa</option>
+                        <option value="A lifelike rendering of a Fulani person with medium-dark skin, narrow face, and high cheekbones. Sunlit realism." title="Orang Fulani dengan kulit gelap sedang, wajah sempit, dan tulang pipi tinggi">Fulani</option>
+                        <option value="A cinematic portrait of an Akan (Ashanti) person with deep brown skin, broad facial structure, and proud features. Studio light." title="Orang Akan (Ashanti) dengan kulit coklat dalam, struktur wajah lebar, dan fitur bangga">Akan (Ashanti)</option>
+                        <option value="A photorealistic portrait of an Amhara person with medium-brown skin, fine nose, and curly dark hair. Ethiopian highland light realism." title="Orang Amhara dengan kulit coklat sedang, hidung halus, dan rambut keriting hitam">Amhara</option>
+                        <option value="A hyper-realistic rendering of an Oromo person with medium-dark skin, curly hair, and striking facial structure. Cultural authenticity." title="Orang Oromo dengan kulit gelap sedang, rambut keriting, dan struktur wajah menonjol">Oromo</option>
+                        <option value="A lifelike portrait of a Somali person with golden-brown skin, long face, and sharp features. Desert light realism." title="Orang Somalia dengan kulit coklat keemasan, wajah panjang, dan fitur tajam">Somalia</option>
+                        <option value="A cinematic rendering of a Tigrayan person with medium-brown skin, curly hair, and fine features. Highland sunlight clarity." title="Orang Tigray dengan kulit coklat sedang, rambut keriting, dan fitur halus">Tigray</option>
+                        <option value="A photorealistic portrait of a Swahili person with golden-brown skin, mixed features, and cultural authenticity. Coastal sunlight realism." title="Orang Swahili dengan kulit coklat keemasan, fitur campuran, dan keaslian budaya">Swahili</option>
+                        <option value="A cinematic portrait of a Congolese person with deep brown skin, broad face, and expressive features. Natural light realism." title="Orang Kongo dengan kulit coklat dalam, wajah lebar, dan fitur ekspresif">Kongo</option>
+                        <option value="A hyper-realistic rendering of a Fang person with dark skin, strong features, and cultural authenticity. Forest light realism." title="Orang Fang dengan kulit gelap, fitur kuat, dan keaslian budaya">Fang</option>
+                        <option value="A lifelike portrait of a Bantu person with rich dark skin, balanced features, and strong presence. Studio light realism." title="Orang Bantu dengan kulit gelap kaya, fitur seimbang, dan kehadiran kuat">Bantu</option>
+                        <option value="A photorealistic rendering of a Pygmy person with shorter stature, deep brown skin, and fine features. Forest sunlight realism." title="Orang Pygmy (Mbenga) dengan postur lebih pendek, kulit coklat dalam, dan fitur halus">Pygmy (Mbenga)</option>
+                        <option value="A hyper-realistic portrait of a Zulu person with medium-dark skin, strong jawline, and proud expression. Natural sunlight clarity." title="Orang Zulu dengan kulit gelap sedang, rahang kuat, dan ekspresi bangga">Zulu</option>
+                        <option value="A photorealistic rendering of a Xhosa person with dark skin, sharp features, and cultural authenticity. Studio clarity." title="Orang Xhosa dengan kulit gelap, fitur tajam, dan keaslian budaya">Xhosa</option>
+                        <option value="A cinematic portrait of a Shona person with medium-dark skin, round features, and expressive eyes. Warm sunlight realism." title="Orang Shona dengan kulit gelap sedang, fitur bulat, dan mata ekspresif">Shona</option>
+                        <option value="A lifelike rendering of a Tswana person with rich dark skin, fine features, and cultural authenticity. Natural light." title="Orang Tswana dengan kulit gelap kaya, fitur halus, dan keaslian budaya">Tswana</option>
+                        <option value="A photorealistic portrait of a San (Bushmen) person with lighter brown skin, fine features, and distinct high cheekbones. Desert sunlight realism." title="Orang San (Bushmen) dengan kulit coklat lebih terang, fitur halus, dan tulang pipi tinggi khas">San (Bushmen)</option>
+                    </optgroup>
+                    
+                    <optgroup label="Eropa - Kelompok Etnis">
+                        <option value="A photorealistic portrait of a Germanic person with fair skin, light eyes, and straight blond hair. Soft northern light realism." title="Orang Jermanik dengan kulit terang, mata terang, dan rambut pirang lurus">Jermanik (Eropa Utara)</option>
+                        <option value="A cinematic rendering of a Scandinavian person with very fair skin, blond hair, and icy blue eyes. Nordic light realism." title="Orang Skandinavia dengan kulit sangat terang, rambut pirang, dan mata biru es">Skandinavia (Nordik)</option>
+                        <option value="A hyper-realistic portrait of a Celtic person with pale skin, freckles, and wavy red or brown hair. Misty light realism." title="Orang Keltik dengan kulit pucat, bintik-bintik, dan rambut merah atau coklat bergelombang">Keltik</option>
+                        <option value="A lifelike portrait of a Finnic person with fair skin, light hair, and high cheekbones. Northern sunlight realism." title="Orang Finnik (Finlandia, Estonia) dengan kulit terang, rambut terang, dan tulang pipi tinggi">Finnik (Finlandia, Estonia)</option>
+                        <option value="A photorealistic portrait of a Baltic person with pale skin, light hair, and strong northern European features. Studio light clarity." title="Orang Baltik (Latvia, Lithuania) dengan kulit pucat, rambut terang, dan fitur Eropa Utara kuat">Baltik (Latvia, Lithuania)</option>
+                        <option value="A cinematic portrait of a French person with light-olive skin, dark hair, and refined European features. Warm studio realism." title="Orang Prancis dengan kulit zaitun terang, rambut hitam, dan fitur Eropa halus">Prancis</option>
+                        <option value="A photorealistic rendering of an Iberian person with olive skin, dark eyes, and strong Mediterranean features. Coastal sunlight realism." title="Orang Iberia (Spanyol, Portugal) dengan kulit zaitun, mata hitam, dan fitur Mediterania kuat">Iberia (Spanyol, Portugal)</option>
+                        <option value="A lifelike portrait of an Italian person with olive skin, dark hair, and expressive Mediterranean features. Golden hour realism." title="Orang Italia dengan kulit zaitun, rambut hitam, dan fitur Mediterania ekspresif">Italia</option>
+                        <option value="A hyper-realistic portrait of a Russian person with fair skin, light or dark hair, and strong Slavic features. Cold northern light." title="Orang Rusia dengan kulit terang, rambut terang atau hitam, dan fitur Slavia kuat">Rusia (Slavia)</option>
+                        <option value="A cinematic rendering of a Ukrainian person with fair skin, light eyes, and distinct Slavic facial structure. Natural sunlight clarity." title="Orang Ukraina dengan kulit terang, mata terang, dan struktur wajah Slavia khas">Ukraina</option>
+                        <option value="A lifelike portrait of a Polish person with fair skin, round features, and light eyes. Central European studio realism." title="Orang Polandia dengan kulit terang, fitur bulat, dan mata terang">Polandia</option>
+                        <option value="A photorealistic portrait of a Balkan person with olive to fair skin, mixed features, and rugged European structure. Balkan sunlight realism." title="Orang Balkan (Serbia, Kroasia, Bosnia) dengan kulit zaitun hingga terang, fitur campuran, dan struktur Eropa kasar">Balkan (Serbia, Kroasia, Bosnia)</option>
+                        <option value="A cinematic portrait of a Slovak/Czech person with fair skin, balanced features, and light hair. Central European natural realism." title="Orang Slavia (Ceko, Slowakia) dengan kulit terang, fitur seimbang, dan rambut terang">Slavia (Ceko, Slowakia)</option>
+                        <option value="A hyper-realistic portrait of a Hungarian (Magyar) person with fair skin, dark hair, and Central European features. Warm sunlight clarity." title="Orang Hongaria (Magyar) dengan kulit terang, rambut hitam, dan fitur Eropa Tengah">Hongaria (Magyar)</option>
+                        <option value="A lifelike portrait of a Greek person with olive skin, dark hair, and strong Mediterranean features. Aegean sunlight realism." title="Orang Yunani dengan kulit zaitun, rambut hitam, dan fitur Mediterania kuat">Yunani</option>
+                        <option value="A photorealistic rendering of an Albanian person with fair-olive skin, dark eyes, and distinct Balkan features. Studio clarity." title="Orang Albania dengan kulit terang-zaitun, mata hitam, dan fitur Balkan khas">Albania</option>
+                        <option value="A cinematic portrait of a Maltese person with olive skin, dark features, and Mediterranean light realism." title="Orang Malta dengan kulit zaitun, fitur gelap, dan cahaya Mediterania realistis">Malta</option>
+                        <option value="A lifelike portrait of a Roma person with medium-dark skin, dark eyes, and distinct features. Cultural authenticity." title="Orang Roma (Gypsy) dengan kulit gelap sedang, mata hitam, dan fitur khas">Roma (Gypsy)</option>
+                        <option value="A hyper-realistic rendering of a Basque person with fair-olive skin, dark hair, and unique Western European features. Atlantic sunlight realism." title="Orang Basque dengan kulit terang-zaitun, rambut hitam, dan fitur Eropa Barat unik">Basque</option>
+                        <option value="A cinematic portrait of an Ashkenazi Jewish person with fair skin, dark hair, and distinct Central/Eastern European features. Warm studio clarity." title="Orang Yahudi Ashkenazi dengan kulit terang, rambut hitam, dan fitur Eropa Tengah/Timur khas">Yahudi Ashkenazi</option>
+                        <option value="A photorealistic rendering of a Sami person with light skin, high cheekbones, and northern Arctic features. Snowlight realism." title="Orang Sami (Laplander) dengan kulit terang, tulang pipi tinggi, dan fitur Arktik utara">Sami (Laplander)</option>
+                    </optgroup>
+                    
+                    <optgroup label="Amerika - Kelompok Etnis">
+                        <option value="A photorealistic portrait of an Anglo-American person with fair skin, light or dark hair, and typical North American features. Studio light realism." title="Orang Anglo-Amerika dengan kulit terang, rambut terang atau gelap, dan fitur Amerika Utara khas">Anglo-Amerika (keturunan Eropa)</option>
+                        <option value="A cinematic rendering of an African-American person with dark brown skin, natural textured hair, and strong African diaspora features. Warm studio clarity." title="Orang Afrika-Amerika dengan kulit coklat gelap, rambut tekstur alami, dan fitur diaspora Afrika kuat">Afrika-Amerika</option>
+                        <option value="A lifelike portrait of a Hispanic/Latino person in the US with medium-olive skin, dark hair, and mixed European-Latin features. Urban realism." title="Orang Hispanik/Latino di AS dengan kulit zaitun sedang, rambut hitam, dan fitur Eropa-Latin campuran">Latino / Hispanik (AS)</option>
+                        <option value="A hyper-realistic portrait of a French-Canadian Québécois person with fair skin, light eyes, and distinct French-European features. Soft northern light." title="Orang Prancis-Kanada (Québécois) dengan kulit terang, mata terang, dan fitur Prancis-Eropa khas">Prancis-Kanada (Québécois)</option>
+                        <option value="A photorealistic rendering of an English-Canadian person with fair skin, light hair, and British/European features. Studio realism." title="Orang Anglo-Kanada dengan kulit terang, rambut terang, dan fitur Inggris/Eropa">Anglo-Kanada</option>
+                        <option value="A cinematic portrait of a Mexican-American (Chicano) person with medium-olive skin, dark eyes, and mixed Mestizo features. Golden hour realism." title="Orang Meksiko-Amerika (Chicano) dengan kulit zaitun sedang, mata hitam, dan fitur Mestizo campuran">Meksiko-Amerika (Chicano)</option>
+                        <option value="A lifelike portrait of a Mestizo person with medium-olive skin, dark hair, and blended Indigenous and European features. Natural daylight realism." title="Orang Mestizo dengan kulit zaitun sedang, rambut hitam, dan fitur Pribumi-Eropa campuran">Mestizo (Amerika Tengah/Selatan)</option>
+                        <option value="A photorealistic rendering of a European Latin American (Spanish, Italian, Portuguese descent) with light-olive skin and Mediterranean features. Studio clarity." title="Orang Eropa Latin Amerika (keturunan Spanyol, Italia, Portugal) dengan kulit zaitun terang dan fitur Mediterania">Eropa Latin Amerika</option>
+                        <option value="A cinematic portrait of an Afro-Latino person with medium-dark skin, curly hair, and African-Latin mixed features. Warm coastal realism." title="Orang Afro-Latino dengan kulit gelap sedang, rambut keriting, dan fitur Afrika-Latin campuran">Afro-Latino (Karibia & Amerika Selatan)</option>
+                        <option value="A hyper-realistic rendering of a Brazilian Pardo person with medium skin, dark hair, and diverse mixed ancestry (European, African, Indigenous). Sunlit realism." title="Orang Pardo Brasil dengan kulit sedang, rambut hitam, dan leluhur campuran yang beragam (Eropa, Afrika, Pribumi)">Pardo Brasil</option>
+                        <option value="A lifelike portrait of an Andean Indigenous person with copper-brown skin, high cheekbones, and straight black hair. Highland sunlight clarity." title="Orang Pribumi Andes dengan kulit coklat tembaga, tulang pipi tinggi, dan rambut hitam lurus">Pribumi Andes (Quechua, Aymara)</option>
+                        <option value="A photorealistic rendering of a Guarani person with bronze-brown skin, straight black hair, and distinct South American Indigenous features. Forest light realism." title="Orang Guarani dengan kulit coklat perunggu, rambut hitam lurus, dan fitur Pribumi Amerika Selatan khas">Guarani (Paraguay, Brasil)</option>
+                        <option value="A cinematic portrait of a Caribbean Afro-descendant person with dark skin, curly or coiled hair, and vibrant island features. Tropical sunlight realism." title="Orang Afro-Karibia dengan kulit gelap, rambut keriting atau bergulung, dan fitur pulau yang bersemangat">Afro-Karibia</option>
+                        <option value="A lifelike rendering of a Caribbean Mestizo person with medium-olive skin, dark hair, and mixed African, Indigenous, and European features. Coastal realism." title="Orang Mestizo Karibia dengan kulit zaitun sedang, rambut hitam, dan fitur Afrika, Pribumi, dan Eropa campuran">Mestizo Karibia / Mulatto</option>
+                    </optgroup>
+                    
+                    <optgroup label="Pribumi Amerika - Kelompok Etnis Utama">
+                        <option value="A photorealistic portrait of a Navajo (Diné) person with warm brown skin, dark hair, and dignified features. Desert light enhances cultural depth." title="Orang Navajo (Diné) dengan kulit coklat hangat, rambut hitam, dan fitur bermartabat">Navajo (Diné)</option>
+                        <option value="A cinematic rendering of a Lakota Sioux person with tanned skin, strong cheekbones, and dark braids. Plains sunlight highlights heritage." title="Orang Lakota Sioux dengan kulit sawo matang, tulang pipi kuat, dan kepang hitam">Lakota Sioux</option>
+                        <option value="A detailed portrait of a Cherokee person with light-brown skin, soft features, and straight black hair. Forest light emphasizes natural realism." title="Orang Cherokee dengan kulit coklat terang, fitur lembut, dan rambut hitam lurus">Cherokee</option>
+                        <option value="A lifelike rendering of an Inuit person with warm tan skin, dark almond eyes, and parka framing. Cold polar light enhances authenticity." title="Orang Inuit dengan kulit sawo matang hangat, mata almond hitam, dan bingkai parka">Inuit</option>
+                        <option value="A cinematic portrait of a Cree person with medium-brown skin, rounded features, and dark hair. Boreal forest light enhances realism." title="Orang Cree dengan kulit coklat sedang, fitur bulat, dan rambut hitam">Cree</option>
+                        <option value="A hyper-detailed rendering of a Maya person with bronze-brown skin, straight black hair, and almond-shaped eyes. Tropical jungle light enhances vibrance." title="Orang Maya dengan kulit coklat perunggu, rambut hitam lurus, dan mata almond">Maya</option>
+                        <option value="A photorealistic portrait of an Aztec (Mexica) person with golden-brown skin, strong facial structure, and piercing dark eyes. Sunlit plateau realism." title="Orang Aztek (Mexica) dengan kulit coklat keemasan, struktur wajah kuat, dan mata hitam tajam">Aztek (Mexica)</option>
+                        <option value="A cinematic portrait of a Zapotec person with medium-brown skin, oval features, and thick dark hair. Oaxaca's natural light emphasizes authenticity." title="Orang Zapotec dengan kulit coklat sedang, fitur oval, dan rambut hitam tebal">Zapotec</option>
+                        <option value="A lifelike rendering of a Quechua person with sun-warmed bronze skin, high cheekbones, and straight black hair. Andean mountain light realism." title="Orang Quechua dengan kulit perunggu hangat matahari, tulang pipi tinggi, dan rambut hitam lurus">Quechua (keturunan Inka)</option>
+                        <option value="A detailed portrait of an Aymara person with golden-brown skin, rounded features, and long dark hair. High-altitude lake light enhances realism." title="Orang Aymara dengan kulit coklat keemasan, fitur bulat, dan rambut hitam panjang">Aymara</option>
+                        <option value="A cinematic rendering of a Mapuche person with olive-tan skin, dark wavy hair, and sharp features. Patagonian light emphasizes resilience." title="Orang Mapuche dengan kulit zaitun-sawo matang, rambut hitam bergelombang, dan fitur tajam">Mapuche</option>
+                        <option value="A hyper-detailed portrait of a Guarani person with warm brown skin, soft features, and dark hair. Subtropical forest light enhances vibrance." title="Orang Guarani dengan kulit coklat hangat, fitur lembut, dan rambut hitam">Guarani</option>
+                        <option value="A lifelike portrait of a Yanomami person with deep bronze skin, expressive eyes, and dark straight hair. Rainforest glow emphasizes cultural presence." title="Orang Yanomami dengan kulit perunggu dalam, mata ekspresif, dan rambut hitam lurus">Yanomami</option>
+                    </optgroup>
+                    
+                    <optgroup label="Oseania & Pasifik - Kelompok Etnis">
+                        <option value="A photorealistic portrait of an Anglo-Australian person with fair skin, light or dark hair, and European-derived features. Bright studio realism." title="Orang Anglo-Australia dengan kulit terang, rambut terang atau gelap, dan fitur keturunan Eropa">Anglo-Australia (keturunan Eropa)</option>
+                        <option value="A cinematic rendering of an Aboriginal Australian person with dark brown skin, curly black hair, and distinct Indigenous features. Warm desert sunlight." title="Orang Aborigin Australia dengan kulit coklat gelap, rambut keriting hitam, dan fitur Pribumi khas">Aborigin Australia</option>
+                        <option value="A lifelike portrait of a Torres Strait Islander with medium-dark brown skin, wavy dark hair, and Melanesian-Indigenous features. Tropical light realism." title="Orang Kepulauan Torres Strait dengan kulit coklat gelap sedang, rambut hitam bergelombang, dan fitur Melanesia-Pribumi">Kepulauan Torres Strait</option>
+                        <option value="A hyper-realistic portrait of a Māori person with bronze-brown skin, wavy or straight black hair, and strong Polynesian features. Green island clarity." title="Orang Māori dengan kulit coklat perunggu, rambut hitam bergelombang atau lurus, dan fitur Polinesia kuat">Māori (Pribumi Selandia Baru)</option>
+                        <option value="A photorealistic rendering of a Pākehā New Zealander of European descent with fair skin, light hair, and typical Western features. Studio lighting realism." title="Orang Pākehā (Eropa Selandia Baru) dengan kulit terang, rambut terang, dan fitur Barat khas">Pākehā (Eropa Selandia Baru)</option>
+                        <option value="A cinematic portrait of a Fijian person with dark brown skin, curly black hair, and Melanesian features. Coastal sunlight realism." title="Orang Fiji dengan kulit coklat gelap, rambut keriting hitam, dan fitur Melanesia">Fiji (Melanesia)</option>
+                        <option value="A lifelike rendering of a Papua New Guinean Highlander with deep brown skin, curly hair, and rugged Melanesian features. Highland sunlight realism." title="Orang Papua Nugini (Dataran Tinggi) dengan kulit coklat dalam, rambut keriting, dan fitur Melanesia kasar">Papua Nugini (Dataran Tinggi)</option>
+                        <option value="A hyper-realistic portrait of a Solomon Islander with medium-dark brown skin, dark curly hair, and Melanesian-Pacific features. Island realism." title="Orang Kepulauan Solomon dengan kulit coklat gelap sedang, rambut keriting hitam, dan fitur Melanesia-Pasifik">Kepulauan Solomon</option>
+                        <option value="A cinematic rendering of a Kanak person from New Caledonia with brown skin, dark curly hair, and Melanesian features. Sunlit realism." title="Orang Kanak (Kaledonia Baru) dengan kulit coklat, rambut keriting hitam, dan fitur Melanesia">Kanak (Kaledonia Baru)</option>
+                        <option value="A photorealistic portrait of a Chamorro person from Guam with medium-brown skin, straight dark hair, and Micronesian-Pacific features. Tropical realism." title="Orang Chamorro (Guam) dengan kulit coklat sedang, rambut hitam lurus, dan fitur Mikronesia-Pasifik">Chamorro (Guam)</option>
+                        <option value="A cinematic rendering of a Marshallese person with bronze-brown skin, dark straight hair, and Micronesian islander features. Coastal sunlight." title="Orang Marshall dengan kulit coklat perunggu, rambut hitam lurus, dan fitur penduduk pulau Mikronesia">Marshall</option>
+                        <option value="A lifelike portrait of a Palauan person with medium-brown skin, dark hair, and Micronesian-Pacific traits. Island light clarity." title="Orang Palau dengan kulit coklat sedang, rambut hitam, dan ciri-ciri Mikronesia-Pasifik">Palau</option>
+                        <option value="A hyper-realistic rendering of a Samoan person with bronze-brown skin, wavy dark hair, and Polynesian islander features. Golden hour realism." title="Orang Samoa dengan kulit coklat perunggu, rambut hitam bergelombang, dan fitur Polinesia">Samoa</option>
+                        <option value="A photorealistic portrait of a Tongan person with medium-dark skin, thick dark hair, and Polynesian features. Coastal sunlight clarity." title="Orang Tonga dengan kulit gelap sedang, rambut hitam tebal, dan fitur Polinesia">Tonga</option>
+                        <option value="A lifelike portrait of a Hawaiian Native person with copper-brown skin, straight or wavy dark hair, and Pacific Polynesian features. Tropical realism." title="Orang Pribumi Hawaii dengan kulit coklat tembaga, rambut hitam lurus atau bergelombang, dan fitur Polinesia Pasifik">Pribumi Hawaii</option>
+                        <option value="A cinematic rendering of a Tahitian person with bronze skin, dark wavy hair, and Polynesian features. Island lagoon light realism." title="Orang Tahiti dengan kulit perunggu, rambut hitam bergelombang, dan fitur Polinesia">Tahiti (Polinesia Prancis)</option>
+                    </optgroup>
+                    
+                    <optgroup label="Campuran & Beragam">
+                        <option value="A hyper-realistic portrait of a mixed-heritage person with blended features, harmonious skin tones, and unique textures. Lighting emphasizes diversity." title="Orang dengan warisan campuran, fitur berpadu, warna kulit harmonis, dan tekstur unik">Warisan Campuran</option>
+                        <option value="A cinematic rendering of a multicultural person whose facial features reflect a blend of multiple ethnic groups. Emphasis on beauty in diversity." title="Orang multikultural dengan fitur wajah yang mencerminkan perpaduan berbagai kelompok etnis">Multikultural</option>
+                    </optgroup>
+                </select>
+            </details>
         </details>
 
         <!-- Negative Prompt -->
-        <details open>
-        <details class="optgroup"></details><summary>Negative Prompt</summary>
-        <select id="NegPrompt" onchange="updatePrompt()" multiple>
-            <option value="">-- choose --</option>
-
+        <details>
+            <summary>Negative Prompt</summary>
             <!-- Quality & Artifact -->
-            <optgroup label="Quality & Artifact">
-            <option value="(low quality, worst quality:1.4)">low quality, worst quality</option>
-            <option value="(bad anatomy:1.3)">bad anatomy</option>
-            <option value="(deformed:1.3)">deformed</option>
-            <option value="(distorted:1.3)">distorted</option>
-            <option value="(ugly:1.3)">ugly</option>
-            <option value="(blurry:1.3)">blurry</option>
-            <option value="(pixelated:1.3)">pixelated</option>
-            <option value="(jpeg artifacts:1.3)">jpeg artifacts</option>
-            <option value="(oversaturated:1.2)">oversaturated</option>
-            <option value="(undersaturated:1.2)">undersaturated</option>
-            <option value="(noise:1.2)">noise</option>
-            <option value="(film grain:1.2)">film grain</option>
-            <option value="(compression artifacts:1.2)">compression artifacts</option>
-            </optgroup>
+            <details class="optgroup"><summary>Quality & Artifact</summary>
+                <select id="NegPrompt">
+                    <option value="">-- choose --</option>
 
-            <!-- Anatomy & Body -->
-            <optgroup label="Anatomy & Body">
-            <option value="(bad proportions:1.4)">bad proportions</option>
-            <option value="(extra limbs:1.4)">extra limbs</option>
-            <option value="(missing limbs:1.4)">missing limbs</option>
-            <option value="(extra arms:1.4)">extra arms</option>
-            <option value="(extra legs:1.4)">extra legs</option>
-            <option value="(fused fingers:1.4)">fused fingers</option>
-            <option value="(too many fingers:1.4)">too many fingers</option>
-            <option value="(extra fingers:1.4)">extra fingers</option>
-            <option value="(missing fingers:1.4)">missing fingers</option>
-            <option value="(mutated hands:1.4)">mutated hands</option>
-            <option value="(deformed hands:1.4)">deformed hands</option>
-            <option value="(gross proportions:1.3)">gross proportions</option>
-            <option value="(malformed limbs:1.3)">malformed limbs</option>
-            <option value="(disfigured:1.3)">disfigured</option>
-            <option value="(mutation:1.3)">mutation</option>
-            <option value="(mutilated:1.3)">mutilated</option>
-            <option value="(out of frame:1.2)">out of frame</option>
-            <option value="(cropped:1.2)">cropped</option>
-            </optgroup>
+                    <!-- Quality & Artifact -->
+                    <optgroup label="Quality & Artifact">
+                    <option value="(low quality, worst quality:1.4)">low quality, worst quality</option>
+                    <option value="(bad anatomy:1.3)">bad anatomy</option>
+                    <option value="(deformed:1.3)">deformed</option>
+                    <option value="(distorted:1.3)">distorted</option>
+                    <option value="(ugly:1.3)">ugly</option>
+                    <option value="(blurry:1.3)">blurry</option>
+                    <option value="(pixelated:1.3)">pixelated</option>
+                    <option value="(jpeg artifacts:1.3)">jpeg artifacts</option>
+                    <option value="(oversaturated:1.2)">oversaturated</option>
+                    <option value="(undersaturated:1.2)">undersaturated</option>
+                    <option value="(noise:1.2)">noise</option>
+                    <option value="(film grain:1.2)">film grain</option>
+                    <option value="(compression artifacts:1.2)">compression artifacts</option>
+                    </optgroup>
 
-            <!-- Face & Head -->
-            <optgroup label="Face & Head">
-            <option value="(bad eyes:1.4)">bad eyes</option>
-            <option value="(unclear eyes:1.4)">unclear eyes</option>
-            <option value="(cross-eyed:1.3)">cross-eyed</option>
-            <option value="(wall-eyed:1.3)">wall-eyed</option>
-            <option value="(asymmetrical eyes:1.3)">asymmetrical eyes</option>
-            <option value="(bad face:1.4)">bad face</option>
-            <option value="(poorly drawn face:1.4)">poorly drawn face</option>
-            <option value="(cloned face:1.4)">cloned face</option>
-            <option value="(double head:1.4)">double head</option>
-            <option value="(two heads:1.4)">two heads</option>
-            <option value="(extra heads:1.4)">extra heads</option>
-            <option value="(missing head:1.4)">missing head</option>
-            <option value="(severed head:1.3)">severed head</option>
-            <option value="(headless:1.3)">headless</option>
-            <option value="(bad mouth:1.3)">bad mouth</option>
-            <option value="(crooked teeth:1.2)">crooked teeth</option>
-            <option value="(missing teeth:1.2)">missing teeth</option>
-            <option value="(bad nose:1.3)">bad nose</option>
-            <option value="(missing nose:1.3)">missing nose</option>
-            </optgroup>
+                    <!-- Anatomy & Body -->
+                    <optgroup label="Anatomy & Body">
+                    <option value="(bad proportions:1.4)">bad proportions</option>
+                    <option value="(extra limbs:1.4)">extra limbs</option>
+                    <option value="(missing limbs:1.4)">missing limbs</option>
+                    <option value="(extra arms:1.4)">extra arms</option>
+                    <option value="(extra legs:1.4)">extra legs</option>
+                    <option value="(fused fingers:1.4)">fused fingers</option>
+                    <option value="(too many fingers:1.4)">too many fingers</option>
+                    <option value="(extra fingers:1.4)">extra fingers</option>
+                    <option value="(missing fingers:1.4)">missing fingers</option>
+                    <option value="(mutated hands:1.4)">mutated hands</option>
+                    <option value="(deformed hands:1.4)">deformed hands</option>
+                    <option value="(gross proportions:1.3)">gross proportions</option>
+                    <option value="(malformed limbs:1.3)">malformed limbs</option>
+                    <option value="(disfigured:1.3)">disfigured</option>
+                    <option value="(mutation:1.3)">mutation</option>
+                    <option value="(mutilated:1.3)">mutilated</option>
+                    <option value="(out of frame:1.2)">out of frame</option>
+                    <option value="(cropped:1.2)">cropped</option>
+                    </optgroup>
 
-            <!-- Hair -->
-            <optgroup label="Hair">
-            <option value="(messy hair:1.3)">messy hair</option>
-            <option value="(bad hair:1.3)">bad hair</option>
-            <option value="(thinning hair:1.2)">thinning hair</option>
-            <option value="(bald spots:1.2)">bald spots</option>
-            <option value="(unnatural hair color:1.2)">unnatural hair color</option>
-            <option value="(hair artifact:1.2)">hair artifact</option>
-            <option value="(floating hair:1.2)">floating hair</option>
-            <option value="(missing hair:1.2)">missing hair</option>
-            </optgroup>
+                    <!-- Face & Head -->
+                    <optgroup label="Face & Head">
+                    <option value="(bad eyes:1.4)">bad eyes</option>
+                    <option value="(unclear eyes:1.4)">unclear eyes</option>
+                    <option value="(cross-eyed:1.3)">cross-eyed</option>
+                    <option value="(wall-eyed:1.3)">wall-eyed</option>
+                    <option value="(asymmetrical eyes:1.3)">asymmetrical eyes</option>
+                    <option value="(bad face:1.4)">bad face</option>
+                    <option value="(poorly drawn face:1.4)">poorly drawn face</option>
+                    <option value="(cloned face:1.4)">cloned face</option>
+                    <option value="(double head:1.4)">double head</option>
+                    <option value="(two heads:1.4)">two heads</option>
+                    <option value="(extra heads:1.4)">extra heads</option>
+                    <option value="(missing head:1.4)">missing head</option>
+                    <option value="(severed head:1.3)">severed head</option>
+                    <option value="(headless:1.3)">headless</option>
+                    <option value="(bad mouth:1.3)">bad mouth</option>
+                    <option value="(crooked teeth:1.2)">crooked teeth</option>
+                    <option value="(missing teeth:1.2)">missing teeth</option>
+                    <option value="(bad nose:1.3)">bad nose</option>
+                    <option value="(missing nose:1.3)">missing nose</option>
+                    </optgroup>
 
-            <!-- Skin -->
-            <optgroup label="Skin">
-            <option value="(unnatural skin:1.4)">unnatural skin</option>
-            <option value="(plastic skin:1.4)">plastic skin</option>
-            <option value="(waxy skin:1.3)">waxy skin</option>
-            <option value="(rubber skin:1.3)">rubber skin</option>
-            <option value="(oily skin:1.2)">oily skin (unwanted shine)</option>
-            <option value="(dry skin:1.2)">dry skin (unwanted texture)</option>
-            <option value="(skin blemishes:1.2)">skin blemishes</option>
-            <option value="(skin tags:1.2)">skin tags</option>
-            <option value="(visible veins:1.2)">visible veins (unless intended)</option>
-            <option value="(bruises:1.2)">bruises</option>
-            <option value="(scars:1.2)">scars (unless intended)</option>
-            <option value="(acne:1.2)">acne</option>
-            <option value="(pimples:1.2)">pimples</option>
-            <option value="(blackheads:1.2)">blackheads</option>
-            </optgroup>
+                    <!-- Hair -->
+                    <optgroup label="Hair">
+                    <option value="(messy hair:1.3)">messy hair</option>
+                    <option value="(bad hair:1.3)">bad hair</option>
+                    <option value="(thinning hair:1.2)">thinning hair</option>
+                    <option value="(bald spots:1.2)">bald spots</option>
+                    <option value="(unnatural hair color:1.2)">unnatural hair color</option>
+                    <option value="(hair artifact:1.2)">hair artifact</option>
+                    <option value="(floating hair:1.2)">floating hair</option>
+                    <option value="(missing hair:1.2)">missing hair</option>
+                    </optgroup>
 
-            <!-- Clothing & Fashion -->
-            <optgroup label="Clothing & Fashion">
-            <option value="(wearing cloth:1.4)">wearing cloth (when nude is desired)</option>
-            <option value="(wearing dress:1.4)">wearing dress (when not wanted)</option>
-            <option value="(unexposed full body:1.4)">unexposed full body</option>
-            <option value="(unexposed feet:1.3)">unexposed feet</option>
-            <option value="(half body:1.3)">half body (when full is wanted)</option>
-            <option value="(portrait only:1.3)">portrait only (when full is wanted)</option>
-            <option value="(unexposed breast:1.4)">unexposed breast</option>
-            <option value="(unexposed nipple:1.4)">unexposed nipple</option>
-            <option value="(unexposed pussy:1.4)">unexposed pussy</option>
-            <option value="(hairy pussy:1.3)">hairy pussy</option>
-            <option value="(unexposed vagina:1.4)">unexposed vagina</option>
-            <option value="(clothed:1.4)">clothed (when nude is desired)</option>
-            <option value="(partially clothed:1.3)">partially clothed</option>
-            <option value="(underwear:1.3)">underwear (when nude is desired)</option>
-            <option value="(lingerie:1.3)">lingerie (when nude is desired)</option>
-            <option value="(bikini:1.3)">bikini (when nude is desired)</option>
-            <option value="(swimsuit:1.3)">swimsuit (when nude is desired)</option>
-            <option value="(pants:1.2)">pants (when nude is desired)</option>
-            <option value="(shirt:1.2)">shirt (when nude is desired)</option>
-            <option value="(hoodie:1.2)">hoodie (when nude is desired)</option>
-            <option value="(jacket:1.2)">jacket (when nude is desired)</option>
-            <option value="(socks:1.2)">socks (when barefoot is desired)</option>
-            <option value="(shoes:1.2)">shoes (when barefoot is desired)</option>
-            </optgroup>
+                    <!-- Skin -->
+                    <optgroup label="Skin">
+                    <option value="(unnatural skin:1.4)">unnatural skin</option>
+                    <option value="(plastic skin:1.4)">plastic skin</option>
+                    <option value="(waxy skin:1.3)">waxy skin</option>
+                    <option value="(rubber skin:1.3)">rubber skin</option>
+                    <option value="(oily skin:1.2)">oily skin (unwanted shine)</option>
+                    <option value="(dry skin:1.2)">dry skin (unwanted texture)</option>
+                    <option value="(skin blemishes:1.2)">skin blemishes</option>
+                    <option value="(skin tags:1.2)">skin tags</option>
+                    <option value="(visible veins:1.2)">visible veins (unless intended)</option>
+                    <option value="(bruises:1.2)">bruises</option>
+                    <option value="(scars:1.2)">scars (unless intended)</option>
+                    <option value="(acne:1.2)">acne</option>
+                    <option value="(pimples:1.2)">pimples</option>
+                    <option value="(blackheads:1.2)">blackheads</option>
+                    </optgroup>
 
-            <!-- Style & Medium -->
-            <optgroup label="Style & Medium">
-            <option value="(cartoon:1.4)">cartoon</option>
-            <option value="(anime:1.4)">anime</option>
-            <option value="(manga:1.3)">manga</option>
-            <option value="(sketches:1.3)">sketches</option>
-            <option value="(3d:1.4)">3d</option>
-            <option value="(render:1.4)">render</option>
-            <option value="(cgi:1.4)">cgi</option>
-            <option value="(flat lighting:1.3)">flat lighting</option>
-            <option value="(no shadows:1.2)">no shadows</option>
-            <option value="(overexposed:1.2)">overexposed</option>
-            <option value="(underexposed:1.2)">underexposed</option>
-            </optgroup>
+                    <!-- Clothing & Fashion -->
+                    <optgroup label="Clothing & Fashion">
+                    <option value="(wearing cloth:1.4)">wearing cloth (when nude is desired)</option>
+                    <option value="(wearing dress:1.4)">wearing dress (when not wanted)</option>
+                    <option value="(unexposed full body:1.4)">unexposed full body</option>
+                    <option value="(unexposed feet:1.3)">unexposed feet</option>
+                    <option value="(half body:1.3)">half body (when full is wanted)</option>
+                    <option value="(portrait only:1.3)">portrait only (when full is wanted)</option>
+                    <option value="(unexposed breast:1.4)">unexposed breast</option>
+                    <option value="(unexposed nipple:1.4)">unexposed nipple</option>
+                    <option value="(unexposed pussy:1.4)">unexposed pussy</option>
+                    <option value="(hairy pussy:1.3)">hairy pussy</option>
+                    <option value="(unexposed vagina:1.4)">unexposed vagina</option>
+                    <option value="(clothed:1.4)">clothed (when nude is desired)</option>
+                    <option value="(partially clothed:1.3)">partially clothed</option>
+                    <option value="(underwear:1.3)">underwear (when nude is desired)</option>
+                    <option value="(lingerie:1.3)">lingerie (when nude is desired)</option>
+                    <option value="(bikini:1.3)">bikini (when nude is desired)</option>
+                    <option value="(swimsuit:1.3)">swimsuit (when nude is desired)</option>
+                    <option value="(pants:1.2)">pants (when nude is desired)</option>
+                    <option value="(shirt:1.2)">shirt (when nude is desired)</option>
+                    <option value="(hoodie:1.2)">hoodie (when nude is desired)</option>
+                    <option value="(jacket:1.2)">jacket (when nude is desired)</option>
+                    <option value="(socks:1.2)">socks (when barefoot is desired)</option>
+                    <option value="(shoes:1.2)">shoes (when barefoot is desired)</option>
+                    </optgroup>
 
-            <!-- Text & Watermark -->
-            <optgroup label="Text & Watermark">
-            <option value="(text:1.4)">text</option>
-            <option value="(watermark:1.4)">watermark</option>
-            <option value="(logo:1.4)">logo</option>
-            <option value="(username:1.4)">username</option>
-            <option value="(signature:1.4)">signature</option>
-            <option value="(subtitle:1.3)">subtitle</option>
-            <option value="(caption:1.3)">caption</option>
-            <option value="(ui element:1.3)">ui element</option>
-            <option value="(hud:1.3)">hud</option>
-            <option value="(qr code:1.2)">qr code</option>
-            <option value="(barcode:1.2)">barcode</option>
-            </optgroup>
+                    <!-- Style & Medium -->
+                    <optgroup label="Style & Medium">
+                    <option value="(cartoon:1.4)">cartoon</option>
+                    <option value="(anime:1.4)">anime</option>
+                    <option value="(manga:1.3)">manga</option>
+                    <option value="(sketches:1.3)">sketches</option>
+                    <option value="(3d:1.4)">3d</option>
+                    <option value="(render:1.4)">render</option>
+                    <option value="(cgi:1.4)">cgi</option>
+                    <option value="(flat lighting:1.3)">flat lighting</option>
+                    <option value="(no shadows:1.2)">no shadows</option>
+                    <option value="(overexposed:1.2)">overexposed</option>
+                    <option value="(underexposed:1.2)">underexposed</option>
+                    </optgroup>
 
-            <!-- Background & Environment -->
-            <optgroup label="Background & Environment">
-            <option value="(busy background:1.2)">busy background</option>
-            <option value="(cluttered background:1.2)">cluttered background</option>
-            <option value="(distracting background:1.2)">distracting background</option>
-            <option value="(blurred background:1.2)">blurred background (when sharp is wanted)</option>
-            <option value="(plain background:1.2)">plain background (when detailed is wanted)</option>
-            <option value="(white background:1.2)">white background (when scenic is wanted)</option>
-            <option value="(black background:1.2)">black background (when scenic is wanted)</option>
-            <option value="(gradient background:1.2)">gradient background (when realistic is wanted)</option>
-            </optgroup>
+                    <!-- Text & Watermark -->
+                    <optgroup label="Text & Watermark">
+                    <option value="(text:1.4)">text</option>
+                    <option value="(watermark:1.4)">watermark</option>
+                    <option value="(logo:1.4)">logo</option>
+                    <option value="(username:1.4)">username</option>
+                    <option value="(signature:1.4)">signature</option>
+                    <option value="(subtitle:1.3)">subtitle</option>
+                    <option value="(caption:1.3)">caption</option>
+                    <option value="(ui element:1.3)">ui element</option>
+                    <option value="(hud:1.3)">hud</option>
+                    <option value="(qr code:1.2)">qr code</option>
+                    <option value="(barcode:1.2)">barcode</option>
+                    </optgroup>
 
-            <!-- NSFW Blockers -->
-            <optgroup label="NSFW Blockers (when nude is desired)">
-            <option value="(censored:1.4)">censored</option>
-            <option value="(censorship bars:1.4)">censorship bars</option>
-            <option value="(pixelation:1.4)">pixelation</option>
-            <option value="(mosaic:1.4)">mosaic</option>
-            <option value="(black box:1.4)">black box</option>
-            <option value="(white box:1.4)">white box</option>
-            <option value="(strategically covered:1.3)">strategically covered</option>
-            <option value="(hands covering:1.3)">hands covering</option>
-            <option value="(objects covering:1.3)">objects covering</option>
-            <option value="(light rays covering:1.3)">light rays covering</option>
-            <option value="(steam covering:1.3)">steam covering</option>
-            <option value="(hair covering:1.3)">hair covering</option>
-            </optgroup>
+                    <!-- Background & Environment -->
+                    <optgroup label="Background & Environment">
+                    <option value="(busy background:1.2)">busy background</option>
+                    <option value="(cluttered background:1.2)">cluttered background</option>
+                    <option value="(distracting background:1.2)">distracting background</option>
+                    <option value="(blurred background:1.2)">blurred background (when sharp is wanted)</option>
+                    <option value="(plain background:1.2)">plain background (when detailed is wanted)</option>
+                    <option value="(white background:1.2)">white background (when scenic is wanted)</option>
+                    <option value="(black background:1.2)">black background (when scenic is wanted)</option>
+                    <option value="(gradient background:1.2)">gradient background (when realistic is wanted)</option>
+                    </optgroup>
 
-            <!-- Extra -->
-            <optgroup label="Extra">
-            <option value="(error:1.4)">error</option>
-            <option value="(glitch:1.3)">glitch</option>
-            <option value="(corrupted:1.3)">corrupted</option>
-            <option value="(artifact:1.3)">artifact</option>
-            <option value="(low resolution:1.3)">low resolution</option>
-            <option value="(jpeg:1.3)">jpeg</option>
-            <option value="(png:1.2)">png (when realism is wanted)</option>
-            <option value="(gif:1.2)">gif (when static is wanted)</option>
-            <option value="(bmp:1.2)">bmp (when realism is wanted)</option>
-            </optgroup>
-        </select>
+                    <!-- NSFW Blockers -->
+                    <optgroup label="NSFW Blockers (when nude is desired)">
+                    <option value="(censored:1.4)">censored</option>
+                    <option value="(censorship bars:1.4)">censorship bars</option>
+                    <option value="(pixelation:1.4)">pixelation</option>
+                    <option value="(mosaic:1.4)">mosaic</option>
+                    <option value="(black box:1.4)">black box</option>
+                    <option value="(white box:1.4)">white box</option>
+                    <option value="(strategically covered:1.3)">strategically covered</option>
+                    <option value="(hands covering:1.3)">hands covering</option>
+                    <option value="(objects covering:1.3)">objects covering</option>
+                    <option value="(light rays covering:1.3)">light rays covering</option>
+                    <option value="(steam covering:1.3)">steam covering</option>
+                    <option value="(hair covering:1.3)">hair covering</option>
+                    </optgroup>
+
+                    <!-- Extra -->
+                    <optgroup label="Extra">
+                    <option value="(error:1.4)">error</option>
+                    <option value="(glitch:1.3)">glitch</option>
+                    <option value="(corrupted:1.3)">corrupted</option>
+                    <option value="(artifact:1.3)">artifact</option>
+                    <option value="(low resolution:1.3)">low resolution</option>
+                    <option value="(jpeg:1.3)">jpeg</option>
+                    <option value="(png:1.2)">png (when realism is wanted)</option>
+                    <option value="(gif:1.2)">gif (when static is wanted)</option>
+                    <option value="(bmp:1.2)">bmp (when realism is wanted)</option>
+                    </optgroup>
+                </select>
+            </details>
+
+            <!-- Negative Prompt Soft Sexuality Content -->
+            <details class="optgroup"><summary>Negative Prompt Soft Sexuality Content</summary>
+                <select id="NegPrompt">
+                    <option value="">-- choose --</option>
+
+                    <!-- SEXUAL CONTENT - SOFT FILTER -->
+                    <optgroup label="Sexual Content (Soft)">
+                        <option value="explicit sexual content">explicit sexual content</option>
+                        <option value="hardcore porn">hardcore porn</option>
+                        <option value="graphic sex">graphic sex</option>
+                        <option value="sexual act">sexual act</option>
+                    </optgroup>
+
+                    <!-- NUDITY (PARTIAL & FULL) -->
+                    <optgroup label="Nudity (Soft Limit)">
+                        <option value="full nudity">full nudity</option>
+                        <option value="explicit nudity">explicit nudity</option>
+                        <option value="fully naked">fully naked</option>
+                        <option value="uncensored body">uncensored body</option>
+                    </optgroup>
+
+                    <!-- SEXUAL BODY EMPHASIS -->
+                    <optgroup label="Sexualized Body Emphasis">
+                        <option value="sexualized body focus">sexualized body focus</option>
+                        <option value="exaggerated breasts">exaggerated breasts</option>
+                        <option value="exaggerated buttocks">exaggerated buttocks</option>
+                        <option value="genital focus">genital focus</option>
+                    </optgroup>
+
+                    <!-- SEXUAL ACTS (EXPLICIT ONLY) -->
+                    <optgroup label="Explicit Sexual Acts">
+                        <option value="penetration">penetration</option>
+                        <option value="oral sex">oral sex</option>
+                        <option value="masturbation">masturbation</option>
+                        <option value="orgasm">orgasm</option>
+                    </optgroup>
+
+                    <!-- FETISH & KINK (HARD ONLY) -->
+                    <optgroup label="Fetish & Kink (Hard)">
+                        <option value="bdsm">bdsm</option>
+                        <option value="bondage">bondage</option>
+                        <option value="sadomasochism">sadomasochism</option>
+                        <option value="sexual fetish">sexual fetish</option>
+                    </optgroup>
+
+                    <!-- SEXUALIZED CLOTHING (EXTREME) -->
+                    <optgroup label="Extreme Sexualized Clothing">
+                        <option value="micro bikini">micro bikini</option>
+                        <option value="transparent clothing">transparent clothing</option>
+                        <option value="see-through lingerie">see-through lingerie</option>
+                    </optgroup>
+
+                    <!-- SUGGESTIVE (ONLY STRONG) -->
+                    <optgroup label="Strong Suggestive Content">
+                        <option value="strongly suggestive pose">strongly suggestive pose</option>
+                        <option value="explicit seduction">explicit seduction</option>
+                    </optgroup>
+
+                    <!-- AGE PROTECTION -->
+                    <optgroup label="Age Safety">
+                        <option value="minor">minor</option>
+                        <option value="underage">underage</option>
+                        <option value="child sexualized">child sexualized</option>
+                    </optgroup>
+                </select>
+            </details>
+
+            <!-- Negative Prompt Sexuality Content -->
+            <details class="optgroup"><summary>Negative Prompt Sexuality Content</summary>
+                <select id="NegPrompt">
+                    <option value="">-- choose --</option>
+
+                    <!-- SEXUAL CONTENT - GENERAL -->
+                    <optgroup label="Sexual Content - General">
+                        <option value="nsfw">nsfw</option>
+                        <option value="sexual content">sexual content</option>
+                        <option value="explicit content">explicit content</option>
+                        <option value="porn">porn</option>
+                        <option value="pornographic">pornographic</option>
+                        <option value="erotic">erotic</option>
+                        <option value="lewd">lewd</option>
+                        <option value="obscene">obscene</option>
+                    </optgroup>
+
+                    <!-- NUDITY -->
+                    <optgroup label="Nudity">
+                        <option value="nudity">nudity</option>
+                        <option value="nude">nude</option>
+                        <option value="naked">naked</option>
+                        <option value="bare skin">bare skin</option>
+                        <option value="exposed body">exposed body</option>
+                        <option value="topless">topless</option>
+                        <option value="bottomless">bottomless</option>
+                    </optgroup>
+
+                    <!-- SEXUAL ACTS -->
+                    <optgroup label="Sexual Acts">
+                        <option value="sex">sex</option>
+                        <option value="sexual intercourse">sexual intercourse</option>
+                        <option value="penetration">penetration</option>
+                        <option value="oral sex">oral sex</option>
+                        <option value="blowjob">blowjob</option>
+                        <option value="handjob">handjob</option>
+                        <option value="masturbation">masturbation</option>
+                    </optgroup>
+
+                    <!-- SEXUAL BODY PARTS -->
+                    <optgroup label="Sexual Body Parts">
+                        <option value="genitals">genitals</option>
+                        <option value="penis">penis</option>
+                        <option value="vagina">vagina</option>
+                        <option value="breasts">breasts</option>
+                        <option value="nipples">nipples</option>
+                        <option value="buttocks">buttocks</option>
+                    </optgroup>
+
+                    <!-- SEXUALIZED FOCUS -->
+                    <optgroup label="Sexualized Focus">
+                        <option value="cleavage">cleavage</option>
+                        <option value="cameltoe">cameltoe</option>
+                        <option value="visible nipples">visible nipples</option>
+                        <option value="sexual emphasis">sexual emphasis</option>
+                        <option value="body close-up">body close-up</option>
+                    </optgroup>
+
+                    <!-- FETISH & KINK -->
+                    <optgroup label="Fetish & Kink">
+                        <option value="fetish">fetish</option>
+                        <option value="bdsm">bdsm</option>
+                        <option value="bondage">bondage</option>
+                        <option value="sadomasochism">sadomasochism</option>
+                        <option value="dominance">dominance</option>
+                        <option value="submission">submission</option>
+                    </optgroup>
+
+                    <!-- SEXUALIZED CLOTHING -->
+                    <optgroup label="Sexualized Clothing">
+                        <option value="lingerie">lingerie</option>
+                        <option value="underwear">underwear</option>
+                        <option value="thong">thong</option>
+                        <option value="micro bikini">micro bikini</option>
+                        <option value="see-through clothing">see-through clothing</option>
+                        <option value="transparent clothing">transparent clothing</option>
+                    </optgroup>
+
+                    <!-- SUGGESTIVE / IMPLIED -->
+                    <optgroup label="Suggestive or Implied Sexuality">
+                        <option value="suggestive">suggestive</option>
+                        <option value="seductive">seductive</option>
+                        <option value="provocative">provocative</option>
+                        <option value="sexual pose">sexual pose</option>
+                        <option value="suggestive pose">suggestive pose</option>
+                    </optgroup>
+
+                    <!-- AGE & PROHIBITED -->
+                    <optgroup label="Age & Prohibited Content">
+                        <option value="minor">minor</option>
+                        <option value="underage">underage</option>
+                        <option value="child sexualized">child sexualized</option>
+                        <option value="lolita">lolita</option>
+                        <option value="teen sexualized">teen sexualized</option>
+                    </optgroup>
+                </select>
+            </details>
         </details>
-        </details>
-
-        <!-- Negative Prompt Soft Sexuality Content -->
-        <details open>
-        <details class="optgroup"></details><summary>Negative Prompt Soft Sexuality Content</summary>
-        <select id="NegPrompt" onchange="updatePrompt()" multiple>
-            <option value="">-- choose --</option>
-
-            <!-- SEXUAL CONTENT - SOFT FILTER -->
-            <optgroup label="Sexual Content (Soft)">
-                <option value="explicit sexual content">explicit sexual content</option>
-                <option value="hardcore porn">hardcore porn</option>
-                <option value="graphic sex">graphic sex</option>
-                <option value="sexual act">sexual act</option>
-            </optgroup>
-
-            <!-- NUDITY (PARTIAL & FULL) -->
-            <optgroup label="Nudity (Soft Limit)">
-                <option value="full nudity">full nudity</option>
-                <option value="explicit nudity">explicit nudity</option>
-                <option value="fully naked">fully naked</option>
-                <option value="uncensored body">uncensored body</option>
-            </optgroup>
-
-            <!-- SEXUAL BODY EMPHASIS -->
-            <optgroup label="Sexualized Body Emphasis">
-                <option value="sexualized body focus">sexualized body focus</option>
-                <option value="exaggerated breasts">exaggerated breasts</option>
-                <option value="exaggerated buttocks">exaggerated buttocks</option>
-                <option value="genital focus">genital focus</option>
-            </optgroup>
-
-            <!-- SEXUAL ACTS (EXPLICIT ONLY) -->
-            <optgroup label="Explicit Sexual Acts">
-                <option value="penetration">penetration</option>
-                <option value="oral sex">oral sex</option>
-                <option value="masturbation">masturbation</option>
-                <option value="orgasm">orgasm</option>
-            </optgroup>
-
-            <!-- FETISH & KINK (HARD ONLY) -->
-            <optgroup label="Fetish & Kink (Hard)">
-                <option value="bdsm">bdsm</option>
-                <option value="bondage">bondage</option>
-                <option value="sadomasochism">sadomasochism</option>
-                <option value="sexual fetish">sexual fetish</option>
-            </optgroup>
-
-            <!-- SEXUALIZED CLOTHING (EXTREME) -->
-            <optgroup label="Extreme Sexualized Clothing">
-                <option value="micro bikini">micro bikini</option>
-                <option value="transparent clothing">transparent clothing</option>
-                <option value="see-through lingerie">see-through lingerie</option>
-            </optgroup>
-
-            <!-- SUGGESTIVE (ONLY STRONG) -->
-            <optgroup label="Strong Suggestive Content">
-                <option value="strongly suggestive pose">strongly suggestive pose</option>
-                <option value="explicit seduction">explicit seduction</option>
-            </optgroup>
-
-            <!-- AGE PROTECTION -->
-            <optgroup label="Age Safety">
-                <option value="minor">minor</option>
-                <option value="underage">underage</option>
-                <option value="child sexualized">child sexualized</option>
-            </optgroup>
-        </select>
-        </details>
-        </details>
-
-        <!-- Negative Prompt Sexuality Content -->
-        <details open>
-        <details class="optgroup"></details><summary>Negative Prompt Sexuality Content</summary>
-        <select id="NegPrompt" onchange="updatePrompt()" multiple>
-            <option value="">-- choose --</option>
-
-    <!-- SEXUAL CONTENT - GENERAL -->
-    <optgroup label="Sexual Content - General">
-        <option value="nsfw">nsfw</option>
-        <option value="sexual content">sexual content</option>
-        <option value="explicit content">explicit content</option>
-        <option value="porn">porn</option>
-        <option value="pornographic">pornographic</option>
-        <option value="erotic">erotic</option>
-        <option value="lewd">lewd</option>
-        <option value="obscene">obscene</option>
-    </optgroup>
-
-    <!-- NUDITY -->
-    <optgroup label="Nudity">
-        <option value="nudity">nudity</option>
-        <option value="nude">nude</option>
-        <option value="naked">naked</option>
-        <option value="bare skin">bare skin</option>
-        <option value="exposed body">exposed body</option>
-        <option value="topless">topless</option>
-        <option value="bottomless">bottomless</option>
-    </optgroup>
-
-    <!-- SEXUAL ACTS -->
-    <optgroup label="Sexual Acts">
-        <option value="sex">sex</option>
-        <option value="sexual intercourse">sexual intercourse</option>
-        <option value="penetration">penetration</option>
-        <option value="oral sex">oral sex</option>
-        <option value="blowjob">blowjob</option>
-        <option value="handjob">handjob</option>
-        <option value="masturbation">masturbation</option>
-    </optgroup>
-
-    <!-- SEXUAL BODY PARTS -->
-    <optgroup label="Sexual Body Parts">
-        <option value="genitals">genitals</option>
-        <option value="penis">penis</option>
-        <option value="vagina">vagina</option>
-        <option value="breasts">breasts</option>
-        <option value="nipples">nipples</option>
-        <option value="buttocks">buttocks</option>
-    </optgroup>
-
-    <!-- SEXUALIZED FOCUS -->
-    <optgroup label="Sexualized Focus">
-        <option value="cleavage">cleavage</option>
-        <option value="cameltoe">cameltoe</option>
-        <option value="visible nipples">visible nipples</option>
-        <option value="sexual emphasis">sexual emphasis</option>
-        <option value="body close-up">body close-up</option>
-    </optgroup>
-
-    <!-- FETISH & KINK -->
-    <optgroup label="Fetish & Kink">
-        <option value="fetish">fetish</option>
-        <option value="bdsm">bdsm</option>
-        <option value="bondage">bondage</option>
-        <option value="sadomasochism">sadomasochism</option>
-        <option value="dominance">dominance</option>
-        <option value="submission">submission</option>
-    </optgroup>
-
-    <!-- SEXUALIZED CLOTHING -->
-    <optgroup label="Sexualized Clothing">
-        <option value="lingerie">lingerie</option>
-        <option value="underwear">underwear</option>
-        <option value="thong">thong</option>
-        <option value="micro bikini">micro bikini</option>
-        <option value="see-through clothing">see-through clothing</option>
-        <option value="transparent clothing">transparent clothing</option>
-    </optgroup>
-
-    <!-- SUGGESTIVE / IMPLIED -->
-    <optgroup label="Suggestive or Implied Sexuality">
-        <option value="suggestive">suggestive</option>
-        <option value="seductive">seductive</option>
-        <option value="provocative">provocative</option>
-        <option value="sexual pose">sexual pose</option>
-        <option value="suggestive pose">suggestive pose</option>
-    </optgroup>
-
-    <!-- AGE & PROHIBITED -->
-    <optgroup label="Age & Prohibited Content">
-        <option value="minor">minor</option>
-        <option value="underage">underage</option>
-        <option value="child sexualized">child sexualized</option>
-        <option value="lolita">lolita</option>
-        <option value="teen sexualized">teen sexualized</option>
-    </optgroup>
-            
-        </select>
-        </details>
-        </details>
-
-    </nav>
+        </nav>
     </aside>
 
     <!-- ===== MAIN AREA ===== -->
