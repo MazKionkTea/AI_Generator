@@ -5,12 +5,1458 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Prompt Generator V4 — 14 Layer System</title>
 
-<link rel="stylesheet" href="style_v1.css">
-<script src="prompt-generator_v2.js"></script>
+<!-- <link rel="stylesheet" href="style_v1.css">
+<script src="toggle_prompt-generator_v2.js"></script> -->
+
+<!-- <style>
+/* ===== CSS VARIABLES ===== */
+:root {
+  --bg0: #0b0f14;
+  --bg1: #11161d;
+  --bg2: #151b23;
+  --bg3: #0a0f15;
+  --accent: #9fef00;
+  --accent-soft: rgba(159,239,0,.15);
+  --accent-dim: rgba(159,239,0,.07);
+  --red: #ff6b6b;
+  --red-soft: rgba(255,107,107,.15);
+  --gold: #ffc107;
+  --gold-soft: rgba(255,193,7,.15);
+  --blue: #5bc0eb;
+  --blue-soft: rgba(91,192,235,.12);
+  --text: #d7dce3;
+  --text-dim: #9aa4b2;
+  --border: rgba(255,255,255,.07);
+  --border-accent: rgba(159,239,0,.25);
+  --radius: 10px;
+  --radius-sm: 6px;
+  --shadow: 0 6px 20px rgba(0,0,0,.5);
+  --sidebar-w: 290px;
+}
+
+/* ===== RESET ===== */
+*, *::before, *::after {
+  box-sizing: border-box; margin: 0; padding: 0;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  font-size: 12.5px; color: var(--text);
+}
+
+body {
+  background: linear-gradient(160deg, var(--bg0) 0%, #090d12 100%);
+  display: flex; height: 100vh; overflow: hidden;
+}
+
+/* ===== SCROLLBAR ===== */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(159,239,0,.35); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+/* ===== BUTTON ===== */
+button {
+  background: linear-gradient(160deg, var(--accent), #7acc00);
+  color: #060e00; border: none; padding: 5px 11px;
+  border-radius: var(--radius-sm); cursor: pointer;
+  font-weight: 700; font-size: 11.5px; letter-spacing: .2px;
+  transition: .15s ease; white-space: nowrap;
+}
+button:hover { filter: brightness(1.08); transform: translateY(-1px); }
+button:active { transform: translateY(0); }
+button.ghost {
+  background: none; color: var(--accent);
+  border: 1px solid var(--border-accent);
+}
+button.ghost:hover { background: var(--accent-dim); }
+button.danger {
+  background: linear-gradient(160deg, var(--red), #cc4444);
+  color: #fff;
+}
+button.full { width: 100%; margin-top: 5px; }
+
+/* ===== SIDEBAR ===== */
+#sidebar {
+  width: var(--sidebar-w);
+  background: linear-gradient(180deg, #0f141c, var(--bg1));
+  border-right: 1px solid var(--border);
+  display: flex; flex-direction: column;
+  transition: width .25s ease; flex-shrink: 0;
+  overflow: hidden;
+}
+#sidebar.collapsed { width: 46px; }
+
+.sidebar-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 11px 12px; border-bottom: 1px solid var(--border);
+  background: rgba(0,0,0,.2); flex-shrink: 0;
+}
+.sidebar-head h2 {
+  color: var(--accent); font-size: 13px; font-weight: 700;
+  letter-spacing: .3px; white-space: nowrap; overflow: hidden;
+}
+#sidebar.collapsed .sidebar-head h2 { display: none; }
+
+#toggleBtn {
+  background: none; color: var(--accent);
+  width: 28px; height: 28px; border-radius: 6px;
+  display: grid; place-items: center; font-size: 14px; flex-shrink: 0;
+}
+#toggleBtn:hover { background: rgba(255,255,255,.06); transform: none; }
+
+/* ===== MENU TREE ===== */
+.menu-tree {
+  flex: 1; overflow-y: auto; overflow-x: hidden;
+  padding: 8px 6px 16px;
+}
+#sidebar.collapsed .menu-tree { display: none; }
+
+/* Section group */
+.layer-section {
+  margin-bottom: 4px;
+}
+.layer-section > details > summary {
+  display: flex; align-items: center; gap: 6px;
+  padding: 7px 9px; border-radius: var(--radius-sm);
+  cursor: pointer; list-style: none;
+  font-weight: 600; font-size: 12px; color: var(--text);
+  background: rgba(255,255,255,.03);
+  border: 1px solid var(--border);
+  transition: .12s ease; user-select: none;
+}
+.layer-section > details > summary:hover { background: rgba(255,255,255,.06); }
+.layer-section > details[open] > summary {
+  background: var(--accent-dim); border-color: var(--border-accent); color: var(--accent);
+}
+.layer-section > details > summary::marker { display: none; }
+.layer-section > details > summary .arr {
+  font-size: 10px; opacity: .6; margin-left: auto;
+  transition: transform .15s ease; flex-shrink: 0;
+}
+.layer-section > details[open] > summary .arr { transform: rotate(90deg); }
+
+.section-body { padding: 6px 0 4px; }
+
+/* Sub-group (optgroup) */
+.sub-group {
+  margin: 3px 0 3px 2px;
+  border-left: 2px solid var(--border);
+}
+.sub-group > details > summary {
+  list-style: none; cursor: pointer;
+  display: flex; align-items: center; gap: 5px;
+  padding: 4px 8px; border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  font-size: 11.5px; font-weight: 600; color: var(--text-dim);
+  transition: .12s ease; user-select: none;
+}
+.sub-group > details > summary:hover { color: var(--text); background: rgba(255,255,255,.04); }
+.sub-group > details[open] > summary { color: var(--accent); }
+.sub-group > details > summary::marker { display: none; }
+.sub-group > details > summary .arr2 { font-size: 9px; opacity: .5; margin-left: auto; transition: transform .15s; }
+.sub-group > details[open] > summary .arr2 { transform: rotate(90deg); }
+
+.sub-body { padding: 4px 8px 6px 10px; display: flex; flex-direction: column; gap: 4px; }
+
+/* ===== FORM ELEMENTS ===== */
+label {
+  display: block; font-size: 10.5px; color: var(--text-dim);
+  margin-bottom: 2px; margin-top: 6px; font-weight: 500;
+}
+label:first-child { margin-top: 2px; }
+
+select, input[type=text], input[type=number], textarea {
+  width: 100%; background: var(--bg3);
+  border: 1px solid var(--border); border-radius: var(--radius-sm);
+  padding: 5px 7px; color: var(--text); outline: none;
+  transition: border-color .15s, box-shadow .15s;
+  appearance: none; -webkit-appearance: none;
+}
+select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%239aa4b2'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 7px center; padding-right: 22px; }
+select:focus, input:focus, textarea:focus {
+  border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-soft);
+}
+textarea { resize: vertical; line-height: 1.5; }
+select[multiple] { background-image: none; padding-right: 7px; height: auto; }
+input[type=range] {
+  width: 100%; height: 4px; background: var(--bg3);
+  border-radius: 2px; border: none; padding: 0;
+  -webkit-appearance: none; appearance: none; cursor: pointer;
+}
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 13px; height: 13px;
+  background: var(--accent); border-radius: 50%; cursor: pointer;
+}
+input[type=checkbox] {
+  width: 13px; height: 13px; margin: 0;
+  accent-color: var(--accent); cursor: pointer;
+}
+
+/* Lock row */
+.lock-row {
+  display: flex; align-items: center; gap: 6px;
+  padding: 3px 6px; border-radius: 4px;
+  background: rgba(255,107,107,.05);
+  border: 1px solid transparent; margin-top: 3px;
+}
+.lock-row:has(input:checked) { border-color: rgba(255,107,107,.3); }
+.lock-row label { margin: 0; font-size: 10.5px; color: var(--red); font-weight: 600; cursor: pointer; }
+
+/* Slider row */
+.slider-row { display: flex; flex-direction: column; gap: 3px; }
+.slider-header { display: flex; justify-content: space-between; align-items: center; }
+.slider-header label { margin: 0; }
+.slider-val { font-size: 11px; font-weight: 700; color: var(--accent); }
+.slider-val.dim { color: var(--text-dim); }
+
+/* Info box */
+.info { font-size: 10.5px; color: var(--text-dim); padding: 4px 8px;
+  background: var(--accent-dim); border-left: 2px solid var(--accent);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0; line-height: 1.5; margin: 4px 0; }
+.info.warn { background: var(--red-soft); border-color: var(--red); color: #ffaaaa; }
+.info.blue { background: var(--blue-soft); border-color: var(--blue); color: #aaddf5; }
+
+/* Badge */
+.badge {
+  display: inline-flex; align-items: center;
+  padding: 1px 5px; border-radius: 3px; font-size: 9.5px; font-weight: 700;
+  letter-spacing: .3px; margin-left: 4px; flex-shrink: 0;
+}
+.badge.lock { background: var(--red-soft); color: var(--red); }
+.badge.vid  { background: var(--blue-soft); color: var(--blue); }
+.badge.adm  { background: rgba(255,255,255,.08); color: var(--text-dim); }
+.badge.imp  { background: var(--gold-soft); color: var(--gold); }
+.badge.ok   { background: var(--accent-dim); color: var(--accent); }
+
+/* Divider */
+.divider {
+  border: none; border-top: 1px solid var(--border);
+  margin: 6px 0;
+}
+
+/* Row flex */
+.row { display: flex; gap: 6px; }
+.row > * { flex: 1; }
+
+/* ===== MAIN ===== */
+main {
+  flex: 1; display: flex; flex-direction: column;
+  overflow: hidden; min-width: 0;
+}
+
+/* Topbar */
+.topbar {
+  height: 44px; background: linear-gradient(180deg, #0f141c, var(--bg1));
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 8px; padding: 0 12px;
+  flex-shrink: 0;
+}
+.topbar-title { color: var(--accent); font-weight: 700; font-size: 13px; }
+.topbar-sub { color: var(--text-dim); font-size: 10.5px; }
+.topbar-sep { width: 1px; height: 20px; background: var(--border); }
+.topbar-right { margin-left: auto; display: flex; gap: 6px; align-items: center; }
+
+/* Content */
+.content {
+  flex: 1; overflow-y: auto; overflow-x: hidden;
+  padding: 12px; display: flex; flex-direction: column; gap: 10px;
+}
+
+/* Panel */
+.panel {
+  background: linear-gradient(160deg, #121820, var(--bg2));
+  border: 1px solid var(--border); border-radius: var(--radius);
+  box-shadow: var(--shadow); display: flex; flex-direction: column;
+}
+.panel-header {
+  padding: 8px 12px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 6px;
+  font-weight: 600; font-size: 12px; color: var(--text-dim);
+  flex-shrink: 0;
+}
+.panel-header .ph-icon { font-size: 14px; }
+.panel-body { flex: 1; padding: 10px 12px; }
+.panel-footer {
+  padding: 7px 10px; border-top: 1px solid var(--border);
+  display: flex; gap: 6px; align-items: center; flex-wrap: wrap;
+}
+
+textarea.output {
+  width: 100%; background: var(--bg3); border: none;
+  resize: none; padding: 10px; line-height: 1.6;
+  font-family: 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
+  font-size: 11.5px; border-radius: var(--radius-sm); min-height: 100px;
+}
+textarea.output:focus { outline: 1px solid var(--border-accent); }
+textarea.output.neg { min-height: 70px; }
+textarea.output.json { min-height: 150px; }
+
+/* Layer map */
+.layer-map {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+}
+.lm-card {
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 8px 10px;
+  display: flex; flex-direction: column; gap: 3px;
+}
+.lm-card.active { border-color: var(--border-accent); background: var(--accent-dim); }
+.lm-card.lock-card { border-color: rgba(255,107,107,.3); background: var(--red-soft); }
+.lm-card.vid-card { border-color: rgba(91,192,235,.25); background: var(--blue-soft); }
+.lm-title { font-size: 10px; font-weight: 700; color: var(--accent); }
+.lm-title.red { color: var(--red); }
+.lm-title.blue { color: var(--blue); }
+.lm-title.dim { color: var(--text-dim); }
+.lm-label { font-size: 10.5px; color: var(--text); font-weight: 600; }
+.lm-desc { font-size: 9.5px; color: var(--text-dim); line-height: 1.4; }
+
+/* Platform params display */
+.platform-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 6px; }
+.plat-card {
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 7px 9px;
+}
+.plat-name { font-size: 10px; font-weight: 700; color: var(--accent); margin-bottom: 3px; }
+.plat-params { font-size: 10.5px; color: var(--text-dim); font-family: monospace; word-break: break-all; }
+
+/* Weight grid in output config */
+.weight-grid { display: flex; flex-direction: column; gap: 6px; }
+.w-item { display: flex; flex-direction: column; gap: 3px; }
+.w-header { display: flex; justify-content: space-between; align-items: center; }
+.w-label { font-size: 11px; color: var(--text); font-weight: 500; }
+.w-val { font-size: 11px; font-weight: 700; color: var(--accent); }
+.w-val.locked { color: var(--red); }
+.w-val.zero { color: var(--text-dim); }
+.w-bar-bg { height: 4px; background: var(--bg0); border-radius: 2px; overflow: hidden; }
+.w-bar { height: 100%; border-radius: 2px; background: var(--accent); }
+.w-bar.red { background: var(--red); }
+.w-bar.dim { background: var(--text-dim); }
+
+/* Panel layer map: default tersembunyi, transisi opacity saat toggle */
+#panelLayerMap {
+  display: none;
+  opacity: 0;
+  transition: opacity .2s ease;
+}
+/* Kontainer ikon yang tampil saat sidebar diciutkan */
+.collapsed-icons {
+  display: none; /* hidden by default, tampil saat collapsed */
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 4px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  flex: 1;
+}
+#sidebar.collapsed .collapsed-icons { display: flex; }
+#sidebar.collapsed .menu-tree { display: none; }
+
+/* Setiap ikon menu saat sidebar diciutkan */
+.ci-btn {
+  width: 34px; height: 34px;
+  display: grid; place-items: center;
+  border-radius: var(--radius-sm);
+  background: none;
+  border: 1px solid transparent;
+  font-size: 14px; cursor: pointer;
+  transition: .12s ease; flex-shrink: 0;
+  color: var(--text-dim);
+  position: relative; /* untuk tooltip */
+}
+.ci-btn:hover {
+  background: rgba(255,255,255,.07);
+  border-color: var(--border);
+  color: var(--text);
+  transform: none; /* override button hover default */
+  filter: none;
+}
+/* Tooltip label saat hover ikon collapsed */
+.ci-btn::after {
+  content: attr(data-label);
+  position: absolute;
+  left: calc(100% + 8px);
+  top: 50%; transform: translateY(-50%);
+  background: #1e2733;
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-size: 10.5px; font-weight: 600;
+  padding: 3px 7px;
+  border-radius: 4px;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0; transition: opacity .15s;
+  z-index: 100;
+}
+.ci-btn:hover::after { opacity: 1; }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 860px) {
+  #sidebar { position: absolute; z-index: 20; height: 100%; box-shadow: var(--shadow); }
+  .layer-map { grid-template-columns: repeat(2, 1fr); }
+  .platform-grid { grid-template-columns: 1fr; }
+}
+
+/* buat komentar disetiap kode untuk saya belajar setiap fungsi, deskripsi dan perubahan. */
+</style> -->
+
+<style>
+/* style dengan komentar lengkap */
+/* ============================================================
+   CSS VARIABLES (Custom Properties)
+   ============================================================
+   - Digunakan untuk mendefinisikan nilai yang sering dipakai
+   - Memudahkan maintenance dan konsistensi desain
+   - Dapat diakses menggunakan var(--nama-variabel)
+   - Jika ingin mengubah warna tema, cukup edit di sini
+   ============================================================ */
+:root {
+  /* === WARNA BACKGROUND === */
+  --bg0: #0b0f14;      /* Background paling gelap, untuk gradient dasar */
+  --bg1: #11161d;      /* Background level 1, untuk sidebar/topbar */
+  --bg2: #151b23;      /* Background level 2, untuk panel utama */
+  --bg3: #0a0f15;      /* Background level 3, untuk input/textarea */
+  
+  /* === WARNA AKCENT (Hijau Neon) === */
+  --accent: #9fef00;                    /* Warna utama hijau neon */
+  --accent-soft: rgba(159,239,0,.15);   /* Versi transparan 15% untuk glow/shadow */
+  --accent-dim: rgba(159,239,0,.07);    /* Versi transparan 7% untuk background subtle */
+  
+  /* === WARNA STATUS/FEEDBACK === */
+  --red: #ff6b6b;                       /* Warna merah untuk error/lock/delete */
+  --red-soft: rgba(255,107,107,.15);    /* Merah transparan untuk background warning */
+  --gold: #ffc107;                      /* Warna emas untuk important/premium */
+  --gold-soft: rgba(255,193,7,.15);     /* Emas transparan */
+  --blue: #5bc0eb;                      /* Warna biru untuk video/info */
+  --blue-soft: rgba(91,192,235,.12);    /* Biru transparan */
+  
+  /* === WARNA TEKS === */
+  --text: #d7dce3;      /* Warna teks utama, abu-abu terang */
+  --text-dim: #9aa4b2;  /* Warna teks sekunder, lebih redup */
+  
+  /* === BORDER & EFEK === */
+  --border: rgba(255,255,255,.07);      /* Border subtle putih transparan */
+  --border-accent: rgba(159,239,0,.25); /* Border dengan warna accent */
+  
+  /* === UKURAN & RADIUS === */
+  --radius: 10px;       /* Border radius besar untuk panel/card */
+  --radius-sm: 6px;     /* Border radius kecil untuk button/input */
+  
+  /* === SHADOW & LAINNYA === */
+  --shadow: 0 6px 20px rgba(0,0,0,.5);  /* Shadow untuk efek depth/elevasi */
+  --sidebar-w: 290px;                    /* Lebar default sidebar */
+}
+
+/* ============================================================
+   RESET STYLES
+   ============================================================
+   - Menghapus default styling browser untuk konsistensi
+   - Box-sizing: border-box memastikan padding tidak menambah ukuran
+   - Font family system-ui untuk performa terbaik di masing-masing OS
+   ============================================================ */
+*, *::before, *::after {
+  box-sizing: border-box;  /* Padding dan border masuk dalam width/height */
+  margin: 0;               /* Hapus margin default */
+  padding: 0;              /* Hapus padding default */
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  font-size: 12.5px;       /* Base font size untuk seluruh aplikasi */
+  color: var(--text);      /* Warna teks default dari variable */
+}
+
+/* ============================================================
+   BODY STYLES
+   ============================================================
+   - Layout flex untuk sidebar + main content
+   - Gradient background dari bg0 ke warna lebih gelap
+   - Overflow hidden mencegah scroll pada body (scroll di dalam container)
+   ============================================================ */
+body {
+  background: linear-gradient(160deg, var(--bg0) 0%, #090d12 100%);
+  display: flex;           /* Flexbox untuk layout horizontal */
+  height: 100vh;           /* Full viewport height */
+  overflow: hidden;        /* Sembunyikan overflow, scroll di dalam */
+}
+
+/* ============================================================
+   CUSTOM SCROLLBAR
+   ============================================================
+   - Mengganti scrollbar default dengan custom styling
+   - Track transparan, thumb berwarna accent
+   - Webkit prefix untuk Chrome/Safari/Edge
+   ============================================================ */
+::-webkit-scrollbar { 
+  width: 5px;   /* Lebar scrollbar vertikal */
+  height: 5px;  /* Tinggi scrollbar horizontal */
+}
+::-webkit-scrollbar-track { 
+  background: transparent;  /* Track tidak terlihat */
+}
+::-webkit-scrollbar-thumb { 
+  background: rgba(159,239,0,.35);  /* Thumb semi-transparan accent */
+  border-radius: 3px;                /* Thumb rounded */
+}
+::-webkit-scrollbar-thumb:hover { 
+  background: var(--accent);  /* Thumb penuh warna saat hover */
+}
+
+/* ============================================================
+   BUTTON STYLES
+   ============================================================
+   - Base button dengan gradient hijau accent
+   - Variasi: ghost (outline), danger (merah), full (width 100%)
+   - Transition untuk efek hover yang smooth
+   ============================================================ */
+button {
+  /* Gradient background dari accent ke hijau lebih gelap */
+  background: linear-gradient(160deg, var(--accent), #7acc00);
+  color: #060e00;          /* Teks hitam untuk kontras dengan bg terang */
+  border: none;            /* Hapus border default */
+  padding: 5px 11px;       /* Padding internal */
+  border-radius: var(--radius-sm);  /* Rounded corners */
+  cursor: pointer;         /* Cursor tangan saat hover */
+  font-weight: 700;        /* Bold text */
+  font-size: 11.5px;       /* Font lebih kecil dari base */
+  letter-spacing: .2px;    /* Spasi antar huruf sedikit */
+  transition: .15s ease;   /* Animasi transisi 0.15s */
+  white-space: nowrap;     /* Teks tidak wrap ke baris baru */
+}
+
+/* Efek hover: brightness naik dan sedikit naik ke atas */
+button:hover { 
+  filter: brightness(1.08); 
+  transform: translateY(-1px); 
+}
+
+/* Efek aktif/click: kembali ke posisi semula */
+button:active { 
+  transform: translateY(0); 
+}
+
+/* === VARIAN BUTTON: GHOST === */
+/* Button transparan dengan border, untuk aksi sekunder */
+button.ghost {
+  background: none;                    /* Tanpa background */
+  color: var(--accent);                /* Teks warna accent */
+  border: 1px solid var(--border-accent);  /* Border accent */
+}
+button.ghost:hover { 
+  background: var(--accent-dim);  /* Background subtle saat hover */
+}
+
+/* === VARIAN BUTTON: DANGER === */
+/* Button merah untuk aksi berbahaya (delete, lock, dll) */
+button.danger {
+  background: linear-gradient(160deg, var(--red), #cc4444);
+  color: #fff;  /* Teks putih */
+}
+
+/* === VARIAN BUTTON: FULL WIDTH === */
+/* Button yang melebar penuh container */
+button.full { 
+  width: 100%; 
+  margin-top: 5px; 
+}
+
+/* ============================================================
+   SIDEBAR STYLES
+   ============================================================
+   - Fixed width 290px, bisa di-collapse jadi 46px
+   - Flex column untuk layout vertikal
+   - Transition untuk animasi collapse/expand smooth
+   ============================================================ */
+#sidebar {
+  width: var(--sidebar-w);  /* Lebar dari variable (290px) */
+  /* Gradient dari atas ke bawah */
+  background: linear-gradient(180deg, #0f141c, var(--bg1));
+  border-right: 1px solid var(--border);  /* Garis pemisah dengan main content */
+  display: flex; 
+  flex-direction: column;   /* Layout vertikal: header -> menu -> footer */
+  transition: width .25s ease;  /* Animasi perubahan lebar */
+  flex-shrink: 0;           /* Sidebar tidak menyusut saat window dikecilkan */
+  overflow: hidden;         /* Sembunyikan konten yang keluar saat collapse */
+}
+
+/* State collapsed: lebar hanya 46px (cukup untuk icon toggle) */
+#sidebar.collapsed { 
+  width: 46px; 
+}
+
+/* ============================================================
+   SIDEBAR HEADER
+   ============================================================
+   - Bagian atas sidebar dengan judul dan tombol toggle
+   - Flex untuk alignment horizontal
+   - Background sedikit lebih gelap untuk depth
+   ============================================================ */
+.sidebar-head {
+  display: flex; 
+  align-items: center;      /* Vertikal center */
+  justify-content: space-between;  /* Judul kiri, toggle kanan */
+  padding: 11px 12px; 
+  border-bottom: 1px solid var(--border);
+  background: rgba(0,0,0,.2);  /* Overlay gelap */
+  flex-shrink: 0;           /* Tidak menyusut */
+}
+
+/* Judul sidebar dengan warna accent */
+.sidebar-head h2 {
+  color: var(--accent); 
+  font-size: 13px; 
+  font-weight: 700;
+  letter-spacing: .3px; 
+  white-space: nowrap;      /* Tidak wrap */
+  overflow: hidden;         /* Sembunyikan overflow saat collapse */
+}
+
+/* Sembunyikan judul saat sidebar collapsed */
+#sidebar.collapsed .sidebar-head h2 { 
+  display: none; 
+}
+
+/* ============================================================
+   TOGGLE BUTTON (Collapse/Expand)
+   ============================================================
+   - Tombol di pojok kanan atas sidebar
+   - Grid place-items untuk centering icon
+   - Hover effect subtle
+   ============================================================ */
+#toggleBtn {
+  background: none; 
+  color: var(--accent);
+  width: 28px; 
+  height: 28px; 
+  border-radius: 6px;
+  display: grid; 
+  place-items: center;  /* Center content horizontal & vertikal */
+  font-size: 14px; 
+  flex-shrink: 0;       /* Tidak menyusut */
+}
+#toggleBtn:hover { 
+  background: rgba(255,255,255,.06);  /* Background subtle saat hover */
+  transform: none;  /* Override transform default button */
+}
+
+/* ============================================================
+   MENU TREE (Navigation Menu)
+   ============================================================
+   - Area scrollable untuk menu navigasi
+   - Padding untuk spacing
+   - Hidden saat collapsed
+   ============================================================ */
+.menu-tree {
+  flex: 1;                    /* Mengisi sisa ruang sidebar */
+  overflow-y: auto;           /* Scroll vertikal jika konten panjang */
+  overflow-x: hidden;         /* Jangan scroll horizontal */
+  padding: 8px 6px 16px;      /* Padding: atas, samping, bawah */
+}
+#sidebar.collapsed .menu-tree { 
+  display: none;  /* Sembunyikan menu saat collapsed */
+}
+
+/* ============================================================
+   SECTION GROUP (Kategori Menu)
+   ============================================================
+   - Menggunakan elemen <details> untuk accordion
+   - Summary sebagai header yang bisa diklik
+   - Arrow indicator yang berotasi saat expand
+   ============================================================ */
+.layer-section {
+  margin-bottom: 4px;  /* Jarak antar section */
+}
+
+/* Header section (summary tag) */
+.layer-section > details > summary {
+  display: flex; 
+  align-items: center; 
+  gap: 6px;                 /* Jarak antar elemen flex */
+  padding: 7px 9px; 
+  border-radius: var(--radius-sm);
+  cursor: pointer; 
+  list-style: none;         /* Hapus bullet default */
+  font-weight: 600; 
+  font-size: 12px; 
+  color: var(--text);
+  background: rgba(255,255,255,.03);  /* Background sangat subtle */
+  border: 1px solid var(--border);
+  transition: .12s ease; 
+  user-select: none;        /* Tidak bisa di-select text */
+}
+
+/* Hover: background sedikit lebih terang */
+.layer-section > details > summary:hover { 
+  background: rgba(255,255,255,.06); 
+}
+
+/* State expanded (open): warna accent dan background */
+.layer-section > details[open] > summary {
+  background: var(--accent-dim); 
+  border-color: var(--border-accent); 
+  color: var(--accent);
+}
+
+/* Hapus marker default browser */
+.layer-section > details > summary::marker { 
+  display: none; 
+}
+
+/* Arrow indicator di kanan */
+.layer-section > details > summary .arr {
+  font-size: 10px; 
+  opacity: .6; 
+  margin-left: auto;        /* Push ke kanan */
+  transition: transform .15s ease;  /* Animasi rotasi */
+  flex-shrink: 0;
+}
+
+/* Rotasi arrow 90 derajat saat expanded */
+.layer-section > details[open] > summary .arr { 
+  transform: rotate(90deg); 
+}
+
+/* Body/isi section setelah summary */
+.section-body { 
+  padding: 6px 0 4px;  /* Padding: atas, samping, bawah */
+}
+
+/* ============================================================
+   SUB-GROUP (Optgroup dalam Section)
+   ============================================================
+   - Sub-menu yang di-indent dengan border kiri
+   - Nested details untuk hierarki lebih dalam
+   ============================================================ */
+.sub-group {
+  margin: 3px 0 3px 2px;    /* Margin kiri untuk indent */
+  border-left: 2px solid var(--border);  /* Garis indent */
+}
+
+/* Summary untuk sub-group */
+.sub-group > details > summary {
+  list-style: none; 
+  cursor: pointer;
+  display: flex; 
+  align-items: center; 
+  gap: 5px;
+  padding: 4px 8px; 
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;  /* Rounded kanan saja */
+  font-size: 11.5px; 
+  font-weight: 600; 
+  color: var(--text-dim);   /* Warna lebih redup dari parent */
+  transition: .12s ease; 
+  user-select: none;
+}
+
+.sub-group > details > summary:hover { 
+  color: var(--text); 
+  background: rgba(255,255,255,.04); 
+}
+
+/* Expanded state: warna accent */
+.sub-group > details[open] > summary { 
+  color: var(--accent); 
+}
+
+.sub-group > details > summary::marker { 
+  display: none; 
+}
+
+/* Arrow untuk sub-group */
+.sub-group > details > summary .arr2 { 
+  font-size: 9px; 
+  opacity: .5; 
+  margin-left: auto; 
+  transition: transform .15s; 
+}
+.sub-group > details[open] > summary .arr2 { 
+  transform: rotate(90deg); 
+}
+
+/* Body sub-group dengan flex column untuk form elements */
+.sub-body { 
+  padding: 4px 8px 6px 10px; 
+  display: flex; 
+  flex-direction: column; 
+  gap: 4px;  /* Jarak antar form element */
+}
+
+/* ============================================================
+   FORM ELEMENTS
+   ============================================================
+   - Input, select, textarea dengan styling konsisten
+   - Focus state dengan border accent dan glow
+   - Custom styling untuk checkbox dan range
+   ============================================================ */
+
+/* Label untuk form elements */
+label {
+  display: block;           /* Block level untuk full width */
+  font-size: 10.5px; 
+  color: var(--text-dim);
+  margin-bottom: 2px; 
+  margin-top: 6px;          /* Jarak dari element sebelumnya */
+  font-weight: 500;
+}
+label:first-child { 
+  margin-top: 2px;  /* Kurangi margin untuk label pertama */
+}
+
+/* Base styling untuk input, select, textarea */
+select, input[type=text], input[type=number], textarea {
+  width: 100%; 
+  background: var(--bg3);   /* Background gelap */
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 5px 7px; 
+  color: var(--text); 
+  outline: none;            /* Hapus outline default */
+  transition: border-color .15s, box-shadow .15s;
+  appearance: none;         /* Hapus styling default browser */
+  -webkit-appearance: none;
+}
+
+/* Custom arrow untuk select dropdown */
+select { 
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%239aa4b2'/%3E%3C/svg%3E"); 
+  background-repeat: no-repeat; 
+  background-position: right 7px center; 
+  padding-right: 22px;  /* Ruang untuk arrow */
+}
+
+/* Focus state: border accent + glow */
+select:focus, input:focus, textarea:focus {
+  border-color: var(--accent); 
+  box-shadow: 0 0 0 2px var(--accent-soft);  /* Glow effect */
+}
+
+/* Textarea bisa di-resize vertikal */
+textarea { 
+  resize: vertical; 
+  line-height: 1.5; 
+}
+
+/* Multiple select tanpa arrow, height auto */
+select[multiple] { 
+  background-image: none; 
+  padding-right: 7px; 
+  height: auto; 
+}
+
+/* Range slider custom styling */
+input[type=range] {
+  width: 100%; 
+  height: 4px; 
+  background: var(--bg3);
+  border-radius: 2px; 
+  border: none; 
+  padding: 0;
+  -webkit-appearance: none; 
+  appearance: none; 
+  cursor: pointer;
+}
+
+/* Thumb (handle) untuk range slider */
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none; 
+  width: 13px; 
+  height: 13px;
+  background: var(--accent); 
+  border-radius: 50%;   /* Bulat */
+  cursor: pointer;
+}
+
+/* Checkbox dengan accent color */
+input[type=checkbox] {
+  width: 13px; 
+  height: 13px; 
+  margin: 0;
+  accent-color: var(--accent);  /* Warna checkmark */
+  cursor: pointer;
+}
+
+/* ============================================================
+   LOCK ROW (Checkbox dengan styling khusus)
+   ============================================================
+   - Row untuk opsi "Lock" dengan border merah saat checked
+   - Background subtle merah
+   ============================================================ */
+.lock-row {
+  display: flex; 
+  align-items: center; 
+  gap: 6px;
+  padding: 3px 6px; 
+  border-radius: 4px;
+  background: rgba(255,107,107,.05);  /* Background merah sangat subtle */
+  border: 1px solid transparent;
+  margin-top: 3px;
+}
+
+/* Border merah muncul saat checkbox checked */
+.lock-row:has(input:checked) { 
+  border-color: rgba(255,107,107,.3); 
+}
+
+.lock-row label { 
+  margin: 0;              /* Reset margin */
+  font-size: 10.5px; 
+  color: var(--red);      /* Teks merah */
+  font-weight: 600; 
+  cursor: pointer;
+}
+
+/* ============================================================
+   SLIDER ROW (Range dengan value display)
+   ============================================================
+   - Layout vertikal dengan header (label + value)
+   - Value berubah warna berdasarkan state
+   ============================================================ */
+.slider-row { 
+  display: flex; 
+  flex-direction: column; 
+  gap: 3px; 
+}
+
+.slider-header { 
+  display: flex; 
+  justify-content: space-between;  /* Label kiri, value kanan */
+  align-items: center; 
+}
+.slider-header label { 
+  margin: 0;  /* Reset margin */
+}
+
+/* Value display dengan warna accent */
+.slider-val { 
+  font-size: 11px; 
+  font-weight: 700; 
+  color: var(--accent); 
+}
+
+/* State dim untuk value non-aktif */
+.slider-val.dim { 
+  color: var(--text-dim); 
+}
+
+/* ============================================================
+   INFO BOX
+   ============================================================
+   - Box informasi dengan border kiri (left border accent)
+   - Variasi: default (accent), warn (merah), blue (info)
+   ============================================================ */
+.info { 
+  font-size: 10.5px; 
+  color: var(--text-dim); 
+  padding: 4px 8px;
+  background: var(--accent-dim); 
+  border-left: 2px solid var(--accent);  /* Border kiri sebagai indicator */
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;  /* Rounded kanan saja */
+  line-height: 1.5; 
+  margin: 4px 0; 
+}
+
+/* Variasi warning: merah */
+.info.warn { 
+  background: var(--red-soft); 
+  border-color: var(--red); 
+  color: #ffaaaa; 
+}
+
+/* Variasi info: biru */
+.info.blue { 
+  background: var(--blue-soft); 
+  border-color: var(--blue); 
+  color: #aaddf5; 
+}
+
+/* ============================================================
+   BADGE (Label kecil untuk status)
+   ============================================================
+   - Inline flex untuk alignment dengan teks
+   - Variasi: lock, vid, adm, imp, ok
+   ============================================================ */
+.badge {
+  display: inline-flex; 
+  align-items: center;
+  padding: 1px 5px; 
+  border-radius: 3px; 
+  font-size: 9.5px; 
+  font-weight: 700;
+  letter-spacing: .3px; 
+  margin-left: 4px; 
+  flex-shrink: 0;
+}
+
+.badge.lock { 
+  background: var(--red-soft); 
+  color: var(--red); 
+}  /* Status terkunci */
+.badge.vid { 
+  background: var(--blue-soft); 
+  color: var(--blue); 
+}   /* Status video */
+.badge.adm { 
+  background: rgba(255,255,255,.08); 
+  color: var(--text-dim); 
+}  /* Admin/default */
+.badge.imp { 
+  background: var(--gold-soft); 
+  color: var(--gold); 
+}   /* Important */
+.badge.ok { 
+  background: var(--accent-dim); 
+  color: var(--accent); 
+}    /* OK/Success */
+
+/* ============================================================
+   DIVIDER & ROW UTILITIES
+   ============================================================ */
+.divider {
+  border: none; 
+  border-top: 1px solid var(--border);  /* Garis horizontal */
+  margin: 6px 0;
+}
+
+/* Row flex untuk layout horizontal */
+.row { 
+  display: flex; 
+  gap: 6px; 
+}
+.row > * { 
+  flex: 1;  /* Distribusi equal width */
+}
+
+/* ============================================================
+   MAIN CONTENT AREA
+   ============================================================
+   - Flex 1 untuk mengisi sisa ruang setelah sidebar
+   - Flex column untuk layout vertikal (topbar -> content)
+   - Min-width 0 untuk fix flexbox overflow issue
+   ============================================================ */
+main {
+  flex: 1; 
+  display: flex; 
+  flex-direction: column;
+  overflow: hidden; 
+  min-width: 0;  /* Penting untuk flex item agar bisa menyusut */
+}
+
+/* ============================================================
+   TOPBAR (Header Main Content)
+   ============================================================
+   - Fixed height 44px
+   - Gradient background sama dengan sidebar head
+   - Flex untuk alignment items
+   ============================================================ */
+.topbar {
+  height: 44px; 
+  background: linear-gradient(180deg, #0f141c, var(--bg1));
+  border-bottom: 1px solid var(--border);
+  display: flex; 
+  align-items: center; 
+  gap: 8px; 
+  padding: 0 12px;
+  flex-shrink: 0;  /* Tidak menyusut */
+}
+
+.topbar-title { 
+  color: var(--accent); 
+  font-weight: 700; 
+  font-size: 13px; 
+}
+.topbar-sub { 
+  color: var(--text-dim); 
+  font-size: 10.5px; 
+}
+
+/* Separator vertikal */
+.topbar-sep { 
+  width: 1px; 
+  height: 20px; 
+  background: var(--border); 
+}
+
+/* Push ke kanan */
+.topbar-right { 
+  margin-left: auto; 
+  display: flex; 
+  gap: 6px; 
+  align-items: center; 
+}
+
+/* ============================================================
+   CONTENT AREA (Scrollable)
+   ============================================================
+   - Flex 1 untuk mengisi ruang antara topbar dan footer
+   - Scroll vertikal, padding untuk spacing
+   - Flex column dengan gap antar panel
+   ============================================================ */
+.content {
+  flex: 1; 
+  overflow-y: auto;   /* Scroll konten */
+  overflow-x: hidden;
+  padding: 12px; 
+  display: flex; 
+  flex-direction: column; 
+  gap: 10px;  /* Jarak antar panel */
+}
+
+/* ============================================================
+   PANEL (Card Component)
+   ============================================================
+   - Container dengan shadow dan border
+   - Header, body, footer structure
+   - Gradient background untuk depth
+   ============================================================ */
+.panel {
+  background: linear-gradient(160deg, #121820, var(--bg2));
+  border: 1px solid var(--border); 
+  border-radius: var(--radius);
+  box-shadow: var(--shadow); 
+  display: flex; 
+  flex-direction: column;
+}
+
+.panel-header {
+  padding: 8px 12px; 
+  border-bottom: 1px solid var(--border);
+  display: flex; 
+  align-items: center; 
+  gap: 6px;
+  font-weight: 600; 
+  font-size: 12px; 
+  color: var(--text-dim);
+  flex-shrink: 0;
+}
+.panel-header .ph-icon { 
+  font-size: 14px;  /* Icon lebih besar */
+}
+
+.panel-body { 
+  flex: 1; 
+  padding: 10px 12px; 
+}
+
+.panel-footer {
+  padding: 7px 10px; 
+  border-top: 1px solid var(--border);
+  display: flex; 
+  gap: 6px; 
+  align-items: center; 
+  flex-wrap: wrap;  /* Wrap jika tidak muat */
+}
+
+/* ============================================================
+   OUTPUT TEXTAREA (Code Display)
+   ============================================================
+   - Monospace font untuk code/output
+   - Variasi: default, neg (negative prompt), json
+   - No border, bg gelap
+   ============================================================ */
+textarea.output {
+  width: 100%; 
+  background: var(--bg3); 
+  border: none;
+  resize: none;           /* Tidak bisa resize */
+  padding: 10px; 
+  line-height: 1.6;
+  /* Font monospace untuk code */
+  font-family: 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
+  font-size: 11.5px; 
+  border-radius: var(--radius-sm); 
+  min-height: 100px;
+}
+textarea.output:focus { 
+  outline: 1px solid var(--border-accent); 
+}
+
+/* Variasi untuk negative prompt (lebih pendek) */
+textarea.output.neg { 
+  min-height: 70px; 
+}
+
+/* Variasi untuk JSON (lebih tinggi) */
+textarea.output.json { 
+  min-height: 150px; 
+}
+
+/* ============================================================
+   LAYER MAP GRID (4 Column Grid)
+   ============================================================
+   - Grid 4 kolom untuk menampilkan layer cards
+   - Gap antar card
+   ============================================================ */
+.layer-map {
+  display: grid; 
+  grid-template-columns: repeat(4, 1fr);  /* 4 kolom equal width */
+  gap: 6px;
+}
+
+/* Individual layer card */
+.lm-card {
+  background: var(--bg3); 
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm); 
+  padding: 8px 10px;
+  display: flex; 
+  flex-direction: column; 
+  gap: 3px;
+}
+
+/* State aktif: border accent */
+.lm-card.active { 
+  border-color: var(--border-accent); 
+  background: var(--accent-dim); 
+}
+
+/* State terkunci: border merah */
+.lm-card.lock-card { 
+  border-color: rgba(255,107,107,.3); 
+  background: var(--red-soft); 
+}
+
+/* State video: border biru */
+.lm-card.vid-card { 
+  border-color: rgba(91,192,235,.25); 
+  background: var(--blue-soft); 
+}
+
+/* Title dalam card dengan variasi warna */
+.lm-title { 
+  font-size: 10px; 
+  font-weight: 700; 
+  color: var(--accent); 
+}
+.lm-title.red { 
+  color: var(--red); 
+}
+.lm-title.blue { 
+  color: var(--blue); 
+}
+.lm-title.dim { 
+  color: var(--text-dim); 
+}
+
+.lm-label { 
+  font-size: 10.5px; 
+  color: var(--text); 
+  font-weight: 600; 
+}
+.lm-desc { 
+  font-size: 9.5px; 
+  color: var(--text-dim); 
+  line-height: 1.4; 
+}
+
+/* ============================================================
+   PLATFORM PARAMS DISPLAY
+   ============================================================
+   - Grid 2 kolom untuk platform cards
+   - Monospace font untuk parameter
+   ============================================================ */
+.platform-grid { 
+  display: grid; 
+  grid-template-columns: repeat(2,1fr); 
+  gap: 6px; 
+}
+
+.plat-card {
+  background: var(--bg3); 
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm); 
+  padding: 7px 9px;
+}
+.plat-name { 
+  font-size: 10px; 
+  font-weight: 700; 
+  color: var(--accent); 
+  margin-bottom: 3px; 
+}
+.plat-params { 
+  font-size: 10.5px; 
+  color: var(--text-dim); 
+  font-family: monospace; 
+  word-break: break-all;  /* Break long parameter strings */
+}
+
+/* ============================================================
+   WEIGHT GRID (Visual Bar Display)
+   ============================================================
+   - Vertical list dengan progress bar
+   - Header dengan label dan value
+   - Bar dengan variasi warna
+   ============================================================ */
+.weight-grid { 
+  display: flex; 
+  flex-direction: column; 
+  gap: 6px; 
+}
+
+.w-item { 
+  display: flex; 
+  flex-direction: column; 
+  gap: 3px; 
+}
+
+.w-header { 
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center; 
+}
+.w-label { 
+  font-size: 11px; 
+  color: var(--text); 
+  font-weight: 500; 
+}
+
+/* Value dengan variasi warna status */
+.w-val { 
+  font-size: 11px; 
+  font-weight: 700; 
+  color: var(--accent); 
+}
+.w-val.locked { 
+  color: var(--red); 
+}
+.w-val.zero { 
+  color: var(--text-dim); 
+}
+
+/* Progress bar background */
+.w-bar-bg { 
+  height: 4px; 
+  background: var(--bg0); 
+  border-radius: 2px; 
+  overflow: hidden; 
+}
+
+/* Progress bar fill dengan variasi warna */
+.w-bar { 
+  height: 100%; 
+  border-radius: 2px; 
+  background: var(--accent); 
+}
+.w-bar.red { 
+  background: var(--red); 
+}
+.w-bar.dim { 
+  background: var(--text-dim); 
+}
+
+/* ============================================================
+   COLLAPSED SIDEBAR ICONS
+   ============================================================
+   - Muncul saat sidebar di-collapse
+   - Icon vertical dengan tooltip
+   - Sembunyi saat sidebar expanded
+   ============================================================ */
+
+/* Panel layer map: default tersembunyi, transisi opacity */
+#panelLayerMap {
+  display: none;
+  opacity: 0;
+  transition: opacity .2s ease;
+}
+
+/* Container icon collapsed */
+.collapsed-icons {
+  display: none;  /* Hidden by default */
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 4px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  flex: 1;
+}
+
+/* Tampilkan saat sidebar collapsed */
+#sidebar.collapsed .collapsed-icons { 
+  display: flex; 
+}
+#sidebar.collapsed .menu-tree { 
+  display: none;  /* Sembunyikan menu tree */
+}
+
+/* Individual icon button */
+.ci-btn {
+  width: 34px; 
+  height: 34px;
+  display: grid; 
+  place-items: center;  /* Center icon */
+  border-radius: var(--radius-sm);
+  background: none;
+  border: 1px solid transparent;
+  font-size: 14px; 
+  cursor: pointer;
+  transition: .12s ease; 
+  flex-shrink: 0;
+  color: var(--text-dim);
+  position: relative;  /* Untuk tooltip positioning */
+}
+
+.ci-btn:hover {
+  background: rgba(255,255,255,.07);
+  border-color: var(--border);
+  color: var(--text);
+  transform: none;  /* Override default button */
+  filter: none;
+}
+
+/* TOOLTIP: Label muncul saat hover icon */
+.ci-btn::after {
+  content: attr(data-label);  /* Ambil dari attribute data-label */
+  position: absolute;
+  left: calc(100% + 8px);     /* Posisi di kanan icon */
+  top: 50%; 
+  transform: translateY(-50%);
+  background: #1e2733;        /* Background tooltip */
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-size: 10.5px; 
+  font-weight: 600;
+  padding: 3px 7px;
+  border-radius: 4px;
+  white-space: nowrap;
+  pointer-events: none;       /* Tidak mengganggu mouse events */
+  opacity: 0;                 /* Hidden by default */
+  transition: opacity .15s;
+  z-index: 100;               /* Di atas elemen lain */
+}
+
+/* Tampilkan tooltip saat hover */
+.ci-btn:hover::after { 
+  opacity: 1; 
+}
+
+/* ============================================================
+   RESPONSIVE STYLES
+   ============================================================
+   - Media query untuk layar kecil (max-width: 860px)
+   - Sidebar jadi absolute overlay
+   - Grid columns berkurang
+   ============================================================ */
+@media (max-width: 860px) {
+  /* Sidebar jadi overlay absolute */
+  #sidebar { 
+    position: absolute; 
+    z-index: 20;           /* Di atas konten */
+    height: 100%; 
+    box-shadow: var(--shadow); 
+  }
+  
+  /* Layer map jadi 2 kolom */
+  .layer-map { 
+    grid-template-columns: repeat(2, 1fr); 
+  }
+  
+  /* Platform grid jadi 1 kolom */
+  .platform-grid { 
+    grid-template-columns: 1fr; 
+  }
+}
+</style>
 
 </head>
 <body>
-  
+
+  <!-- ini adalah prompt_generator_v4.html template versi minimal untuk menghemat context window limitation -->
+
 <!-- ============================
      SIDEBAR 
 ============================= -->
@@ -90,156 +1536,280 @@
 
           <!-- Primary Subject -->
           <div class="sub-group">
-            <details open>
-              <summary>Primary Subject/Character <span class="arr2">▸</span></summary>
+            <details>
+              <summary>Primary Subject <span class="arr2">▸</span></summary>
               <div class="sub-body">
-                <label>Subject/Race Type</label>
-                <select>
-                  <option>human</option>
-                  <!-- lebih banyak pilihan/option di file original -->
-                </select>
+                <label for="Subject Type">Subject Type</label>
+                  <select name="" id="">Subject Type
+                    <option value="">-- pilih --</option>
+                    <!-- lebih banyak pilihan/option di file original -->
+                  </select>
 
-                <label>Archetype / Role</label>
-                <select>
-                  <option value="">-- pilih --</option>
-                  <option>warrior</option>
-                  <!-- lebih banyak pilihan/option di file original -->
-                </select>
+                <label for="Species">Species</label>
+                  <select name="" id="">Species
+                    <option value="">-- pilih --</option>
+                    <!-- lebih banyak pilihan/option di file original (105 opts) -->
+                  </select>
+
+                <label for="Gender">Gender</label>
+                  <select name="" id="">Gender
+                    <option value="">-- pilih --</option>
+                    <option value="Humanoid">Humanoid</option>
+                    <!-- lebih banyak pilihan/option di file original (16 opts) -->
+                  </select>
+
+                <label for="Age">Age</label>
+                  <select name="" id="">Age
+                    <option value="">-- pilih --</option>
+                    <!-- lebih banyak pilihan/option di file original (12 opts) -->
+                  </select>
+
+                <label for="Ethnicity">Ethnicity</label>
+                  <select name="" id="">Ethnicity
+                    <option value="">-- pilih --</option>
+                    <!-- lebih banyak pilihan/option di file original (86 opts)-->
+                  </select>
+
+                <label for="">Archetype / Role</label>
+                  <select name="" id="">
+                    <option value="">-- pilih --</option>
+                    <!-- lebih banyak pilihan/option di file original (15 opts)-->
+                  </select>
               </div>
             </details>
           </div>
 
-          <!-- Physical - Face -->
+          <!-- Physical - Head Details -->
           <div class="sub-group">
             <details>
-              <summary>Physical — Face Detail <span class="arr2">▸</span></summary>
+              <summary>Head<span class="arr2">▸</span></summary>
               <div class="sub-body">
                 <div class="info">↑ Field utama di-lock di L1A · Face DNA. Di sini untuk desain awal.</div>
-                <label>Stature / Height</label>
-                <select>
-                  <option>petite (sangat mungil)</option>
-                  <option>short (pendek)</option>
-                  <option>average (rata-rata)</option>
-                  <option>tall (tinggi)</option>
-                  <option>very_tall (sangat tinggi)</option>
-                  <option>towering_non_human</option>
+
+                <label for="" title="Kepala">Head</label>
+                <select name="" id="">
+                  <option value="">-- pilih --</option>
                 </select>
 
-                <label>Body Frame</label>
-                <select>
-                  <option>ectomorph_lean (ramping)</option>
-                  <option>slim_delicate (fragile)</option>
-                  <option>mesomorph_athletic</option>
-                  <option>endomorph_solid</option>
-                  <option>muscular_powerful</option>
-                  <option>curvy_hourglass</option>
-                  <option>stocky_compact</option>
-                </select>
+                <label for="">Face</label>
+                  <select name="" id="">
+                    <option value="">-- pilih --</option>
+                  </select>
 
-                <label>Ears (Fantasy Override)</label>
-                <select>
-                  <option>human_normal</option>
-                  <option>pointed_elf_long (45° upward)</option>
-                  <option>pointed_elf_short</option>
-                  <option>cat_ears_on_head</option>
-                  <option>wolf_ears_on_head</option>
-                  <option>large_prominent</option>
-                </select>
+                <label for="">Cheek</label>
+                  <select name="" id="">
+                    <option value="">-- pilih --</option>
+                  </select>
+
+                <label for="">Jawline</label>
+                  <select name="" id="">
+                    <option value="">-- pilih --</option>
+                  </select>
+
+                <label for="">Chin</label>
+                  <select name="" id="">
+                    <option value="">-- pilih --</option>
+                  </select>
+
+                <label for="">Eyebrows</label>
+                  <select name="" id="">
+                    <option value="">-- pilih --</option>
+                  </select>
+
+                <label for="">Eye</label>
+                  <select name="" id="">
+                    <option value="">-- pilih --</option>
+                  </select>
+
+                <label for="">Nose</label>
+                  <select name="" id="">
+                    <option value="">-- pilih --</option>
+                  </select>
+
+                <label for="">Eye Shape</label>
+                  <select name="" id="">
+                    <option value="">-- pilih --</option>
+                  </select>
+
+                <label for="">Hair Color</label>
+                  <select name="" id="">
+                    <option value="">-- pilih --</option>
+                  </select>
+
+                <label for="">Hair Style</label>
+                  <select name="" id="">
+                    <option value="">-- pilih --</option>
+                  </select>
+
+                <label for="">Hair Length</label>
+                  <select name="" id="">
+                    <option value="">-- pilih --</option>
+                  </select>
               </div>
             </details>
           </div>
 
-          <!-- Skin & Hair -->
+          <!-- Physical - Body Details -->
           <div class="sub-group">
             <details>
-              <summary>Physical — Skin &amp; Hair <span class="arr2">▸</span></summary>
+              <summary>Body<span class="arr2">▸</span></summary>
               <div class="sub-body">
-                <label>Skin Color</label>
-                <select>
-                  <option value="">-- pilih --</option>
-                  <option>porcelain_white</option>
-                  <option>fair_light</option>
-                  <option>light_neutral</option>
-                  <option>light_warm_beige</option>
-                  <option>medium_tan</option>
-                  <option>olive_warm</option>
-                  <option>warm_brown</option>
-                  <option>deep_brown</option>
-                  <option>very_dark_ebony</option>
-                  <option>dark_ashen_grey (Dark Elf)</option>
-                  <option>pale_blue_tint (Fantasy)</option>
-                  <option>golden_metallic (Divine)</option>
-                </select>
+                <label for="">Body</label>
+                  <select name="" id="">
+                    <option value="">-- pilih --</option>
 
-                <label>Skin Texture</label>
-                <select>
-                  <option>smooth_porcelain</option>
-                  <option>smooth_natural</option>
-                  <option>slightly_textured</option>
-                  <option>weathered_rugged</option>
-                  <option>scarred</option>
-                  <option>aged_with_lines</option>
-                  <option>synthetic_perfect (Android)</option>
-                </select>
+                    <optgroup label="Body by Age Category">
+                      <option value="">-- pilih --</option>
+                    </optgroup>
 
-                <label>Hair Color</label>
-                <select>
-                  <option value="">-- pilih --</option>
-                  <option>jet_black (hitam pekat)</option>
-                  <option>dark_brown_black</option>
-                  <option>dark_brown</option>
-                  <option>medium_brown</option>
-                  <option>warm_auburn</option>
-                  <option>chestnut</option>
-                  <option>golden_blonde</option>
-                  <option>platinum_blonde</option>
-                  <option>strawberry_blonde</option>
-                  <option>bright_red</option>
-                  <option>grey_silver</option>
-                  <option>pure_white (Dark Elf / Elder)</option>
-                  <option>fantasy_purple</option>
-                  <option>fantasy_blue</option>
-                  <option>fantasy_pink</option>
-                  <option>fantasy_green</option>
-                  <option>multicolor_streaks</option>
-                </select>
+                    <optgroup label="Body by Proportion">
+                      <option value="">-- pilih --</option>
+                    </optgroup>
 
-                <label>Hair Style</label>
-                <select>
-                  <option value="">-- pilih --</option>
-                  <option>straight_sleek</option>
-                  <option>straight_loose</option>
-                  <option>wavy_natural</option>
-                  <option>wavy_tousled</option>
-                  <option>curly_defined</option>
-                  <option>curly_wild</option>
-                  <option>coily_natural</option>
-                  <option>braided_single</option>
-                  <option>braided_double</option>
-                  <option>twin_tails</option>
-                  <option>high_ponytail</option>
-                  <option>low_ponytail</option>
-                  <option>half_up_half_down</option>
-                  <option>messy_bun</option>
-                  <option>elegant_updo</option>
-                  <option>short_pixie</option>
-                  <option>bob_cut</option>
-                  <option>undercut</option>
-                  <option>wild_windswept</option>
-                  <option>flowing_long_loose</option>
-                </select>
+                    <optgroup label="Body by Shape">
+                      <option value="">-- pilih --</option>
+                    </optgroup>
 
-                <label>Hair Length</label>
-                <select>
-                  <option>bald_shaved</option>
-                  <option>very_short</option>
-                  <option>short_ear_length</option>
-                  <option>medium_chin_length</option>
-                  <option>medium_shoulder_length</option>
-                  <option>long_chest_length</option>
-                  <option>very_long_waist</option>
-                  <option>ultra_long_hip</option>
-                </select>
+                  </select>
+                
+                <label for="">Skin Color</label>
+                  <select name="" id="">
+                    <option value="">-- pilih --</option>
+                  </select>
+                
+                <label for="">Skin Texture</label>
+                  <select name="" id="">
+                    <option value="">-- pilih --</option>
+                  </select>
+                
+                <label for="">Neck</label>
+                  <select name="" id="">
+                    <option value="">-- pilih --</option>
+                  </select>
+                
+                <label for="">Shoulder</label>
+                  <select name="" id="">
+                    <option value="">-- pilih --</option>
+                  </select>
+                
+                <label for="">Arms</label>
+                  <select name="" id="">
+                    <option value="">-- pilih --</option>
+                  </select>
+                
+                <label for="">Wrists</label>
+                  <select name="" id="">
+                    <option value="">-- pilih --</option>
+                  </select>
+                
+                <label for="">Hands</label>
+                  <select name="" id="">
+                    <option value="">-- pilih --</option>
+                  </select>
+                
+                <label for="">fingers</label>
+                  <select name="" id="">
+                    <option value="">-- pilih --</option>
+                  </select>
+                
+                <label for="">Nails</label>
+                  <select name="" id="">
+                    <option value="">-- pilih --</option>
+                  </select>
+
+                <label for="">Chest / Breast</label>
+                  <select name="" id="">
+                    <option value="">-- pilih --</option>
+
+                    <!-- Chest / Breast -->
+                    <optgroup label="Type">
+                      <option value="">-- pilih --</option>
+                    </optgroup>
+
+                    <!-- NSFW Feature (18+) -->
+                    <!-- Ptosis (Sagging Grade) -->
+                    <optgroup label="Ptosis">
+                      <option value="">-- pilih --</option>
+                    </optgroup>
+
+                    <!-- Nipple Type -->
+                    <optgroup label="Nipple Type">
+                      <option value="">-- pilih --</option>
+                    </optgroup>
+
+                    <!-- Nipple Size -->
+                    <optgroup label="Nipple Size">
+                      <option value="">-- pilih --</option>
+                    </optgroup>
+
+                    <!-- Areola -->
+                    <optgroup label="Areola Color">
+                      <option value="">-- pilih --</option>
+                    </optgroup>
+
+                    <!-- Areola Diameter -->
+                    <optgroup label="Areola Diameter">
+                      <option value="">-- pilih --</option>
+                    </optgroup>
+
+                    <!-- Areola Texture -->
+                    <optgroup label="Areola Texture">
+                      <option value="">-- pilih --</option>
+                    </optgroup>
+                  </select>
+                
+                <label for="">Stomach</label>
+                  <select name="" id="">
+                    <option value="">-- pilih --</option>
+                  </select>
+                
+                <label for="">Waist</label>
+                  <select name="" id="">
+                    <option value="">-- pilih --</option>
+                  </select>
+                
+                <label for="">Hips</label>
+                  <select name="" id="">
+                    <option value="">-- pilih --</option>
+                  </select>
+                
+                <label for="">Buttocks</label>
+                  <select name="" id="">
+                    <option value="">-- pilih --</option>
+                  </select>
+                
+                <!-- NSFW Feature (18+) -->
+                <label for="">Genital</label>
+                  <select name="" id="">
+                    <option value="">-- pilih --</option>
+
+                    <optgroup label="Mon Pubis">
+                      <option value="">-- pilih --</option>
+                    </optgroup>
+
+                    <optgroup label="Labia Majora">
+                      <option value="">-- pilih --</option>
+                    </optgroup>
+
+                    <optgroup label="Labia Majora Color">
+                      <option value="">-- pilih --</option>
+                    </optgroup>
+                  </select>
+                
+                <label for="">Thigh</label>
+                  <select name="" id="">
+                    <option value="">-- pilih --</option>
+                  </select>
+                
+                <label for="">Calf</label>
+                  <select name="" id="">
+                    <option value="">-- pilih --</option>
+                  </select>
+                
+                <label for="">Foot</label>
+                  <select name="" id="">
+                    <option value="">-- pilih --</option>
+                  </select>
 
                 <label>Distinctive Features</label>
                 <input type="text" placeholder="e.g., scar_across_left_eye, glowing_rune_markings">
@@ -250,11 +1820,83 @@
           <!-- Dressing Room -->
           <div class="sub-group">
             <details>
-              <summary>Dressing Room — Active Outfit <span class="arr2">▸</span></summary>
+              <summary>Dressing Room — Active Attire <span class="arr2">▸</span></summary>
               <div class="sub-body">
                 <div class="info">🎭 Outfit overlay — tidak mengubah proporsi tubuh. Bisa diganti tiap generate.</div>
                 <label>Outfit Set Name</label>
                 <input type="text" placeholder="e.g., Battle_Ready_v1">
+                
+                <label for="">Outfit</label>
+                  <select name="" id="">
+                    <option value="">-- pilih --</option>
+
+                    <!-- 1. BARE / MINIMAL -->
+                    <optgroup label="Bare / Minimal">
+                      <option value="">-- pilih --</option>
+                    </optgroup>
+
+                    <!-- 2. INTIMATES / SWIM -->
+                    <optgroup label="Intimates / Swim">
+                      <option value="">-- pilih --</option>
+                    </optgroup>
+
+                    <!-- 3. CASUAL / DAILY -->
+                    <optgroup label="Casual / Daily">
+                      <option value="">-- pilih --</option>
+                    </optgroup>
+
+                    <!-- 4. FORMAL / OFFICE -->
+                    <optgroup label="Formal / Office">
+                      <option value="">-- pilih --</option>
+                    </optgroup>
+
+                    <!-- 5. THEMATIC / SEASONAL -->
+                    <optgroup label="Thematic / Seasonal">
+                      <option value="">-- pilih --</option>
+                    </optgroup>
+
+                    <!-- 6. COSTUME / FANTASY -->
+                    <optgroup label="Costume / Fantasy">
+                      <option value="">-- pilih --</option>
+                    </optgroup>
+
+                    <!-- NSFW Attire (18+) -->
+                    <!-- 1. BARE MINIMAL -->
+                    <optgroup label="Bare Minimal">
+                      <option value="">-- pilih --</option>
+                    </optgroup>
+
+                    <!-- 2. MICRO & SHEER -->
+                    <optgroup label="Micro & Sheer">
+                      <option value="">-- pilih --</option>
+                    </optgroup>
+
+                    <!-- 3. BONDAGE / FETISH -->
+                    <optgroup label="Bondage & Fetish">
+                      <option value="">-- pilih --</option>
+                    </optgroup>
+
+                    <!-- 4. ROLE-PLAY EROTIC -->
+                    <optgroup label="Role-Play Erotic">
+                      <option value="">-- pilih --</option>
+                    </optgroup>
+
+                    <!-- 5. TOYS & ACCESSORIES -->
+                    <optgroup label="Toys & Accessories">
+                      <option value="">-- pilih --</option>
+                    </optgroup>
+
+                    <!-- 6. EXTREME / MICRO -->
+                    <optgroup label="Extreme / Micro">
+                      <option value="">-- pilih --</option>
+                    </optgroup>
+
+                  </select>
+                
+                <label for="">Buttocks</label>
+                  <select name="" id="">
+                    <option value="">-- pilih --</option>
+                  </select>
 
                 <label>Outfit Preset (Quick Load)</label>
                 <select>
@@ -364,242 +2006,6 @@
               </div>
             </details>
           </div>
-
-          <!-- Pose & Action -->
-          <div class="sub-group">
-            <details>
-              <summary>Pose &amp; Action <span class="arr2">▸</span></summary>
-              <div class="sub-body">
-                <label>Base Pose</label>
-                <select>
-                  <option value="">-- pilih --</option>
-                  <option>standing_neutral</option>
-                  <option>standing_composed</option>
-                  <option>standing_relaxed</option>
-                  <option>standing_combat</option>
-                  <option>sitting_formal</option>
-                  <option>sitting_casual</option>
-                  <option>sitting_perched (tepi/rooftop)</option>
-                  <option>crouching</option>
-                  <option>kneeling_one_knee</option>
-                  <option>lying_down</option>
-                  <option>mid_walk</option>
-                  <option>mid_run</option>
-                  <option>leaning_against</option>
-                  <option>floating_hovering</option>
-                  <option>action_mid_strike</option>
-                </select>
-
-                <label>Action Verb</label>
-                <select>
-                  <option value="">-- none / idle --</option>
-                  <option>staring_into_distance</option>
-                  <option>examining_object</option>
-                  <option>reading</option>
-                  <option>meditating</option>
-                  <option>laughing</option>
-                  <option>crying</option>
-                  <option>drawing_sword</option>
-                  <option>mid_sword_swing</option>
-                  <option>casting_spell</option>
-                  <option>dodging</option>
-                  <option>walking_forward</option>
-                  <option>running_toward_camera</option>
-                  <option>stepping_forward_determined</option>
-                  <option>reaching_for_something</option>
-                </select>
-
-                <label>Action Object (optional)</label>
-                <input type="text" placeholder="e.g., ancient_artifact, glowing_sword">
-
-                <label>Energy Level</label>
-                <select>
-                  <option>static</option>
-                  <option>subtle</option>
-                  <option>controlled</option>
-                  <option>dynamic</option>
-                  <option>high_energy</option>
-                  <option>explosive</option>
-                </select>
-
-                <label>Balance</label>
-                <select>
-                  <option>stable</option>
-                  <option>shifting</option>
-                  <option>precarious</option>
-                  <option>mid_motion</option>
-                  <option>weightless</option>
-                </select>
-
-                <label>Line of Sight</label>
-                <select>
-                  <option>at_camera (menatap langsung)</option>
-                  <option>slightly_off_camera</option>
-                  <option>away_left</option>
-                  <option>away_right</option>
-                  <option>looking_up</option>
-                  <option>looking_down</option>
-                  <option>distant_unfocused</option>
-                  <option>at_subject_companion</option>
-                  <option>scanning_alert</option>
-                </select>
-              </div>
-            </details>
-          </div>
-
-          <!-- Expression & Emotion -->
-          <div class="sub-group">
-            <details>
-              <summary>Expression &amp; Emotion <span class="arr2">▸</span></summary>
-              <div class="sub-body">
-                <label>Primary Emotion</label>
-                <select>
-                  <option value="">-- pilih --</option>
-                  <option>neutral_calm</option>
-                  <option>determination (tekad kuat)</option>
-                  <option>joy_happiness</option>
-                  <option>sadness_grief</option>
-                  <option>anger_rage</option>
-                  <option>fear_terror</option>
-                  <option>wonder_awe (kagum)</option>
-                  <option>melancholy_wistful</option>
-                  <option>confidence</option>
-                  <option>pride</option>
-                  <option>shame_guilt</option>
-                  <option>curiosity</option>
-                  <option>suspicion_distrust</option>
-                  <option>exhaustion</option>
-                  <option>serenity_peace</option>
-                  <option>loneliness</option>
-                  <option>hope</option>
-                  <option>love_adoration</option>
-                  <option>stoic_unreadable</option>
-                  <option>smug_satisfied</option>
-                </select>
-
-                <label>Secondary Emotion (Undercurrent)</label>
-                <select>
-                  <option value="">-- none --</option>
-                  <option>underlying_sadness</option>
-                  <option>lingering_anger</option>
-                  <option>suppressed_fear</option>
-                  <option>hidden_hope</option>
-                  <option>quiet_determination</option>
-                  <option>unspoken_guilt</option>
-                  <option>jealousy_hidden</option>
-                  <option>love_unrequited</option>
-                  <option>nostalgia_bittersweet</option>
-                  <option>relief_mixed_with_grief</option>
-                </select>
-
-                <label>Intensity</label>
-                <select>
-                  <option>repressed (hampir tidak terlihat)</option>
-                  <option>subtle</option>
-                  <option>moderate</option>
-                  <option>strong</option>
-                  <option>intense</option>
-                  <option>overwhelming</option>
-                </select>
-
-                <label>Micro Expressions</label>
-                <select multiple size="4">
-                  <option>tight_jaw</option>
-                  <option>furrowed_brow</option>
-                  <option>slight_smile</option>
-                  <option>watery_eyes</option>
-                  <option>chin_slightly_raised</option>
-                  <option>flared_nostrils</option>
-                  <option>half_lidded_eyes</option>
-                  <option>head_tilt_slight</option>
-                  <option>direct_gaze</option>
-                </select>
-
-                <label>Eye State</label>
-                <select>
-                  <option>sharp_focused</option>
-                  <option>soft_warm</option>
-                  <option>cold_calculating</option>
-                  <option>tired_heavy</option>
-                  <option>bright_alive</option>
-                  <option>sad_distant</option>
-                  <option>wide_surprised</option>
-                  <option>squinting_suspicious</option>
-                  <option>glowing_power</option>
-                  <option>glazed_shock</option>
-                </select>
-              </div>
-            </details>
-          </div>
-
-          <!-- Modifiers -->
-          <div class="sub-group">
-            <details>
-              <summary>Modifiers (Cybernetics / Magic / Condition) <span class="arr2">▸</span></summary>
-              <div class="sub-body">
-                <label>Cybernetics</label>
-                <input type="text" placeholder="e.g., cybernetic_right_arm_full, neural_interface_temple">
-
-                <label>Magical Effects</label>
-                <input type="text" placeholder="e.g., aura_golden_light, dark_energy_wisps_around_hands">
-
-                <label>Physical Condition</label>
-                <select>
-                  <option value="">-- normal --</option>
-                  <option>battle_damaged_armor</option>
-                  <option>wounds_bandaged</option>
-                  <option>blood_on_clothing</option>
-                  <option>rain_soaked_thoroughly</option>
-                  <option>dust_covered</option>
-                  <option>fire_ash_covered</option>
-                  <option>extreme_wind_effect</option>
-                </select>
-              </div>
-            </details>
-          </div>
-
-          <!-- Secondary Subjects -->
-          <div class="sub-group">
-            <details>
-              <summary>Secondary Subjects &amp; Crowd <span class="arr2">▸</span></summary>
-              <div class="sub-body">
-                <label>Relationship to Primary</label>
-                <select>
-                  <option value="">-- none / solo --</option>
-                  <option>back_to_back_allies</option>
-                  <option>one_protecting_other</option>
-                  <option>confrontational</option>
-                  <option>intimate_close</option>
-                  <option>mentor_student</option>
-                  <option>stranger_wary</option>
-                  <option>rivalry_tense</option>
-                </select>
-
-                <label>Background Entities</label>
-                <select>
-                  <option value="">-- none --</option>
-                  <option>crowd_vague (kerumunan blur)</option>
-                  <option>soldier_patrol</option>
-                  <option>civilian_passing</option>
-                  <option>animal_companion</option>
-                  <option>silhouette_only</option>
-                  <option>distant_riders</option>
-                </select>
-
-                <label>Crowd Density</label>
-                <select>
-                  <option value="">-- none --</option>
-                  <option>sparse_few</option>
-                  <option>moderate_crowd</option>
-                  <option>dense_crowd</option>
-                  <option>mob_chaos</option>
-                </select>
-
-                <button class="full ghost">+ Add Secondary Character</button>
-              </div>
-            </details>
-          </div>
-
         </div>
       </details>
     </div>
@@ -615,11 +2021,11 @@
           <div class="info warn">⚠️ DIKUNCI. Tidak boleh diubah setelah karakter di-approve. Paspor digital karakter.</div>
 
           <div class="sub-body">
-            <label>Character Name</label>
+            <label for="">Character Name</label>
             <input type="text" placeholder="e.g., Eira Shadowleaf">
 
-            <label>Lock Method</label>
-            <select>
+            <label for="">Lock Method</label>
+            <select name="" id="">
               <option>image_reference_primary (⭐⭐⭐⭐⭐ — Terkuat)</option>
               <option>lora_model (⭐⭐⭐⭐⭐ — Terkuat / SD only)</option>
               <option>ip_adapter_controlnet (⭐⭐⭐⭐⭐ — SD only)</option>
@@ -888,11 +2294,11 @@
         <div class="section-body">
           <div class="info warn">⚠️ PERMANEN. "Pagar" identitas — apa yang DILARANG keras di setiap generate.</div>
           <div class="sub-body">
-            <label>Negative DNA (Identity Protection)</label>
+            <label for="">Negative DNA (Identity Protection)</label>
             <textarea rows="5" placeholder="wrong race:1.5&#10;european facial structure:1.4&#10;age drift&#10;extra limbs&#10;mature anatomy (jika karakter muda)"></textarea>
 
-            <label>Anatomy Locks</label>
-            <select multiple size="4">
+            <label for="">Anatomy Locks</label>
+            <select multiple size="4" name="" id="">
               <option selected>no_extra_fingers</option>
               <option selected>no_deformed_hands</option>
               <option selected>no_extra_limbs</option>
@@ -901,8 +2307,8 @@
               <option>no_floating_limbs</option>
             </select>
 
-            <label>Face Protection Locks</label>
-            <select multiple size="4">
+            <label for="">Face Protection Locks</label>
+            <select multiple size="4" name="" id="">
               <option selected>no_wrong_race</option>
               <option selected>no_age_drift</option>
               <option selected>no_deformed_face</option>
@@ -911,8 +2317,8 @@
               <option>no_plastic_skin</option>
             </select>
 
-            <label>Quality Locks</label>
-            <select multiple size="3">
+            <label for="">Quality Locks</label>
+            <select multiple size="3" name="" id="">
               <option selected>no_worst_quality</option>
               <option selected>no_low_quality</option>
               <option selected>no_blurry</option>
@@ -920,7 +2326,7 @@
               <option>no_text_artifacts</option>
             </select>
 
-            <label>Identity Locked Fields (tidak bisa di-override)</label>
+            <label for="">Identity Locked Fields (tidak bisa di-override)</label>
             <input type="text" placeholder="race_matrix, age_profile, face_dna, body_dna">
           </div>
         </div>
@@ -939,18 +2345,205 @@
             <details open>
               <summary>Scene Type &amp; Focus <span class="arr2">▸</span></summary>
               <div class="sub-body">
-                <label>Primary Focus</label>
-                <select>
-                  <option>character</option>
-                  <!-- lebih banyak pilihan/option di file original -->
-                </select>
-                <label>Narrative Moment</label>
-                <select>
+                <label for="" >Primary Focus</label>
+                <select name="" id="">
                   <option value="">-- pilih --</option>
-                  <option>calm_before_storm</option>
-                  <!-- lebih banyak pilihan/option di file original -->
+                </select>
+                <label for="">Narrative Moment</label>
+                <select name="" id="">
+                  <option value="">-- pilih --</option>
+                </select>
+                <input type="text" placeholder="Additional Narrative Moment">
+              </div>
+          <!-- Pose & Action -->
+          <div class="sub-group">
+            <details>
+              <summary>Pose &amp; Action <span class="arr2">▸</span></summary>
+              <div class="sub-body">
+                <label for="">Base Pose</label>
+                <select name="" id="">
+                  <option value="">-- pilih --</option>
+                </select>
+
+                <label for="">Action Verb</label>
+                <select name="" id="">
+                  <option value="">-- pilih --</option>
+                </select>
+
+                <label for="">Action Object (optional)</label>
+                <input type="text" placeholder="e.g., ancient_artifact, glowing_sword">
+
+                <label for="">Energy Level</label>
+                <select name="" id="">
+                  <option value="">-- pilih --</option>
+                </select>
+
+                <label for="">Balance</label>
+                <select name="" id="">
+                  <option value="">-- pilih --</option>
+                </select>
+
+                <label for="">Line of Sight</label>
+                <select name="" id="">
+                  <option value="">-- pilih --</option>
                 </select>
               </div>
+            </details>
+          </div>
+
+          <!-- Expression & Emotion -->
+          <div class="sub-group">
+            <details>
+              <summary>Expression &amp; Emotion <span class="arr2">▸</span></summary>
+              <div class="sub-body">
+                <label>Primary Emotion</label>
+                <select>
+                  <option value="">-- pilih --</option>
+                  <option>neutral_calm</option>
+                  <option>determination (tekad kuat)</option>
+                  <option>joy_happiness</option>
+                  <option>sadness_grief</option>
+                  <option>anger_rage</option>
+                  <option>fear_terror</option>
+                  <option>wonder_awe (kagum)</option>
+                  <option>melancholy_wistful</option>
+                  <option>confidence</option>
+                  <option>pride</option>
+                  <option>shame_guilt</option>
+                  <option>curiosity</option>
+                  <option>suspicion_distrust</option>
+                  <option>exhaustion</option>
+                  <option>serenity_peace</option>
+                  <option>loneliness</option>
+                  <option>hope</option>
+                  <option>love_adoration</option>
+                  <option>stoic_unreadable</option>
+                  <option>smug_satisfied</option>
+                </select>
+
+                <label>Secondary Emotion (Undercurrent)</label>
+                <select>
+                  <option value="">-- none --</option>
+                  <option>underlying_sadness</option>
+                  <option>lingering_anger</option>
+                  <option>suppressed_fear</option>
+                  <option>hidden_hope</option>
+                  <option>quiet_determination</option>
+                  <option>unspoken_guilt</option>
+                  <option>jealousy_hidden</option>
+                  <option>love_unrequited</option>
+                  <option>nostalgia_bittersweet</option>
+                  <option>relief_mixed_with_grief</option>
+                </select>
+
+                <label>Intensity</label>
+                <select>
+                  <option>repressed (hampir tidak terlihat)</option>
+                  <option>subtle</option>
+                  <option>moderate</option>
+                  <option>strong</option>
+                  <option>intense</option>
+                  <option>overwhelming</option>
+                </select>
+
+                <label>Micro Expressions</label>
+                <select multiple size="4">
+                  <option>tight_jaw</option>
+                  <option>furrowed_brow</option>
+                  <option>slight_smile</option>
+                  <option>watery_eyes</option>
+                  <option>chin_slightly_raised</option>
+                  <option>flared_nostrils</option>
+                  <option>half_lidded_eyes</option>
+                  <option>head_tilt_slight</option>
+                  <option>direct_gaze</option>
+                </select>
+
+                <label>Eye State</label>
+                <select>
+                  <option>sharp_focused</option>
+                  <option>soft_warm</option>
+                  <option>cold_calculating</option>
+                  <option>tired_heavy</option>
+                  <option>bright_alive</option>
+                  <option>sad_distant</option>
+                  <option>wide_surprised</option>
+                  <option>squinting_suspicious</option>
+                  <option>glowing_power</option>
+                  <option>glazed_shock</option>
+                </select>
+              </div>
+            </details>
+          </div>
+
+          <!-- Modifiers -->
+          <div class="sub-group">
+            <details>
+              <summary>Modifiers (Cybernetics / Magic / Condition) <span class="arr2">▸</span></summary>
+              <div class="sub-body">
+                <label>Cybernetics</label>
+                <input type="text" placeholder="e.g., cybernetic_right_arm_full, neural_interface_temple">
+
+                <label>Magical Effects</label>
+                <input type="text" placeholder="e.g., aura_golden_light, dark_energy_wisps_around_hands">
+
+                <label>Physical Condition</label>
+                <select>
+                  <option value="">-- normal --</option>
+                  <option>battle_damaged_armor</option>
+                  <option>wounds_bandaged</option>
+                  <option>blood_on_clothing</option>
+                  <option>rain_soaked_thoroughly</option>
+                  <option>dust_covered</option>
+                  <option>fire_ash_covered</option>
+                  <option>extreme_wind_effect</option>
+                </select>
+              </div>
+            </details>
+          </div>
+
+          <!-- Secondary Subjects -->
+          <div class="sub-group">
+            <details>
+              <summary>Secondary Subjects &amp; Crowd <span class="arr2">▸</span></summary>
+              <div class="sub-body">
+                <label>Relationship to Primary</label>
+                <select>
+                  <option value="">-- none / solo --</option>
+                  <option>back_to_back_allies</option>
+                  <option>one_protecting_other</option>
+                  <option>confrontational</option>
+                  <option>intimate_close</option>
+                  <option>mentor_student</option>
+                  <option>stranger_wary</option>
+                  <option>rivalry_tense</option>
+                </select>
+
+                <label>Background Entities</label>
+                <select>
+                  <option value="">-- none --</option>
+                  <option>crowd_vague (kerumunan blur)</option>
+                  <option>soldier_patrol</option>
+                  <option>civilian_passing</option>
+                  <option>animal_companion</option>
+                  <option>silhouette_only</option>
+                  <option>distant_riders</option>
+                </select>
+
+                <label>Crowd Density</label>
+                <select>
+                  <option value="">-- none --</option>
+                  <option>sparse_few</option>
+                  <option>moderate_crowd</option>
+                  <option>dense_crowd</option>
+                  <option>mob_chaos</option>
+                </select>
+
+                <button class="full ghost">+ Add Secondary Character</button>
+              </div>
+            </details>
+          </div>
+
             </details>
           </div>
 
@@ -1029,20 +2622,17 @@
             <details open>
               <summary>Location Detail <span class="arr2">▸</span></summary>
               <div class="sub-body">
-                <label>Setting Type</label>
-                <select>
+                <label for="">Setting Type</label>
+                <select name="" id="">
                   <option value="">-- pilih --</option>
-                  <option>urban_city_street</option>
-                  <!-- lebih banyak pilihan/option di file original -->
                 </select>
-                <label>Geographic / Cultural Context</label>
+                <label for="">Geographic / Cultural Context</label>
                 <input type="text" placeholder="e.g., Neo Tokyo, European countryside, ancient ruins">
-                <label>Maintenance State</label>
-                <select>
-                  <option>pristine_new</option>
-                  <!-- lebih banyak pilihan/option di file original -->
+                <label for="">Maintenance State</label>
+                <select name="" id="">
+                  <option value="">-- pilih --</option>
                 </select>
-                <label>Structural Features</label>
+                <label for="">Structural Features</label>
                 <input type="text" placeholder="e.g., exposed_pipes, neon_signs, ancient_columns">
               </div>
             </details>
@@ -1052,25 +2642,21 @@
             <details>
               <summary>Weather &amp; Climate <span class="arr2">▸</span></summary>
               <div class="sub-body">
-                <label>Precipitation</label>
-                <select>
-                  <option>none_clear</option>
-                  <!-- lebih banyak pilihan/option di file original -->
+                <label for="">Precipitation</label>
+                <select name="" id="">
+                  <option value="">-- pilih --</option>
+\                </select>
+                <label for="">Wind Effect</label>
+                <select name="" id="">
+                  <option value="">-- pilih --</option>
                 </select>
-                <label>Wind Effect</label>
-                <select>
-                  <option>calm_still</option>
-                  <!-- lebih banyak pilihan/option di file original -->
+                <label for="">Visibility</label>
+                <select name="" id="">
+                  <option value="">-- pilih --</option>
                 </select>
-                <label>Visibility</label>
-                <select>
-                  <option>crystal_clear</option>
-                  <!-- lebih banyak pilihan/option di file original -->
-                </select>
-                <label>Sky Condition</label>
-                <select>
-                  <option>clear_sunny</option>
-                  <!-- lebih banyak pilihan/option di file original -->
+                <label for="">Sky Condition</label>
+                <select name="" id="">
+                  <option value="">-- pilih --</option>
                 </select>
               </div>
             </details>
@@ -1080,12 +2666,11 @@
             <details>
               <summary>Props &amp; Objects <span class="arr2">▸</span></summary>
               <div class="sub-body">
-                <label>Key Props</label>
+                <label for="">Key Props</label>
                 <input type="text" placeholder="e.g., ancient_sword_in_stone, floating_lanterns">
-                <label>Prop Importance</label>
-                <select>
-                  <option>hero_prop (fokus utama)</option>
-                  <!-- lebih banyak pilihan/option di file original -->
+                <label for="">Prop Importance</label>
+                <select name="" id="">
+                  <option value="">-- pilih --</option>
                 </select>
                 <button class="full ghost">+ Add Another Prop</button>
               </div>
@@ -1107,36 +2692,29 @@
             <details open>
               <summary>Camera Setup <span class="arr2">▸</span></summary>
               <div class="sub-body">
-                <label>Shot Type</label>
-                <select>
+                <label for="">Shot Type</label>
+                <select name="" id="">
                   <option value="">-- pilih --</option>
-                  <option>extreme_close_up ECU (wajah saja)</option>
-                  <!-- lebih banyak pilihan/option di file original -->
                 </select>
 
-                <label>Camera Angle</label>
-                <select>
-                  <option>eye_level</option>
-                  <!-- lebih banyak pilihan/option di file original -->
-                </select>
-
-                <label>Focal Length</label>
-                <select>
+                <label for="">Camera Angle</label>
+                <select name="" id="">
                   <option value="">-- pilih --</option>
-                  <option>14mm (ultra wide — distorsi)</option>
-                  <!-- lebih banyak pilihan/option di file original -->
                 </select>
 
-                <label>Aperture / Depth of Field</label>
-                <select>
-                  <option>f/1.4 (ultra shallow — bokeh kuat)</option>
-                  <!-- lebih banyak pilihan/option di file original -->
+                <label for="">Focal Length</label>
+                <select name="" id="">
+                  <option value="">-- pilih --</option>
                 </select>
 
-                <label>Camera Stability</label>
-                <select>
-                  <option>static_locked</option>
-                  <!-- lebih banyak pilihan/option di file original -->
+                <label for="">Aperture / Depth of Field</label>
+                <select name="" id="">
+                  <option value="">-- pilih --</option>
+                </select>
+
+                <label for="">Camera Stability</label>
+                <select name="" id="">
+                  <option value="">-- pilih --</option>
                 </select>
               </div>
             </details>
@@ -1146,39 +2724,32 @@
             <details>
               <summary>Framing &amp; Composition Rules <span class="arr2">▸</span></summary>
               <div class="sub-body">
-                <label>Subject Placement</label>
-                <select>
-                  <option>center</option>
-                  <!-- lebih banyak pilihan/option di file original -->
+                <label for="">Subject Placement</label>
+                <select name="" id="">
+                  <option value="">-- pilih --</option>
                 </select>
 
-                <label>Symmetry</label>
-                <select>
-                  <option>symmetric_centered</option>
-                  <!-- lebih banyak pilihan/option di file original -->
+                <label for="">Symmetry</label>
+                <select name="" id="">
+                  <option value="">-- pilih --</option>
                 </select>
 
-                <label>Leading Lines</label>
-                <select>
-                  <option>none</option>
-                  <option>diagonal_left_to_right</option>
-                  <!-- lebih banyak pilihan/option di file original -->
+                <label for="">Leading Lines</label>
+                <select name="" id="">
+                  <option value="">-- pilih --</option>
                 </select>
 
-                <label>Depth / Layers</label>
-                <select>
-                  <option>flat_no_depth</option>
-                  <!-- lebih banyak pilihan/option di file original -->
+                <label for="">Depth / Layers</label>
+                <select name="" id="">
+                  <option value="">-- pilih --</option>
                 </select>
 
-                <label>Foreground Element</label>
+                <label for="">Foreground Element</label>
                 <input type="text" placeholder="e.g., blurred foliage, rain on glass, bokeh lights">
 
-                <label>Frame Within Frame</label>
-                <select>
-                  <option>none</option>
-                  <option>yes (doorway / window / arch)</option>
-                  <!-- lebih banyak pilihan/option di file original -->
+                <label for="">Frame Within Frame</label>
+                <select name="" id="">
+                  <option value="">-- pilih --</option>
                 </select>
               </div>
             </details>
@@ -1201,25 +2772,21 @@
             <details>
               <summary>Camera Movement <span class="arr2">▸</span></summary>
               <div class="sub-body">
-                <label>Movement Type</label>
-                <select>
-                  <option>static_locked</option>
-                  <!-- lebih banyak pilihan/option di file original -->
+                <label for="">Movement Type</label>
+                <select name="" id="">
+                  <option value="">-- pilih --</option>
                 </select>
-                <label>Direction</label>
-                <select>
-                  <option>left</option>
-                  <!-- lebih banyak pilihan/option di file original -->
+                <label for="">Direction</label>
+                <select name="" id="">
+                  <option value="">-- pilih --</option>
                 </select>
-                <label>Speed</label>
-                <select>
-                  <option>very_slow</option>
-                  <!-- lebih banyak pilihan/option di file original -->
+                <label for="">Speed</label>
+                <select name="" id="">
+                  <option value="">-- pilih --</option>
                 </select>
-                <label>Easing</label>
-                <select>
-                  <option>smooth_ease_in_out</option>
-                  <!-- lebih banyak pilihan/option di file original -->
+                <label for="">Easing</label>
+                <select name="" id="">
+                  <option value="">-- pilih --</option>
                 </select>
               </div>
             </details>
@@ -1229,27 +2796,26 @@
             <details>
               <summary>Subject Motion <span class="arr2">▸</span></summary>
               <div class="sub-body">
-                <label>Primary Motion</label>
-                <select>
-                  <option>idle_breathing (ambient)</option>
-                  <!-- lebih banyak pilihan/option di file original -->
+                <label for="">Primary Motion</label>
+                <select name="" id="">
+                  <option value="">-- pilih --</option>
                 </select>
-                <label>Motion Intensity</label>
-                <select>
-                  <option>static (tidak bergerak)</option>
-                  <!-- lebih banyak pilihan/option di file original -->
+
+                <label for="">Motion Intensity</label>
+                <select name="" id="">
+                  <option value="">-- pilih --</option>
                 </select>
-                <label>Cloth Physics</label>
-                <select>
-                  <option>none</option>
-                  <!-- lebih banyak pilihan/option di file original -->
+
+                <label for="">Cloth Physics</label>
+                <select name="" id="">
+                  <option value="">-- pilih --</option>
                 </select>
-                <label>Hair Physics</label>
-                <select>
-                  <option>none</option>
-                  <!-- lebih banyak pilihan/option di file original -->
+
+                <label for="">Hair Physics</label>
+                <select name="" id="">
+                  <option value="">-- pilih --</option>
                 </select>
-                <label>Particle Effects (optional)</label>
+                <label for="">Particle Effects (optional)</label>
                 <input type="text" placeholder="e.g., floating_petals, sparks, snow_particles">
               </div>
             </details>
@@ -1965,6 +3531,19 @@
       </details>
     </div>
 
+    <div class="layer-section" id="sec-l8a">
+      <div class="section-body">
+        <div class="info">Mature content for 18+ only</div>
+        <div class="sub-body">
+          <form>
+            <label for="setuju">Unlock Mature Content</label>
+            <input type="checkbox" id="setuju" name="setuju">
+            <button type="button">18+</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
   </nav><!-- end menu-tree -->
 </aside>
 
@@ -2163,6 +3742,618 @@
 
   </section>
 </main>
+
+<!-- <script>
+/**
+ * Prompt Generator V4 — UI Controller
+ * ======================================
+ * Fungsi yang diimplementasikan (UI saja, belum generator):
+ *   1. Toggle sidebar aside (expand/collapse) — default: TERTUTUP
+ *   2. Toggle panel Layer Map — default: TERTUTUP
+ *   3. Collapsed-icons: klik ikon → expand sidebar + scroll ke section
+ *   4. Slider weight: perbarui nilai tampilan saat digeser
+ *
+ * Tombol toggle sidebar : #toggleBtn (di dalam aside header)
+ * Tombol toggle layer map: #toggleBtnMain (di topbar kiri — sesuai file asli)
+ */
+
+(function () {
+  'use strict';
+
+  // ==================== CACHE ELEMEN DOM ====================
+  // Kumpulkan semua elemen yang sering diakses agar tidak query ulang
+  const DOM = {
+    sidebar      : null,   // Elemen <aside id="sidebar">
+    btnAside     : null,   // Tombol ☰ di dalam header sidebar → toggle aside
+    btnMain      : null,   // Tombol 🗺 di topbar → toggle layer map (BUKAN toggle aside)
+    panelLayerMap: null,   // Panel layer architecture di main content
+    menuTree     : null,   // Nav .menu-tree (scrollable form sidebar)
+    collapsedIcons: null,  // Nav #collapsedIcons (ikon kecil saat collapsed)
+    ciBtns       : null,   // Semua button di collapsed-icons
+    weightSliders: null    // Semua input[type=range] di panel weight
+  };
+
+  // ==================== STATE APLIKASI ====================
+  // Simpan status UI saat ini
+  const state = {
+    sidebarCollapsed : true,   // Default: sidebar TERTUTUP saat pertama buka
+    layerMapVisible  : false   // Default: layer map TERTUTUP saat pertama buka
+  };
+
+  // ==================== INISIALISASI ====================
+  function init() {
+    // Ambil semua referensi elemen DOM
+    cacheDOM();
+
+    // Pasang event listener
+    bindEvents();
+
+    // Terapkan state default (sidebar tutup, layer map tutup)
+    applySidebarState();
+    applyLayerMapState();
+  }
+
+  // ==================== CACHE DOM ====================
+  function cacheDOM() {
+    DOM.sidebar       = document.getElementById('sidebar');
+    DOM.btnAside      = document.getElementById('toggleBtn');      // tombol ☰ di dalam aside
+    DOM.btnMain       = document.getElementById('toggleBtnMain');  // tombol 🗺 di topbar → toggle layer map
+    DOM.panelLayerMap = document.getElementById('panelLayerMap');
+    DOM.menuTree      = DOM.sidebar ? DOM.sidebar.querySelector('.menu-tree') : null;
+    DOM.collapsedIcons= document.getElementById('collapsedIcons');
+    DOM.ciBtns        = DOM.collapsedIcons
+                          ? DOM.collapsedIcons.querySelectorAll('.ci-btn')
+                          : [];
+    // Slider weight ada di sub-body section weights
+    DOM.weightSliders = document.querySelectorAll('.weight-grid input[type=range]');
+  }
+
+  // ==================== PASANG EVENT LISTENER ====================
+  function bindEvents() {
+    // Tombol ☰ di header aside → toggle sidebar (expand/collapse)
+    if (DOM.btnAside) {
+      DOM.btnAside.addEventListener('click', function (e) {
+        e.stopPropagation();
+        toggleSidebar();
+      });
+    }
+
+    // Tombol 🗺 di topbar → toggle Layer Map panel (BUKAN toggle sidebar)
+    if (DOM.btnMain) {
+      DOM.btnMain.addEventListener('click', function (e) {
+        e.stopPropagation();
+        toggleLayerMap(); // sesuai file asli: toggleBtnMain memanggil togglePanelMap
+      });
+    }
+
+    // Klik ikon di collapsed-icons: expand sidebar lalu scroll ke section
+    DOM.ciBtns.forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var targetId = btn.getAttribute('data-target');
+        // Expand sidebar dulu jika masih tertutup
+        if (state.sidebarCollapsed) {
+          state.sidebarCollapsed = false;
+          applySidebarState();
+        }
+        // Scroll ke section yang dituju dan buka <details>-nya
+        scrollToSection(targetId);
+      });
+    });
+
+    // Update tampilan nilai slider weight saat digeser
+    DOM.weightSliders.forEach(function (slider) {
+      // Cari elemen .slider-val atau .w-val terdekat sebagai display nilai
+      slider.addEventListener('input', function () {
+        var display = findSliderDisplay(slider);
+        if (display) {
+          display.textContent = parseFloat(slider.value).toFixed(
+            slider.step && slider.step.includes('.') ? 1 : 0
+          );
+        }
+      });
+    });
+  }
+
+  // ==================== TOGGLE SIDEBAR ====================
+  // Dipanggil oleh btnAside DAN btnMain (keduanya toggle sidebar)
+  function toggleSidebar() {
+    state.sidebarCollapsed = !state.sidebarCollapsed;
+    applySidebarState();
+  }
+
+  // Terapkan state sidebar ke DOM
+  function applySidebarState() {
+    if (!DOM.sidebar) return;
+
+    // Toggle class 'collapsed' pada elemen aside
+    DOM.sidebar.classList.toggle('collapsed', state.sidebarCollapsed);
+
+    // Perbarui ikon tombol ☰/← di header aside saja
+    if (DOM.btnAside) {
+      DOM.btnAside.innerHTML = state.sidebarCollapsed ? '☰' : '←';
+      DOM.btnAside.title     = state.sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar';
+    }
+    // Catatan: btnMain adalah tombol layer map, tidak perlu diupdate di sini
+    // Tampilan .menu-tree dan .collapsed-icons dikontrol via CSS class 'collapsed'
+  }
+
+  // ==================== TOGGLE LAYER MAP ====================
+  // TERPISAH dari toggle sidebar — hanya kontrol panel #panelLayerMap
+  function toggleLayerMap() {
+    state.layerMapVisible = !state.layerMapVisible;
+    applyLayerMapState();
+  }
+
+  // Terapkan state layer map ke DOM
+  function applyLayerMapState() {
+    if (!DOM.panelLayerMap) return;
+
+    if (state.layerMapVisible) {
+      // Tampilkan panel — set display dulu, lalu opacity untuk fade-in
+      DOM.panelLayerMap.style.display = 'flex';
+      requestAnimationFrame(function () {
+        DOM.panelLayerMap.style.opacity = '1';
+      });
+    } else {
+      // Sembunyikan panel — reset opacity dan sembunyikan
+      DOM.panelLayerMap.style.opacity = '0';
+      DOM.panelLayerMap.style.display = 'none';
+    }
+
+    // Perbarui tampilan tombol 🗺 di topbar sebagai indikator aktif/tidak
+    if (DOM.btnMain) {
+      DOM.btnMain.style.opacity = state.layerMapVisible ? '1' : '0.5';
+      DOM.btnMain.title = state.layerMapVisible ? 'Sembunyikan Layer Map' : 'Tampilkan Layer Map';
+    }
+  }
+
+  // ==================== SCROLL KE SECTION ====================
+  // Buka <details> section target dan scroll ke sana di menu-tree
+  function scrollToSection(sectionId) {
+    if (!sectionId || !DOM.menuTree) return;
+
+    var section = document.getElementById(sectionId);
+    if (!section) return;
+
+    // Buka <details> utama section ini
+    var details = section.querySelector('details');
+    if (details) details.open = true;
+
+    // Scroll ke section dengan animasi halus
+    setTimeout(function () {
+      section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+      // Highlight singkat pada summary untuk feedback visual
+      var summary = details ? details.querySelector('summary') : null;
+      if (summary) {
+        summary.style.background = 'var(--accent-dim)';
+        summary.style.color      = 'var(--accent)';
+        setTimeout(function () {
+          summary.style.background = '';
+          summary.style.color      = '';
+        }, 1200);
+      }
+    }, 80);
+  }
+
+  // ==================== HELPER: CARI DISPLAY SLIDER ====================
+  // Cari elemen tampilan nilai slider — cek .slider-val atau .w-val terdekat
+  function findSliderDisplay(slider) {
+    // Cek di .slider-row parent
+    var row = slider.closest('.slider-row');
+    if (row) return row.querySelector('.slider-val');
+
+    // Cek di .w-item parent (weight grid)
+    var item = slider.closest('.w-item');
+    if (item) return item.querySelector('.w-val');
+
+    return null;
+  }
+
+  // ==================== JALANKAN SETELAH DOM SIAP ====================
+  // Guard agar init() tidak jalan sebelum DOM tersedia
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+
+})();
+</script> -->
+
+<script>
+/**
+ * Prompt Generator V4 — UI Controller
+ * ======================================
+ * Fungsi yang diimplementasikan (UI saja, belum generator):
+ *   1. Toggle sidebar aside (expand/collapse) — default: TERTUTUP
+ *   2. Toggle panel Layer Map — default: TERTUTUP
+ *   3. Collapsed-icons: klik ikon → expand sidebar + scroll ke section
+ *   4. Slider weight: perbarui nilai tampilan saat digeser
+ *
+ * Tombol toggle sidebar : #toggleBtn (di dalam aside header)
+ * Tombol toggle layer map: #toggleBtnMain (di topbar kiri — sesuai file asli)
+ */
+
+// ============================================
+// IIFE (Immediately Invoked Function Expression)
+// ============================================
+// Menggunakan IIFE untuk:
+// 1. Enkapsulasi kode - variabel tidak bocor ke global scope
+// 2. Hindari konflik nama variabel dengan kode lain
+// 3. "use strict" mode berjalan aman di dalam scope terpisah
+// ============================================
+(function () {
+  'use strict';  // Mode ketat: mencegah bug umum, error untuk variabel tidak dideklarasikan
+
+  // ============================================
+  // CACHE ELEMEN DOM
+  // ============================================
+  // Object DOM menyimpan referensi elemen HTML yang sering diakses
+  // Mengapa di-cache? Agar tidak querySelector berulang kali (lebih cepat)
+  // null sebagai default, diisi saat init() berjalan
+  // ============================================
+  const DOM = {
+    sidebar       : null,   // Elemen <aside id="sidebar"> - sidebar utama
+    btnAside      : null,   // Tombol ☰ di header sidebar - untuk toggle sidebar
+    btnMain       : null,   // Tombol 🗺 di topbar - untuk toggle layer map panel
+    panelLayerMap : null,   // Panel #panelLayerMap - panel arsitektur layer
+    menuTree      : null,   // Nav .menu-tree - menu navigasi saat sidebar expanded
+    collapsedIcons: null,   // Nav #collapsedIcons - icon saat sidebar collapsed
+    ciBtns        : null,   // NodeList semua button .ci-btn di collapsedIcons
+    weightSliders : null    // NodeList semua input range untuk weight slider
+  };
+
+  // ============================================
+  // STATE APLIKASI
+  // ============================================
+  // Object state menyimpan status UI saat ini
+  // Dipisah dari DOM agar logic lebih bersih dan bisa di-track
+  // Boolean values: true/false untuk status toggle
+  // ============================================
+  const state = {
+    sidebarCollapsed : true,   // Default: sidebar TERTUTUP saat halaman dibuka
+    layerMapVisible  : false   // Default: layer map TERTUTUP saat halaman dibuka
+  };
+
+  // ============================================
+  // FUNGSI INISIALISASI (ENTRY POINT)
+  // ============================================
+  // Fungsi utama yang dijalankan saat DOM siap
+  // Urutan eksekusi: cacheDOM → bindEvents → applyDefaultStates
+  // ============================================
+  function init() {
+    // 1. Kumpulkan semua referensi elemen DOM
+    cacheDOM();
+
+    // 2. Pasang event listener ke elemen-elemen interaktif
+    bindEvents();
+
+    // 3. Terapkan state default ke tampilan (sidebar tutup, layer map tutup)
+    applySidebarState();
+    applyLayerMapState();
+  }
+
+  // ============================================
+  // CACHE DOM - AMBIL REFERENSI ELEMEN
+  // ============================================
+  // Menggunakan getElementById dan querySelector untuk mengisi object DOM
+  // Null check (?) untuk menghindari error jika elemen tidak ditemukan
+  // Selector spesifik sesuai struktur HTML yang diharapkan
+  // ============================================
+  function cacheDOM() {
+    // Elemen utama sidebar
+    DOM.sidebar = document.getElementById('sidebar');
+    
+    // Tombol toggle di dalam header sidebar (icon ☰ / ←)
+    DOM.btnAside = document.getElementById('toggleBtn');
+    
+    // Tombol toggle layer map di topbar (icon 🗺)
+    DOM.btnMain = document.getElementById('toggleBtnMain');
+    
+    // Panel layer map yang akan di-toggle tampil/sembunyi
+    DOM.panelLayerMap = document.getElementById('panelLayerMap');
+    
+    // Menu tree - hanya ada saat sidebar expanded
+    DOM.menuTree = DOM.sidebar 
+      ? DOM.sidebar.querySelector('.menu-tree') 
+      : null;
+    
+    // Container icon saat sidebar collapsed
+    DOM.collapsedIcons = document.getElementById('collapsedIcons');
+    
+    // Semua tombol icon di collapsed state
+    // Jika collapsedIcons ada, cari semua .ci-btn, jika tidak ada jadi array kosong
+    DOM.ciBtns = DOM.collapsedIcons
+      ? DOM.collapsedIcons.querySelectorAll('.ci-btn')
+      : [];
+    
+    // Semua input range di dalam weight-grid (panel konfigurasi weight)
+    DOM.weightSliders = document.querySelectorAll('.weight-grid input[type=range]');
+  }
+
+  // ============================================
+  // BIND EVENTS - PASANG EVENT LISTENER
+  // ============================================
+  // Menghubungkan elemen DOM dengan fungsi handler
+  // Menggunakan addEventListener untuk interaksi user
+  // e.stopPropagation() mencegah event bubbling ke parent
+  // ============================================
+  function bindEvents() {
+    // ------------------------------------------------
+    // EVENT 1: Tombol ☰ di header sidebar
+    // Fungsi: Toggle expand/collapse sidebar
+    // ------------------------------------------------
+    if (DOM.btnAside) {
+      DOM.btnAside.addEventListener('click', function (e) {
+        e.stopPropagation();  // Hindari trigger event parent (jika ada)
+        toggleSidebar();      // Panggil fungsi toggle
+      });
+    }
+
+    // ------------------------------------------------
+    // EVENT 2: Tombol 🗺 di topbar
+    // Fungsi: Toggle tampilan panel Layer Map
+    // PERHATIAN: Ini BUKAN toggle sidebar, hanya panel layer map
+    // ------------------------------------------------
+    if (DOM.btnMain) {
+      DOM.btnMain.addEventListener('click', function (e) {
+        e.stopPropagation();
+        toggleLayerMap();  // Panggil fungsi toggle layer map
+      });
+    }
+
+    // ------------------------------------------------
+    // EVENT 3: Klik icon di collapsed-icons
+    // Fungsi: Expand sidebar + scroll ke section terkait
+    // Loop untuk setiap button .ci-btn
+    // ------------------------------------------------
+    DOM.ciBtns.forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        // Ambil ID target dari attribute data-target (misal: "section-weights")
+        var targetId = btn.getAttribute('data-target');
+        
+        // Jika sidebar masih tertutup, buka dulu
+        if (state.sidebarCollapsed) {
+          state.sidebarCollapsed = false;
+          applySidebarState();  // Update tampilan sidebar
+        }
+        
+        // Scroll ke section yang dituju dan buka accordion-nya
+        scrollToSection(targetId);
+      });
+    });
+
+    // ------------------------------------------------
+    // EVENT 4: Input pada slider weight
+    // Fungsi: Update tampilan nilai real-time saat digeser
+    // Event 'input' berjalan terus saat dragging, 'change' hanya saat release
+    // ------------------------------------------------
+    DOM.weightSliders.forEach(function (slider) {
+      slider.addEventListener('input', function () {
+        // Cari elemen display nilai terdekat
+        var display = findSliderDisplay(slider);
+        
+        if (display) {
+          // Format nilai: jika step desimal (0.1), pakai 1 angka desimal
+          // Jika step bulat (1), pakai 0 angka desimal (integer)
+          var decimals = slider.step && slider.step.includes('.') ? 1 : 0;
+          display.textContent = parseFloat(slider.value).toFixed(decimals);
+        }
+      });
+    });
+  }
+
+  // ============================================
+  // TOGGLE SIDEBAR - EXPAND/COLLAPSE
+  // ============================================
+  // Mengubah state sidebar lalu terapkan ke DOM
+  // Dipanggil oleh btnAside (tombol di header sidebar)
+  // ============================================
+  function toggleSidebar() {
+    // Toggle boolean: true jadi false, false jadi true
+    state.sidebarCollapsed = !state.sidebarCollapsed;
+    applySidebarState();  // Update tampilan
+  }
+
+  // ============================================
+  // APPLY SIDEBAR STATE - UPDATE DOM
+  // ============================================
+  // Mengubah class CSS dan icon berdasarkan state
+  // Class 'collapsed' di-toggle di elemen #sidebar
+  // CSS mengatur tampilan .menu-tree dan .collapsed-icons berdasarkan class ini
+  // ============================================
+  function applySidebarState() {
+    if (!DOM.sidebar) return;  // Guard clause: hentikan jika elemen tidak ada
+
+    // Toggle class 'collapsed' pada sidebar
+    // Jika state.sidebarCollapsed = true → tambah class 'collapsed'
+    // Jika false → hapus class 'collapsed'
+    DOM.sidebar.classList.toggle('collapsed', state.sidebarCollapsed);
+
+    // Update icon dan title tombol di header sidebar (btnAside)
+    if (DOM.btnAside) {
+      // Icon: ☰ (hamburger) saat tertutup, ← (panah kiri) saat terbuka
+      DOM.btnAside.innerHTML = state.sidebarCollapsed ? '☰' : '←';
+      
+      // Tooltip title untuk accessibility
+      DOM.btnAside.title = state.sidebarCollapsed 
+        ? 'Expand sidebar' 
+        : 'Collapse sidebar';
+    }
+    
+    // Catatan: btnMain (tombol layer map) TIDAK diupdate di sini
+    // karena fungsinya berbeda (toggle layer map, bukan sidebar)
+  }
+
+  // ============================================
+  // TOGGLE LAYER MAP - TAMPILKAN/SEMBUNYIKAN PANEL
+  // ============================================
+  // TERPISAH dari toggle sidebar
+  // Mengontrol visibilitas panel #panelLayerMap saja
+  // ============================================
+  function toggleLayerMap() {
+    state.layerMapVisible = !state.layerMapVisible;
+    applyLayerMapState();
+  }
+
+  // ============================================
+  // APPLY LAYER MAP STATE - UPDATE DOM
+  // ============================================
+  // Mengubah display dan opacity panel layer map
+  // Menggunakan requestAnimationFrame untuk animasi fade-in smooth
+  // ============================================
+  function applyLayerMapState() {
+    if (!DOM.panelLayerMap) return;
+
+    if (state.layerMapVisible) {
+      // ------------------------------------------------
+      // TAMPILKAN PANEL
+      // ------------------------------------------------
+      // 1. Set display ke 'flex' dulu (agar elemen muncul di layout)
+      DOM.panelLayerMap.style.display = 'flex';
+      
+      // 2. Gunakan requestAnimationFrame untuk animasi opacity
+      //    Menunggu browser render display:flex dulu baru ubah opacity
+      requestAnimationFrame(function () {
+        DOM.panelLayerMap.style.opacity = '1';  // Fade in ke opacity penuh
+      });
+      
+    } else {
+      // ------------------------------------------------
+      // SEMBUNYIKAN PANEL
+      // ------------------------------------------------
+      // Langsung set opacity 0 dan display none (tanpa animasi keluar)
+      DOM.panelLayerMap.style.opacity = '0';
+      DOM.panelLayerMap.style.display = 'none';
+    }
+
+    // Update tampilan tombol 🗺 di topbar sebagai indikator visual
+    if (DOM.btnMain) {
+      // Opacity penuh saat aktif, redup saat tidak aktif
+      DOM.btnMain.style.opacity = state.layerMapVisible ? '1' : '0.5';
+      
+      // Update tooltip
+      DOM.btnMain.title = state.layerMapVisible 
+        ? 'Sembunyikan Layer Map' 
+        : 'Tampilkan Layer Map';
+    }
+  }
+
+  // ============================================
+  // SCROLL TO SECTION - NAVIGASI MENU
+  // ============================================
+  // Fungsi untuk:
+  // 1. Buka accordion <details> section target
+  // 2. Scroll ke section tersebut di menu tree
+  // 3. Highlight summary untuk feedback visual
+  // 
+  // Parameter: sectionId (string) - ID elemen section target
+  // ============================================
+  function scrollToSection(sectionId) {
+    // Guard clauses: hentikan jika parameter tidak valid atau elemen tidak ada
+    if (!sectionId || !DOM.menuTree) return;
+
+    // Cari elemen section berdasarkan ID
+    var section = document.getElementById(sectionId);
+    if (!section) return;
+
+    // ------------------------------------------------
+    // BUKA ACCORDION
+    // ------------------------------------------------
+    // Cari elemen <details> di dalam section (accordion container)
+    var details = section.querySelector('details');
+    if (details) details.open = true;  // Property 'open' mengontrol expand/collapse
+
+    // ------------------------------------------------
+    // SCROLL DENGAN DELAY
+    // ------------------------------------------------
+    // setTimeout 80ms: tunggu DOM update setelah buka accordion
+    setTimeout(function () {
+      // Scroll ke section dengan animasi smooth
+      section.scrollIntoView({ 
+        behavior: 'smooth',  // Animasi scroll halus
+        block: 'start'       // Align ke bagian atas viewport
+      });
+
+      // ------------------------------------------------
+      // HIGHLIGHT FEEDBACK
+      // ------------------------------------------------
+      // Beri warna accent sementara pada summary untuk menunjukkan lokasi
+      var summary = details ? details.querySelector('summary') : null;
+      if (summary) {
+        // Terapkan style accent
+        summary.style.background = 'var(--accent-dim)';
+        summary.style.color = 'var(--accent)';
+        
+        // Kembalikan ke style normal setelah 1.2 detik
+        setTimeout(function () {
+          summary.style.background = '';
+          summary.style.color = '';
+        }, 1200);
+      }
+    }, 80);
+  }
+
+  // ============================================
+  // HELPER: FIND SLIDER DISPLAY
+  // ============================================
+  // Mencari elemen tampilan nilai untuk slider
+  // Mengecek dua kemungkinan struktur HTML:
+  // 1. .slider-row → .slider-val (slider biasa)
+  // 2. .w-item → .w-val (weight grid)
+  // 
+  // Parameter: slider (HTMLInputElement) - elemen input range
+  // Return: HTMLElement atau null
+  // ============================================
+  function findSliderDisplay(slider) {
+    // ------------------------------------------------
+    // CARI DI SLIDER-ROW (struktur slider standar)
+    // ------------------------------------------------
+    // closest() mencari parent dengan class .slider-row
+    var row = slider.closest('.slider-row');
+    if (row) {
+      // Di dalam .slider-row, cari .slider-val
+      return row.querySelector('.slider-val');
+    }
+
+    // ------------------------------------------------
+    // CARI DI W-ITEM (struktur weight grid)
+    // ------------------------------------------------
+    // Jika tidak ketemu di slider-row, cek di weight grid
+    var item = slider.closest('.w-item');
+    if (item) {
+      // Di dalam .w-item, cari .w-val
+      return item.querySelector('.w-val');
+    }
+
+    // Jika tidak ketemu di mana pun, return null
+    return null;
+  }
+
+  // ============================================
+  // INITIALIZATION TRIGGER
+  // ============================================
+  // Menentukan kapan init() dijalankan berdasarkan state DOM
+  // 
+  // Jika DOM masih loading: tunggu event DOMContentLoaded
+  // Jika DOM sudah ready: jalankan langsung
+  // ============================================
+  if (document.readyState === 'loading') {
+    // DOM masih dalam proses parsing
+    // Tunggu event DOMContentLoaded sebelum jalankan init
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    // DOM sudah selesai parsing (readyState = 'interactive' atau 'complete')
+    // Jalankan init langsung
+    init();
+  }
+
+  // ============================================
+  // AKHIR IIFE
+  // ============================================
+})();
+</script>
 
 </body>
 </html>
