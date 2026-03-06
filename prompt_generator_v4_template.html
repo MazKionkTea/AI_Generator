@@ -5,399 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Prompt Generator V4 — 14 Layer System</title>
 
-<!-- <link rel="stylesheet" href="style_v1.css">
-<script src="toggle_prompt-generator_v2.js"></script> -->
-
-<!-- <style>
-/* ===== CSS VARIABLES ===== */
-:root {
-  --bg0: #0b0f14;
-  --bg1: #11161d;
-  --bg2: #151b23;
-  --bg3: #0a0f15;
-  --accent: #9fef00;
-  --accent-soft: rgba(159,239,0,.15);
-  --accent-dim: rgba(159,239,0,.07);
-  --red: #ff6b6b;
-  --red-soft: rgba(255,107,107,.15);
-  --gold: #ffc107;
-  --gold-soft: rgba(255,193,7,.15);
-  --blue: #5bc0eb;
-  --blue-soft: rgba(91,192,235,.12);
-  --text: #d7dce3;
-  --text-dim: #9aa4b2;
-  --border: rgba(255,255,255,.07);
-  --border-accent: rgba(159,239,0,.25);
-  --radius: 10px;
-  --radius-sm: 6px;
-  --shadow: 0 6px 20px rgba(0,0,0,.5);
-  --sidebar-w: 290px;
-}
-
-/* ===== RESET ===== */
-*, *::before, *::after {
-  box-sizing: border-box; margin: 0; padding: 0;
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  font-size: 12.5px; color: var(--text);
-}
-
-body {
-  background: linear-gradient(160deg, var(--bg0) 0%, #090d12 100%);
-  display: flex; height: 100vh; overflow: hidden;
-}
-
-/* ===== SCROLLBAR ===== */
-::-webkit-scrollbar { width: 5px; height: 5px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(159,239,0,.35); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: var(--accent); }
-
-/* ===== BUTTON ===== */
-button {
-  background: linear-gradient(160deg, var(--accent), #7acc00);
-  color: #060e00; border: none; padding: 5px 11px;
-  border-radius: var(--radius-sm); cursor: pointer;
-  font-weight: 700; font-size: 11.5px; letter-spacing: .2px;
-  transition: .15s ease; white-space: nowrap;
-}
-button:hover { filter: brightness(1.08); transform: translateY(-1px); }
-button:active { transform: translateY(0); }
-button.ghost {
-  background: none; color: var(--accent);
-  border: 1px solid var(--border-accent);
-}
-button.ghost:hover { background: var(--accent-dim); }
-button.danger {
-  background: linear-gradient(160deg, var(--red), #cc4444);
-  color: #fff;
-}
-button.full { width: 100%; margin-top: 5px; }
-
-/* ===== SIDEBAR ===== */
-#sidebar {
-  width: var(--sidebar-w);
-  background: linear-gradient(180deg, #0f141c, var(--bg1));
-  border-right: 1px solid var(--border);
-  display: flex; flex-direction: column;
-  transition: width .25s ease; flex-shrink: 0;
-  overflow: hidden;
-}
-#sidebar.collapsed { width: 46px; }
-
-.sidebar-head {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 11px 12px; border-bottom: 1px solid var(--border);
-  background: rgba(0,0,0,.2); flex-shrink: 0;
-}
-.sidebar-head h2 {
-  color: var(--accent); font-size: 13px; font-weight: 700;
-  letter-spacing: .3px; white-space: nowrap; overflow: hidden;
-}
-#sidebar.collapsed .sidebar-head h2 { display: none; }
-
-#toggleBtn {
-  background: none; color: var(--accent);
-  width: 28px; height: 28px; border-radius: 6px;
-  display: grid; place-items: center; font-size: 14px; flex-shrink: 0;
-}
-#toggleBtn:hover { background: rgba(255,255,255,.06); transform: none; }
-
-/* ===== MENU TREE ===== */
-.menu-tree {
-  flex: 1; overflow-y: auto; overflow-x: hidden;
-  padding: 8px 6px 16px;
-}
-#sidebar.collapsed .menu-tree { display: none; }
-
-/* Section group */
-.layer-section {
-  margin-bottom: 4px;
-}
-.layer-section > details > summary {
-  display: flex; align-items: center; gap: 6px;
-  padding: 7px 9px; border-radius: var(--radius-sm);
-  cursor: pointer; list-style: none;
-  font-weight: 600; font-size: 12px; color: var(--text);
-  background: rgba(255,255,255,.03);
-  border: 1px solid var(--border);
-  transition: .12s ease; user-select: none;
-}
-.layer-section > details > summary:hover { background: rgba(255,255,255,.06); }
-.layer-section > details[open] > summary {
-  background: var(--accent-dim); border-color: var(--border-accent); color: var(--accent);
-}
-.layer-section > details > summary::marker { display: none; }
-.layer-section > details > summary .arr {
-  font-size: 10px; opacity: .6; margin-left: auto;
-  transition: transform .15s ease; flex-shrink: 0;
-}
-.layer-section > details[open] > summary .arr { transform: rotate(90deg); }
-
-.section-body { padding: 6px 0 4px; }
-
-/* Sub-group (optgroup) */
-.sub-group {
-  margin: 3px 0 3px 2px;
-  border-left: 2px solid var(--border);
-}
-.sub-group > details > summary {
-  list-style: none; cursor: pointer;
-  display: flex; align-items: center; gap: 5px;
-  padding: 4px 8px; border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
-  font-size: 11.5px; font-weight: 600; color: var(--text-dim);
-  transition: .12s ease; user-select: none;
-}
-.sub-group > details > summary:hover { color: var(--text); background: rgba(255,255,255,.04); }
-.sub-group > details[open] > summary { color: var(--accent); }
-.sub-group > details > summary::marker { display: none; }
-.sub-group > details > summary .arr2 { font-size: 9px; opacity: .5; margin-left: auto; transition: transform .15s; }
-.sub-group > details[open] > summary .arr2 { transform: rotate(90deg); }
-
-.sub-body { padding: 4px 8px 6px 10px; display: flex; flex-direction: column; gap: 4px; }
-
-/* ===== FORM ELEMENTS ===== */
-label {
-  display: block; font-size: 10.5px; color: var(--text-dim);
-  margin-bottom: 2px; margin-top: 6px; font-weight: 500;
-}
-label:first-child { margin-top: 2px; }
-
-select, input[type=text], input[type=number], textarea {
-  width: 100%; background: var(--bg3);
-  border: 1px solid var(--border); border-radius: var(--radius-sm);
-  padding: 5px 7px; color: var(--text); outline: none;
-  transition: border-color .15s, box-shadow .15s;
-  appearance: none; -webkit-appearance: none;
-}
-select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%239aa4b2'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 7px center; padding-right: 22px; }
-select:focus, input:focus, textarea:focus {
-  border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-soft);
-}
-textarea { resize: vertical; line-height: 1.5; }
-select[multiple] { background-image: none; padding-right: 7px; height: auto; }
-input[type=range] {
-  width: 100%; height: 4px; background: var(--bg3);
-  border-radius: 2px; border: none; padding: 0;
-  -webkit-appearance: none; appearance: none; cursor: pointer;
-}
-input[type=range]::-webkit-slider-thumb {
-  -webkit-appearance: none; width: 13px; height: 13px;
-  background: var(--accent); border-radius: 50%; cursor: pointer;
-}
-input[type=checkbox] {
-  width: 13px; height: 13px; margin: 0;
-  accent-color: var(--accent); cursor: pointer;
-}
-
-/* Lock row */
-.lock-row {
-  display: flex; align-items: center; gap: 6px;
-  padding: 3px 6px; border-radius: 4px;
-  background: rgba(255,107,107,.05);
-  border: 1px solid transparent; margin-top: 3px;
-}
-.lock-row:has(input:checked) { border-color: rgba(255,107,107,.3); }
-.lock-row label { margin: 0; font-size: 10.5px; color: var(--red); font-weight: 600; cursor: pointer; }
-
-/* Slider row */
-.slider-row { display: flex; flex-direction: column; gap: 3px; }
-.slider-header { display: flex; justify-content: space-between; align-items: center; }
-.slider-header label { margin: 0; }
-.slider-val { font-size: 11px; font-weight: 700; color: var(--accent); }
-.slider-val.dim { color: var(--text-dim); }
-
-/* Info box */
-.info { font-size: 10.5px; color: var(--text-dim); padding: 4px 8px;
-  background: var(--accent-dim); border-left: 2px solid var(--accent);
-  border-radius: 0 var(--radius-sm) var(--radius-sm) 0; line-height: 1.5; margin: 4px 0; }
-.info.warn { background: var(--red-soft); border-color: var(--red); color: #ffaaaa; }
-.info.blue { background: var(--blue-soft); border-color: var(--blue); color: #aaddf5; }
-
-/* Badge */
-.badge {
-  display: inline-flex; align-items: center;
-  padding: 1px 5px; border-radius: 3px; font-size: 9.5px; font-weight: 700;
-  letter-spacing: .3px; margin-left: 4px; flex-shrink: 0;
-}
-.badge.lock { background: var(--red-soft); color: var(--red); }
-.badge.vid  { background: var(--blue-soft); color: var(--blue); }
-.badge.adm  { background: rgba(255,255,255,.08); color: var(--text-dim); }
-.badge.imp  { background: var(--gold-soft); color: var(--gold); }
-.badge.ok   { background: var(--accent-dim); color: var(--accent); }
-
-/* Divider */
-.divider {
-  border: none; border-top: 1px solid var(--border);
-  margin: 6px 0;
-}
-
-/* Row flex */
-.row { display: flex; gap: 6px; }
-.row > * { flex: 1; }
-
-/* ===== MAIN ===== */
-main {
-  flex: 1; display: flex; flex-direction: column;
-  overflow: hidden; min-width: 0;
-}
-
-/* Topbar */
-.topbar {
-  height: 44px; background: linear-gradient(180deg, #0f141c, var(--bg1));
-  border-bottom: 1px solid var(--border);
-  display: flex; align-items: center; gap: 8px; padding: 0 12px;
-  flex-shrink: 0;
-}
-.topbar-title { color: var(--accent); font-weight: 700; font-size: 13px; }
-.topbar-sub { color: var(--text-dim); font-size: 10.5px; }
-.topbar-sep { width: 1px; height: 20px; background: var(--border); }
-.topbar-right { margin-left: auto; display: flex; gap: 6px; align-items: center; }
-
-/* Content */
-.content {
-  flex: 1; overflow-y: auto; overflow-x: hidden;
-  padding: 12px; display: flex; flex-direction: column; gap: 10px;
-}
-
-/* Panel */
-.panel {
-  background: linear-gradient(160deg, #121820, var(--bg2));
-  border: 1px solid var(--border); border-radius: var(--radius);
-  box-shadow: var(--shadow); display: flex; flex-direction: column;
-}
-.panel-header {
-  padding: 8px 12px; border-bottom: 1px solid var(--border);
-  display: flex; align-items: center; gap: 6px;
-  font-weight: 600; font-size: 12px; color: var(--text-dim);
-  flex-shrink: 0;
-}
-.panel-header .ph-icon { font-size: 14px; }
-.panel-body { flex: 1; padding: 10px 12px; }
-.panel-footer {
-  padding: 7px 10px; border-top: 1px solid var(--border);
-  display: flex; gap: 6px; align-items: center; flex-wrap: wrap;
-}
-
-textarea.output {
-  width: 100%; background: var(--bg3); border: none;
-  resize: none; padding: 10px; line-height: 1.6;
-  font-family: 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
-  font-size: 11.5px; border-radius: var(--radius-sm); min-height: 100px;
-}
-textarea.output:focus { outline: 1px solid var(--border-accent); }
-textarea.output.neg { min-height: 70px; }
-textarea.output.json { min-height: 150px; }
-
-/* Layer map */
-.layer-map {
-  display: grid; grid-template-columns: repeat(4, 1fr);
-  gap: 6px;
-}
-.lm-card {
-  background: var(--bg3); border: 1px solid var(--border);
-  border-radius: var(--radius-sm); padding: 8px 10px;
-  display: flex; flex-direction: column; gap: 3px;
-}
-.lm-card.active { border-color: var(--border-accent); background: var(--accent-dim); }
-.lm-card.lock-card { border-color: rgba(255,107,107,.3); background: var(--red-soft); }
-.lm-card.vid-card { border-color: rgba(91,192,235,.25); background: var(--blue-soft); }
-.lm-title { font-size: 10px; font-weight: 700; color: var(--accent); }
-.lm-title.red { color: var(--red); }
-.lm-title.blue { color: var(--blue); }
-.lm-title.dim { color: var(--text-dim); }
-.lm-label { font-size: 10.5px; color: var(--text); font-weight: 600; }
-.lm-desc { font-size: 9.5px; color: var(--text-dim); line-height: 1.4; }
-
-/* Platform params display */
-.platform-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 6px; }
-.plat-card {
-  background: var(--bg3); border: 1px solid var(--border);
-  border-radius: var(--radius-sm); padding: 7px 9px;
-}
-.plat-name { font-size: 10px; font-weight: 700; color: var(--accent); margin-bottom: 3px; }
-.plat-params { font-size: 10.5px; color: var(--text-dim); font-family: monospace; word-break: break-all; }
-
-/* Weight grid in output config */
-.weight-grid { display: flex; flex-direction: column; gap: 6px; }
-.w-item { display: flex; flex-direction: column; gap: 3px; }
-.w-header { display: flex; justify-content: space-between; align-items: center; }
-.w-label { font-size: 11px; color: var(--text); font-weight: 500; }
-.w-val { font-size: 11px; font-weight: 700; color: var(--accent); }
-.w-val.locked { color: var(--red); }
-.w-val.zero { color: var(--text-dim); }
-.w-bar-bg { height: 4px; background: var(--bg0); border-radius: 2px; overflow: hidden; }
-.w-bar { height: 100%; border-radius: 2px; background: var(--accent); }
-.w-bar.red { background: var(--red); }
-.w-bar.dim { background: var(--text-dim); }
-
-/* Panel layer map: default tersembunyi, transisi opacity saat toggle */
-#panelLayerMap {
-  display: none;
-  opacity: 0;
-  transition: opacity .2s ease;
-}
-/* Kontainer ikon yang tampil saat sidebar diciutkan */
-.collapsed-icons {
-  display: none; /* hidden by default, tampil saat collapsed */
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  padding: 8px 4px;
-  overflow-y: auto;
-  overflow-x: hidden;
-  flex: 1;
-}
-#sidebar.collapsed .collapsed-icons { display: flex; }
-#sidebar.collapsed .menu-tree { display: none; }
-
-/* Setiap ikon menu saat sidebar diciutkan */
-.ci-btn {
-  width: 34px; height: 34px;
-  display: grid; place-items: center;
-  border-radius: var(--radius-sm);
-  background: none;
-  border: 1px solid transparent;
-  font-size: 14px; cursor: pointer;
-  transition: .12s ease; flex-shrink: 0;
-  color: var(--text-dim);
-  position: relative; /* untuk tooltip */
-}
-.ci-btn:hover {
-  background: rgba(255,255,255,.07);
-  border-color: var(--border);
-  color: var(--text);
-  transform: none; /* override button hover default */
-  filter: none;
-}
-/* Tooltip label saat hover ikon collapsed */
-.ci-btn::after {
-  content: attr(data-label);
-  position: absolute;
-  left: calc(100% + 8px);
-  top: 50%; transform: translateY(-50%);
-  background: #1e2733;
-  border: 1px solid var(--border);
-  color: var(--text);
-  font-size: 10.5px; font-weight: 600;
-  padding: 3px 7px;
-  border-radius: 4px;
-  white-space: nowrap;
-  pointer-events: none;
-  opacity: 0; transition: opacity .15s;
-  z-index: 100;
-}
-.ci-btn:hover::after { opacity: 1; }
-
-/* ===== RESPONSIVE ===== */
-@media (max-width: 860px) {
-  #sidebar { position: absolute; z-index: 20; height: 100%; box-shadow: var(--shadow); }
-  .layer-map { grid-template-columns: repeat(2, 1fr); }
-  .platform-grid { grid-template-columns: 1fr; }
-}
-
-/* buat komentar disetiap kode untuk saya belajar setiap fungsi, deskripsi dan perubahan. */
-</style> -->
-
 <style>
 /* style dengan komentar lengkap */
 /* ============================================================
@@ -2833,34 +2440,31 @@ textarea.output.json {
         </summary>
         <div class="section-body">
           <div class="sub-body">
-            <label>Total Duration (seconds)</label>
+            <label for="">Total Duration (seconds)</label>
             <input type="number" value="5" min="1" max="60" step="0.5">
 
-            <label>FPS</label>
-            <select>
-              <option>24 (cinematic — recommended)</option>
-              <!-- lebih banyak pilihan/option di file original -->
+            <label for="">FPS</label>
+            <select name="" id="">
+              <option value="">-- pilih --</option>
             </select>
 
-            <label>Loop</label>
-            <select>
-              <option>false</option>
-              <option>true (seamless loop)</option>
+            <label for="">Loop</label>
+            <select name="" id="">
+              <option value="">-- pilih --</option>
             </select>
 
-            <label>Transition Type</label>
-            <select>
-              <option>none (cut hard)</option>
-              <!-- lebih banyak pilihan/option di file original -->
+            <label for="">Transition Type</label>
+            <select name="" id="">
+              <option value="">-- pilih --</option>
             </select>
 
-            <label>Key Action at Start</label>
+            <label for="">Key Action at Start</label>
             <input type="text" placeholder="e.g., character_stands_still">
 
-            <label>Key Action at End</label>
+            <label for="">Key Action at End</label>
             <input type="text" placeholder="e.g., character_turns_and_walks_away">
 
-            <label>Peak Moment (midpoint)</label>
+            <label for="">Peak Moment (midpoint)</label>
             <input type="text" placeholder="e.g., expression_change, spell_released">
           </div>
         </div>
@@ -2876,11 +2480,9 @@ textarea.output.json {
         </summary>
         <div class="section-body">
           <div class="sub-body" style="padding:6px 8px 4px">
-            <label>Lighting Preset (Quick Setup)</label>
-            <select>
+            <label for="">Lighting Preset (Quick Setup)</label>
+            <select name="" id="">
               <option value="">-- Custom --</option>
-              <option>natural_daylight</option>
-              <!-- lebih banyak pilihan/option di file original -->
             </select>
           </div>
 
@@ -2888,33 +2490,29 @@ textarea.output.json {
             <details>
               <summary>Key Light (Primary) <span class="arr2">▸</span></summary>
               <div class="sub-body">
-                <label>Source Type</label>
-                <select>
-                  <option>sun_daylight</option>
-                  <!-- lebih banyak pilihan/option di file original -->
+                <label for="">Source Type</label>
+                <select name="" id="">
+                  <option value="">-- pilih --</option>
                 </select>
 
-                <label>Position</label>
-                <select>
-                  <option>front_flat</option>
-                  <!-- lebih banyak pilihan/option di file original -->
+                <label for="">Position</label>
+                <select name="" id="">
+                  <option value="">-- pilih --</option>
                 </select>
 
-                <label>Quality</label>
-                <select>
-                  <option>hard (shadow tajam)</option>
-                  <!-- lebih banyak pilihan/option di file original -->
+                <label for="">Quality</label>
+                <select name="" id="">
+                  <option value="">-- pilih --</option>
                 </select>
 
-                <label>Color Temperature</label>
-                <select>
-                  <option>very_warm_2700K (candlelight)</option>
-                  <!-- lebih banyak pilihan/option di file original -->
+                <label for="">Color Temperature</label>
+                <select name="" id="">
+                  <option value="">-- pilih --</option>
                 </select>
 
                 <div class="slider-row">
                   <div class="slider-header">
-                    <label>Intensity</label>
+                    <label for="">Intensity</label>
                     <span class="slider-val">7</span>
                   </div>
                   <input type="range" min="1" max="10" value="7">
@@ -2927,15 +2525,13 @@ textarea.output.json {
             <details>
               <summary>Fill Light &amp; Rim Light <span class="arr2">▸</span></summary>
               <div class="sub-body">
-                <label>Fill Light Source</label>
-                <select>
+                <label for="">Fill Light Source</label>
+                <select name="" id="">
                   <option value="">-- none --</option>
-                  <option>ambient_environmental</option>
-                  <!-- lebih banyak pilihan/option di file original -->
                 </select>
                 <div class="slider-row">
                   <div class="slider-header">
-                    <label>Fill Intensity</label>
+                    <label for="">Fill Intensity</label>
                     <span class="slider-val">3</span>
                   </div>
                   <input type="range" min="1" max="10" value="3">
@@ -2947,11 +2543,11 @@ textarea.output.json {
                   <input type="checkbox" id="rimEnable">
                   <label for="rimEnable" style="color:var(--text-dim)">Enable Rim / Back Light</label>
                 </div>
-                <label>Rim Color</label>
+                <label for="">Rim Color</label>
                 <input type="text" placeholder="e.g., cyan, gold, white">
                 <div class="slider-row">
                   <div class="slider-header">
-                    <label>Rim Intensity</label>
+                    <label for="">Rim Intensity</label>
                     <span class="slider-val">5</span>
                   </div>
                   <input type="range" min="1" max="10" value="5">
@@ -2964,10 +2560,9 @@ textarea.output.json {
             <details>
               <summary>Shadow &amp; Ambient Effects <span class="arr2">▸</span></summary>
               <div class="sub-body">
-                <label>Shadow Style</label>
-                <select>
-                  <option>realistic_natural</option>
-                  <!-- lebih banyak pilihan/option di file original -->
+                <label for="">Shadow Style</label>
+                <select name="" id="">
+                  <option value="">-- pilih --</option>
                 </select>
 
                 <div class="lock-row" style="background:none;border:none;padding:0">
@@ -2983,12 +2578,9 @@ textarea.output.json {
                   <label for="causticEnable" style="color:var(--text-dim)">Caustic Light (air / glass)</label>
                 </div>
 
-                <label>Lighting Condition</label>
-                <select>
-                  <option>high_key (terang, shadow minim)</option>
-                  <option>balanced</option>
-                  <option>low_key (gelap, shadow dalam)</option>
-                  <option>silhouette</option>
+                <label for="">Lighting Condition</label>
+                <select name="" id="">
+                  <option value="">-- pilih --</option>
                 </select>
               </div>
             </details>
@@ -3009,18 +2601,14 @@ textarea.output.json {
             <details open>
               <summary>Emotional Tone <span class="arr2">▸</span></summary>
               <div class="sub-body">
-                <label>Primary Tone</label>
-                <select>
+                <label for="">Primary Tone</label>
+                <select name="" id="">
                   <option value="">-- pilih --</option>
-                  <option>tense_anxious</option>
-                  <!-- lebih banyak pilihan/option di file original -->
                 </select>
 
-                <label>Secondary Tone</label>
-                <select>
+                <label for="">Secondary Tone</label>
+                <select name="" id="">
                   <option value="">-- none --</option>
-                  <option>tense_anxious</option>
-                  <!-- lebih banyak pilihan/option di file original -->
                 </select>
               </div>
             </details>
@@ -3030,30 +2618,25 @@ textarea.output.json {
             <details>
               <summary>Visual Style <span class="arr2">▸</span></summary>
               <div class="sub-body">
-                <label>Art Movement / Style</label>
-                <select>
+                <label for="">Art Movement / Style</label>
+                <select name="" id="">
                   <option value="">-- pilih --</option>
-                  <option>photorealism</option>
-                  <!-- lebih banyak pilihan/option di file original -->
                 </select>
 
-                <label>Film / Director Reference</label>
+                <label for="">Film / Director Reference</label>
                 <input type="text" placeholder="e.g., Blade Runner 2049, Studio Ghibli, Wes Anderson">
 
-                <label>Color Palette</label>
-                <select>
+                <label for="">Color Palette</label>
+                <select name="" id="">
                   <option value="">-- pilih --</option>
-                  <option>warm_golden (amber, orange, cream)</option>
-                  <!-- lebih banyak pilihan/option di file original -->
                 </select>
 
-                <label>Custom Color Notes</label>
+                <label for="">Custom Color Notes</label>
                 <input type="text" placeholder="e.g., neon magenta + deep shadow + cyan accent">
 
-                <label>Contrast</label>
-                <select>
-                  <option>low_soft_dreamy</option>
-                  <!-- lebih banyak pilihan/option di file original -->
+                <label for="">Contrast</label>
+                <select name="" id="">
+                  <option value="">-- pilih --</option>
                 </select>
               </div>
             </details>
@@ -3063,15 +2646,14 @@ textarea.output.json {
             <details>
               <summary>Texture &amp; Grain <span class="arr2">▸</span></summary>
               <div class="sub-body">
-                <label>Texture Emphasis</label>
-                <select>
-                  <option>smooth_clean</option>
-                  <!-- lebih banyak pilihan/option di file original -->
+                <label for="">Texture Emphasis</label>
+                <select name="" id="">
+                  <option value="">-- pilih --</option>
                 </select>
-                <label>Film Grain</label>
-                <select>
-                  <option>none_clean</option>
-                  <!-- lebih banyak pilihan/option di file original -->
+
+                <label for="">Film Grain</label>
+                <select name="" id="">
+                  <option value="">-- pilih --</option>
                 </select>
               </div>
             </details>
@@ -3092,22 +2674,19 @@ textarea.output.json {
             <details open>
               <summary>Render Specs <span class="arr2">▸</span></summary>
               <div class="sub-body">
-                <label>Aspect Ratio</label>
-                <select>
-                  <option>9:16 (vertikal mobile — TikTok / Reels)</option>
-                  <!-- lebih banyak pilihan/option di file original -->
+                <label for="">Aspect Ratio</label>
+                <select name="" id="">
+                  <option value="">-- pilih --</option>
                 </select>
 
-                <label>Resolution</label>
-                <select>
-                  <option>512x512 (SD legacy)</option>
-                  <!-- lebih banyak pilihan/option di file original -->
+                <label for="">Resolution</label>
+                <select name="" id="">
+                  <option value="">-- pilih --</option>
                 </select>
 
-                <label>Quality / Detail Level</label>
-                <select>
-                  <option>draft (cepat, iterasi)</option>
-                  <!-- lebih banyak pilihan/option di file original -->
+                <label for="">Quality / Detail Level</label>
+                <select name="" id="">
+                  <option value="">-- pilih --</option>
                 </select>
               </div>
             </details>
@@ -3117,23 +2696,19 @@ textarea.output.json {
             <details>
               <summary>Virtual Camera Tech <span class="arr2">▸</span></summary>
               <div class="sub-body">
-                <label>ISO</label>
-                <select>
-                  <option>100 (bright, noise-free)</option>
-                  <!-- lebih banyak pilihan/option di file original -->
+                <label for="">ISO</label>
+                <select name="" id="">
+                  <option value="">-- pilih --</option>
                 </select>
 
-                <label>Shutter Speed</label>
-                <select>
-                  <option>1/30 (motion blur)</option>
-                  <!-- lebih banyak pilihan/option di file original -->
+                <label for="">Shutter Speed</label>
+                <select name="" id="">
+                  <option value="">-- pilih --</option>
                 </select>
 
-                <label>Render Engine</label>
-                <select>
-                  <option value="">-- choose --</option>
-                  <option>Unreal Engine 5</option>
-                  <!-- lebih banyak pilihan/option di file original -->
+                <label for="">Render Engine</label>
+                <select name="" id="">
+                  <option value="">-- pilih --</option>
                 </select>
               </div>
             </details>
@@ -3143,22 +2718,19 @@ textarea.output.json {
             <details>
               <summary>Post Processing <span class="arr2">▸</span></summary>
               <div class="sub-body">
-                <label>Color Grading</label>
-                <select>
-                  <option>none_natural</option>
-                  <!-- lebih banyak pilihan/option di file original -->
+                <label for="">Color Grading</label>
+                <select name="" id="">
+                  <option value="">-- pilih --</option>
                 </select>
 
-                <label>Lens Effects</label>
-                <select multiple size="4">
-                  <option>vignette</option>
-                  <!-- lebih banyak pilihan/option di file original -->
+                <label for="">Lens Effects</label>
+                <select multiple size="4" name="" id="">
+                  <option value="">-- pilih --</option>
                 </select>
 
-                <label>Sharpening</label>
-                <select>
-                  <option>none_soft</option>
-                  <!-- lebih banyak pilihan/option di file original -->
+                <label for="">Sharpening</label>
+                <select name="" id="">
+                  <option value="">-- pilih --</option>
                 </select>
               </div>
             </details>
@@ -3168,20 +2740,19 @@ textarea.output.json {
             <details>
               <summary>Video Specs <span class="badge vid">VIDEO</span> <span class="arr2">▸</span></summary>
               <div class="sub-body">
-                <label>Codec</label>
-                <select>
-                  <option>h264 (kompatibel universal)</option>
-                  <!-- lebih banyak pilihan/option di file original -->
+                <label for="">Codec</label>
+                <select name="" id="">
+                  <option value="">-- pilih --</option>
                 </select>
-                <label>Delivery Format</label>
-                <select>
-                  <option>mp4</option>
-                  <!-- lebih banyak pilihan/option di file original -->
+
+                <label for="">Delivery Format</label>
+                <select name="" id="">
+                  <option value="">-- pilih --</option>
                 </select>
-                <label>Stabilization</label>
-                <select>
-                  <option>none</option>
-                  <!-- lebih banyak pilihan/option di file original -->
+
+                <label for="">Stabilization</label>
+                <select name="" id="">
+                  <option value="">-- pilih --</option>
                 </select>
               </div>
             </details>
@@ -3203,51 +2774,29 @@ textarea.output.json {
             <details open>
               <summary>Prompt Structure <span class="arr2">▸</span></summary>
               <div class="sub-body">
-                <label>Section Order</label>
-                <select>
-                  <option>identity_first — identity → subjects → lighting → composition → atmosphere → scene → environment</option>
-                  <option>cinematic_order — composition → subjects → lighting → scene → atmosphere</option>
-                  <option>scene_first — scene → environment → atmosphere → lighting → identity → subjects</option>
-                  <option>mood_first — atmosphere → lighting → identity → subjects → scene</option>
-                  <option>video_optimized — identity → subjects → motion → temporal → composition → lighting</option>
-                  <option>sdxl_budget — identity → subjects → lighting → composition (token-optimized)</option>
+                <label for="">Section Order</label>
+                <select name="" id="">
+                  <option value="">-- pilih --</option>
                 </select>
 
-                <label>Separator</label>
-                <select>
-                  <option>, (comma space — universal)</option>
-                  <option>. (period — natural language / DALL-E)</option>
-                  <option> | (pipe — MidJourney style)</option>
-                  <option>\n (new line — human readable)</option>
+                <label for="">Separator</label>
+                <select name="" id="">
+                  <option value="">-- pilih --</option>
                 </select>
 
-                <label>Emphasis Syntax</label>
-                <select>
-                  <option>none (semua platform)</option>
-                  <option>parentheses: (token:1.x) — SDXL only</option>
-                  <option>weight_suffix: (token:1.x) — SDXL</option>
-                  <option>brackets_reduce: [token] — SDXL</option>
-                  <option>natural_repetition — semua platform</option>
-                  <option>attention_markers — semua platform</option>
+                <label for="">Emphasis Syntax</label>
+                <select name="" id="">
+                  <option value="">-- pilih --</option>
                 </select>
 
-                <label>Length Limit (characters)</label>
-                <select>
-                  <option>250 (Pika — ultra short)</option>
-                  <option>500 (Kling / Runway — video)</option>
-                  <option>1000 (MidJourney)</option>
-                  <option>1500 (SDXL — 75 token limit)</option>
-                  <option>2000 (DALL-E 3)</option>
-                  <option>4000 (Sora — long narrative)</option>
+                <label for="">Length Limit (characters)</label>
+                <select name="" id="">
+                  <option value="">-- pilih --</option>
                 </select>
 
-                <label>Truncation Strategy</label>
-                <select>
-                  <option>priority_only (weight ≥ 1.0 stays)</option>
-                  <option>proportional_trim</option>
-                  <option>front_preserve</option>
-                  <option>keyword_compress (SDXL)</option>
-                  <option>split_dual_pass (SDXL CLIP1+CLIP2)</option>
+                <label for="">Truncation Strategy</label>
+                <select name="" id="">
+                  <option value="">-- pilih --</option>
                 </select>
               </div>
             </details>
@@ -3363,14 +2912,8 @@ textarea.output.json {
                 </div>
 
                 <label style="margin-top:8px">Weight Preset</label>
-                <select>
-                  <option>default_balanced</option>
-                  <option>character_portrait_extreme</option>
-                  <option>environment_showcase</option>
-                  <option>cinematic_balanced</option>
-                  <option>mood_atmosphere_heavy</option>
-                  <option>video_action_focused</option>
-                  <option>sdxl_token_budget</option>
+                <select name="" id="">
+                  <option value="">-- pilih --</option>
                 </select>
               </div>
             </details>
@@ -3382,21 +2925,12 @@ textarea.output.json {
               <div class="sub-body">
                 <div class="info">🔗 Auto-merge dengan technical_constraints negative DNA.</div>
 
-                <label>Situational Negative Banks</label>
-                <select multiple size="5">
-                  <option>clean_portrait_background</option>
-                  <option>no_text_artifacts</option>
-                  <option>no_extra_characters</option>
-                  <option>cinematic_quality</option>
-                  <option>anatomy_protection</option>
-                  <option>face_protection</option>
-                  <option>style_protection (no cartoon/anime)</option>
-                  <option>video_motion_quality</option>
-                  <option>outdoor_scene_clean</option>
-                  <option>period_accuracy (no modern elements)</option>
+                <label for="">Situational Negative Banks</label>
+                <select multiple size="5" name="" id="">
+                  <option value="">-- pilih --</option>
                 </select>
 
-                <label>Additional Negative (manual)</label>
+                <label for="">Additional Negative (manual)</label>
                 <textarea rows="3" placeholder="e.g., cluttered background, text in image, multiple people..."></textarea>
               </div>
             </details>
@@ -3406,19 +2940,19 @@ textarea.output.json {
             <details>
               <summary>Platform Parameters <span class="arr2">▸</span></summary>
               <div class="sub-body">
-                <label>MidJourney</label>
+                <label for="">MidJourney</label>
                 <input type="text" placeholder="--v 6 --style raw --ar 2:3 --s 100 --q 2">
-                <label>Stable Diffusion XL</label>
+                <label for="">Stable Diffusion XL</label>
                 <input type="text" placeholder="steps:25, cfg:7.5, sampler:DPM++ 2M Karras">
-                <label>DALL-E 3</label>
+                <label for="">DALL-E 3</label>
                 <input type="text" placeholder="quality=hd, style=natural, size=1024x1792">
-                <label>Runway Gen-3</label>
+                <label for="">Runway Gen-3</label>
                 <input type="text" placeholder="fps=24, duration=6, motion=medium">
-                <label>Kling</label>
+                <label for="">Kling</label>
                 <input type="text" placeholder="mode=pro, duration=10, face_ref=0.85">
-                <label>Pika</label>
+                <label for="">Pika</label>
                 <input type="text" placeholder="--motion 2 --ar 9:16 --fps 24">
-                <label>Sora</label>
+                <label for="">Sora</label>
                 <input type="text" placeholder="resolution=1080p, duration=10s, ar=16:9">
               </div>
             </details>
@@ -3438,42 +2972,29 @@ textarea.output.json {
         <div class="section-body">
           <div class="info">⚙️ Weight 0.0 — tidak masuk prompt. Hanya mengontrol sistem batch.</div>
           <div class="sub-body">
-            <label>Base Seed</label>
+            <label for="">Base Seed</label>
             <input type="number" value="42">
             <div class="lock-row" style="margin-top:4px">
               <input type="checkbox" id="seedLock" checked>
               <label for="seedLock" style="color:var(--text-dim)">Deterministic (same seed = same result)</label>
             </div>
 
-            <label>Batch Count</label>
+            <label for="">Batch Count</label>
             <input type="number" value="1" min="1" max="100">
 
-            <label>Genre Profile</label>
-            <select>
-              <option>none (custom)</option>
-              <option>dark_fantasy</option>
-              <option>cyberpunk</option>
-              <option>slice_of_life</option>
-              <option>epic_fantasy</option>
-              <option>horror</option>
-              <option>romance</option>
+            <label for="">Genre Profile</label>
+            <select name="" id="">
+              <option value="">-- pilih --</option>
             </select>
 
-            <label>Video Preset</label>
-            <select>
-              <option value="">-- none --</option>
-              <option>Character_Idle_Loop_Series</option>
-              <option>Dynamic_Action_Shots</option>
-              <option>Portrait_Reveal_Series</option>
+            <label for="">Video Preset</label>
+            <select name="" id="">
+              <option value="">-- pilih --</option>
             </select>
 
-            <label>Production Profile</label>
-            <select>
-              <option value="">-- none --</option>
-              <option>Character_Launch_Pack</option>
-              <option>Social_Media_Content_Week</option>
-              <option>Story_Arc_Visual_Novel</option>
-              <option>Platform_Comparison_Test</option>
+            <label for="">Production Profile</label>
+            <select name="" id="">
+              <option value="">-- pilih --</option>
             </select>
 
             <button class="full ghost">⚙️ Configure Variation Rules</button>
@@ -3492,39 +3013,27 @@ textarea.output.json {
         <div class="section-body">
           <div class="info">📋 Weight 0.0 — tidak masuk prompt. Hanya untuk administrasi dan tracking.</div>
           <div class="sub-body">
-            <label>Title</label>
+            <label for="">Title</label>
             <input type="text" placeholder="e.g., Eira in Forest — Battle Scene">
-            <label>Description</label>
+            <label for="">Description</label>
             <textarea rows="2" placeholder="Brief scene description..."></textarea>
-            <label>Author / Creator</label>
+            <label for="">Author / Creator</label>
             <input type="text" placeholder="Your name or handle">
-            <label>Tags</label>
+            <label for="">Tags</label>
             <input type="text" placeholder="e.g., fantasy, dark, action, eira">
-            <label>Category</label>
-            <select>
+            <label for="">Category</label>
+            <select name="" id="">
               <option value="">-- pilih --</option>
-              <option>dark_fantasy</option>
-              <option>sci_fi_cyberpunk</option>
-              <option>realistic_contemporary</option>
-              <option>anime_adjacent</option>
-              <option>horror</option>
-              <option>romance</option>
-              <option>slice_of_life</option>
-              <option>epic_fantasy</option>
             </select>
-            <label>Target AI Platform</label>
-            <select multiple size="4">
-              <option>MidJourney</option>
-              <option>Stable Diffusion XL</option>
-              <option>DALL-E 3</option>
-              <option>Runway Gen-3</option>
-              <option>Kling</option>
-              <option>Pika</option>
-              <option>Sora</option>
+
+            <label for="">Target AI Platform</label>
+            <select multiple size="4" name="" id="">
+              <option value="">-- pilih --</option>
             </select>
-            <label>Version</label>
+
+            <label for="">Version</label>
             <input type="text" placeholder="e.g., v1.0">
-            <label>Notes</label>
+            <label for="">Notes</label>
             <textarea rows="2" placeholder="Any additional notes, reference files, decisions..."></textarea>
           </div>
         </div>
@@ -3742,224 +3251,6 @@ textarea.output.json {
 
   </section>
 </main>
-
-<!-- <script>
-/**
- * Prompt Generator V4 — UI Controller
- * ======================================
- * Fungsi yang diimplementasikan (UI saja, belum generator):
- *   1. Toggle sidebar aside (expand/collapse) — default: TERTUTUP
- *   2. Toggle panel Layer Map — default: TERTUTUP
- *   3. Collapsed-icons: klik ikon → expand sidebar + scroll ke section
- *   4. Slider weight: perbarui nilai tampilan saat digeser
- *
- * Tombol toggle sidebar : #toggleBtn (di dalam aside header)
- * Tombol toggle layer map: #toggleBtnMain (di topbar kiri — sesuai file asli)
- */
-
-(function () {
-  'use strict';
-
-  // ==================== CACHE ELEMEN DOM ====================
-  // Kumpulkan semua elemen yang sering diakses agar tidak query ulang
-  const DOM = {
-    sidebar      : null,   // Elemen <aside id="sidebar">
-    btnAside     : null,   // Tombol ☰ di dalam header sidebar → toggle aside
-    btnMain      : null,   // Tombol 🗺 di topbar → toggle layer map (BUKAN toggle aside)
-    panelLayerMap: null,   // Panel layer architecture di main content
-    menuTree     : null,   // Nav .menu-tree (scrollable form sidebar)
-    collapsedIcons: null,  // Nav #collapsedIcons (ikon kecil saat collapsed)
-    ciBtns       : null,   // Semua button di collapsed-icons
-    weightSliders: null    // Semua input[type=range] di panel weight
-  };
-
-  // ==================== STATE APLIKASI ====================
-  // Simpan status UI saat ini
-  const state = {
-    sidebarCollapsed : true,   // Default: sidebar TERTUTUP saat pertama buka
-    layerMapVisible  : false   // Default: layer map TERTUTUP saat pertama buka
-  };
-
-  // ==================== INISIALISASI ====================
-  function init() {
-    // Ambil semua referensi elemen DOM
-    cacheDOM();
-
-    // Pasang event listener
-    bindEvents();
-
-    // Terapkan state default (sidebar tutup, layer map tutup)
-    applySidebarState();
-    applyLayerMapState();
-  }
-
-  // ==================== CACHE DOM ====================
-  function cacheDOM() {
-    DOM.sidebar       = document.getElementById('sidebar');
-    DOM.btnAside      = document.getElementById('toggleBtn');      // tombol ☰ di dalam aside
-    DOM.btnMain       = document.getElementById('toggleBtnMain');  // tombol 🗺 di topbar → toggle layer map
-    DOM.panelLayerMap = document.getElementById('panelLayerMap');
-    DOM.menuTree      = DOM.sidebar ? DOM.sidebar.querySelector('.menu-tree') : null;
-    DOM.collapsedIcons= document.getElementById('collapsedIcons');
-    DOM.ciBtns        = DOM.collapsedIcons
-                          ? DOM.collapsedIcons.querySelectorAll('.ci-btn')
-                          : [];
-    // Slider weight ada di sub-body section weights
-    DOM.weightSliders = document.querySelectorAll('.weight-grid input[type=range]');
-  }
-
-  // ==================== PASANG EVENT LISTENER ====================
-  function bindEvents() {
-    // Tombol ☰ di header aside → toggle sidebar (expand/collapse)
-    if (DOM.btnAside) {
-      DOM.btnAside.addEventListener('click', function (e) {
-        e.stopPropagation();
-        toggleSidebar();
-      });
-    }
-
-    // Tombol 🗺 di topbar → toggle Layer Map panel (BUKAN toggle sidebar)
-    if (DOM.btnMain) {
-      DOM.btnMain.addEventListener('click', function (e) {
-        e.stopPropagation();
-        toggleLayerMap(); // sesuai file asli: toggleBtnMain memanggil togglePanelMap
-      });
-    }
-
-    // Klik ikon di collapsed-icons: expand sidebar lalu scroll ke section
-    DOM.ciBtns.forEach(function (btn) {
-      btn.addEventListener('click', function () {
-        var targetId = btn.getAttribute('data-target');
-        // Expand sidebar dulu jika masih tertutup
-        if (state.sidebarCollapsed) {
-          state.sidebarCollapsed = false;
-          applySidebarState();
-        }
-        // Scroll ke section yang dituju dan buka <details>-nya
-        scrollToSection(targetId);
-      });
-    });
-
-    // Update tampilan nilai slider weight saat digeser
-    DOM.weightSliders.forEach(function (slider) {
-      // Cari elemen .slider-val atau .w-val terdekat sebagai display nilai
-      slider.addEventListener('input', function () {
-        var display = findSliderDisplay(slider);
-        if (display) {
-          display.textContent = parseFloat(slider.value).toFixed(
-            slider.step && slider.step.includes('.') ? 1 : 0
-          );
-        }
-      });
-    });
-  }
-
-  // ==================== TOGGLE SIDEBAR ====================
-  // Dipanggil oleh btnAside DAN btnMain (keduanya toggle sidebar)
-  function toggleSidebar() {
-    state.sidebarCollapsed = !state.sidebarCollapsed;
-    applySidebarState();
-  }
-
-  // Terapkan state sidebar ke DOM
-  function applySidebarState() {
-    if (!DOM.sidebar) return;
-
-    // Toggle class 'collapsed' pada elemen aside
-    DOM.sidebar.classList.toggle('collapsed', state.sidebarCollapsed);
-
-    // Perbarui ikon tombol ☰/← di header aside saja
-    if (DOM.btnAside) {
-      DOM.btnAside.innerHTML = state.sidebarCollapsed ? '☰' : '←';
-      DOM.btnAside.title     = state.sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar';
-    }
-    // Catatan: btnMain adalah tombol layer map, tidak perlu diupdate di sini
-    // Tampilan .menu-tree dan .collapsed-icons dikontrol via CSS class 'collapsed'
-  }
-
-  // ==================== TOGGLE LAYER MAP ====================
-  // TERPISAH dari toggle sidebar — hanya kontrol panel #panelLayerMap
-  function toggleLayerMap() {
-    state.layerMapVisible = !state.layerMapVisible;
-    applyLayerMapState();
-  }
-
-  // Terapkan state layer map ke DOM
-  function applyLayerMapState() {
-    if (!DOM.panelLayerMap) return;
-
-    if (state.layerMapVisible) {
-      // Tampilkan panel — set display dulu, lalu opacity untuk fade-in
-      DOM.panelLayerMap.style.display = 'flex';
-      requestAnimationFrame(function () {
-        DOM.panelLayerMap.style.opacity = '1';
-      });
-    } else {
-      // Sembunyikan panel — reset opacity dan sembunyikan
-      DOM.panelLayerMap.style.opacity = '0';
-      DOM.panelLayerMap.style.display = 'none';
-    }
-
-    // Perbarui tampilan tombol 🗺 di topbar sebagai indikator aktif/tidak
-    if (DOM.btnMain) {
-      DOM.btnMain.style.opacity = state.layerMapVisible ? '1' : '0.5';
-      DOM.btnMain.title = state.layerMapVisible ? 'Sembunyikan Layer Map' : 'Tampilkan Layer Map';
-    }
-  }
-
-  // ==================== SCROLL KE SECTION ====================
-  // Buka <details> section target dan scroll ke sana di menu-tree
-  function scrollToSection(sectionId) {
-    if (!sectionId || !DOM.menuTree) return;
-
-    var section = document.getElementById(sectionId);
-    if (!section) return;
-
-    // Buka <details> utama section ini
-    var details = section.querySelector('details');
-    if (details) details.open = true;
-
-    // Scroll ke section dengan animasi halus
-    setTimeout(function () {
-      section.scrollIntoView({ behavior: 'smooth', block: 'start' });
-
-      // Highlight singkat pada summary untuk feedback visual
-      var summary = details ? details.querySelector('summary') : null;
-      if (summary) {
-        summary.style.background = 'var(--accent-dim)';
-        summary.style.color      = 'var(--accent)';
-        setTimeout(function () {
-          summary.style.background = '';
-          summary.style.color      = '';
-        }, 1200);
-      }
-    }, 80);
-  }
-
-  // ==================== HELPER: CARI DISPLAY SLIDER ====================
-  // Cari elemen tampilan nilai slider — cek .slider-val atau .w-val terdekat
-  function findSliderDisplay(slider) {
-    // Cek di .slider-row parent
-    var row = slider.closest('.slider-row');
-    if (row) return row.querySelector('.slider-val');
-
-    // Cek di .w-item parent (weight grid)
-    var item = slider.closest('.w-item');
-    if (item) return item.querySelector('.w-val');
-
-    return null;
-  }
-
-  // ==================== JALANKAN SETELAH DOM SIAP ====================
-  // Guard agar init() tidak jalan sebelum DOM tersedia
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
-  } else {
-    init();
-  }
-
-})();
-</script> -->
 
 <script>
 /**
