@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Prompt Generator V4 — 14 Layer System</title>
 
+<script src="step1_template_management.js"></script>
+<script src="step2_l0_subjects_alternative.js"></script>
+
 <style>
 /* style dengan komentar lengkap */
 /* ============================================================
@@ -1059,6 +1062,37 @@ textarea.output.json {
 }
 </style>
 
+<style>
+/* Styling untuk locked fields (read-only display) */
+.locked-field {
+  margin-top: 8px;
+}
+
+.locked-field label {
+  display: block;
+  font-size: 10.5px;
+  color: var(--red);  /* Merah untuk locked */
+  margin-bottom: 3px;
+  font-weight: 600;
+}
+
+.locked-field input[readonly],
+.locked-field textarea[readonly] {
+  background: rgba(255,107,107,.05);  /* Background merah subtle */
+  border: 1px solid rgba(255,107,107,.3);
+  color: var(--text-dim);
+  cursor: not-allowed;
+  font-style: italic;
+}
+
+.locked-field input[readonly]:focus,
+.locked-field textarea[readonly]:focus {
+  outline: none;
+  box-shadow: none;
+}
+</style>
+
+
 </head>
 <body>
 
@@ -1093,6 +1127,7 @@ textarea.output.json {
     <button class="ci-btn" data-target="sec-l8c"      data-label="L8C Output">📤</button>
     <button class="ci-btn" data-target="sec-l8b"      data-label="L8B Variations">🔄</button>
     <button class="ci-btn" data-target="sec-l8a"      data-label="L8A Metadata">📝</button>
+    <button class="ci-btn" data-target="sec-nsfw"     data-label="NSFW — Mature Content">🔞</button>
   </nav>
 
   <!-- Scrollable menu tree (tampil saat sidebar expanded) -->
@@ -1107,20 +1142,23 @@ textarea.output.json {
         </summary>
         <div class="section-body">
           <div class="sub-body">
-            <label>Load Template</label>
-            <select>
+            <label for="Load_Template">Load Template</label>
+            <select name="Load_Template" id="Load_Template">
               <option value="">-- New Character --</option>
-              <option>Eira Shadowleaf (Example)</option>
-              <option>Custom Character 1</option>
+              <option value="">Eira Shadowleaf (Example)</option>
+              <option value="">Custom Character 1</option>
             </select>
-            <label>Template ID</label>
-            <input type="text" placeholder="e.g., EIRA_SHADOWLEAF_v1">
-            <label>Generator Type</label>
-            <select>
-              <option>image</option>
-              <option>video</option>
-              <option>both</option>
+
+            <label for="Template_ID">Template ID</label>
+            <input type="text" placeholder="e.g., Eira Shadowleaf">
+
+            <label for="Generator_Type">Generator Type</label>
+            <select name="Generator_Type" id="Generator_Type">
+              <option value="Image">Image</option>
+              <option value="Video">Video</option>
+              <option value="Both">Both</option>
             </select>
+
             <div class="row" style="margin-top:6px">
               <button class="ghost">📂 Import</button>
               <button class="ghost">💾 Export</button>
@@ -1146,33 +1184,38 @@ textarea.output.json {
             <details>
               <summary>Primary Subject <span class="arr2">▸</span></summary>
               <div class="sub-body">
-                <label for="L0SubjectType">Subject Type</label>
-                  <select name="L0SubjectType" id="L0SubjectType">Subject Type
+                <label for="Species">Species</label>
+                  <select name="Species" id="Species">Species
                     <option value="">-- pilih --</option>
                   </select>
 
-                <label for="L0Species">Species</label>
-                  <select name="L0Species" id="L0Species">Species
+                <label for="Race">Race</label>
+                  <select name="Race" id="Race">Race
                     <option value="">-- pilih --</option>
                   </select>
 
-                <label for="L0Gender">Gender</label>
-                  <select name="L0Gender" id="L0Gender">Gender
+                <label for="Gender">Gender</label>
+                  <select name="Gender" id="Gender">Gender
                     <option value="">-- pilih --</option>
                   </select>
 
-                <label for="L0Age">Age</label>
-                  <select name="L0Age" id="L0Age">Age
+                <label for="Gender_Presentation">Gender Presentation</label>
+                  <select name="Gender_Presentation" id="Gender_Presentation">Gender Presentation
                     <option value="">-- pilih --</option>
                   </select>
 
-                <label for="L0Ethnicity">Ethnicity</label>
-                  <select name="L0Ethnicity" id="L0Ethnicity">Ethnicity
+                  <label for="Age">Age</label>
+                  <select name="Age" id="Age">Age
                     <option value="">-- pilih --</option>
                   </select>
 
-                <label for="L0ArchetypeRole">Archetype / Role</label>
-                  <select name="L0ArchetypeRole" id="L0ArchetypeRole">
+                <label for="Ethnicity">Ethnicity</label>
+                  <select name="Ethnicity" id="Ethnicity">Ethnicity
+                    <option value="">-- pilih --</option>
+                  </select>
+
+                <label for="Archetype_Role">Archetype / Role</label>
+                  <select name="Archetype_Role" id="Archetype_Role">
                     <option value="">-- pilih --</option>
                   </select>
               </div>
@@ -1186,63 +1229,63 @@ textarea.output.json {
               <div class="sub-body">
                 <div class="info">↑ Field utama di-lock di L1A · Face DNA. Di sini untuk desain awal.</div>
 
-                <label for="L0Head" title="Kepala">Head</label>
-                <select name="L0Head" id="L0Head">
+                <label for="Head" title="Kepala">Head</label>
+                <select name="Head" id="Head">
                   <option value="">-- pilih --</option>
                 </select>
 
-                <label for="L0Face">Face</label>
-                  <select name="L0Face" id="L0Face">
+                <label for="Face">Face</label>
+                  <select name="Face" id="Face">
                     <option value="">-- pilih --</option>
                   </select>
 
-                <label for="L0Cheek">Cheek</label>
-                  <select name="L0Cheek" id="L0Cheek">
+                <label for="Cheek">Cheek</label>
+                  <select name="Cheek" id="Cheek">
                     <option value="">-- pilih --</option>
                   </select>
 
-                <label for="L0Jawline">Jawline</label>
-                  <select name="L0Jawline" id="L0Jawline">
+                <label for="Jawline">Jawline</label>
+                  <select name="Jawline" id="Jawline">
                     <option value="">-- pilih --</option>
                   </select>
 
-                <label for="L0Chin">Chin</label>
-                  <select name="L0Chin" id="L0Chin">
+                <label for="Chin">Chin</label>
+                  <select name="Chin" id="Chin">
                     <option value="">-- pilih --</option>
                   </select>
 
-                <label for="L0Eyebrows">Eyebrows</label>
-                  <select name="L0Eyebrows" id="L0Eyebrows">
+                <label for="Eyebrows">Eyebrows</label>
+                  <select name="Eyebrows" id="Eyebrows">
                     <option value="">-- pilih --</option>
                   </select>
 
-                <label for="L0Eye">Eye</label>
-                  <select name="L0Eye" id="L0Eye">
+                <label for="Eye">Eye</label>
+                  <select name="Eye" id="Eye">
                     <option value="">-- pilih --</option>
                   </select>
 
-                <label for="L0Nose">Nose</label>
-                  <select name="L0Nose" id="L0Nose">
+                <label for="Nose">Nose</label>
+                  <select name="Nose" id="Nose">
                     <option value="">-- pilih --</option>
                   </select>
 
-                <label for="L0EyeShape">Eye Shape</label>
-                  <select name="L0EyeShape" id="L0EyeShape">
+                <label for="Eye_Shape">Eye Shape</label>
+                  <select name="Eye_Shape" id="Eye_Shape">
                     <option value="">-- pilih --</option>
                   </select>
 
-                <label for="L0HairColor">Hair Color</label>
-                  <select name="L0HairColor" id="L0HairColor">
+                <label for="Hair_Color">Hair Color</label>
+                  <select name="Hair_Color" id="Hair_Color">
                     <option value="">-- pilih --</option>
                   </select>
 
-                <label for="L0HairStyle<">Hair Style</label>
-                  <select name="L0HairStyle" id="L0HairStyle">
+                <label for="Hair_Style<">Hair Style</label>
+                  <select name="Hair_Style" id="Hair_Style">
                     <option value="">-- pilih --</option>
                   </select>
 
-                <label for="L0HairLength">Hair Length</label>
-                  <select name="L0HairLength" id="L0HairLength">
+                <label for="Hair_Length">Hair Length</label>
+                  <select name="Hair_Length" id="Hair_Length">
                     <option value="">-- pilih --</option>
                   </select>
               </div>
@@ -1254,8 +1297,8 @@ textarea.output.json {
             <details>
               <summary>Body<span class="arr2">▸</span></summary>
               <div class="sub-body">
-                <label for="L0Body">Body</label>
-                  <select name="L0Body" id="L0Body">
+                <label for="Body">Body</label>
+                  <select name="Body" id="Body">
                     <option value="">-- pilih --</option>
 
                     <optgroup label="Body by Age Category">
@@ -1272,54 +1315,54 @@ textarea.output.json {
 
                   </select>
                 
-                <label for="L0SkinColor">Skin Color</label>
-                  <select name="L0SkinColor" id="L0SkinColor">
+                <label for="Skin_Color">Skin Color</label>
+                  <select name="Skin_Color" id="Skin_Color">
                     <option value="">-- pilih --</option>
                   </select>
                 
-                <label for="L0SkinTexture">Skin Texture</label>
-                  <select name="L0SkinTexture" id="L0SkinTexture">
+                <label for="Skin_Texture">Skin Texture</label>
+                  <select name="Skin_Texture" id="Skin_Texture">
                     <option value="">-- pilih --</option>
                   </select>
                 
-                <label for="L0Neck">Neck</label>
-                  <select name="L0Neck" id="L0Neck">
+                <label for="Neck">Neck</label>
+                  <select name="Neck" id="Neck">
                     <option value="">-- pilih --</option>
                   </select>
                 
-                <label for="L0Shoulder">Shoulder</label>
-                  <select name="L0Shoulder" id="L0Shoulder">
+                <label for="Shoulder">Shoulder</label>
+                  <select name="Shoulder" id="Shoulder">
                     <option value="">-- pilih --</option>
                   </select>
                 
-                <label for="L0Arms">Arms</label>
-                  <select name="L0Arms" id="L0Arms">
+                <label for="Arms">Arms</label>
+                  <select name="Arms" id="Arms">
                     <option value="">-- pilih --</option>
                   </select>
                 
-                <label for="L0Wrists">Wrists</label>
-                  <select name="L0Wrists" id="L0Wrists">
+                <label for="Wrists">Wrists</label>
+                  <select name="Wrists" id="Wrists">
                     <option value="">-- pilih --</option>
                   </select>
                 
-                <label for="L0Hands">Hands</label>
-                  <select name="L0Hands" id="L0Hands">
+                <label for="Hands">Hands</label>
+                  <select name="Hands" id="Hands">
                     <option value="">-- pilih --</option>
                   </select>
                 
-                <label for="L0Fingers">Fingers</label>
-                  <select name="L0Fingers" id="L0Fingers">
+                <label for="Fingers">Fingers</label>
+                  <select name="Fingers" id="Fingers">
                     <option value="">-- pilih --</option>
                   </select>
                 
-                <label for="L0Nails">Nails</label>
-                  <select name="L0Nails" id="L0Nails">
+                <label for="Nails">Nails</label>
+                  <select name="Nails" id="Nails">
                     <option value="">-- pilih --</option>
                   </select>
 
                 <!-- Chest / Breast -->
-                <label for="L0ChestBreast">Chest / Breast</label>
-                  <select name="L0ChestBreast" id="L0ChestBreast">
+                <label for="Chest_Breast">Chest / Breast</label>
+                  <select name="Chest_Breast" id="Chest_Breast">
                     <option value="">-- pilih --</option>
 
                     <optgroup label="Type">
@@ -1328,90 +1371,90 @@ textarea.output.json {
 
                     <!-- NSFW Feature (18+) -->
                     <!-- Ptosis (Sagging Grade) -->
-                    <optgroup label="Ptosis">
+                    <optgroup label="Ptosis" id="NSFW">
                       <option value="">-- pilih --</option>
                     </optgroup>
 
                     <!-- Nipple Type -->
-                    <optgroup label="Nipple Type">
+                    <optgroup label="Nipple Type" id="NSFW">
                       <option value="">-- pilih --</option>
                     </optgroup>
 
                     <!-- Nipple Size -->
-                    <optgroup label="Nipple Size">
+                    <optgroup label="Nipple Size" id="NSFW">
                       <option value="">-- pilih --</option>
                     </optgroup>
 
                     <!-- Areola -->
-                    <optgroup label="Areola Color">
+                    <optgroup label="Areola Color" id="NSFW">
                       <option value="">-- pilih --</option>
                     </optgroup>
 
                     <!-- Areola Diameter -->
-                    <optgroup label="Areola Diameter">
+                    <optgroup label="Areola Diameter" id="NSFW">
                       <option value="">-- pilih --</option>
                     </optgroup>
 
                     <!-- Areola Texture -->
-                    <optgroup label="Areola Texture">
+                    <optgroup label="Areola Texture" id="NSFW">
                       <option value="">-- pilih --</option>
                     </optgroup>
                   </select>
                 
-                <label for="L0Stomach">Stomach</label>
-                  <select name="L0Stomach" id="L0Stomach">
+                <label for="Stomach">Stomach</label>
+                  <select name="Stomach" id="Stomach">
                     <option value="">-- pilih --</option>
                   </select>
                 
-                <label for="L0Waist">Waist</label>
-                  <select name="L0Waist" id="L0Waist">
+                <label for="Waist">Waist</label>
+                  <select name="Waist" id="Waist">
                     <option value="">-- pilih --</option>
                   </select>
                 
-                <label for="L0Hips">Hips</label>
-                  <select name="L0Hips" id="L0Hips">
+                <label for="Hips">Hips</label>
+                  <select name="Hips" id="Hips">
                     <option value="">-- pilih --</option>
                   </select>
                 
-                <label for="L0Buttocks">Buttocks</label>
-                  <select name="L0Buttocks" id="L0Buttocks">
+                <label for="Buttocks">Buttocks</label>
+                  <select name="Buttocks" id="Buttocks">
                     <option value="">-- pilih --</option>
                   </select>
                 
                 <!-- NSFW Feature (18+) -->
-                <label for="L0Genital">Genital</label>
-                  <select name="L0Genital" id="L0Genital">
+                <label for="Genital">Genital</label>
+                  <select name="Genital" id="Genital">
                     <option value="">-- pilih --</option>
 
-                    <optgroup label="Mon Pubis">
+                    <optgroup label="Mon Pubis" id="NSFW">
                       <option value="">-- pilih --</option>
                     </optgroup>
 
-                    <optgroup label="Labia Majora">
+                    <optgroup label="Labia Majora" id="NSFW">
                       <option value="">-- pilih --</option>
                     </optgroup>
 
-                    <optgroup label="Labia Majora Color">
+                    <optgroup label="Labia Majora Color" id="NSFW">
                       <option value="">-- pilih --</option>
                     </optgroup>
                   </select>
                 
-                <label for="L0Thigh">Thigh</label>
-                  <select name="L0Thigh" id="L0Thigh">
+                <label for="Thigh">Thigh</label>
+                  <select name="Thigh" id="Thigh">
                     <option value="">-- pilih --</option>
                   </select>
                 
-                <label for="L0Calf">Calf</label>
-                  <select name="L0Calf" id="L0Calf">
+                <label for="Calf">Calf</label>
+                  <select name="Calf" id="Calf">
                     <option value="">-- pilih --</option>
                   </select>
                 
-                <label for="L0Foot">Foot</label>
-                  <select name="L0Foot" id="L0Foot">
+                <label for="Foot">Foot</label>
+                  <select name="Foot" id="Foot">
                     <option value="">-- pilih --</option>
                   </select>
 
-                <label for="L0DistinctiveFeatures">Distinctive Features</label>
+                <label for="Distinctive_Features">Distinctive Features</label>
                 <input type="text" placeholder="e.g., scar_across_left_eye, glowing_rune_markings">
               </div>
             </details>
@@ -1423,11 +1466,11 @@ textarea.output.json {
               <summary>Dressing Room — Active Attire <span class="arr2">▸</span></summary>
               <div class="sub-body">
                 <div class="info">🎭 Outfit overlay — tidak mengubah proporsi tubuh. Bisa diganti tiap generate.</div>
-                <label>Outfit Set Name</label>
-                <input type="text" placeholder="e.g., Battle_Ready_v1">
+                <label for="Outfit_Set_Name">Outfit Set Name</label>
+                <input type="text" placeholder="e.g., Battle_Armor">
                 
-                <label for="L0Outfit">Outfit</label>
-                  <select name="L0Outfit" id="L0Outfit">
+                <label for="Outfit">Outfit</label>
+                  <select name="Outfit" id="Outfit">
                     <option value="">-- pilih --</option>
 
                     <!-- 1. BARE / MINIMAL -->
@@ -1493,43 +1536,43 @@ textarea.output.json {
 
                   </select>
 
-                <label for="L0OutfitPreset">Outfit Preset (Quick Load)</label>
-                <select name="L0OutfitPreset" id="L0OutfitPreset">
+                <label for="Outfit_Preset">Outfit Preset (Quick Load)</label>
+                <select name="Outfit_Preset" id="Outfit_Preset">
                   <option value="">-- pilih --</option>
                 </select>
 
-                <label for="L0UpperBody">Upper Body</label>
-                <select name="L0UpperBody" id="L0UpperBody">
+                <label for="Upper_Body">Upper Body</label>
+                <select name="Upper_Body" id="Upper_Body">
                   <option value="">-- pilih --</option>
                 </select>
 
-                <label for="L0LowerBody">Lower Body</label>
-                <select name="L0LowerBody" id="L0LowerBody">
+                <label for="Lower_Body">Lower Body</label>
+                <select name="Lower_Body" id="Lower_Body">
                   <option value="">-- pilih --</option>
                 </select>
 
-                <label for="L0Outerwear">Outerwear</label>
-                <select name="L0Outerwear" id="L0Outerwear">
+                <label for="Outerwear">Outerwear</label>
+                <select name="Outerwear" id="Outerwear">
                   <option value="">-- none --</option>
                 </select>
 
-                <label for="L0Footwear">Footwear</label>
-                <select name="L0Footwear" id="L0Footwear">
+                <label for="Footwear">Footwear</label>
+                <select name="Footwear" id="Footwear">
                   <option value="">-- pilih --</option>
                 </select>
 
-                <label for="L0Headwear">Headwear</label>
-                <select name="L0Headwear" id="L0Headwear">
+                <label for="Headwear">Headwear</label>
+                <select name="Headwear" id="Headwear">
                   <option value="">-- pilih --</option>
                 </select>
 
-                <label for="L0Accessories">Accessories</label>
-                <select multiple size="4" name="L0Accessories" id="L0Accessories">
+                <label for="Accessories">Accessories</label>
+                <select multiple size="4" name="Accessories" id="Accessories">
                   <option value="">-- pilih --</option>
                 </select>
 
-                <label for="L0PhysicsEngine">Physics Engine</label>
-                <select name="L0PhysicsEngine" id="L0PhysicsEngine">
+                <label for="Physics_Engine">Physics Engine</label>
+                <select name="Physics_Engine" id="Physics_Engine">
                   <option value="">-- pilih --</option>
                 </select>
 
@@ -1537,6 +1580,31 @@ textarea.output.json {
               </div>
             </details>
           </div>
+
+          <!-- Reference Images -->
+          <div class="sub-group">
+            <details>
+              <summary>Reference Images <span class="arr2">▸</span></summary>
+              <div class="sub-body">
+                <div class="info">💡 Lebih banyak angle = konsistensi lebih tinggi. Minimum 1, ideal 4+ angle.</div>
+                <label>Front View (Primary) — Priority 1</label>
+                <input type="file" placeholder="front_view.png atau URL">
+                <label>Face Closeup — Priority 2</label>
+                <input type="file" placeholder="eira_face_closeup.png">
+                <label>3/4 Left — Priority 2</label>
+                <input type="file" placeholder="three_quarter_left_view.png">
+                <label>3/4 Right — Priority 2</label>
+                <input type="file" placeholder="three_quarter_right_view.png">
+                <label>Left Side Profile — Priority 3</label>
+                <input type="file" placeholder="left_side_view.png">
+                <label>Right Side Profile — Priority 3</label>
+                <input type="file" placeholder="right_side_view.png">
+                <label>Back View — Priority 3</label>
+                <input type="file" placeholder="eira_back_v1.png">
+              </div>
+            </details>
+          </div>
+
         </div>
       </details>
     </div>
@@ -1549,249 +1617,79 @@ textarea.output.json {
           <span class="arr">▸</span>
         </summary>
         <div class="section-body">
-          <div class="info warn">⚠️ DIKUNCI. Tidak boleh diubah setelah karakter di-approve. Paspor digital karakter.</div>
+          <div class="info warn">⚠️ Layer ini LOCK hasil dari L0. Setelah di-approve, nilai tidak boleh diubah.</div>
 
-          <div class="sub-body">
-            <label for="">Character Name</label>
-            <input type="text" placeholder="e.g., Eira Shadowleaf">
+          <!-- Editable Fields -->
+          <label for="Character_Name">Character Name</label>
+          <input type="text" id="Character_Name" placeholder="e.g., Eira Shadowleaf">
 
-            <label for="L1ALockMethod">Lock Method</label>
-            <select name="L1ALockMethod" id="L1ALockMethod">
-              <option>image_reference_primary (⭐⭐⭐⭐⭐ — Terkuat)</option>
-              <option>lora_model (⭐⭐⭐⭐⭐ — Terkuat / SD only)</option>
-              <option>ip_adapter_controlnet (⭐⭐⭐⭐⭐ — SD only)</option>
-              <option>image_reference_secondary (⭐⭐⭐)</option>
-              <option>prompt_only (⭐⭐ — Lemah)</option>
-            </select>
+          <label for="Base_Body_Ref">Base Body Reference</label>
+          <input type="text" id="Base_Body_Ref" placeholder="e.g., Asian female 20s athletic">
 
-            <div class="lock-row">
-              <input type="checkbox" id="lockIdentity" checked>
-              <label for="lockIdentity">🔒 Identity Anchor Locked</label>
-            </div>
-          </div>
+          <div class="divider"></div>
 
-          <!-- Race Matrix -->
+          <!-- Locked Values from L0 (READ-ONLY DISPLAY) -->
           <div class="sub-group">
             <details open>
-              <summary>Race Matrix <span class="arr2">▸</span></summary>
+              <summary>🔒 Locked Features (dari L0) <span class="arr2">▸</span></summary>
               <div class="sub-body">
-                <label for="L1ARasRealistis">Ras Realistis (Basis Tengkorak)</label>
-                <select name="L1ARasRealistis" id="L1ARasRealistis">
-                  <option value="">-- pilih --</option>
-                </select>
-                <div class="lock-row">
-                  <input type="checkbox" id="lockRace" checked>
-                  <label for="lockRace">🔒 Lock Race</label>
+                
+                <!-- Species (dari L0) -->
+                <div class="locked-field">
+                  <label for="locked_species">Species 🔒</label>
+                  <input type="text" id="locked_species" readonly disabled 
+                        placeholder="Will be locked from L0 selection">
                 </div>
 
-                <label for="L1ARasFantasi">Ras Fantasi (Overlay)</label>
-                <select name="L1ARasFantasi" id="L1ARasFantasi">
-                  <option value="">-- pilih --</option>
-                </select>
-
-                <label>Skull Logic — Locks Out</label>
-                <input type="text" placeholder="e.g., European_facial_structure, caucasian_features">
-
-                <label for="L1ASkinToneRange">Skin Tone Range</label>
-                <select name="L1ASkinToneRange" id="L1ASkinToneRange">
-                  <option value="">-- pilih --</option>
-                </select>
-              </div>
-            </details>
-          </div>
-
-          <!-- Age Profile -->
-          <div class="sub-group">
-            <details>
-              <summary>Age Profile <span class="arr2">▸</span></summary>
-              <div class="sub-body">
-                <label for="L1AAgeRangeTarget">Age Range Target</label>
-                <select name="L1AAgeRangeTarget" id="L1AAgeRangeTarget">
-                  <option value="">-- pilih --</option>
-                </select>
-                <div class="lock-row">
-                  <input type="checkbox" id="lockAge" checked>
-                  <label for="lockAge">🔒 Lock Age</label>
+                <!-- Age (dari L0) -->
+                <div class="locked-field">
+                  <label for="locked_age">Age Profile 🔒</label>
+                  <input type="text" id="locked_age" readonly disabled 
+                        placeholder="Will be locked from L0 selection">
                 </div>
 
-                <label for="L1AMaturityLevel">Maturity Level</label>
-                <select name="L1AMaturityLevel" id="L1AMaturityLevel">
-                  <option value="">-- pilih --</option>
-                </select>
-
-                <label for="L1ASkinCondition">Skin Condition (age-based)</label>
-                <select name="L1ASkinCondition" id="L1ASkinCondition">
-                  <option value="">-- pilih --</option>
-                </select>
-              </div>
-            </details>
-          </div>
-
-          <!-- Face DNA -->
-          <div class="sub-group">
-            <details>
-              <summary>Face DNA <span class="arr2">▸</span></summary>
-              <div class="sub-body">
-                <label for="L1AFaceShape">Face Shape</label>
-                <select name="L1AFaceShape" id="L1AFaceShape">
-                  <option value="">-- pilih --</option>
-                </select>
-
-                <label for="L1AEyeShape">Eye Shape</label>
-                <select name="L1AEyeShape" id="L1AEyeShape">
-                  <option value="">-- pilih --</option>
-                </select>
-
-                <label for="L1AEyeColor">Eye Color</label>
-                <select name="L1AEyeColor" id="L1AEyeColor">
-                  <option value="">-- pilih --</option>
-                </select>
-                <div class="lock-row">
-                  <input type="checkbox" id="lockEyes" checked>
-                  <label for="lockEyes">🔒 Lock Eye Shape + Color</label>
+                <!-- Ethnicity (dari L0) -->
+                <div class="locked-field">
+                  <label for="locked_ethnicity">Ethnicity 🔒</label>
+                  <input type="text" id="locked_ethnicity" readonly disabled 
+                        placeholder="Will be locked from L0 selection">
                 </div>
 
-                <label for="L1ANoseShape">Nose Shape</label>
-                <select name="L1ANoseShape" id="L1ANoseShape">
-                  <option value="">-- pilih --</option>
-                </select>
-
-                <label>Lip Shape</label>
-                <select>
-                  <option value="">-- pilih --</option>
-                  <option>thin_natural</option>
-                  <!-- lebih banyak pilihan/option di file original -->
-                </select>
-
-                <label>Jaw Line</label>
-                <select>
-                  <option value="">-- pilih --</option>
-                  <option>soft_rounded</option>
-                  <!-- lebih banyak pilihan/option di file original -->
-                </select>
-
-                <label>Cheek Structure</label>
-                <select>
-                  <option value="">-- pilih --</option>
-                  <option>high_prominent (East Asian / Slavic)</option>
-                  <!-- lebih banyak pilihan/option di file original -->
-                </select>
-
-                <label>Skin Undertone</label>
-                <select>
-                  <option value="">-- pilih --</option>
-                  <option>warm_peachy (East Asian / N. European)</option>
-                  <!-- lebih banyak pilihan/option di file original -->
-                </select>
-              </div>
-            </details>
-          </div>
-
-          <!-- Body DNA -->
-          <div class="sub-group">
-            <details>
-              <summary>Body DNA <span class="arr2">▸</span></summary>
-              <div class="sub-body">
-                <label>Height Category</label>
-                <select>
-                  <option value="">-- pilih --</option>
-                  <option>petite (di bawah 160cm)</option>
-                  <!-- lebih banyak pilihan/option di file original -->
-                </select>
-                <div class="lock-row">
-                  <input type="checkbox" id="lockHeight" checked>
-                  <label for="lockHeight">🔒 Lock Height</label>
+                <!-- Face DNA (summary dari L0 Head) -->
+                <div class="locked-field">
+                  <label for="locked_face">Face DNA 🔒</label>
+                  <textarea id="locked_face" readonly disabled rows="2" 
+                            placeholder="Face features will be locked from L0 (eyes, nose, lips, jaw...)"></textarea>
                 </div>
 
-                <label>Frame Type</label>
-                <select>
-                  <option value="">-- pilih --</option>
-                  <option>ectomorph_lean (ramping natural)</option>
-                  <!-- lebih banyak pilihan/option di file original -->
-                </select>
-                <div class="lock-row">
-                  <input type="checkbox" id="lockFrame" checked>
-                  <label for="lockFrame">🔒 Lock Frame</label>
+                <!-- Body DNA (summary dari L0 Body) -->
+                <div class="locked-field">
+                  <label for="locked_body">Body DNA 🔒</label>
+                  <textarea id="locked_body" readonly disabled rows="2" 
+                            placeholder="Body features will be locked from L0 (frame, proportions...)"></textarea>
                 </div>
 
-                <label>Shoulder Width</label>
-                <select>
-                  <option>narrow (sempit, lebih kecil dari pinggul)</option>
-                  <!-- lebih banyak pilihan/option di file original -->
-                </select>
+                <!-- Skin & Hair (summary dari L0) -->
+                <div class="locked-field">
+                  <label for="locked_skin_hair">Skin & Hair DNA 🔒</label>
+                  <textarea id="locked_skin_hair" readonly disabled rows="2" 
+                            placeholder="Skin color, texture, hair color, style from L0"></textarea>
+                </div>
 
-                <label>Waist Definition</label>
-                <select>
-                  <option>undefined_straight</option>
-                  <!-- lebih banyak pilihan/option di file original -->
-                </select>
-
-                <label>Limb Proportion</label>
-                <select>
-                  <option>short_limbed</option>
-                  <!-- lebih banyak pilihan/option di file original -->
-                </select>
               </div>
             </details>
           </div>
 
-          <!-- Reference Images -->
-          <div class="sub-group">
-            <details>
-              <summary>Reference Images <span class="arr2">▸</span></summary>
-              <div class="sub-body">
-                <div class="info">💡 Lebih banyak angle = konsistensi lebih tinggi. Minimum 1, ideal 4+ angle.</div>
-                <label>Front View (Primary) — Priority 1</label>
-                <input type="text" placeholder="eira_front_v1.png atau URL">
-                <label>3/4 Left — Priority 2</label>
-                <input type="text" placeholder="eira_three_quarter_left.png">
-                <label>3/4 Right — Priority 2</label>
-                <input type="text" placeholder="eira_three_quarter_right.png">
-                <label>Side Profile — Priority 3</label>
-                <input type="text" placeholder="eira_side_v1.png">
-                <label>Back View — Priority 3</label>
-                <input type="text" placeholder="eira_back_v1.png">
-                <label>Face Closeup — Priority 2</label>
-                <input type="text" placeholder="eira_face_closeup.png">
-              </div>
-            </details>
-          </div>
+          <div class="divider"></div>
 
-          <!-- Platform Usage -->
-          <div class="sub-group">
-            <details>
-              <summary>Platform Usage <span class="arr2">▸</span></summary>
-              <div class="sub-body">
-                <label>MidJourney — Image Weight</label>
-                <select>
-                  <option>--iw 0.5 (lemah)</option>
-                  <option>--iw 1.0 (balance)</option>
-                  <option>--iw 1.5 (dominan — recommended)</option>
-                  <option>--iw 2.0 (maksimal)</option>
-                </select>
-                <label>MidJourney — Char Ref Weight (--cw)</label>
-                <select>
-                  <option>--cw 100 (lock wajah + outfit)</option>
-                  <option>--cw 75 (lock wajah, outfit bebas)</option>
-                  <option>--cw 50 (hanya wajah)</option>
-                  <option>--cw 0 (style saja)</option>
-                </select>
-                <label>SDXL — IP-Adapter Scale</label>
-                <select>
-                  <option>0.85 (recommended)</option>
-                  <option>0.70</option>
-                  <option>0.90</option>
-                  <option>1.00 (maksimal)</option>
-                </select>
-                <label>Kling — Face Reference Weight</label>
-                <select>
-                  <option>0.85 (recommended)</option>
-                  <option>0.70 (lebih bebas)</option>
-                  <option>1.00 (maksimal lock)</option>
-                </select>
-              </div>
-            </details>
+          <!-- Lock Control -->
+          <div class="lock-row">
+            <input type="checkbox" id="identity_Locked">
+            <label for="identity_Locked">🔒 Lock Identity Permanently</label>
           </div>
+          <div class="info">⚠️ Setelah locked, nilai L1A tidak bisa diubah. Pastikan L0 sudah final!</div>
+
+          <button class="full" id="lock_Identity_Btn">🔒 LOCK CHARACTER IDENTITY</button>
 
         </div>
       </details>
@@ -1807,39 +1705,60 @@ textarea.output.json {
         <div class="section-body">
           <div class="info warn">⚠️ PERMANEN. "Pagar" identitas — apa yang DILARANG keras di setiap generate.</div>
           <div class="sub-body">
-            <label for="">Negative DNA (Identity Protection)</label>
+            <label for="Identity_Protection">Negative DNA (Identity Protection)</label>
             <textarea rows="5" placeholder="wrong race:1.5&#10;european facial structure:1.4&#10;age drift&#10;extra limbs&#10;mature anatomy (jika karakter muda)"></textarea>
 
-            <label for="">Anatomy Locks</label>
-            <select multiple size="4" name="" id="">
+            <label for="Anatomy_Locks">Anatomy Locks</label>
+            <select multiple size="4" name="Anatomy_Locks" id="Anatomy_Locks">
               <option selected>no_extra_fingers</option>
               <option selected>no_deformed_hands</option>
               <option selected>no_extra_limbs</option>
               <option selected>no_anatomy_distortion</option>
-              <option>no_merged_fingers</option>
-              <option>no_floating_limbs</option>
+              <option value="no_merged_fingers">no_merged_fingers</option>
+              <option value="no_floating_limbs">no_floating_limbs</option>
             </select>
 
-            <label for="">Face Protection Locks</label>
-            <select multiple size="4" name="" id="">
+            <label for="Face_Protection_Locks">Face Protection Locks</label>
+            <select multiple size="4" name="Face_Protection_Locks" id="Face_Protection_Locks">
               <option selected>no_wrong_race</option>
               <option selected>no_age_drift</option>
               <option selected>no_deformed_face</option>
               <option selected>no_asymmetric_face</option>
-              <option>no_crossed_eyes</option>
-              <option>no_plastic_skin</option>
+              <option value="no_crossed_eyes">no_crossed_eyes</option>
+              <option value="no_plastic_skin">no_plastic_skin</option>
             </select>
 
-            <label for="">Quality Locks</label>
-            <select multiple size="3" name="" id="">
+            <label for="Quality_Locks">Quality Locks</label>
+            <select multiple size="3" name="Quality_Locks" id="Quality_Locks">
               <option selected>no_worst_quality</option>
               <option selected>no_low_quality</option>
               <option selected>no_blurry</option>
-              <option>no_watermark</option>
-              <option>no_text_artifacts</option>
+              <option value="no_watermark">no_watermark</option>
+              <option value="no_watermark">no_text_artifacts</option>
             </select>
 
-            <label for="">Identity Locked Fields (tidak bisa di-override)</label>
+            <label for="Negative_Prompt">Negative Prompt</label>
+            <select multiple name="Negative_Prompt" id="Negative_Prompt">
+              <option value="">-- pilih --</option>
+              
+              <optgroup label="Universal">
+                <option value="">-- pilih --</option>
+              </optgroup>
+
+              <optgroup label="Anime">
+                <option value="">-- pilih --</option>
+              </optgroup>
+
+              <optgroup label="Realistic">
+                <option value="">-- pilih --</option>
+              </optgroup>
+
+              <optgroup label="Image Quality">
+                <option value="">-- pilih --</option>
+              </optgroup>
+            </select>
+
+            <label for="Identity_Locked_Fields">Identity Locked Fields (tidak bisa di-override)</label>
             <input type="text" placeholder="race_matrix, age_profile, face_dna, body_dna">
           </div>
         </div>
@@ -1858,46 +1777,49 @@ textarea.output.json {
             <details open>
               <summary>Scene Type &amp; Focus <span class="arr2">▸</span></summary>
               <div class="sub-body">
-                <label for="" >Primary Focus</label>
-                <select name="" id="">
+                <label for="Primary_Focus">Primary Focus</label>
+                <select name="Primary_Focus" id="Primary_Focus">
                   <option value="">-- pilih --</option>
                 </select>
-                <label for="">Narrative Moment</label>
-                <select name="" id="">
+
+                <label for="Narrative_Moment">Narrative Moment</label>
+                <select name="Narrative_Moment" id="Narrative_Moment">
                   <option value="">-- pilih --</option>
                 </select>
+
                 <input type="text" placeholder="Additional Narrative Moment">
               </div>
+
           <!-- Pose & Action -->
           <div class="sub-group">
             <details>
               <summary>Pose &amp; Action <span class="arr2">▸</span></summary>
               <div class="sub-body">
-                <label for="">Base Pose</label>
-                <select name="" id="">
+                <label for="Base_Pose">Base Pose</label>
+                <select name="Base_Pose" id="Base_Pose">
                   <option value="">-- pilih --</option>
                 </select>
 
-                <label for="">Action Verb</label>
-                <select name="" id="">
+                <label for="Action_Verb">Action Verb</label>
+                <select name="Action_Verb" id="Action_Verb">
                   <option value="">-- pilih --</option>
                 </select>
 
                 <label for="">Action Object (optional)</label>
                 <input type="text" placeholder="e.g., ancient_artifact, glowing_sword">
 
-                <label for="">Energy Level</label>
-                <select name="" id="">
+                <label for="Energy_Level">Energy Level</label>
+                <select name="Energy_Level" id="Energy_Level">
                   <option value="">-- pilih --</option>
                 </select>
 
-                <label for="">Balance</label>
-                <select name="" id="">
+                <label for="Balance">Balance</label>
+                <select name="Balance" id="Balance">
                   <option value="">-- pilih --</option>
                 </select>
 
-                <label for="">Line of Sight</label>
-                <select name="" id="">
+                <label for="Line_of_Sight">Line of Sight</label>
+                <select name="Line_of_Sight" id="Line_of_Sight">
                   <option value="">-- pilih --</option>
                 </select>
               </div>
@@ -1909,81 +1831,29 @@ textarea.output.json {
             <details>
               <summary>Expression &amp; Emotion <span class="arr2">▸</span></summary>
               <div class="sub-body">
-                <label>Primary Emotion</label>
-                <select>
+                <label for="Primary_Emotion">Primary Emotion</label>
+                <select name="Primary_Emotion" id="Primary_Emotion">
                   <option value="">-- pilih --</option>
-                  <option>neutral_calm</option>
-                  <option>determination (tekad kuat)</option>
-                  <option>joy_happiness</option>
-                  <option>sadness_grief</option>
-                  <option>anger_rage</option>
-                  <option>fear_terror</option>
-                  <option>wonder_awe (kagum)</option>
-                  <option>melancholy_wistful</option>
-                  <option>confidence</option>
-                  <option>pride</option>
-                  <option>shame_guilt</option>
-                  <option>curiosity</option>
-                  <option>suspicion_distrust</option>
-                  <option>exhaustion</option>
-                  <option>serenity_peace</option>
-                  <option>loneliness</option>
-                  <option>hope</option>
-                  <option>love_adoration</option>
-                  <option>stoic_unreadable</option>
-                  <option>smug_satisfied</option>
                 </select>
 
-                <label>Secondary Emotion (Undercurrent)</label>
-                <select>
-                  <option value="">-- none --</option>
-                  <option>underlying_sadness</option>
-                  <option>lingering_anger</option>
-                  <option>suppressed_fear</option>
-                  <option>hidden_hope</option>
-                  <option>quiet_determination</option>
-                  <option>unspoken_guilt</option>
-                  <option>jealousy_hidden</option>
-                  <option>love_unrequited</option>
-                  <option>nostalgia_bittersweet</option>
-                  <option>relief_mixed_with_grief</option>
+                <label for="Secondary_Emotion">Secondary Emotion (Undercurrent)</label>
+                <select name="Secondary_Emotion" id="Secondary_Emotion">
+                  <option value="">-- pilih --</option>
                 </select>
 
-                <label>Intensity</label>
-                <select>
-                  <option>repressed (hampir tidak terlihat)</option>
-                  <option>subtle</option>
-                  <option>moderate</option>
-                  <option>strong</option>
-                  <option>intense</option>
-                  <option>overwhelming</option>
+                <label for="Intensity">Intensity</label>
+                <select name="Intensity" id="Intensity">
+                  <option value="">-- pilih --</option>
                 </select>
 
-                <label>Micro Expressions</label>
-                <select multiple size="4">
-                  <option>tight_jaw</option>
-                  <option>furrowed_brow</option>
-                  <option>slight_smile</option>
-                  <option>watery_eyes</option>
-                  <option>chin_slightly_raised</option>
-                  <option>flared_nostrils</option>
-                  <option>half_lidded_eyes</option>
-                  <option>head_tilt_slight</option>
-                  <option>direct_gaze</option>
+                <label for="Micro_Expressions">Micro Expressions</label>
+                <select multiple size="4" name="Micro_Expressions" id="Micro_Expressions">
+                  <option value="">-- pilih --</option>
                 </select>
 
-                <label>Eye State</label>
-                <select>
-                  <option>sharp_focused</option>
-                  <option>soft_warm</option>
-                  <option>cold_calculating</option>
-                  <option>tired_heavy</option>
-                  <option>bright_alive</option>
-                  <option>sad_distant</option>
-                  <option>wide_surprised</option>
-                  <option>squinting_suspicious</option>
-                  <option>glowing_power</option>
-                  <option>glazed_shock</option>
+                <label for="Eye_State">Eye State</label>
+                <select name="Eye_State" id="Eye_State">
+                  <option value="">-- pilih --</option>
                 </select>
               </div>
             </details>
@@ -1994,22 +1864,15 @@ textarea.output.json {
             <details>
               <summary>Modifiers (Cybernetics / Magic / Condition) <span class="arr2">▸</span></summary>
               <div class="sub-body">
-                <label>Cybernetics</label>
+                <label for="Cybernetics">Cybernetics</label>
                 <input type="text" placeholder="e.g., cybernetic_right_arm_full, neural_interface_temple">
 
-                <label>Magical Effects</label>
+                <label for="Magical_Effects">Magical Effects</label>
                 <input type="text" placeholder="e.g., aura_golden_light, dark_energy_wisps_around_hands">
 
-                <label>Physical Condition</label>
-                <select>
-                  <option value="">-- normal --</option>
-                  <option>battle_damaged_armor</option>
-                  <option>wounds_bandaged</option>
-                  <option>blood_on_clothing</option>
-                  <option>rain_soaked_thoroughly</option>
-                  <option>dust_covered</option>
-                  <option>fire_ash_covered</option>
-                  <option>extreme_wind_effect</option>
+                <label for="Physical_Condition">Physical Condition</label>
+                <select name="Physical_Condition" id="Physical_Condition">
+                  <option value="">-- pilih --</option>
                 </select>
               </div>
             </details>
@@ -2064,31 +1927,24 @@ textarea.output.json {
             <details>
               <summary>Time Setting <span class="arr2">▸</span></summary>
               <div class="sub-body">
-                <label>Era / Period</label>
-                <select>
+                <label for="Era_Period">Era / Period</label>
+                <select name="Era_Period" id="Era_Period">
                   <option value="">-- pilih --</option>
-                  <option>ancient / prehistoric</option>
-                  <!-- lebih banyak pilihan/option di file original -->
                 </select>
 
-                <label>Time of Day</label>
-                <select>
+                <label for="Time_of_Day">Time of Day</label>
+                <select name="Time_of_Day" id="Time_of_Day">
                   <option value="">-- pilih --</option>
-                  <option>dawn_pre_sunrise</option>
-                  <!-- lebih banyak pilihan/option di file original -->
                 </select>
 
-                <label>Season</label>
-                <select>
+                <label for="Season">Season</label>
+                <select name="Season" id="Season">
                   <option value="">-- pilih --</option>
-                  <option>spring</option>
-                  <!-- lebih banyak pilihan/option di file original -->
                 </select>
 
-                <label>Time Flow</label>
-                <select>
-                  <option>real_time</option>
-                  <!-- lebih banyak pilihan/option di file original -->
+                <label for="Time_Flow">Time Flow</label>
+                <select name="Time_Flow" id="Time_Flow">
+                  <option value="">-- pilih --</option>
                 </select>
               </div>
             </details>
@@ -2098,24 +1954,24 @@ textarea.output.json {
             <details>
               <summary>Space Setting <span class="arr2">▸</span></summary>
               <div class="sub-body">
-                <label>Location Type</label>
-                <select>
+                <label for="Location_Type">Location Type</label>
+                <select name="Location_Type" id="Location_Type">
                   <option value="">-- pilih --</option>
-                  <option>urban_city</option>
-                  <!-- lebih banyak pilihan/option di file original -->
                 </select>
-                <label>Specific Place</label>
+
+                <label for="Specific_Place">Specific Place</label>
                 <input type="text" placeholder="e.g., abandoned metro station, grand library">
-                <label>Scale</label>
-                <select>
-                  <option>intimate_small</option>
-                  <!-- lebih banyak pilihan/option di file original -->
+                
+                <label for="Scale">Scale</label>
+                <select name="Scale" id="Scale">
+                  <option value="">-- pilih --</option>
                 </select>
-                <label>Spatial Quality</label>
-                <select>
-                  <option>open_vast</option>
-                  <!-- lebih banyak pilihan/option di file original -->
+
+                <label for="Spatial_Quality">Spatial Quality</label>
+                <select name="Spatial_Quality" id="Spatial_Quality">
+                  <option value="">-- pilih --</option>
                 </select>
+
               </div>
             </details>
           </div>
@@ -3555,6 +3411,24 @@ textarea.output.json {
   // AKHIR IIFE
   // ============================================
 })();
+</script>
+
+<script>
+// SCRIPT UNTUK LOCK MECHANISM (placeholder - implement nanti)
+document.getElementById('lockIdentityBtn')?.addEventListener('click', function() {
+  const checkbox = document.getElementById('identityLocked');
+  
+  if (!checkbox.checked) {
+    alert('⚠️ Centang checkbox "Lock Identity Permanently" terlebih dahulu!');
+    return;
+  }
+  
+  // TODO: Copy values dari L0 ke L1A locked fields
+  // TODO: Disable L0 fields yang sudah di-lock
+  // TODO: Save locked state ke localStorage
+  
+  alert('🔒 Character identity locked! (Script belum diimplementasi)');
+});
 </script>
 
 </body>
